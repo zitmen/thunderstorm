@@ -19,7 +19,7 @@ public interface LMfunc {
      * return the kth component of the gradient df(x,a)/da_k
      */
     double grad(double[] x, double[] a, int ak);
-
+    
     /**
      * return initial guess at a[]
      */
