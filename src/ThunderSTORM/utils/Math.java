@@ -1,4 +1,4 @@
-package ThunderSTORM.util;
+package ThunderSTORM.utils;
 
 public class Math {
 

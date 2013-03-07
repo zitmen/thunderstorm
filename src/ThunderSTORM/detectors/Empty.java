@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ThunderSTORM.estimator;
+package ThunderSTORM.detectors;
 
 /**
  *
  * @author Martin
  */
-public interface IEstimator {
+public class Empty {
     
 }

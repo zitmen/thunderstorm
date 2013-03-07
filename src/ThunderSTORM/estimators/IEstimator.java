@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ThunderSTORM.util;
+package ThunderSTORM.estimators;
 
 /**
  *
  * @author Martin
  */
-public class Convolution {
+public interface IEstimator {
     
 }

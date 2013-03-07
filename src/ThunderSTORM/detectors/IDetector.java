@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ThunderSTORM.filter;
+package ThunderSTORM.detectors;
 
 /**
  *
  * @author Martin
  */
-public class Empty {
+public interface IDetector {
     
 }
