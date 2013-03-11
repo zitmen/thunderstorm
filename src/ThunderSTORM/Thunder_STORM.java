@@ -9,6 +9,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
+import ij.process.TypeConverter;
 import java.rmi.UnexpectedException;
 
 public final class Thunder_STORM {
@@ -40,7 +41,7 @@ public final class Thunder_STORM {
         }
     }
 
-    public static ImageProcessor WaveletDetector(ImageProcessor image) throws UnexpectedException {
+    public static FloatProcessor WaveletDetector(FloatProcessor image) throws UnexpectedException {
         //double[] g1 = new double[]{1/16,1/4,3/8,1/4,1/16};
         //double[] g2 = new double[]{1/16,0,1/4,0,3/8,0,1/4,0,1/16};
         //double[] g3 = new double[]{1/16,0,0,0,1/4,0,0,0,3/8,0,0,0,1/4,0,0,0,1/16};
@@ -132,8 +133,8 @@ public final class Thunder_STORM {
          * WAVELET DETECTOR
          */
         ImagePlus image = IJ.openImage("../rice.png");
-        ImageProcessor ip = WaveletDetector(image.getProcessor());
-        image.setProcessor(ip);
+        FloatProcessor fp = WaveletDetector((FloatProcessor)image.getProcessor().convertToFloat());
+        image.setProcessor(fp.convertToByte(false));
         IJ.save(image, "../rice_g1.png");
         /**/
     }

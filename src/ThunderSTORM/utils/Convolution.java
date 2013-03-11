@@ -1,9 +1,7 @@
 package ThunderSTORM.utils;
 
 import Jama.Matrix;
-import ij.process.ImageProcessor;
 import java.rmi.UnexpectedException;
-import static ThunderSTORM.utils.ImageProcessor.newImageProcessor;
 import static ThunderSTORM.utils.ImageProcessor.alignArray;
 import static ThunderSTORM.utils.ImageProcessor.replicateRow;
 import static ThunderSTORM.utils.ImageProcessor.replicateColumn;
@@ -20,7 +18,7 @@ public class Convolution {
     //       implement them more efficiently...the algorithms are ok as it is now,
     //       but in case of DUPLICATE&CYCLIC there are some extra allocations,
     //       which make the whole thing slower!
-    public static ImageProcessor addBorder(ImageProcessor image, int size, int type) throws UnexpectedException {
+    public static FloatProcessor addBorder(FloatProcessor image, int size, int type) throws UnexpectedException {
 
         assert size >= 0;
         assert type >= 1 && type <= 3;
@@ -28,7 +26,7 @@ public class Convolution {
         int w = image.getWidth();
         int h = image.getHeight();
 
-        ImageProcessor out = newImageProcessor(image, w + 2 * size, h + 2 * size);
+        FloatProcessor out = new FloatProcessor(w + 2 * size, h + 2 * size);
 
         switch (type) {
             case PADDING_ZERO:
@@ -46,31 +44,31 @@ public class Convolution {
                 int[] line = new int[out.getWidth()];
                 image.getRow(0, 0, line, w);
                 alignArray(line, size, out.getWidth() - size, left, right);
-                ImageProcessor ip = newImageProcessor(image, w + 2 * size, size);
-                ip.setIntArray(replicateRow(line, size));
-                out.copyBits(ip, 0, 0, Blitter.COPY);
+                FloatProcessor fp = new FloatProcessor(w + 2 * size, size);
+                fp.setIntArray(replicateRow(line, size));
+                out.copyBits(fp, 0, 0, Blitter.COPY);
 
                 // bottom side of border        
                 left = image.getPixel(0, h - 1);
                 right = image.getPixel(w - 1, h - 1);
                 image.getRow(0, h - 1, line, w);
                 alignArray(line, size, out.getWidth() - size, left, right);
-                ip = newImageProcessor(image, w + 2 * size, size);
-                ip.setIntArray(replicateRow(line, size));
-                out.copyBits(ip, 0, h + size, Blitter.COPY);
+                fp = new FloatProcessor(w + 2 * size, size);
+                fp.setIntArray(replicateRow(line, size));
+                out.copyBits(fp, 0, h + size, Blitter.COPY);
 
                 // left side of border
                 line = new int[image.getWidth()];
                 image.getColumn(0, 0, line, h);
-                ip = newImageProcessor(image, size, h);
-                ip.setIntArray(replicateColumn(line, size));
-                out.copyBits(ip, 0, size, Blitter.COPY);
+                fp = new FloatProcessor(size, h);
+                fp.setIntArray(replicateColumn(line, size));
+                out.copyBits(fp, 0, size, Blitter.COPY);
 
                 // right side of border
                 image.getColumn(w - 1, 0, line, h);
-                ip = newImageProcessor(image, size, h);
-                ip.setIntArray(replicateColumn(line, size));
-                out.copyBits(ip, w + size, size, Blitter.COPY);
+                fp = new FloatProcessor(size, h);
+                fp.setIntArray(replicateColumn(line, size));
+                out.copyBits(fp, w + size, size, Blitter.COPY);
 
                 // finally, insert the input image inside the output image
                 out.copyBits(image, size, size, Blitter.COPY);
@@ -89,24 +87,28 @@ public class Convolution {
         return out;
     }
 
-    public static FloatProcessor Convolve(ImageProcessor image, FloatProcessor kernel, int padding_type) throws UnexpectedException {
+    public static FloatProcessor Convolve(FloatProcessor image, FloatProcessor kernel, int padding_type) throws UnexpectedException {
         assert kernel.getWidth() % 2 == 1;
         assert kernel.getHeight() % 2 == 1;
 
         int kw = kernel.getWidth(), kh = kernel.getHeight(), padsize = java.lang.Math.max(kw, kh) / 2;
-        ImageProcessor img = addBorder(image, padsize, padding_type);
-
+        FloatProcessor img = (FloatProcessor)addBorder(image, padsize, padding_type);
+        
         // convolution
         float[] result = new float[image.getWidth() * image.getHeight()];
         for (int ix = 0, ixm = image.getWidth(); ix < ixm; ix++) {
             for (int iy = 0, iym = image.getHeight(); iy < iym; iy++) {
                 float pixel = 0;
-                for (int kx = 0, kxm = kw; kx < kxm; kx++) {
-                    for (int ky = 0, kym = kh; ky < kym; ky++) {
-                        pixel += kernel.getPixelValue(kx, ky) * img.getPixelValue(padsize + ix - (kx - kw + 1), padsize + iy - (ky - kh + 1));
+                for (int kx = 0; kx < kw; kx++) {
+                    for (int ky = 0; ky < kh; ky++) {
+                        int imgx = padsize + ix + (kx - kw/2);
+                        int imgy = padsize + iy + (ky - kh/2);
+                        float kval = kernel.getPixelValue(kx, ky);
+                        float ival = img.getPixelValue(imgx, imgy);
+                        pixel += kernel.getPixelValue(kx, ky) * img.getPixelValue(imgx, imgy);
                     }
                 }
-                result[ix + iy * image.getHeight()] = pixel / (kw * kh);
+                result[ix + iy * iym] = pixel;
             }
         }
 
