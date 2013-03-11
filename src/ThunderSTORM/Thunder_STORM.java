@@ -4,13 +4,15 @@ import Jama.Matrix;
 import static ThunderSTORM.utils.Math.sqr;
 import static ThunderSTORM.utils.ImageProcessor.subtractImage;
 import static ThunderSTORM.utils.ImageProcessor.threshold;
+import static ThunderSTORM.utils.ImageProcessor.applyNegativeMask;
 import ThunderSTORM.utils.Convolution;
 import LMA.LMA;
 import LMA.LMAMultiDimFunction;
+import Watershed.WatershedAlgorithm;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
 import java.rmi.UnexpectedException;
 
 public final class Thunder_STORM {
@@ -77,11 +79,11 @@ public final class Thunder_STORM {
                 final_plane.setInterpolationMethod(FloatProcessor.NEAREST_NEIGHBOR);
                 final_plane = (FloatProcessor) final_plane.resize(final_plane.getWidth() * 2);
             }
-        //        d = bwdist(~final);
-        //        d = -d;
-        //        W = watershed(d);
-        //        W(~final) = 0;
-        //        final = W;
+            // run the watershed algorithm - it works only with ByteProcessor! that's all I need though
+            FloatProcessor w = (FloatProcessor) WatershedAlgorithm.run((ByteProcessor) final_plane.convertToByte(false)).convertToFloat();
+//TODO: it almost worked for a while, but now it doesnt! WTF?!
+            //final_plane = applyNegativeMask(w, final_plane);
+            final_plane = w;
             if(upsample)
             {
                 final_plane = (FloatProcessor) final_plane.resize(final_plane.getWidth() / 2);
@@ -121,7 +123,7 @@ public final class Thunder_STORM {
          * WAVELET DETECTOR
          */
         ImagePlus image = IJ.openImage("../rice.png");
-        FloatProcessor fp = WaveletDetector((FloatProcessor)image.getProcessor().convertToFloat(), false, true, true);
+        FloatProcessor fp = WaveletDetector((FloatProcessor)image.getProcessor().convertToFloat(), false, true, false);
         image.setProcessor(fp.convertToByte(false));
         IJ.save(image, "../rice_g1.png");
         /**/

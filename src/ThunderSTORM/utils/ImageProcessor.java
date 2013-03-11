@@ -101,7 +101,7 @@ public class ImageProcessor {
         return mean;
     }
 
-    public static void threshold(FloatProcessor image, float threshold, float high_val, float low_val) {
+    public static void threshold(FloatProcessor image, float threshold, float low_val, float high_val) {
         for (int i = 0, im = image.getWidth(); i < im; i++) {
             for (int j = 0, jm = image.getHeight(); j < jm; j++) {
                 if (image.getPixelValue(i, j) >= threshold) {
@@ -111,5 +111,21 @@ public class ImageProcessor {
                 }
             }
         }
+    }
+
+    public static FloatProcessor applyNegativeMask(FloatProcessor image, FloatProcessor mask) {
+        assert (image.getWidth() == mask.getWidth());
+        assert (image.getHeight() == mask.getHeight());
+
+        FloatProcessor result = new FloatProcessor(image.getWidth(), image.getHeight(), (float[]) image.getPixelsCopy());
+        for (int x = 0, xm = image.getWidth(); x < xm; x++) {
+            for (int y = 0, ym = image.getHeight(); y < ym; y++) {
+                if (mask.getPixelValue(x, y) == 0.0f) {
+                    result.setf(x, y, 0.0f);
+                }
+            }
+        }
+        
+        return result;
     }
 }

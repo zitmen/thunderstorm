@@ -1,5 +1,7 @@
 package Watershed;
 
+import java.util.LinkedList;
+
 /*
  * Watershed plugin
  *
@@ -19,44 +21,43 @@ package Watershed;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-import java.util.*;
-import ij.*;
-
-/** This class implements a FIFO queue that
- *  uses the same formalism as the Vincent
- *  and Soille algorithm (1991)
- **/
-
+/**
+ * This class implements a FIFO queue that uses the same formalism as the
+ * Vincent and Soille algorithm (1991)
+ *
+ */
 public class WatershedFIFO {
+
     private LinkedList watershedFIFO;
 
     public WatershedFIFO() {
-	watershedFIFO = new LinkedList();
+        watershedFIFO = new LinkedList();
     }
 
     public void fifo_add(WatershedPixel p) {
-	watershedFIFO.addFirst(p);
+        watershedFIFO.addFirst(p);
     }
 
     public WatershedPixel fifo_remove() {
-	return (WatershedPixel) watershedFIFO.removeLast();
+        return (WatershedPixel) watershedFIFO.removeLast();
     }
 
     public boolean fifo_empty() {
-	return watershedFIFO.isEmpty();
+        return watershedFIFO.isEmpty();
     }
 
     public void fifo_add_FICTITIOUS() {
-	watershedFIFO.addFirst(new WatershedPixel());
+        watershedFIFO.addFirst(new WatershedPixel());
     }
 
+    @Override
     public String toString() {
-	StringBuffer ret = new StringBuffer();
-	for(int i=0; i<watershedFIFO.size(); i++) {
-	    ret.append( ((WatershedPixel)watershedFIFO.get(i)).toString() );
-	    ret.append( "\n" );
-	}
-	
-	return ret.toString();
+        StringBuilder ret = new StringBuilder();
+        for (int i = 0; i < watershedFIFO.size(); i++) {
+            ret.append(((WatershedPixel) watershedFIFO.get(i)).toString());
+            ret.append("\n");
+        }
+
+        return ret.toString();
     }
 }
