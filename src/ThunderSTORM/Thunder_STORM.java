@@ -2,6 +2,8 @@ package ThunderSTORM;
 
 import Jama.Matrix;
 import static ThunderSTORM.utils.Math.sqr;
+import static ThunderSTORM.utils.ImageProcessor.subtractImage;
+import static ThunderSTORM.utils.ImageProcessor.threshold;
 import ThunderSTORM.utils.Convolution;
 import LMA.LMA;
 import LMA.LMAMultiDimFunction;
@@ -9,7 +11,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import ij.process.TypeConverter;
 import java.rmi.UnexpectedException;
 
 public final class Thunder_STORM {
@@ -41,74 +42,61 @@ public final class Thunder_STORM {
         }
     }
 
-    public static FloatProcessor WaveletDetector(FloatProcessor image) throws UnexpectedException {
-        //double[] g1 = new double[]{1/16,1/4,3/8,1/4,1/16};
-        //double[] g2 = new double[]{1/16,0,1/4,0,3/8,0,1/4,0,1/16};
-        //double[] g3 = new double[]{1/16,0,0,0,1/4,0,0,0,3/8,0,0,0,1/4,0,0,0,1/16};
-
-        // pad image on edges with closest point
-        //int border = g3.length/2;
-        //ImageProcessor imagePadded = Convolution.addBorder(image,Convolution.PADDING_DUPLICATE,border);
-
-        //FloatProcessor g1 = new FloatProcessor(5, 1, new float[]{1f / 16f, 1f / 4f, 3f / 8f, 1f / 4f, 1f / 16f});
-        //FloatProcessor g2 = new FloatProcessor(9, 1, new float[]{1f / 16f, 0f, 1f / 4f, 0f, 3f / 8f, 0f, 1f / 4f, 0f, 1f / 16f});
-        //FloatProcessor g3 = new FloatProcessor(17, 1, new float[]{1f / 16f, 0f, 0f, 0f, 1f / 4f, 0f, 0f, 0f, 3f / 8f, 0f, 0f, 0f, 1f / 4f, 0f, 0f, 0f, 1f / 16f});
-
+    public static FloatProcessor WaveletDetector(FloatProcessor image, boolean third_plane, boolean watershed, boolean upsample) throws UnexpectedException {
+        // wavelets definition
         float[] g1 = new float[]{1f / 16f, 1f / 4f, 3f / 8f, 1f / 4f, 1f / 16f};
         float[] g2 = new float[]{1f / 16f, 0f, 1f / 4f, 0f, 3f / 8f, 0f, 1f / 4f, 0f, 1f / 16f};
         float[] g3 = new float[]{1f / 16f, 0f, 0f, 0f, 1f / 4f, 0f, 0f, 0f, 3f / 8f, 0f, 0f, 0f, 1f / 4f, 0f, 0f, 0f, 1f / 16f};
 
-        FloatProcessor kernel = Convolution.getSeparableKernelFromVectors(g1, g1);
+        // prepare the wavelets for convolution
+        FloatProcessor k1 = Convolution.getSeparableKernelFromVectors(g1, g1);
+        FloatProcessor k2 = Convolution.getSeparableKernelFromVectors(g2, g2);
+        FloatProcessor k3 = Convolution.getSeparableKernelFromVectors(g3, g3);
         
-        // TODO: vysledek konvoluce je nejakej svetlejsi nez V1!!
-        // zkusit to na datech nebo jadru, kde poznam snadno rozdil!
+        // convolve with the wavelets
+        FloatProcessor V1 = Convolution.Convolve(image, k1, Convolution.PADDING_DUPLICATE);
+        FloatProcessor V2 = Convolution.Convolve(image, k2, Convolution.PADDING_DUPLICATE);
+        FloatProcessor V3 = null;
+        if(third_plane)
+            V3 = Convolution.Convolve(image, k3, Convolution.PADDING_DUPLICATE);
         
-        return Convolution.Convolve(image, kernel, Convolution.PADDING_DUPLICATE);
-        /*
-         %convolve
-         V1 = conv2(g1, g1, imagePadded, 'same');
-         V2 = conv2(g2, g2, V1, 'same');
-         if(thirdPlane)
-         V3 = conv2(g3, g3, V2, 'same');
-         end
+        // create wavelet planes
+        FloatProcessor first_plane = subtractImage(image, V1); // 1st
+        FloatProcessor final_plane = subtractImage(V1, V2);    // 2nd
+        if(third_plane)
+            final_plane = subtractImage(V2, V3);  // 3rd
+        
+        // detection - thresholding
+        threshold(final_plane, 1.25f * (float) first_plane.getStatistics().stdDev, 0.0f, 1.0f);
+        
+        // detection - watershed transform with[out] upscaling
+        if(watershed)
+        {
+            if(upsample)
+            {
+                final_plane.setInterpolationMethod(FloatProcessor.NEAREST_NEIGHBOR);
+                final_plane = (FloatProcessor) final_plane.resize(final_plane.getWidth() * 2);
+            }
+        //        d = bwdist(~final);
+        //        d = -d;
+        //        W = watershed(d);
+        //        W(~final) = 0;
+        //        final = W;
+            if(upsample)
+            {
+                final_plane = (FloatProcessor) final_plane.resize(final_plane.getWidth() / 2);
+            }
+        }
 
-         %remove padded border
-         V1 = V1(border+1:size(V1,1)-border,border+1:size(V1,2)-border);
-         V2 = V2(border+1:size(V2,1)-border,border+1:size(V2,2)-border);
-         if(thirdPlane)
-         V3 = V3(border+1:size(V3,1)-border,border+1:size(V3,2)-border);
-         end
-
-         %create wavelet planes
-         first = double(image)-V1;
-         final = V1-V2; %second
-         if(thirdPlane)
-         final = V2-V3; %third
-         end
-
-         final = final > params.threshold*std(first(:));
-
-         if(doWatershed)
-         if(doUpsample)
-         final = final(ceil((1:2*size(final,1))/2), ceil((1:2*size(final,2))/2));
-         end
-         d = bwdist(~final);
-         d = -d;
-         W = watershed(d);
-         W(~final) = 0;
-         final = W;
-         if(doUpsample)
-         final = final(1:2:size(final,1),1:2:size(final,2));
-         end
-         end
-
-         locstruct = regionprops(final, 'Centroid');
-         loc = [locstruct.Centroid];
-         loc = round(loc);
-         loc = reshape(loc,2,length(loc)/2)';
-
-         end
-         */
+        // detection - finding a center of gravity (subpixel precision)
+        //locstruct = regionprops(final, 'Centroid');
+        //loc = [locstruct.Centroid];
+        // but since all other detectors return positions with pixel precision,
+        // do the rounding to pixels
+        //loc = round(loc);
+        //loc = reshape(loc,2,length(loc)/2)';
+        
+        return final_plane;
     }
 
     public static void main(String[] args) throws UnexpectedException {
@@ -133,7 +121,7 @@ public final class Thunder_STORM {
          * WAVELET DETECTOR
          */
         ImagePlus image = IJ.openImage("../rice.png");
-        FloatProcessor fp = WaveletDetector((FloatProcessor)image.getProcessor().convertToFloat());
+        FloatProcessor fp = WaveletDetector((FloatProcessor)image.getProcessor().convertToFloat(), false, true, true);
         image.setProcessor(fp.convertToByte(false));
         IJ.save(image, "../rice_g1.png");
         /**/
