@@ -92,23 +92,19 @@ public class Convolution {
         assert kernel.getHeight() % 2 == 1;
 
         int kw = kernel.getWidth(), kh = kernel.getHeight(), padsize = java.lang.Math.max(kw, kh) / 2;
-        FloatProcessor img = (FloatProcessor)addBorder(image, padsize, padding_type);
-        
+        int iw = image.getWidth(), ih = image.getHeight(), idx;
+        FloatProcessor img = (FloatProcessor) addBorder(image, padsize, padding_type);
+
         // convolution
-        float[] result = new float[image.getWidth() * image.getHeight()];
-        for (int ix = 0, ixm = image.getWidth(); ix < ixm; ix++) {
-            for (int iy = 0, iym = image.getHeight(); iy < iym; iy++) {
-                float pixel = 0;
+        float[] result = new float[iw * ih];
+        for (int ix = 0; ix < iw; ix++) {
+            for (int iy = 0; iy < ih; iy++) {
+                idx = ix + iy * ih;
                 for (int kx = 0; kx < kw; kx++) {
                     for (int ky = 0; ky < kh; ky++) {
-                        int imgx = padsize + ix + (kx - kw/2);
-                        int imgy = padsize + iy + (ky - kh/2);
-                        float kval = kernel.getPixelValue(kx, ky);
-                        float ival = img.getPixelValue(imgx, imgy);
-                        pixel += kernel.getPixelValue(kx, ky) * img.getPixelValue(imgx, imgy);
+                        result[idx] += kernel.getPixelValue(kx, ky) * img.getPixelValue(padsize + ix + (kx - kw / 2), padsize + iy + (ky - kh / 2));
                     }
                 }
-                result[ix + iy * iym] = pixel;
             }
         }
 
