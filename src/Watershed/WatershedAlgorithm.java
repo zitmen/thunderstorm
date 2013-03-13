@@ -209,7 +209,6 @@ public class WatershedAlgorithm {
             //    newPixels[p.getX() + p.getY() * width] = (byte) 255;
             //}
             // the following paints black boundaries and each segment with different intensity:
-            int label = p.getLabel();
             newPixels[p.getX() + p.getY() * width] = (byte) p.getLabel();
         }
 

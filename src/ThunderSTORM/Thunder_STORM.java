@@ -4,7 +4,7 @@ import Jama.Matrix;
 import static ThunderSTORM.utils.Math.sqr;
 import static ThunderSTORM.utils.ImageProcessor.subtractImage;
 import static ThunderSTORM.utils.ImageProcessor.threshold;
-import static ThunderSTORM.utils.ImageProcessor.applyNegativeMask;
+import static ThunderSTORM.utils.ImageProcessor.applyMask;
 import ThunderSTORM.utils.Convolution;
 import LMA.LMA;
 import LMA.LMAMultiDimFunction;
@@ -45,6 +45,8 @@ public final class Thunder_STORM {
     }
 
     public static FloatProcessor WaveletDetector(FloatProcessor image, boolean third_plane, boolean watershed, boolean upsample) throws UnexpectedException {
+        assert (!((upsample == true) && (watershed == false))) : "Upsampling can be performed only along with watershed transform!";
+
         // wavelets definition
         float[] g1 = new float[]{1f / 16f, 1f / 4f, 3f / 8f, 1f / 4f, 1f / 16f};
         float[] g2 = new float[]{1f / 16f, 0f, 1f / 4f, 0f, 3f / 8f, 0f, 1f / 4f, 0f, 1f / 16f};
@@ -54,50 +56,45 @@ public final class Thunder_STORM {
         FloatProcessor k1 = Convolution.getSeparableKernelFromVectors(g1, g1);
         FloatProcessor k2 = Convolution.getSeparableKernelFromVectors(g2, g2);
         FloatProcessor k3 = Convolution.getSeparableKernelFromVectors(g3, g3);
-        
+
         // convolve with the wavelets
         FloatProcessor V1 = Convolution.Convolve(image, k1, Convolution.PADDING_DUPLICATE);
         FloatProcessor V2 = Convolution.Convolve(image, k2, Convolution.PADDING_DUPLICATE);
         FloatProcessor V3 = null;
-        if(third_plane)
+        if (third_plane) {
             V3 = Convolution.Convolve(image, k3, Convolution.PADDING_DUPLICATE);
-        
+        }
+
         // create wavelet planes
         FloatProcessor first_plane = subtractImage(image, V1); // 1st
         FloatProcessor final_plane = subtractImage(V1, V2);    // 2nd
-        if(third_plane)
+        if (third_plane) {
             final_plane = subtractImage(V2, V3);  // 3rd
-        
+        }
         // detection - thresholding
-        threshold(final_plane, 1.25f * (float) first_plane.getStatistics().stdDev, 0.0f, 1.0f);
-        
+        threshold(final_plane, 1.25f * (float) first_plane.getStatistics().stdDev, 1.0f, 0.0f); // these are in reverse (1=low,0=high) on purpose!
+
         // detection - watershed transform with[out] upscaling
-        if(watershed)
-        {
-            if(upsample)
-            {
+        if (watershed) {
+            if (upsample) {
                 final_plane.setInterpolationMethod(FloatProcessor.NEAREST_NEIGHBOR);
                 final_plane = (FloatProcessor) final_plane.resize(final_plane.getWidth() * 2);
             }
             // run the watershed algorithm - it works only with ByteProcessor! that's all I need though
             FloatProcessor w = (FloatProcessor) WatershedAlgorithm.run((ByteProcessor) final_plane.convertToByte(false)).convertToFloat();
-//TODO: it almost worked for a while, but now it doesnt! WTF?!
-            //final_plane = applyNegativeMask(w, final_plane);
-            final_plane = w;
-            if(upsample)
-            {
+            final_plane = applyMask(w, final_plane);
+            if (upsample) {
                 final_plane = (FloatProcessor) final_plane.resize(final_plane.getWidth() / 2);
             }
         }
 
         // detection - finding a center of gravity (subpixel precision)
-        //locstruct = regionprops(final, 'Centroid');
-        //loc = [locstruct.Centroid];
-        // but since all other detectors return positions with pixel precision,
-        // do the rounding to pixels
-        //loc = round(loc);
-        //loc = reshape(loc,2,length(loc)/2)';
+        // 1. rozdelit na komponenty grafu
+        // 2. centroid
         
+        // but since all other detectors return positions with pixel precision, round the positions to pixels
+        // 3. zaokrouhlit na cele pixely
+
         return final_plane;
     }
 
@@ -123,7 +120,7 @@ public final class Thunder_STORM {
          * WAVELET DETECTOR
          */
         ImagePlus image = IJ.openImage("../rice.png");
-        FloatProcessor fp = WaveletDetector((FloatProcessor)image.getProcessor().convertToFloat(), false, true, false);
+        FloatProcessor fp = WaveletDetector((FloatProcessor) image.getProcessor().convertToFloat(), false, true, false);
         image.setProcessor(fp.convertToByte(false));
         IJ.save(image, "../rice_g1.png");
         /**/

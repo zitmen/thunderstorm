@@ -113,14 +113,14 @@ public class ImageProcessor {
         }
     }
 
-    public static FloatProcessor applyNegativeMask(FloatProcessor image, FloatProcessor mask) {
+    public static FloatProcessor applyMask(FloatProcessor image, FloatProcessor mask) {
         assert (image.getWidth() == mask.getWidth());
         assert (image.getHeight() == mask.getHeight());
 
         FloatProcessor result = new FloatProcessor(image.getWidth(), image.getHeight(), (float[]) image.getPixelsCopy());
         for (int x = 0, xm = image.getWidth(); x < xm; x++) {
             for (int y = 0, ym = image.getHeight(); y < ym; y++) {
-                if (mask.getPixelValue(x, y) == 0.0f) {
+                if (mask.getPixelValue(x, y) != 0.0f) {
                     result.setf(x, y, 0.0f);
                 }
             }
