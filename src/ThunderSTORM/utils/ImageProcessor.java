@@ -3,8 +3,6 @@ package ThunderSTORM.utils;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ShortProcessor;
-import static ThunderSTORM.utils.Math.sqr;
-import static java.lang.Math.sqrt;
 
 public class ImageProcessor {
 
@@ -77,28 +75,6 @@ public class ImageProcessor {
         }
 
         return out;
-    }
-
-    public static float stddev(FloatProcessor fp) {
-        float stddev = 0.0f, mean = mean(fp), n = (float) (fp.getWidth() * fp.getHeight());
-        for (int i = 0, im = fp.getWidth(); i < im; i++) {
-            for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
-                stddev += sqr(fp.getPixelValue(i, j) - mean);
-            }
-        }
-        stddev = (float) sqrt(stddev / n);
-        return stddev;
-    }
-
-    public static float mean(FloatProcessor fp) {
-        float mean = 0.0f;
-        for (int i = 0, im = fp.getWidth(); i < im; i++) {
-            for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
-                mean += fp.getPixelValue(i, j);
-            }
-        }
-        mean /= (float) (fp.getWidth() * fp.getHeight());
-        return mean;
     }
 
     public static void threshold(FloatProcessor image, float threshold, float low_val, float high_val) {

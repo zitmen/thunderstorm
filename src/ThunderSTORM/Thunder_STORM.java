@@ -63,10 +63,10 @@ public final class Thunder_STORM {
 
         // convolve with the wavelets
         FloatProcessor V1 = Convolution.Convolve(image, k1, Convolution.PADDING_DUPLICATE);
-        FloatProcessor V2 = Convolution.Convolve(image, k2, Convolution.PADDING_DUPLICATE);
+        FloatProcessor V2 = Convolution.Convolve(V1, k2, Convolution.PADDING_DUPLICATE);
         FloatProcessor V3 = null;
         if (third_plane) {
-            V3 = Convolution.Convolve(image, k3, Convolution.PADDING_DUPLICATE);
+            V3 = Convolution.Convolve(V2, k3, Convolution.PADDING_DUPLICATE);
         }
 
         // create wavelet planes
@@ -77,7 +77,7 @@ public final class Thunder_STORM {
         }
         // detection - thresholding
         threshold(final_plane, 1.25f * (float) first_plane.getStatistics().stdDev, 1.0f, 0.0f); // these are in reverse (1=low,0=high) on purpose!
-
+                                                                                                //the result is negated image, which is exactly what i need
         // detection - watershed transform with[out] upscaling
         if (watershed) {
             if (upsample) {
@@ -97,7 +97,8 @@ public final class Thunder_STORM {
         //   round the positions to pixels (integer coordinates)
         Vector<Point<Integer>> detections = new Vector<>();
         for (Graph.ConnectedComponent c : Graph.getConnectedComponents((ImageProcessor) final_plane, Graph.CONNECTIVITY_8)) {
-            detections.add(c.centroid().toInteger());
+            detections.add(c.centroid().roundToInteger());
+            detections.lastElement().val = null;
         }
 
         return detections;
@@ -124,11 +125,13 @@ public final class Thunder_STORM {
         /**
          * WAVELET DETECTOR
          */
-        ImagePlus image = IJ.openImage("../rice.png");
+        //ImagePlus image = IJ.openImage("../eye_00010.tif");
+        ImagePlus image = IJ.openImage("../tubulins1_00020.tif");
         Vector<Point<Integer>> detections = WaveletDetector((FloatProcessor) image.getProcessor().convertToFloat(), false, true, false);
         System.out.println(detections.toString());
-        //image.setProcessor(fp.convertToByte(false));
-        //IJ.save(image, "../rice_g1.png");
+        //FloatProcessor fp = WaveletDetector((FloatProcessor) image.getProcessor().convertToFloat(), false, true, false);
+        //image.setProcessor(fp.convertToShort(false));
+        //IJ.save(image, "../rice_g1.tif");
         /**/
     }
 }

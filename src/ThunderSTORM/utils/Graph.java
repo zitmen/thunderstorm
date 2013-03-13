@@ -1,5 +1,7 @@
 package ThunderSTORM.utils;
 
+import static ThunderSTORM.utils.Math.mean;
+import static ThunderSTORM.utils.Math.sum;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -10,7 +12,18 @@ public class Graph {
         public Vector<Point> points = new Vector<>();
 
         public Point centroid() {
-            return points.elementAt(0);
+            int npts = points.size();
+            double[] xarr = new double[npts];
+            double[] yarr = new double[npts];
+            double[] valarr = new double[npts];
+            
+            for(int i = 0, im = npts; i < im; i++) {
+                Point p = points.elementAt(i);
+                xarr[i] = p.getX().doubleValue();
+                yarr[i] = p.getY().doubleValue();
+                valarr[i] = p.getVal().doubleValue();
+            }
+            return new Point(mean(xarr), mean(yarr), sum(valarr));
         }
     }
     
@@ -18,6 +31,7 @@ public class Graph {
     public static final int CONNECTIVITY_8 = 8;
 
     // TODO: very slow because of too many allocations!
+    // TODO: pixel.val is now a component id! it should be real intensity of the pixel --> this may be solved by calling the method with different image and with `thr` parameter
     public static Vector<ConnectedComponent> getConnectedComponents(ij.process.ImageProcessor ip, int connectivity) {
         assert (ip != null);
         assert ((connectivity == CONNECTIVITY_4) || (connectivity == CONNECTIVITY_8));
@@ -52,8 +66,8 @@ public class Graph {
                     int px = p.getX().intValue();
                     int py = p.getY().intValue();
                     
-                    if (map[x][y] > 0) continue; // already member of another component
-                    if (ip.getPixelValue(x, y) == 0.0f) continue;    // disabled pixel
+                    if (map[px][py] > 0) continue; // already member of another component
+                    if (ip.getPixelValue(px, py) == 0.0f) continue;    // disabled pixel
                     
                     map[px][py] = counter;
                     

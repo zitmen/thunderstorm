@@ -1,5 +1,7 @@
 package ThunderSTORM.utils;
 
+import static java.lang.Math.round;
+
 public class Point<T extends Number> {
 
     public T x, y, val;
@@ -55,6 +57,26 @@ public class Point<T extends Number> {
         this.x = x;
         this.y = y;
         this.val = val;
+    }
+    
+    public Point<Integer> roundToInteger() {
+        assert ((x != null) && (y != null));
+
+        if (val == null) {
+            return new Point<>(round(this.x.floatValue()), round(this.y.floatValue()));
+        } else {
+            return new Point<>(round(this.x.floatValue()), round(this.y.floatValue()), round(this.val.floatValue()));
+        }
+    }
+    
+    public Point<Long> roundToLong() {
+        assert ((x != null) && (y != null));
+
+        if (val == null) {
+            return new Point<>(round(this.x.doubleValue()), round(this.y.doubleValue()));
+        } else {
+            return new Point<>(round(this.x.doubleValue()), round(this.y.doubleValue()), round(this.val.doubleValue()));
+        }
     }
 
     public Point<Integer> toInteger() {
