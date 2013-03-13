@@ -8,12 +8,16 @@ import static ThunderSTORM.utils.ImageProcessor.applyMask;
 import ThunderSTORM.utils.Convolution;
 import LMA.LMA;
 import LMA.LMAMultiDimFunction;
+import ThunderSTORM.utils.Graph;
+import ThunderSTORM.utils.Point;
 import Watershed.WatershedAlgorithm;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
 import java.rmi.UnexpectedException;
+import java.util.Vector;
 
 public final class Thunder_STORM {
 
@@ -44,7 +48,7 @@ public final class Thunder_STORM {
         }
     }
 
-    public static FloatProcessor WaveletDetector(FloatProcessor image, boolean third_plane, boolean watershed, boolean upsample) throws UnexpectedException {
+    public static Vector<Point<Integer>> WaveletDetector(FloatProcessor image, boolean third_plane, boolean watershed, boolean upsample) throws UnexpectedException {
         assert (!((upsample == true) && (watershed == false))) : "Upsampling can be performed only along with watershed transform!";
 
         // wavelets definition
@@ -88,14 +92,15 @@ public final class Thunder_STORM {
             }
         }
 
-        // detection - finding a center of gravity (subpixel precision)
-        // 1. rozdelit na komponenty grafu
-        // 2. centroid
-        
-        // but since all other detectors return positions with pixel precision, round the positions to pixels
-        // 3. zaokrouhlit na cele pixely
+        // Detection - finding a center of gravity (with subpixel precision),
+        //   but since all other detectors return positions with pixel precision,
+        //   round the positions to pixels (integer coordinates)
+        Vector<Point<Integer>> detections = new Vector<>();
+        for (Graph.ConnectedComponent c : Graph.getConnectedComponents((ImageProcessor) final_plane, Graph.CONNECTIVITY_8)) {
+            detections.add(c.centroid().toInteger());
+        }
 
-        return final_plane;
+        return detections;
     }
 
     public static void main(String[] args) throws UnexpectedException {
@@ -120,9 +125,10 @@ public final class Thunder_STORM {
          * WAVELET DETECTOR
          */
         ImagePlus image = IJ.openImage("../rice.png");
-        FloatProcessor fp = WaveletDetector((FloatProcessor) image.getProcessor().convertToFloat(), false, true, false);
-        image.setProcessor(fp.convertToByte(false));
-        IJ.save(image, "../rice_g1.png");
+        Vector<Point<Integer>> detections = WaveletDetector((FloatProcessor) image.getProcessor().convertToFloat(), false, true, false);
+        System.out.println(detections.toString());
+        //image.setProcessor(fp.convertToByte(false));
+        //IJ.save(image, "../rice_g1.png");
         /**/
     }
 }
