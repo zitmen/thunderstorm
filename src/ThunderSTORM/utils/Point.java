@@ -63,9 +63,9 @@ public class Point<T extends Number> {
         assert ((x != null) && (y != null));
 
         if (val == null) {
-            return new Point<>(round(this.x.floatValue()), round(this.y.floatValue()));
+            return new Point<Integer>(round(this.x.floatValue()), round(this.y.floatValue()));
         } else {
-            return new Point<>(round(this.x.floatValue()), round(this.y.floatValue()), round(this.val.floatValue()));
+            return new Point<Integer>(round(this.x.floatValue()), round(this.y.floatValue()), round(this.val.floatValue()));
         }
     }
     
@@ -73,9 +73,9 @@ public class Point<T extends Number> {
         assert ((x != null) && (y != null));
 
         if (val == null) {
-            return new Point<>(round(this.x.doubleValue()), round(this.y.doubleValue()));
+            return new Point<Long>(round(this.x.doubleValue()), round(this.y.doubleValue()));
         } else {
-            return new Point<>(round(this.x.doubleValue()), round(this.y.doubleValue()), round(this.val.doubleValue()));
+            return new Point<Long>(round(this.x.doubleValue()), round(this.y.doubleValue()), round(this.val.doubleValue()));
         }
     }
 
@@ -83,9 +83,9 @@ public class Point<T extends Number> {
         assert ((x != null) && (y != null));
 
         if (val == null) {
-            return new Point<>(this.x.intValue(), this.y.intValue());
+            return new Point<Integer>(this.x.intValue(), this.y.intValue());
         } else {
-            return new Point<>(this.x.intValue(), this.y.intValue(), this.val.intValue());
+            return new Point<Integer>(this.x.intValue(), this.y.intValue(), this.val.intValue());
         }
     }
 
@@ -93,9 +93,9 @@ public class Point<T extends Number> {
         assert ((x != null) && (y != null));
 
         if (val == null) {
-            return new Point<>(this.x.floatValue(), this.y.floatValue());
+            return new Point<Float>(this.x.floatValue(), this.y.floatValue());
         } else {
-            return new Point<>(this.x.floatValue(), this.y.floatValue(), this.val.floatValue());
+            return new Point<Float>(this.x.floatValue(), this.y.floatValue(), this.val.floatValue());
         }
     }
 
@@ -103,9 +103,9 @@ public class Point<T extends Number> {
         assert ((x != null) && (y != null));
 
         if (val == null) {
-            return new Point<>(this.x.byteValue(), this.y.byteValue());
+            return new Point<Byte>(this.x.byteValue(), this.y.byteValue());
         } else {
-            return new Point<>(this.x.byteValue(), this.y.byteValue(), this.val.byteValue());
+            return new Point<Byte>(this.x.byteValue(), this.y.byteValue(), this.val.byteValue());
         }
     }
 
@@ -113,9 +113,9 @@ public class Point<T extends Number> {
         assert ((x != null) && (y != null));
 
         if (val == null) {
-            return new Point<>(this.x.doubleValue(), this.y.doubleValue());
+            return new Point<Double>(this.x.doubleValue(), this.y.doubleValue());
         } else {
-            return new Point<>(this.x.doubleValue(), this.y.doubleValue(), this.val.doubleValue());
+            return new Point<Double>(this.x.doubleValue(), this.y.doubleValue(), this.val.doubleValue());
         }
     }
 
@@ -123,9 +123,9 @@ public class Point<T extends Number> {
         assert ((x != null) && (y != null));
 
         if (val == null) {
-            return new Point<>(this.x.longValue(), this.y.longValue());
+            return new Point<Long>(this.x.longValue(), this.y.longValue());
         } else {
-            return new Point<>(this.x.longValue(), this.y.longValue(), this.val.longValue());
+            return new Point<Long>(this.x.longValue(), this.y.longValue(), this.val.longValue());
         }
     }
 
@@ -133,9 +133,9 @@ public class Point<T extends Number> {
         assert ((x != null) && (y != null));
 
         if (val == null) {
-            return new Point<>(this.x.shortValue(), this.y.shortValue());
+            return new Point<Short>(this.x.shortValue(), this.y.shortValue());
         } else {
-            return new Point<>(this.x.shortValue(), this.y.shortValue(), this.val.shortValue());
+            return new Point<Short>(this.x.shortValue(), this.y.shortValue(), this.val.shortValue());
         }
     }
 

@@ -1,7 +1,6 @@
 package ThunderSTORM.utils;
 
 import Jama.Matrix;
-import java.rmi.UnexpectedException;
 import static ThunderSTORM.utils.ImageProcessor.alignArray;
 import static ThunderSTORM.utils.ImageProcessor.replicateRow;
 import static ThunderSTORM.utils.ImageProcessor.replicateColumn;
@@ -18,7 +17,7 @@ public class Convolution {
     //       implement them more efficiently...the algorithms are ok as it is now,
     //       but in case of DUPLICATE&CYCLIC there are some extra allocations,
     //       which make the whole thing slower!
-    public static FloatProcessor addBorder(FloatProcessor image, int size, int type) throws UnexpectedException {
+    public static FloatProcessor addBorder(FloatProcessor image, int size, int type) {
 
         assert size >= 0;
         assert type >= 1 && type <= 3;
@@ -82,12 +81,12 @@ public class Convolution {
             //break;
 
             default:
-                throw new UnexpectedException("Unknown padding type!");
+                throw new UnsupportedOperationException("Unsupported padding method!");
         }
         return out;
     }
 
-    public static FloatProcessor Convolve(FloatProcessor image, FloatProcessor kernel, int padding_type) throws UnexpectedException {
+    public static FloatProcessor Convolve(FloatProcessor image, FloatProcessor kernel, int padding_type) {
         assert kernel.getWidth() % 2 == 1;
         assert kernel.getHeight() % 2 == 1;
 

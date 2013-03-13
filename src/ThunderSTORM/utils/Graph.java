@@ -9,7 +9,7 @@ public class Graph {
 
     public static class ConnectedComponent {
 
-        public Vector<Point> points = new Vector<>();
+        public Vector<Point> points = new Vector<Point>();
 
         public Point centroid() {
             int npts = points.size();
@@ -45,8 +45,8 @@ public class Graph {
 
         Point<Integer> p;
         ConnectedComponent c;
-        Vector<ConnectedComponent> components = new Vector<>();
-        LinkedList<Point<Integer>> queue = new LinkedList<>();
+        Vector<ConnectedComponent> components = new Vector<ConnectedComponent>();
+        LinkedList<Point<Integer>> queue = new LinkedList<Point<Integer>>();
         
         int counter = 0;
         boolean n, s, w, e;
@@ -58,7 +58,7 @@ public class Graph {
                 // new component
                 counter++;
                 queue.clear();
-                queue.push(new Point<>(x, y));
+                queue.push(new Point<Integer>(x, y));
                 c = new ConnectedComponent();
 
                 while (!queue.isEmpty()) {
@@ -71,23 +71,23 @@ public class Graph {
                     
                     map[px][py] = counter;
                     
-                    c.points.add(new Point<>(p.getX().floatValue(), p.getY().floatValue(), ip.getPixelValue(px, py)));
+                    c.points.add(new Point<Float>(p.getX().floatValue(), p.getY().floatValue(), ip.getPixelValue(px, py)));
 
                     w = (px > 0);  // west
                     n = (py > 0);  // north
                     e = (px < (map.length - 1));  // east
                     s = (py < (map[px].length - 1));  // south
 
-                    if(w) queue.push(new Point<>(px - 1, py));  // west
-                    if(n) queue.push(new Point<>(px, py - 1));  // north
-                    if(e) queue.push(new Point<>(px + 1, py));  // east
-                    if(s) queue.push(new Point<>(px, py + 1));  // south
+                    if(w) queue.push(new Point<Integer>(px - 1, py));  // west
+                    if(n) queue.push(new Point<Integer>(px, py - 1));  // north
+                    if(e) queue.push(new Point<Integer>(px + 1, py));  // east
+                    if(s) queue.push(new Point<Integer>(px, py + 1));  // south
                     
                     if(connectivity == CONNECTIVITY_8) {
-                        if(n && w) queue.push(new Point<>(px - 1, py - 1));  // north west
-                        if(n && e) queue.push(new Point<>(px + 1, py - 1));  // north east
-                        if(s && w) queue.push(new Point<>(px - 1, py + 1));  // south west
-                        if(s && e) queue.push(new Point<>(px + 1, py + 1));  // south east
+                        if(n && w) queue.push(new Point<Integer>(px - 1, py - 1));  // north west
+                        if(n && e) queue.push(new Point<Integer>(px + 1, py - 1));  // north east
+                        if(s && w) queue.push(new Point<Integer>(px - 1, py + 1));  // south west
+                        if(s && e) queue.push(new Point<Integer>(px + 1, py + 1));  // south east
                     }
                 }
                 

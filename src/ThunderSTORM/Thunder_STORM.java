@@ -1,6 +1,5 @@
 package ThunderSTORM;
 
-import Jama.Matrix;
 import static ThunderSTORM.utils.Math.sqr;
 import static ThunderSTORM.utils.ImageProcessor.subtractImage;
 import static ThunderSTORM.utils.ImageProcessor.threshold;
@@ -13,13 +12,51 @@ import ThunderSTORM.utils.Point;
 import Watershed.WatershedAlgorithm;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.measure.ResultsTable;
+import ij.plugin.filter.Analyzer;
+import ij.plugin.filter.PlugInFilter;
+import static ij.plugin.filter.PlugInFilter.DOES_16;
+import static ij.plugin.filter.PlugInFilter.DOES_32;
+import static ij.plugin.filter.PlugInFilter.DOES_8G;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import java.rmi.UnexpectedException;
 import java.util.Vector;
 
-public final class Thunder_STORM {
+public final class Thunder_STORM implements PlugInFilter {
+
+    private ImagePlus imp;
+    
+    @Override
+    public int setup(String string, ImagePlus imp) {
+        this.imp = imp;
+        // Grayscale only, no changes to the image and therefore no undo
+        return DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO ;
+    }
+
+    @Override
+    public void run(ImageProcessor ip) {
+        FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
+        Vector<Point> detections = WaveletDetector(fp, false, true, false);
+        //IJ.log("DETECTION:\n");
+        //IJ.log(detections.toString());
+        //IJ.log("\n\n");
+        //IJ.log("LOCALIZATION:\n");
+        Vector<Point<Double>> fits = ExponentialGaussianEstimator(fp, detections);
+        //IJ.log(fits.toString());
+        //
+        ResultsTable rt = Analyzer.getResultsTable();
+        if (rt == null) {
+            rt = new ResultsTable();
+            Analyzer.setResultsTable(rt);
+        }
+        for(Point<Double> p : fits) {
+            rt.incrementCounter();
+            rt.addValue("x [nm]", p.getX());
+            rt.addValue("y [nm]", p.getY());
+            rt.show("Results");
+        }
+    }
 
     public static class Gaussian extends LMAMultiDimFunction {
 
@@ -43,7 +80,7 @@ public final class Thunder_STORM {
         }
     }
 
-    public static Vector<Point> WaveletDetector(FloatProcessor image, boolean third_plane, boolean watershed, boolean upsample) throws UnexpectedException {
+    public static Vector<Point> WaveletDetector(FloatProcessor image, boolean third_plane, boolean watershed, boolean upsample) {
         assert (!((upsample == true) && (watershed == false))) : "Upsampling can be performed only along with watershed transform!";
 
         // wavelets definition
@@ -88,7 +125,7 @@ public final class Thunder_STORM {
         }
 
         // Detection - finding a center of gravity (with subpixel precision),
-        Vector<Point> detections = new Vector<>();
+        Vector<Point> detections = new Vector<Point>();
         for (Graph.ConnectedComponent c : Graph.getConnectedComponents((ImageProcessor) final_plane, Graph.CONNECTIVITY_8)) {
             detections.add(c.centroid());
             detections.lastElement().val = null;
@@ -100,7 +137,7 @@ public final class Thunder_STORM {
     // TODO: boundary pixels!! coordinates would go negative!! especially with the zero-based indexing
     // TODO: refactor...!
     public static Vector<Point<Double>> ExponentialGaussianEstimator(FloatProcessor fp, Vector<Point> detections) {
-        Vector<Point<Double>> fits = new Vector<>();
+        Vector<Point<Double>> fits = new Vector<Point<Double>>();
         
         for(int d = 0, dm = detections.size(); d < dm; d++)
         {
@@ -128,7 +165,7 @@ public final class Thunder_STORM {
         return fits;
     }
 
-    public static void main(String[] args) throws UnexpectedException {
+    public static void main(String[] args) {
         ImagePlus image = IJ.openImage("../eye_00010.tif");
         //ImagePlus image = IJ.openImage("../tubulins1_00020.tif");
         Vector<Point> detections = WaveletDetector((FloatProcessor) image.getProcessor().convertToFloat(), false, true, false);
