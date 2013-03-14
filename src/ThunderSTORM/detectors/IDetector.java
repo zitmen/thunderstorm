@@ -1,13 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ThunderSTORM.detectors;
 
-/**
- *
- * @author Martin
- */
+import ThunderSTORM.utils.Point;
+import ij.process.FloatProcessor;
+import java.util.Vector;
+
 public interface IDetector {
-    
+    public Vector<Point> detectMoleculeCandidates(FloatProcessor image);
 }

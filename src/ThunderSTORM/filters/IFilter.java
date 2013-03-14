@@ -1,13 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ThunderSTORM.filters;
 
-/**
- *
- * @author Martin
- */
+import ij.process.FloatProcessor;
+
 public interface IFilter {
+    
+    public FloatProcessor filterImage(FloatProcessor image);
     
 }
