@@ -1,19 +1,23 @@
 package ThunderSTORM.filters;
 
-import ThunderSTORM.utils.Convolution;
+import static ThunderSTORM.utils.Math.mean;
+import ThunderSTORM.utils.ImageProcessor;
 import ij.process.FloatProcessor;
 
-public class LoweredGaussianFilter extends ConvolutionFilter {
+// This filter uses the same trick to be effective as the DoG filter
+public class LoweredGaussianFilter implements IFilter {
     
-    private static float [] getKernel(int size, double sigma, boolean truncate)
-    {
-        float [] kernel = new float[size*size];
-        // TODO: generate lowered (truncated) Gaussian
-        return kernel;
+    private GaussianFilter g;
+    private UniformFilter u;
+    
+    public LoweredGaussianFilter(int size, double sigma) {
+        g = new GaussianFilter(size, sigma);
+        u = new UniformFilter(size, mean((float []) g.getKernelX().getPixels()));
     }
-    
-    public LoweredGaussianFilter(int size, double sigma, boolean truncate) {
-        super(new FloatProcessor(size, size, getKernel(size, sigma, truncate)), Convolution.PADDING_DUPLICATE);
+
+    @Override
+    public FloatProcessor filterImage(FloatProcessor image) {
+        return ImageProcessor.subtractImage(g.filterImage(image), u.filterImage(image));
     }
     
 }

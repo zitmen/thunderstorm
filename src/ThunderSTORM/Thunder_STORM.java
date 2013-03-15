@@ -1,5 +1,8 @@
 package ThunderSTORM;
 
+// TODO#1: JUnit tests!!! (conversion to maven? or can Ant do it too?)
+// TODO#2: speed & refactoring where needed
+
 import static ThunderSTORM.utils.Math.sqr;
 import static ThunderSTORM.utils.ImageProcessor.subtractImage;
 import static ThunderSTORM.utils.ImageProcessor.threshold;
@@ -7,6 +10,7 @@ import static ThunderSTORM.utils.ImageProcessor.applyMask;
 import ThunderSTORM.utils.Convolution;
 import LMA.LMA;
 import LMA.LMAMultiDimFunction;
+import ThunderSTORM.filters.LoweredGaussianFilter;
 import ThunderSTORM.utils.Graph;
 import ThunderSTORM.utils.Point;
 import Watershed.WatershedAlgorithm;
@@ -166,6 +170,8 @@ public final class Thunder_STORM implements PlugInFilter {
     }
 
     public static void main(String[] args) {
+        LoweredGaussianFilter lg = new LoweredGaussianFilter(11, 1.6);
+        //
         ImagePlus image = IJ.openImage("../eye_00010.tif");
         //ImagePlus image = IJ.openImage("../tubulins1_00020.tif");
         Vector<Point> detections = WaveletDetector((FloatProcessor) image.getProcessor().convertToFloat(), false, true, false);
