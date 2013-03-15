@@ -17,6 +17,9 @@ public class NonMaxSuppressionDetector implements IDetector {
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
         Vector<Point> detections = new Vector<Point>();
+        
+        // TODO: implementovat grayscale dilataci presne podle Matlabu
+        
         return detections;
     }
     
