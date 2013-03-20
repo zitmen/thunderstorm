@@ -3,7 +3,7 @@ package ThunderSTORM.filters;
 import ThunderSTORM.utils.Convolution;
 import ij.process.FloatProcessor;
 
-public abstract class ConvolutionFilter implements IFilter {
+public class ConvolutionFilter implements IFilter {
 
     private int padding_method;
     private FloatProcessor kernel = null, kernel_x = null, kernel_y = null;

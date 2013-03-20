@@ -1,5 +1,6 @@
 package ThunderSTORM.detectors;
 
+import ThunderSTORM.IModule;
 import ThunderSTORM.utils.Graph;
 import static ThunderSTORM.utils.ImageProcessor.applyMask;
 import static ThunderSTORM.utils.ImageProcessor.threshold;
@@ -8,9 +9,15 @@ import Watershed.WatershedAlgorithm;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.Vector;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-public class WatershedDetector implements IDetector {
+public class WatershedDetector implements IDetector, IModule {
 
     private boolean upsample;
     private double threshold;
@@ -45,6 +52,27 @@ public class WatershedDetector implements IDetector {
         }
 
         return detections;
+    }
+
+    @Override
+    public String getName() {
+        return "Watershed transform";
+    }
+
+    @Override
+    public JPanel getOptionsPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Threshold: "), gbc);
+        gbc.gridx = 1;
+        panel.add(new JTextField("Threshold", 20), gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        panel.add(new JCheckBox("upsample"), gbc);
+        return panel;
     }
     
 }

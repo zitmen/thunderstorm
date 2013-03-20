@@ -1,11 +1,17 @@
 package ThunderSTORM.detectors;
 
+import ThunderSTORM.IModule;
 import ThunderSTORM.utils.Morphology;
 import ThunderSTORM.utils.Point;
 import ij.process.FloatProcessor;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.Vector;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-public class NonMaxSuppressionDetector implements IDetector {
+public class NonMaxSuppressionDetector implements IDetector, IModule {
 
     private int radius;
     private double threshold;
@@ -34,6 +40,28 @@ public class NonMaxSuppressionDetector implements IDetector {
         }
         
         return detections;
+    }
+
+    @Override
+    public String getName() {
+        return "Non-maxima suppression";
+    }
+
+    @Override
+    public JPanel getOptionsPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Threshold: "), gbc);
+        gbc.gridx = 1;
+        panel.add(new JTextField("Threshold", 20), gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Radius: "), gbc);
+        gbc.gridx = 1;
+        panel.add(new JTextField("Radius", 20), gbc);
+        return panel;
     }
     
 }

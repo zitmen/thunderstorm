@@ -1,5 +1,18 @@
 package ThunderSTORM.estimators;
 
-public class CenterOfGravityEstimator implements IEstimator {
+import ThunderSTORM.IModule;
+import javax.swing.JPanel;
+
+public class CenterOfGravityEstimator implements IEstimator, IModule {
+
+    @Override
+    public String getName() {
+        return "Center of Gravity";
+    }
+
+    @Override
+    public JPanel getOptionsPanel() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

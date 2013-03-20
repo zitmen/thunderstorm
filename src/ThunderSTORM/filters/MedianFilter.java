@@ -1,8 +1,15 @@
 package ThunderSTORM.filters;
 
+import ThunderSTORM.IModule;
 import ij.process.FloatProcessor;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
-public class MedianFilter implements IFilter {
+public class MedianFilter implements IFilter, IModule {
 
     public static final int CROSS = 4;
     public static final int BOX = 8;
@@ -57,5 +64,29 @@ public class MedianFilter implements IFilter {
             }
         }
         return result;
+    }
+
+    @Override
+    public String getName() {
+        return "Median filter";
+    }
+
+    @Override
+    public JPanel getOptionsPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Pattern: "), gbc);
+        gbc.gridx = 1;
+        panel.add(new JRadioButton("box"), gbc);
+        gbc.gridy = 1;
+        panel.add(new JRadioButton("cross"), gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(new JLabel("Size: "), gbc);
+        gbc.gridx = 1;
+        panel.add(new JTextField("Size", 20), gbc);
+        return panel;
     }
 }

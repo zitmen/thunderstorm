@@ -10,7 +10,19 @@ import static ThunderSTORM.utils.ImageProcessor.applyMask;
 import ThunderSTORM.utils.Convolution;
 import LMA.LMA;
 import LMA.LMAMultiDimFunction;
+import ThunderSTORM.UI.AnalysisOptionsDialog;
+import ThunderSTORM.detectors.LocalMaximaDetector;
+import ThunderSTORM.detectors.NonMaxSuppressionDetector;
+import ThunderSTORM.detectors.WatershedDetector;
+import ThunderSTORM.estimators.LeastSquaresEstimator;
+import ThunderSTORM.estimators.MaximumLikelihoodEstimator;
+import ThunderSTORM.filters.BoxFilter;
+import ThunderSTORM.filters.DifferenceOfGaussiansFilter;
+import ThunderSTORM.filters.EmptyFilter;
+import ThunderSTORM.filters.GaussianFilter;
 import ThunderSTORM.filters.LoweredGaussianFilter;
+import ThunderSTORM.filters.MedianFilter;
+import ThunderSTORM.filters.WaveletFilter;
 import ThunderSTORM.utils.Graph;
 import ThunderSTORM.utils.Padding;
 import ThunderSTORM.utils.Point;
@@ -27,6 +39,9 @@ import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import java.util.Vector;
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 public final class Thunder_STORM implements PlugInFilter {
 
@@ -171,6 +186,7 @@ public final class Thunder_STORM implements PlugInFilter {
     }
 
     public static void main(String[] args) {
+        /*
         LoweredGaussianFilter lg = new LoweredGaussianFilter(11, 1.6);
         //
         ImagePlus image = IJ.openImage("../eye_00010.tif");
@@ -185,5 +201,64 @@ public final class Thunder_STORM implements PlugInFilter {
         //FloatProcessor fp = WaveletDetector((FloatProcessor) image.getProcessor().convertToFloat(), false, true, false);
         //image.setProcessor(fp.convertToShort(false));
         //IJ.save(image, "../output.tif");
+        */
+        /**
+     * Create the GUI and show it.  For thread safety,
+     * this method should be invoked from the
+     * event dispatch thread.
+     */
+        /* Use an appropriate Look and Feel */
+        try {
+            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+        } catch (UnsupportedLookAndFeelException ex) {
+            ex.printStackTrace();
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+        } catch (InstantiationException ex) {
+            ex.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+
+        /* Turn off metal's use of bold fonts */
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+         
+        //Schedule a job for the event dispatch thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                //Create and set up the window.
+                JFrame frame = new JFrame("CardLayoutDemo");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+                //Create and set up the content pane.
+                Vector<IModule> filters = new Vector<IModule>();
+                filters.add(new EmptyFilter());
+                filters.add(new BoxFilter(3));
+                filters.add(new MedianFilter(MedianFilter.BOX, 3));
+                filters.add(new GaussianFilter(11, 1.6));
+                filters.add(new DifferenceOfGaussiansFilter(11, 1.6, 1.0));
+                filters.add(new LoweredGaussianFilter(11, 1.6));
+                filters.add(new WaveletFilter(2));
+                
+                Vector<IModule> detectors = new Vector<IModule>();
+                detectors.add(new LocalMaximaDetector(Graph.CONNECTIVITY_8, 10.0));
+                detectors.add(new NonMaxSuppressionDetector(3, 6.0));
+                detectors.add(new WatershedDetector(false, 1.0));
+                
+                Vector<IModule> estimators = new Vector<IModule>();
+                estimators.add(new LeastSquaresEstimator(11));
+                estimators.add(new MaximumLikelihoodEstimator(11));
+                
+                AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(filters, detectors, estimators);
+                dialog.addComponentsToPane(frame.getContentPane());
+
+                //Display the window.
+                frame.pack();
+                frame.setVisible(true);
+            }
+        });
     }
 }

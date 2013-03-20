@@ -1,11 +1,18 @@
 package ThunderSTORM.detectors;
 
+import ThunderSTORM.IModule;
 import ThunderSTORM.utils.Graph;
 import ThunderSTORM.utils.Point;
 import ij.process.FloatProcessor;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.Vector;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
-public class LocalMaximaDetector implements IDetector {
+public class LocalMaximaDetector implements IDetector, IModule {
 
     private int connectivity;
     private double threshold;
@@ -137,6 +144,30 @@ public class LocalMaximaDetector implements IDetector {
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
         return ((connectivity == Graph.CONNECTIVITY_4) ? getMax4Candidates(image) : getMax8Candidates(image));
+    }
+
+    @Override
+    public String getName() {
+        return "Search for local maxima";
+    }
+
+    @Override
+    public JPanel getOptionsPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Threshold: "), gbc);
+        gbc.gridx = 1;
+        panel.add(new JTextField("Threshold", 20), gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Connectivity: "), gbc);
+        gbc.gridx = 1;
+        panel.add(new JRadioButton("8-neighbourhood"), gbc);
+        gbc.gridy = 2;
+        panel.add(new JRadioButton("4-neighbourhood"), gbc);
+        return panel;
     }
 
 }

@@ -1,9 +1,13 @@
 package ThunderSTORM.filters;
 
+import ThunderSTORM.IModule;
 import ThunderSTORM.utils.Padding;
 import ij.process.FloatProcessor;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-public class WaveletFilter extends ConvolutionFilter {
+public class WaveletFilter extends ConvolutionFilter implements IModule {
     
     private static float [] getKernel(int plane)
     {
@@ -17,6 +21,19 @@ public class WaveletFilter extends ConvolutionFilter {
     
     public WaveletFilter(int plane) {
         super(new FloatProcessor(1, getKernel(plane).length, getKernel(plane)), true, Padding.PADDING_DUPLICATE);   // the `getKernel(plane).length` is very ugly and slow, but the `super()` has to be on first line!
+    }
+
+    @Override
+    public String getName() {
+        return "Wavelet filter";
+    }
+
+    @Override
+    public JPanel getOptionsPanel() {
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Threshold: "));
+        panel.add(new JTextField("Threshold", 20));
+        return panel;
     }
     
 }
