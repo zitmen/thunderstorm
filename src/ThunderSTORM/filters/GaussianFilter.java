@@ -1,7 +1,7 @@
 package ThunderSTORM.filters;
 
 import static ThunderSTORM.utils.Math.gauss;
-import ThunderSTORM.utils.Convolution;
+import ThunderSTORM.utils.Padding;
 import ij.process.FloatProcessor;
 
 public class GaussianFilter extends ConvolutionFilter {
@@ -16,7 +16,7 @@ public class GaussianFilter extends ConvolutionFilter {
     }
 
     public GaussianFilter(int size, double sigma) {
-        super(new FloatProcessor(1, size, getKernel(size, sigma)), true, Convolution.PADDING_DUPLICATE);
+        super(new FloatProcessor(1, size, getKernel(size, sigma)), true, Padding.PADDING_DUPLICATE);
     }
     
 }

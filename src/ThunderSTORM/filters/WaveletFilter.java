@@ -1,6 +1,6 @@
 package ThunderSTORM.filters;
 
-import ThunderSTORM.utils.Convolution;
+import ThunderSTORM.utils.Padding;
 import ij.process.FloatProcessor;
 
 public class WaveletFilter extends ConvolutionFilter {
@@ -16,7 +16,7 @@ public class WaveletFilter extends ConvolutionFilter {
     }
     
     public WaveletFilter(int plane) {
-        super(new FloatProcessor(1, getKernel(plane).length, getKernel(plane)), true, Convolution.PADDING_DUPLICATE);   // the `getKernel(plane).length` is very ugly and slow, but the `super()` has to be on first line!
+        super(new FloatProcessor(1, getKernel(plane).length, getKernel(plane)), true, Padding.PADDING_DUPLICATE);   // the `getKernel(plane).length` is very ugly and slow, but the `super()` has to be on first line!
     }
     
 }

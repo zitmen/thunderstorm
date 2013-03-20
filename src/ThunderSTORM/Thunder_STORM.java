@@ -12,6 +12,7 @@ import LMA.LMA;
 import LMA.LMAMultiDimFunction;
 import ThunderSTORM.filters.LoweredGaussianFilter;
 import ThunderSTORM.utils.Graph;
+import ThunderSTORM.utils.Padding;
 import ThunderSTORM.utils.Point;
 import Watershed.WatershedAlgorithm;
 import ij.IJ;
@@ -98,11 +99,11 @@ public final class Thunder_STORM implements PlugInFilter {
         FloatProcessor k3 = Convolution.getSeparableKernelFromVectors(g3, g3);
 
         // convolve with the wavelets
-        FloatProcessor V1 = Convolution.Convolve(image, k1, Convolution.PADDING_DUPLICATE);
-        FloatProcessor V2 = Convolution.Convolve(V1, k2, Convolution.PADDING_DUPLICATE);
+        FloatProcessor V1 = Convolution.Convolve(image, k1, Padding.PADDING_DUPLICATE);
+        FloatProcessor V2 = Convolution.Convolve(V1, k2, Padding.PADDING_DUPLICATE);
         FloatProcessor V3 = null;
         if (third_plane) {
-            V3 = Convolution.Convolve(V2, k3, Convolution.PADDING_DUPLICATE);
+            V3 = Convolution.Convolve(V2, k3, Padding.PADDING_DUPLICATE);
         }
 
         // create wavelet planes

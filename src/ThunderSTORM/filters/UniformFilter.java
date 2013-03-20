@@ -1,6 +1,6 @@
 package ThunderSTORM.filters;
 
-import ThunderSTORM.utils.Convolution;
+import ThunderSTORM.utils.Padding;
 import ij.process.FloatProcessor;
 import java.util.Arrays;
 
@@ -13,7 +13,7 @@ public class UniformFilter extends ConvolutionFilter {
     }
 
     public UniformFilter(int size, float mean) {
-        super(new FloatProcessor(1, size, getKernel(size, mean)), true, Convolution.PADDING_DUPLICATE);
+        super(new FloatProcessor(1, size, getKernel(size, mean)), true, Padding.PADDING_DUPLICATE);
     }
 
 }
