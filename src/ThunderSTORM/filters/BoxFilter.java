@@ -1,11 +1,19 @@
 package ThunderSTORM.filters;
 
 import ThunderSTORM.IModule;
+import ij.IJ;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class BoxFilter extends UniformFilter implements IModule {
+    
+    private boolean params_changed;
+    
+    private void initialize() {
+        // TODO
+        params_changed = false;
+    }
     
     public BoxFilter(int size) {
         super(size, 1.0f / (float) size);
@@ -23,6 +31,15 @@ public class BoxFilter extends UniformFilter implements IModule {
         panel.add(new JLabel("Size: "));
         panel.add(new JTextField("Size", 20));
         return panel;
+    }
+    
+    @Override
+    public void readParameters() {
+        try {
+            size = Integer.parseInt(sizeTextField.getText());
+        } catch(NumberFormatException ex) {
+            IJ.showMessage("Error!", ex.getMessage());
+        }
     }
     
 }
