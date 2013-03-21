@@ -65,5 +65,10 @@ public class MaximumLikelihoodEstimator implements IEstimator, IModule {
         panel.add(new JTextField("Fitting region size", 20));
         return panel;
     }
+
+    @Override
+    public void readParameters() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

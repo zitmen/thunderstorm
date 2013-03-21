@@ -2,7 +2,9 @@ package ThunderSTORM.detectors;
 
 import ThunderSTORM.IModule;
 import ThunderSTORM.utils.Graph;
+import ThunderSTORM.utils.GridBagHelper;
 import ThunderSTORM.utils.Point;
+import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -17,6 +19,9 @@ public class LocalMaximaDetector implements IDetector, IModule {
     private int connectivity;
     private double threshold;
     private FloatProcessor image;
+    
+    private JTextField thrTextField;
+    private JRadioButton conn4RadioButton, conn8RadioButton;
     
     public LocalMaximaDetector(int connectivity, double threshold) {
         assert((connectivity == Graph.CONNECTIVITY_4) || (connectivity == Graph.CONNECTIVITY_8));
@@ -153,21 +158,31 @@ public class LocalMaximaDetector implements IDetector, IModule {
 
     @Override
     public JPanel getOptionsPanel() {
+        thrTextField = new JTextField("Threshold", 20);
+        conn4RadioButton = new JRadioButton("4-neighbourhood");
+        conn8RadioButton = new JRadioButton("8-neighbourhood");
+        //
+        conn4RadioButton.setSelected(connectivity == Graph.CONNECTIVITY_4);
+        conn8RadioButton.setSelected(connectivity == Graph.CONNECTIVITY_8);
+        //
         JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Threshold: "), gbc);
-        gbc.gridx = 1;
-        panel.add(new JTextField("Threshold", 20), gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JLabel("Connectivity: "), gbc);
-        gbc.gridx = 1;
-        panel.add(new JRadioButton("8-neighbourhood"), gbc);
-        gbc.gridy = 2;
-        panel.add(new JRadioButton("4-neighbourhood"), gbc);
+        panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
+        panel.add(thrTextField, GridBagHelper.pos(1, 0));
+        panel.add(new JLabel("Connectivity: "), GridBagHelper.pos(0, 1));
+        panel.add(conn8RadioButton, GridBagHelper.pos(1, 1));
+        panel.add(conn4RadioButton, GridBagHelper.pos(1, 2));
         return panel;
+    }
+
+    @Override
+    public void readParameters() {
+        try {
+            threshold = Double.parseDouble(thrTextField.getText());
+            if(conn4RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_4;
+            if(conn8RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_8;
+        } catch(NumberFormatException ex) {
+            IJ.showMessage("Error!", ex.getMessage());
+        }
     }
 
 }

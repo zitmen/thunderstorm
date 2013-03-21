@@ -1,20 +1,24 @@
 package ThunderSTORM.detectors;
 
 import ThunderSTORM.IModule;
+import ThunderSTORM.utils.GridBagHelper;
 import ThunderSTORM.utils.Morphology;
 import ThunderSTORM.utils.Point;
+import ij.IJ;
 import ij.process.FloatProcessor;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class NonMaxSuppressionDetector implements IDetector, IModule {
+public final class NonMaxSuppressionDetector implements IDetector, IModule {
 
     private int radius;
     private double threshold;
+    
+    private JTextField thrTextField;
+    private JTextField radiusTextField;
     
     public NonMaxSuppressionDetector(int radius, double threshold) {
         this.radius = radius;
@@ -49,19 +53,25 @@ public class NonMaxSuppressionDetector implements IDetector, IModule {
 
     @Override
     public JPanel getOptionsPanel() {
+        thrTextField = new JTextField(Double.toString(threshold), 20);
+        radiusTextField = new JTextField(Integer.toString(radius), 20);
+        //
         JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Threshold: "), gbc);
-        gbc.gridx = 1;
-        panel.add(new JTextField("Threshold", 20), gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JLabel("Radius: "), gbc);
-        gbc.gridx = 1;
-        panel.add(new JTextField("Radius", 20), gbc);
+        panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
+        panel.add(thrTextField, GridBagHelper.pos(1, 0));
+        panel.add(new JLabel("Radius: "), GridBagHelper.pos(0, 1));
+        panel.add(radiusTextField, GridBagHelper.pos(1, 1));
         return panel;
+    }
+
+    @Override
+    public void readParameters() {
+        try {
+            threshold = Double.parseDouble(thrTextField.getText());
+            radius = Integer.parseInt(radiusTextField.getText());
+        } catch(NumberFormatException ex) {
+            IJ.showMessage("Error!", ex.getMessage());
+        }
     }
     
 }

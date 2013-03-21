@@ -42,7 +42,7 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
     @Override
     public JPanel getOptionsPanel() {
         thirdCheckBox = new JCheckBox("third plane");
-        thirdCheckBox.setEnabled(third_plane);
+        thirdCheckBox.setSelected(third_plane);
         //
         JPanel panel = new JPanel();
         panel.add(thirdCheckBox);

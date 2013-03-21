@@ -2,14 +2,15 @@ package ThunderSTORM.detectors;
 
 import ThunderSTORM.IModule;
 import ThunderSTORM.utils.Graph;
+import ThunderSTORM.utils.GridBagHelper;
 import static ThunderSTORM.utils.ImageProcessor.applyMask;
 import static ThunderSTORM.utils.ImageProcessor.threshold;
 import ThunderSTORM.utils.Point;
 import Watershed.WatershedAlgorithm;
+import ij.IJ;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.Vector;
 import javax.swing.JCheckBox;
@@ -17,10 +18,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class WatershedDetector implements IDetector, IModule {
+public final class WatershedDetector implements IDetector, IModule {
 
     private boolean upsample;
     private double threshold;
+    
+    private JTextField thrTextField;
+    private JCheckBox upCheckBox;
     
     public WatershedDetector(boolean upsample, double threshold) {
         this.upsample = upsample;
@@ -61,18 +65,25 @@ public class WatershedDetector implements IDetector, IModule {
 
     @Override
     public JPanel getOptionsPanel() {
+        thrTextField = new JTextField(Double.toString(threshold), 20);
+        upCheckBox = new JCheckBox("upsample");
+        upCheckBox.setSelected(upsample);
+        //
         JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Threshold: "), gbc);
-        gbc.gridx = 1;
-        panel.add(new JTextField("Threshold", 20), gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        panel.add(new JCheckBox("upsample"), gbc);
+        panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
+        panel.add(thrTextField, GridBagHelper.pos(1, 0));
+        panel.add(upCheckBox, GridBagHelper.pos_width(0, 1, 2, 1));
         return panel;
+    }
+
+    @Override
+    public void readParameters() {
+        try {
+            threshold = Double.parseDouble(thrTextField.getText());
+            upsample = upCheckBox.isSelected();
+        } catch(NumberFormatException ex) {
+            IJ.showMessage("Error!", ex.getMessage());
+        }
     }
     
 }
