@@ -17,5 +17,11 @@ public class GridBagHelper {
         gbc.gridheight = h;
         return gbc;
     }
+
+    public static GridBagConstraints pos_width(int x, int y, int w, int h) {
+        pos(x, y);
+        width(w, h);
+        return gbc;
+    }
     
 }

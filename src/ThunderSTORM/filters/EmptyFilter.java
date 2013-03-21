@@ -2,10 +2,9 @@ package ThunderSTORM.filters;
 
 import ThunderSTORM.IModule;
 import ij.process.FloatProcessor;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class EmptyFilter implements IFilter, IModule {
+public final class EmptyFilter implements IFilter, IModule {
 
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
@@ -20,6 +19,11 @@ public class EmptyFilter implements IFilter, IModule {
     @Override
     public JPanel getOptionsPanel() {
         return null;
+    }
+
+    @Override
+    public void readParameters() {
+        // nothing to do here
     }
     
 }

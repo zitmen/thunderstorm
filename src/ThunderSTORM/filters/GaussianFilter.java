@@ -1,16 +1,22 @@
 package ThunderSTORM.filters;
 
 import ThunderSTORM.IModule;
+import ThunderSTORM.utils.GridBagHelper;
 import static ThunderSTORM.utils.Math.gauss;
 import ThunderSTORM.utils.Padding;
+import ij.IJ;
 import ij.process.FloatProcessor;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class GaussianFilter extends ConvolutionFilter implements IModule {
+public final class GaussianFilter extends ConvolutionFilter implements IModule {
+    
+    private int size;
+    private double sigma;
+    
+    private JTextField sizeTextField, sigmaTextField;
     
     private static float [] getKernel(int size, double sigma)
     {
@@ -20,9 +26,15 @@ public class GaussianFilter extends ConvolutionFilter implements IModule {
         }
         return kernel;
     }
+    
+    private void updateKernel() {
+        super.updateKernel(new FloatProcessor(1, size, getKernel(size, sigma)), true, Padding.PADDING_DUPLICATE);
+    }
 
     public GaussianFilter(int size, double sigma) {
         super(new FloatProcessor(1, size, getKernel(size, sigma)), true, Padding.PADDING_DUPLICATE);
+        this.size = size;
+        this.sigma = sigma;
     }
 
     @Override
@@ -32,18 +44,26 @@ public class GaussianFilter extends ConvolutionFilter implements IModule {
 
     @Override
     public JPanel getOptionsPanel() {
+        sizeTextField = new JTextField(Integer.toString(size), 20);
+        sigmaTextField = new JTextField(Double.toString(sigma), 20);
+        //
         JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        panel.add(new JLabel("Size: "), gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JTextField("Size", 20), gbc);
-        gbc.gridx = 1;
-        panel.add(new JLabel("Sigma: "), gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JTextField("Sigma", 20), gbc);
+        panel.add(new JLabel("Size: "), GridBagHelper.pos(0,0));
+        panel.add(sizeTextField, GridBagHelper.pos(1,0));
+        panel.add(new JLabel("Sigma: "), GridBagHelper.pos(0,1));
+        panel.add(sigmaTextField, GridBagHelper.pos(1,1));
         return panel;
+    }
+
+    @Override
+    public void readParameters() {
+        try {
+            size = Integer.parseInt(sizeTextField.getText());
+            sigma = Double.parseDouble(sigmaTextField.getText());
+            updateKernel();
+        } catch(NumberFormatException ex) {
+            IJ.showMessage("Error!", ex.getMessage());
+        }
     }
     
 }

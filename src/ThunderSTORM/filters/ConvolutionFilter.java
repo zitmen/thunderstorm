@@ -8,7 +8,7 @@ public class ConvolutionFilter implements IFilter {
     private int padding_method;
     private FloatProcessor kernel = null, kernel_x = null, kernel_y = null;
 
-    public ConvolutionFilter(FloatProcessor kernel, boolean separable_kernel, int padding_method) {
+    public final void updateKernel(FloatProcessor kernel, boolean separable_kernel, int padding_method) {
         if (separable_kernel) {
             if (kernel.getWidth() > 1) {    // kernel = kernel_x -> to get kernel_y (transposition) it has to be rotated to right
                 this.kernel_x = kernel;
@@ -17,17 +17,24 @@ public class ConvolutionFilter implements IFilter {
                 this.kernel_x = (FloatProcessor) kernel.rotateLeft();
                 this.kernel_y = kernel;
             }
-            
         } else {
             this.kernel = kernel;
         }
         this.padding_method = padding_method;
     }
     
-    public ConvolutionFilter(FloatProcessor kernel_x, FloatProcessor kernel_y, int padding_method) {
+    public final void updateKernel(FloatProcessor kernel_x, FloatProcessor kernel_y, int padding_method) {
         this.kernel_x = kernel_x;
         this.kernel_y = kernel_y;
         this.padding_method = padding_method;
+    }
+    
+    public ConvolutionFilter(FloatProcessor kernel, boolean separable_kernel, int padding_method) {
+        updateKernel(kernel, separable_kernel, padding_method);
+    }
+    
+    public ConvolutionFilter(FloatProcessor kernel_x, FloatProcessor kernel_y, int padding_method) {
+        updateKernel(kernel_x, kernel_y, padding_method);
     }
 
     @Override

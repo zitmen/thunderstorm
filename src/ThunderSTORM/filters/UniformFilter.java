@@ -11,9 +11,15 @@ public class UniformFilter extends ConvolutionFilter {
         Arrays.fill(kernel, value);
         return kernel;
     }
+    
+    protected int size;
+    
+    protected void updateKernel(int size, float value) {
+        super.updateKernel(new FloatProcessor(1, size, getKernel(size, value)), true, Padding.PADDING_DUPLICATE);
+    }
 
-    public UniformFilter(int size, float mean) {
-        super(new FloatProcessor(1, size, getKernel(size, mean)), true, Padding.PADDING_DUPLICATE);
+    public UniformFilter(int size, float value) {
+        super(new FloatProcessor(1, size, getKernel(size, value)), true, Padding.PADDING_DUPLICATE);
     }
 
 }

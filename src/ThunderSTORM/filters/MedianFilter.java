@@ -1,6 +1,8 @@
 package ThunderSTORM.filters;
 
 import ThunderSTORM.IModule;
+import ThunderSTORM.utils.GridBagHelper;
+import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -9,12 +11,15 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-public class MedianFilter implements IFilter, IModule {
+public final class MedianFilter implements IFilter, IModule {
 
     public static final int CROSS = 4;
     public static final int BOX = 8;
     private int pattern;
     private int size;
+    
+    private JTextField sizeTextField;
+    private JRadioButton patternCrossRadioButton, patternBoxRadioButton;
 
     public MedianFilter(int pattern, int size) {
         assert ((pattern == BOX) || (pattern == CROSS));
@@ -73,20 +78,30 @@ public class MedianFilter implements IFilter, IModule {
 
     @Override
     public JPanel getOptionsPanel() {
+        patternBoxRadioButton = new JRadioButton("box");
+        patternCrossRadioButton = new JRadioButton("cross");
+        sizeTextField = new JTextField(Integer.toString(size), 20);
+        //
+        patternBoxRadioButton.setSelected(pattern == BOX);
+        patternCrossRadioButton.setSelected(pattern == CROSS);
+        //
         JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Pattern: "), gbc);
-        gbc.gridx = 1;
-        panel.add(new JRadioButton("box"), gbc);
-        gbc.gridy = 1;
-        panel.add(new JRadioButton("cross"), gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(new JLabel("Size: "), gbc);
-        gbc.gridx = 1;
-        panel.add(new JTextField("Size", 20), gbc);
+        panel.add(new JLabel("Pattern: "), GridBagHelper.pos(0, 0));
+        panel.add(patternBoxRadioButton, GridBagHelper.pos(1, 0));
+        panel.add(patternCrossRadioButton, GridBagHelper.pos(1, 1));
+        panel.add(new JLabel("Size: "), GridBagHelper.pos(0, 2));
+        panel.add(sizeTextField, GridBagHelper.pos(1, 2));
         return panel;
+    }
+
+    @Override
+    public void readParameters() {
+        try {
+            size = Integer.parseInt(sizeTextField.getText());
+            if(patternBoxRadioButton.isSelected()) pattern = BOX;
+            if(patternCrossRadioButton.isSelected()) pattern = CROSS;
+        } catch(NumberFormatException ex) {
+            IJ.showMessage("Error!", ex.getMessage());
+        }
     }
 }

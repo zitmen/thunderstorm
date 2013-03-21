@@ -17,6 +17,7 @@ import ThunderSTORM.detectors.WatershedDetector;
 import ThunderSTORM.estimators.LeastSquaresEstimator;
 import ThunderSTORM.estimators.MaximumLikelihoodEstimator;
 import ThunderSTORM.filters.BoxFilter;
+import ThunderSTORM.filters.CompoundWaveletFilter;
 import ThunderSTORM.filters.DifferenceOfGaussiansFilter;
 import ThunderSTORM.filters.EmptyFilter;
 import ThunderSTORM.filters.GaussianFilter;
@@ -241,7 +242,7 @@ public final class Thunder_STORM implements PlugInFilter {
                 filters.add(new GaussianFilter(11, 1.6));
                 filters.add(new DifferenceOfGaussiansFilter(11, 1.6, 1.0));
                 filters.add(new LoweredGaussianFilter(11, 1.6));
-                filters.add(new WaveletFilter(2));
+                filters.add(new CompoundWaveletFilter(false));
                 
                 Vector<IModule> detectors = new Vector<IModule>();
                 detectors.add(new LocalMaximaDetector(Graph.CONNECTIVITY_8, 10.0));

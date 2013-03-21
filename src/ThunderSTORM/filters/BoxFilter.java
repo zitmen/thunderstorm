@@ -6,14 +6,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class BoxFilter extends UniformFilter implements IModule {
+public final class BoxFilter extends UniformFilter implements IModule {
     
-    private boolean params_changed;
-    
-    private void initialize() {
-        // TODO
-        params_changed = false;
-    }
+    private JTextField sizeTextField;
     
     public BoxFilter(int size) {
         super(size, 1.0f / (float) size);
@@ -28,15 +23,18 @@ public class BoxFilter extends UniformFilter implements IModule {
     @Override
     public JPanel getOptionsPanel() {
         JPanel panel = new JPanel();
+        sizeTextField = new JTextField(Integer.toString(super.size), 20);
+        //
         panel.add(new JLabel("Size: "));
-        panel.add(new JTextField("Size", 20));
+        panel.add(sizeTextField);
         return panel;
     }
     
     @Override
     public void readParameters() {
         try {
-            size = Integer.parseInt(sizeTextField.getText());
+            int s = Integer.parseInt(sizeTextField.getText());
+            super.updateKernel(s, 1.0f / (float) s);
         } catch(NumberFormatException ex) {
             IJ.showMessage("Error!", ex.getMessage());
         }
