@@ -13,22 +13,21 @@ import javax.swing.JTextField;
 
 public class LeastSquaresEstimator implements IEstimator, IModule {
     
-    private int fitrad;
-    private int fitrad2;
-    private int fitrad_2;
+    private int fitrad, fitrad2, fitrad_2;
     
-    public LeastSquaresEstimator(int fitting_radius) {
-        this.fitrad = fitting_radius;
-        this.fitrad2 = fitting_radius * fitting_radius;
-        this.fitrad_2 = fitting_radius / 2;
+    private JTextField fitregsizeTextField;
+    
+    public LeastSquaresEstimator(int fitting_region_size) {
+        this.fitrad = fitting_region_size;
+        this.fitrad2 = fitting_region_size * fitting_region_size;
+        this.fitrad_2 = fitting_region_size / 2;
     }
     
-    // TODO: this is just copy of the same method in Thunder_STORM.java
-    public Vector<Point<Double>> ExponentialGaussianEstimator(FloatProcessor fp, Vector<Point> detections, PSF initial_guess) {
-        Vector<Point<Double>> fits = new Vector<Point<Double>>();
+    @Override
+    public Vector<PSF> estimateParameters(FloatProcessor fp, Vector<Point> detections, PSF initial_guess) {
+        Vector<PSF> fits = new Vector<PSF>();
         
-        for(int d = 0, dm = detections.size(); d < dm; d++)
-        {
+        for(int d = 0, dm = detections.size(); d < dm; d++) {
             Point p = detections.elementAt(d);
             
             // params = {x0,y0,Intensity,sigma,background}
@@ -47,7 +46,7 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
             LMA lma = new LMA(new Thunder_STORM.Gaussian(), init_guess, y, x);
             lma.fit();
             
-            fits.add(new Point(lma.parameters[0]+0.5, lma.parameters[1]+0.5));  // 0.5px shift to the center of each pixel
+            fits.add(new PSF(lma.parameters[0]+0.5, lma.parameters[1]+0.5));  // 0.5px shift to the center of each pixel
         }
         
         return fits;
@@ -60,9 +59,11 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
 
     @Override
     public JPanel getOptionsPanel() {
+        fitregsizeTextField = new JTextField(Integer.toString(fitrad), 20);
+        //
         JPanel panel = new JPanel();
         panel.add(new JLabel("Fitting region size: "));
-        panel.add(new JTextField("Fitting region size", 20));
+        panel.add(fitregsizeTextField);
         return panel;
     }
 

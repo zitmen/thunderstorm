@@ -1,8 +1,8 @@
 package ThunderSTORM.UI;
 
 import ThunderSTORM.IModule;
+import ThunderSTORM.utils.GridBagHelper;
 import java.awt.CardLayout;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -13,22 +13,25 @@ import javax.swing.JPanel;
  
 public class CardsPanel implements ItemListener {
 
-    private JPanel cardsPanel, comboBoxPanel;
+    private JPanel cardsPanel;
+    private JComboBox cb;
     
     public CardsPanel(Vector<IModule> items) {
         cardsPanel = createCardsPanel(items);
     }
+    
+    public void setDefaultComboBoxItem(int index) {
+        cb.setSelectedIndex(index);
+    }
      
     public final JPanel createCardsPanel(Vector<IModule> items) {
-        comboBoxPanel = new JPanel();
         String comboBoxItems[] = new String[items.size()];
         for(int i = 0; i < items.size(); i++) {
             comboBoxItems[i] = items.elementAt(i).getName();
         }
-        JComboBox cb = new JComboBox(comboBoxItems);
+        cb = new JComboBox(comboBoxItems);
         cb.setEditable(false);
         cb.addItemListener(this);
-        comboBoxPanel.add(cb);
         
         // Create the cards
         JPanel[] cards = new JPanel[items.size()];
@@ -50,16 +53,9 @@ public class CardsPanel implements ItemListener {
     
     public JPanel getPanel(String name) {
         JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel(name), gbc);
-        gbc.gridx = 1;
-        panel.add(comboBoxPanel, gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        panel.add(cardsPanel, gbc);
+        panel.add(new JLabel(name), GridBagHelper.pos(0, 0));
+        panel.add(cb, GridBagHelper.pos(1, 0));
+        panel.add(cardsPanel, GridBagHelper.pos_width(0, 1, 2, 1));
         return panel;
     }
      

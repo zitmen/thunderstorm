@@ -2,13 +2,34 @@ package ThunderSTORM.estimators.PSF;
 
 public class SymmetricGaussianPSF extends GaussianPSF {
     
-    // TODO: dat atributy trid do private, abych mohl zamaskovat, ze sigma je ve skutecnosti sigma_x = sigma_y;
-    // TODO: pridat settery a gettery....tam se to prave zamaskuje!
-    // TODO: pro zrychleni fitovani bude potreba metode Gradient predavat uz hotovy objekt PSF, aby se furt dokola nealokovala nova pamet!
+    public double sigma;
     
     @Override
-    public PSF getGradient() {
-        // TODO: vratit pouze sigma!!
+    public double getValueAt(PSF where) {
+        sigma_x = sigma_y = sigma;
+        return super.getValueAt(where);
+    }
+
+    @Override
+    public double[] getGradient(PSF where) {
+        sigma_x = sigma_y = sigma;
+        return super.getGradient(where);
+    }
+    
+    @Override
+    public double[] getParams() {
+        params[0] = xpos;
+        params[1] = ypos;
+        params[2] = zpos;
+        params[3] = intensity;
+        params[4] = sigma_x;
+        params[5] = sigma_y;
+        params[6] = background;
+        return params;
+    }
+
+    @Override
+    public String[] getTitles() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

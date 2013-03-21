@@ -42,7 +42,7 @@ public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
 
     @Override
     public String getName() {
-        return "Box filter";
+        return "Difference of Gaussians";
     }
 
     @Override

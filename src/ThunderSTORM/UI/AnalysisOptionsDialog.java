@@ -13,10 +13,14 @@ public class AnalysisOptionsDialog {
 
     private CardsPanel filters, detectors, estimators;
     
-    public AnalysisOptionsDialog(Vector<IModule> filters, Vector<IModule> detectors, Vector<IModule> estimators) {
+    public AnalysisOptionsDialog(Vector<IModule> filters, int default_filter, Vector<IModule> detectors, int default_detector, Vector<IModule> estimators, int default_estimator) {
         this.filters = new CardsPanel(filters);
         this.detectors = new CardsPanel(detectors);
         this.estimators = new CardsPanel(estimators);
+        //
+        this.filters.setDefaultComboBoxItem(default_filter);
+        this.detectors.setDefaultComboBoxItem(default_detector);
+        this.estimators.setDefaultComboBoxItem(default_estimator);
     }
      
     public void addComponentsToPane(Container pane) {

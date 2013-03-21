@@ -253,7 +253,7 @@ public final class Thunder_STORM implements PlugInFilter {
                 estimators.add(new LeastSquaresEstimator(11));
                 estimators.add(new MaximumLikelihoodEstimator(11));
                 
-                AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(filters, detectors, estimators);
+                AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(filters, 6, detectors, 2, estimators, 0);
                 dialog.addComponentsToPane(frame.getContentPane());
 
                 //Display the window.
