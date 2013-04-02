@@ -18,13 +18,21 @@ public class GaussianPSF extends PSF {
     private final double[] params = new double[5];
     private final static String[] titles = new String[] { "x", "y", "I", "sigma", "b" };
 
+    public GaussianPSF() {
+        //
+    }
+    
     public GaussianPSF(double x, double y) {
         super.xpos = x;
         super.ypos = y;
     }
     
-    public GaussianPSF(double sigma) {    // this one is used for initial guessing
-        this.sigma = sigma;
+    public GaussianPSF(double x, double y, double I, double s, double b) {
+        super.xpos = x;
+        super.ypos = y;
+        super.intensity = I;
+        this.sigma = s;
+        super.background = b;
     }
 
     // TODO: rozlisovat sigma_x, sigma_y a pridat rotaci o uhel (staci rotacni matice? mela by!)!!

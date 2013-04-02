@@ -6,7 +6,10 @@ import ThunderSTORM.estimators.IEstimator;
 import ThunderSTORM.estimators.PSF.GaussianPSF;
 import ThunderSTORM.estimators.PSF.PSF;
 import ThunderSTORM.filters.IFilter;
+import ij.ImagePlus;
 import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -23,8 +26,14 @@ public class AnalysisOptionsDialog implements ActionListener {
     private CardsPanel filters, detectors, estimators;
     private JButton preview, ok, cancel;
     private JFrame frame;
+    private FloatProcessor fp;
+    private ImagePlus imp;
     
-    public AnalysisOptionsDialog(JFrame frame, Vector<IModule> filters, int default_filter, Vector<IModule> detectors, int default_detector, Vector<IModule> estimators, int default_estimator) {
+    // TODO: predavani IP je uplne dementni...tohle je tu jen pro jednoduchost, abych videl aspon nejakej vysledek!! REFACTOR!!
+    public AnalysisOptionsDialog(ImagePlus imp, ImageProcessor ip, JFrame frame, Vector<IModule> filters, int default_filter, Vector<IModule> detectors, int default_detector, Vector<IModule> estimators, int default_estimator) {
+        this.imp = imp;
+        this.fp = (FloatProcessor)ip.convertToFloat();
+        //
         this.frame = frame;
         //
         this.filters = new CardsPanel(filters);
@@ -35,7 +44,7 @@ public class AnalysisOptionsDialog implements ActionListener {
         this.detectors.setDefaultComboBoxItem(default_detector);
         this.estimators.setDefaultComboBoxItem(default_estimator);
         //
-        this.preview = new JButton("Preview...");
+        this.preview = new JButton("Preview");
         this.ok = new JButton("Ok");
         this.cancel = new JButton("Cancel");
     }
@@ -69,7 +78,7 @@ public class AnalysisOptionsDialog implements ActionListener {
             frame.dispose();
         } else if(e.getActionCommand().equals("Ok")) {
             throw new UnsupportedOperationException("Run the analysis!");
-        } else if(e.getActionCommand().equals("Preview...")) {
+        } else if(e.getActionCommand().equals("Preview")) {
             IFilter filter = (IFilter)filters.getActiveComboBoxItem();
             IDetector detector = (IDetector)detectors.getActiveComboBoxItem();
             IEstimator estimator = (IEstimator)estimators.getActiveComboBoxItem();
@@ -78,12 +87,15 @@ public class AnalysisOptionsDialog implements ActionListener {
             ((IModule)detector).readParameters();
             ((IModule)estimator).readParameters();
             //
-            FloatProcessor image = null;    // TODO!
-            Vector<PSF> results = estimator.estimateParameters(image, detector.detectMoleculeCandidates(filter.filterImage(image)));
+            Vector<PSF> results = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
             //
-            // TODO: overlay!
-            //
-            throw new UnsupportedOperationException("Run the analysis just on the active frame, show the overlay and render the points!");
+            double [] xCoord = new double[results.size()];
+            double [] yCoord = new double[results.size()];
+            for(int i = 0; i < results.size(); i++) {
+                xCoord[i] = results.elementAt(i).xpos;
+                yCoord[i] = results.elementAt(i).ypos;
+            }    
+            RenderingOverlay.showPointsInImage(imp, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
         } else {
             throw new UnsupportedOperationException("Command '" + e.getActionCommand() + "' is not supported!");
         }

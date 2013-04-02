@@ -12,8 +12,8 @@ import java.awt.Color;
  */
 public class RenderingOverlay {
 
-    public static final int CROSS = 1;
-    public static final int CIRCLE = 2;
+    public static final int MARKER_CROSS = 1;
+    public static final int MARKER_CIRCLE = 2;
 
     public static void showPointsInImage(ImagePlus imp, double[] xCoord, double[] yCoord, Color c, int markerType) {
         Overlay overlay = imp.getOverlay();
@@ -33,18 +33,13 @@ public class RenderingOverlay {
         imp.setOverlay(overlay);
     }
 
-    /**
-     * point with coordinates [0,0] will show in the center of top left pixel
-     * this is different from imageJ default behavior, where the center of the
-     * top left pixel would have coordinates [0.5 0.5]
-     */
-    static Overlay addPointsToOverlay(double[] xCoord, double[] yCoord, Overlay overlay, int slice, Color c, int markerType) {
+    private static Overlay addPointsToOverlay(double[] xCoord, double[] yCoord, Overlay overlay, int slice, Color c, int markerType) {
         double halfSize = 1;
         for (int i = 0; i < xCoord.length; i++) {
             switch (markerType) {
-                case CROSS:
-                    Line horizontalLine = new Line(0.5 + xCoord[i] - halfSize, 0.5 + yCoord[i], 0.5 + xCoord[i] + halfSize, 0.5 + yCoord[i]);
-                    Line verticalLine = new Line(0.5 + xCoord[i], 0.5 + yCoord[i] - halfSize, 0.5 + xCoord[i], 0.5 + yCoord[i] + halfSize);
+                case MARKER_CROSS:
+                    Line horizontalLine = new Line(xCoord[i] - halfSize, yCoord[i], xCoord[i] + halfSize, yCoord[i]);
+                    Line verticalLine = new Line(xCoord[i], yCoord[i] - halfSize, xCoord[i], yCoord[i] + halfSize);
                     if (c != null) {
                         verticalLine.setStrokeColor(c);
                         horizontalLine.setStrokeColor(c);
@@ -56,8 +51,9 @@ public class RenderingOverlay {
                     overlay.add(horizontalLine);
                     overlay.add(verticalLine);
                     break;
-                case CIRCLE:
-                    EllipseRoi ellipse = new EllipseRoi(0.5 + xCoord[i] - halfSize, 0.5 + yCoord[i], 0.5 + xCoord[i] + halfSize, 0.5 + yCoord[i], 1);
+                    
+                case MARKER_CIRCLE:
+                    EllipseRoi ellipse = new EllipseRoi(xCoord[i] - halfSize, yCoord[i], xCoord[i] + halfSize, yCoord[i], 1);
                     ellipse.setName("" + (i + 1));
                     ellipse.setPosition(slice);
                     if (c != null) {
@@ -65,8 +61,9 @@ public class RenderingOverlay {
                     }
                     overlay.add(ellipse);
                     break;
+                    
                 default:
-                    throw new IllegalArgumentException("unknown marker type");
+                    throw new IllegalArgumentException("Unknown marker type!");
             }
         }
         return overlay;

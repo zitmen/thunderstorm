@@ -8,6 +8,7 @@ import static ThunderSTORM.utils.ImageProcessor.threshold;
 import ThunderSTORM.utils.Point;
 import Watershed.WatershedAlgorithm;
 import ij.IJ;
+import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -33,9 +34,15 @@ public final class WatershedDetector implements IDetector, IModule {
 
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
+        ImagePlus imp = new ImagePlus();
+        imp.setProcessor(image.convertToShort(false)); IJ.save(imp, "../output_wavelets.tif");
+        
         // thresholding first to make the image binary
-        threshold(image, (float) threshold, 1.0f, 0.0f); // these are in reverse (1=low,0=high) on purpose!
+        threshold(image, (float) threshold*11.627f, 1.0f, 0.0f); // these are in reverse (1=low,0=high) on purpose!
                                                          //the result is negated image, which is exactly what i need
+        
+        imp.setProcessor(image.convertToShort(false)); IJ.save(imp, "../output_threshold.tiff");
+        
         // watershed transform with[out] upscaling
         if (upsample) {
             image.setInterpolationMethod(FloatProcessor.NEAREST_NEIGHBOR);

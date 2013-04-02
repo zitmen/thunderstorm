@@ -7,6 +7,6 @@ import java.util.Vector;
 
 public interface IEstimator {
     
-    public Vector<PSF> estimateParameters(FloatProcessor fp, Vector<Point> detections);
+    public Vector<PSF> estimateParameters(FloatProcessor image, Vector<Point> detections);
     
 }
