@@ -15,7 +15,6 @@ import ThunderSTORM.detectors.LocalMaximaDetector;
 import ThunderSTORM.detectors.NonMaxSuppressionDetector;
 import ThunderSTORM.detectors.WatershedDetector;
 import ThunderSTORM.estimators.LeastSquaresEstimator;
-import ThunderSTORM.estimators.MaximumLikelihoodEstimator;
 import ThunderSTORM.filters.BoxFilter;
 import ThunderSTORM.filters.CompoundWaveletFilter;
 import ThunderSTORM.filters.DifferenceOfGaussiansFilter;
@@ -23,12 +22,10 @@ import ThunderSTORM.filters.EmptyFilter;
 import ThunderSTORM.filters.GaussianFilter;
 import ThunderSTORM.filters.LoweredGaussianFilter;
 import ThunderSTORM.filters.MedianFilter;
-import ThunderSTORM.filters.WaveletFilter;
 import ThunderSTORM.utils.Graph;
 import ThunderSTORM.utils.Padding;
 import ThunderSTORM.utils.Point;
 import Watershed.WatershedAlgorithm;
-import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
@@ -225,16 +222,16 @@ public final class Thunder_STORM implements PlugInFilter {
         /* Turn off metal's use of bold fonts */
         UIManager.put("swing.boldMetal", Boolean.FALSE);
          
-        //Schedule a job for the event dispatch thread:
-        //creating and showing this application's GUI.
+        // Schedule a job for the event dispatch thread:
+        // creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                //Create and set up the window.
+                // Create and set up the window.
                 JFrame frame = new JFrame("CardLayoutDemo");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-                //Create and set up the content pane.
+                // Create and set up the content pane.
                 Vector<IModule> filters = new Vector<IModule>();
                 filters.add(new EmptyFilter());
                 filters.add(new BoxFilter(3));
@@ -251,12 +248,11 @@ public final class Thunder_STORM implements PlugInFilter {
                 
                 Vector<IModule> estimators = new Vector<IModule>();
                 estimators.add(new LeastSquaresEstimator(11));
-                estimators.add(new MaximumLikelihoodEstimator(11));
                 
-                AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(filters, 6, detectors, 2, estimators, 0);
-                dialog.addComponentsToPane(frame.getContentPane());
+                AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(frame, filters, 6, detectors, 2, estimators, 0);
+                dialog.addComponentsToPane();
 
-                //Display the window.
+                // Display the window.
                 frame.pack();
                 frame.setVisible(true);
             }

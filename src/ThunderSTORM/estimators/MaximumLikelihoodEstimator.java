@@ -19,12 +19,17 @@ public class MaximumLikelihoodEstimator implements IEstimator, IModule {
     private int fitrad_2;
     
     public MaximumLikelihoodEstimator(int fitting_radius) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        /*
         this.fitrad = fitting_radius;
         this.fitrad2 = fitting_radius * fitting_radius;
         this.fitrad_2 = fitting_radius / 2;
+        */
     }
     
     public Vector<Point<Double>> ExponentialGaussianEstimator(FloatProcessor fp, Vector<Point> detections, PSF initial_guess) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        /*
         Vector<Point<Double>> fits = new Vector<Point<Double>>();
         
         for(int d = 0, dm = detections.size(); d < dm; d++)
@@ -51,6 +56,7 @@ public class MaximumLikelihoodEstimator implements IEstimator, IModule {
         }
         
         return fits;
+        */
     }
 
     @Override
@@ -68,6 +74,11 @@ public class MaximumLikelihoodEstimator implements IEstimator, IModule {
 
     @Override
     public void readParameters() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Vector<PSF> estimateParameters(FloatProcessor fp, Vector<Point> detections) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

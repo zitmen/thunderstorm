@@ -15,16 +15,22 @@ public class CardsPanel implements ItemListener {
 
     private JPanel cardsPanel;
     private JComboBox cb;
+    private Vector<IModule> items;
     
     public CardsPanel(Vector<IModule> items) {
-        cardsPanel = createCardsPanel(items);
+        this.items = items;
+        cardsPanel = createCardsPanel();
     }
     
     public void setDefaultComboBoxItem(int index) {
         cb.setSelectedIndex(index);
     }
+    
+    public IModule getActiveComboBoxItem() {
+        return items.elementAt(cb.getSelectedIndex());
+    }
      
-    public final JPanel createCardsPanel(Vector<IModule> items) {
+    public final JPanel createCardsPanel() {
         String comboBoxItems[] = new String[items.size()];
         for(int i = 0; i < items.size(); i++) {
             comboBoxItems[i] = items.elementAt(i).getName();

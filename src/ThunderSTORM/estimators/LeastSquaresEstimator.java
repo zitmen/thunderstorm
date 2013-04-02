@@ -3,6 +3,7 @@ package ThunderSTORM.estimators;
 import LMA.LMA;
 import ThunderSTORM.IModule;
 import ThunderSTORM.Thunder_STORM;
+import ThunderSTORM.estimators.PSF.GaussianPSF;
 import ThunderSTORM.estimators.PSF.PSF;
 import ThunderSTORM.utils.Point;
 import ij.process.FloatProcessor;
@@ -24,14 +25,14 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
     }
     
     @Override
-    public Vector<PSF> estimateParameters(FloatProcessor fp, Vector<Point> detections, PSF initial_guess) {
+    public Vector<PSF> estimateParameters(FloatProcessor fp, Vector<Point> detections) {
         Vector<PSF> fits = new Vector<PSF>();
         
         for(int d = 0, dm = detections.size(); d < dm; d++) {
             Point p = detections.elementAt(d);
             
-            // params = {x0,y0,Intensity,sigma,background}
-            double[] init_guess = new double[]{ p.getX().doubleValue(), p.getY().doubleValue(), fp.getPixelValue(p.roundToInteger().getX().intValue(), p.roundToInteger().getY().intValue()), 1.3, 100.0 };
+            // [GaussianPSF] params = {x0,y0,Intensity,sigma,background}
+            double[] init_guess = new double[]{ p.getX().doubleValue(), p.getY().doubleValue(), fp.getPixelValue(p.roundToInteger().getX().intValue(), p.roundToInteger().getY().intValue()), 1.6, 100.0 };
             double[][] x = new double[fitrad2][2];
             double[] y = new double[fitrad2];
             for (int r = 0; r < fitrad; r++) {
@@ -46,7 +47,8 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
             LMA lma = new LMA(new Thunder_STORM.Gaussian(), init_guess, y, x);
             lma.fit();
             
-            fits.add(new PSF(lma.parameters[0]+0.5, lma.parameters[1]+0.5));  // 0.5px shift to the center of each pixel
+            // TODO: generalize!! this should not be just GaussianPSF!!
+            fits.add(new GaussianPSF(lma.parameters[0]+0.5, lma.parameters[1]+0.5));  // 0.5px shift to the center of each pixel
         }
         
         return fits;
@@ -69,7 +71,7 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
 
     @Override
     public void readParameters() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
 }
