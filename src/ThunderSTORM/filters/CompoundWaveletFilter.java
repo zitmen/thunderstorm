@@ -26,23 +26,12 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
     
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
-        ImagePlus imp = new ImagePlus();
-        //
         FloatProcessor V1 = w1.filterImage(image);
-        //
-        imp.setProcessor(V1.convertToShort(false)); IJ.save(imp, "../output_V1.tif");
-        //
         FloatProcessor V2 = w2.filterImage(V1);
-        //
-        imp.setProcessor(V2.convertToShort(false)); IJ.save(imp, "../output_V2.tif");
-        //
         if (third_plane) {
             FloatProcessor V3 = w3.filterImage(V2);
             return subtractImage(V2, V3);
         }
-        //
-        imp.setProcessor(subtractImage(V1, V2).convertToShort(false)); IJ.save(imp, "../output_V1-V2.tif");
-        //
         return subtractImage(V1, V2);
     }
 

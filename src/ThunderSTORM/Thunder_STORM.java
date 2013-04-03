@@ -1,7 +1,6 @@
 package ThunderSTORM;
 
-// TODO#1: JUnit tests!!! (conversion to maven? or can Ant do it too?)
-// TODO#2: speed & refactoring where needed
+// TODO: speed & refactoring; profiling
 
 import ThunderSTORM.UI.AnalysisOptionsDialog;
 import ThunderSTORM.detectors.LocalMaximaDetector;
@@ -15,6 +14,7 @@ import ThunderSTORM.filters.EmptyFilter;
 import ThunderSTORM.filters.GaussianFilter;
 import ThunderSTORM.filters.LoweredGaussianFilter;
 import ThunderSTORM.filters.MedianFilter;
+import ThunderSTORM.utils.CSV;
 import ThunderSTORM.utils.Graph;
 import ij.IJ;
 import ij.ImagePlus;
@@ -25,6 +25,7 @@ import static ij.plugin.filter.PlugInFilter.DOES_32;
 import static ij.plugin.filter.PlugInFilter.DOES_8G;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
+import java.io.IOException;
 import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -101,6 +102,25 @@ public final class Thunder_STORM implements PlugInFilter {
     }
     
     public static void main(String[] args) {
+        try {
+            FloatProcessor image = (FloatProcessor) IJ.openImage("test/resources/rice.png").getProcessor().convertToFloat();
+            
+            CompoundWaveletFilter instance = new CompoundWaveletFilter(false);
+            float[] result = (float[]) instance.filterImage(image).getPixels();
+            float[] expResult = (float[]) CSV.csv2fp("test/resources/rice_filter_compound-wavelet-V1-V2.csv").getPixels();
+            //assertArrayEquals(expResult, result, 5.0f);
+            
+            instance = new CompoundWaveletFilter(true);
+            result = (float[]) instance.filterImage(image).getPixels();
+            expResult = (float[]) CSV.csv2fp("test/resources/rice_filter_compound-wavelet-V2-V3.csv").getPixels();
+            
+            int aaa = 4;
+            //assertArrayEquals(expResult, result, 5.0f);
+        } catch(IOException ex) {
+            //fail("Error in box filter test: " + ex.getMessage());
+        }
+        //
+        //
         Thunder_STORM thunder = new Thunder_STORM();
         ImagePlus image = IJ.openImage("../eye_00010.tif");
         //ImagePlus image = IJ.openImage("../tubulins1_00020.tif");

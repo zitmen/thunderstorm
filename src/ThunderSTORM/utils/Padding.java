@@ -8,6 +8,7 @@ import ij.process.FloatProcessor;
 
 public class Padding {
     
+    public static final int PADDING_NONE = 0;
     public static final int PADDING_ZERO = 1;
     public static final int PADDING_DUPLICATE = 2;
     public static final int PADDING_CYCLIC = 3;
@@ -19,15 +20,21 @@ public class Padding {
     public static FloatProcessor addBorder(FloatProcessor image, int size, int type) {
 
         assert size >= 0;
-        assert type >= 1 && type <= 3;
+        assert type >= 0 && type <= 3;
 
         int w = image.getWidth();
         int h = image.getHeight();
 
-        FloatProcessor out = new FloatProcessor(w + 2 * size, h + 2 * size);
+        FloatProcessor out = null;
 
         switch (type) {
+            case PADDING_NONE:
+                out = new FloatProcessor(w, h);
+                out.copyBits(image, 0, 0, Blitter.COPY);
+                break;
+                
             case PADDING_ZERO:
+                out = new FloatProcessor(w + 2 * size, h + 2 * size);
                 // fill the output image with zeros
                 out.setValue(0);
                 out.fill();
@@ -36,6 +43,7 @@ public class Padding {
                 break;
 
             case PADDING_DUPLICATE:
+                out = new FloatProcessor(w + 2 * size, h + 2 * size);
                 // top side of border
                 int left = image.getPixel(0, 0);
                 int right = image.getPixel(w - 1, 0);
@@ -56,7 +64,7 @@ public class Padding {
                 out.copyBits(fp, 0, h + size, Blitter.COPY);
 
                 // left side of border
-                line = new int[image.getWidth()];
+                line = new int[image.getHeight()];
                 image.getColumn(0, 0, line, h);
                 fp = new FloatProcessor(size, h);
                 fp.setIntArray(replicateColumn(line, size));

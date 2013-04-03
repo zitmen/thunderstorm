@@ -5,7 +5,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author Martin Ovesny <martin.ovesny[at]lf1.cuni.cz>
  */
 public class UniformFilterTest {
@@ -15,7 +14,7 @@ public class UniformFilterTest {
      */
     @Test
     public void testUpdateKernel() {
-        System.out.println("updateKernel");
+        System.out.println("UniformFilterTest::updateKernel");
         
         UniformFilter instance = new UniformFilter(3, 3f);
         cmpKernel(instance, 3, 3f);

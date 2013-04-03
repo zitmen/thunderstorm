@@ -4,8 +4,8 @@ import ThunderSTORM.IModule;
 import ThunderSTORM.utils.GridBagHelper;
 import ij.IJ;
 import ij.process.FloatProcessor;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Arrays;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -33,38 +33,41 @@ public final class MedianFilter implements IFilter, IModule {
         FloatProcessor result = new FloatProcessor(image.getWidth(), image.getHeight());
         if (pattern == BOX) {
             float [] items = new float[size*size];
-            for (int x = 0, xm = image.getWidth(); x < xm; x++) {
+            
                 for (int y = 0, ym = image.getHeight(); y < ym; y++) {
+                    for (int x = 0, xm = image.getWidth(); x < xm; x++) {
                     int ii = 0;
                     for(int i = x - size/2, im = i + size; i < im; i++) {
-                        for(int j = x - size/2, jm = j + size; j < jm; j++) {
+                        for(int j = y - size/2, jm = j + size; j < jm; j++) {
                             if((i >= 0) && (i < xm) && (j >= 0) && (j < ym)) {
                                 items[ii] = image.getPixelValue(i, j);
                                 ii++;
                             }
                         }
                     }
-                    result.setf(x, y, items[ii/2]);
+                    Arrays.sort(items, 0, ii);
+                    result.setf(x, y, ((ii%2==1) ? items[ii/2] : ((items[(ii-1)/2] + items[ii/2]) / 2.0f)));    // median evaluation, same as in Matlab
                 }
             }
         } else {
-            float [] items = new float[2*size];
+            float [] items = new float[2*size-1];
             for (int x = 0, xm = image.getWidth(); x < xm; x++) {
                 for (int y = 0, ym = image.getHeight(); y < ym; y++) {
                     int ii = 0;
                     for(int i = x - size/2, im = i + size; i < im; i++) {
-                        if((i >= 0) && (i < xm)) {
+                        if((i >= 0) && (i < xm)) {  // check for boudaries
                             items[ii] = image.getPixelValue(i, y);
                             ii++;
                         }
                     }
                     for(int j = y - size/2, jm = j + size; j < jm; j++) {
-                        if((j >= 0) && (j < ym)) {
+                        if((j >= 0) && (j < ym) && (j != y)) {  // check for boundaries and skip the center of the cross to avoid storing one value multiple times
                             items[ii] = image.getPixelValue(x, j);
                             ii++;
                         }
                     }
-                    result.setf(x, y, items[ii/2]);
+                    Arrays.sort(items, 0, ii);
+                    result.setf(x, y, ((ii%2==1) ? items[ii/2] : ((items[(ii-1)/2] + items[ii/2]) / 2.0f)));    // median evaluation, same as in Matlab
                 }
             }
         }

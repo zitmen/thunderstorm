@@ -5,10 +5,12 @@ import ij.process.FloatProcessor;
 
 public class Convolution {
 
-    public static FloatProcessor Convolve(FloatProcessor image, FloatProcessor kernel, int padding_type) {
+    public static FloatProcessor Convolve(FloatProcessor image, FloatProcessor kernel, int padding_type, boolean return_same_size) {
         assert kernel.getWidth() % 2 == 1;
         assert kernel.getHeight() % 2 == 1;
 
+        // TODO: padding_NONE!! same_size!!! asi nejdriv testy!!
+        
         int kw = kernel.getWidth(), kh = kernel.getHeight(), padsize = java.lang.Math.max(kw, kh) / 2;
         int iw = image.getWidth(), ih = image.getHeight(), idx;
         FloatProcessor img = (FloatProcessor) Padding.addBorder(image, padsize, padding_type);
@@ -17,7 +19,7 @@ public class Convolution {
         float[] result = new float[iw * ih];
         for (int ix = 0; ix < iw; ix++) {
             for (int iy = 0; iy < ih; iy++) {
-                idx = ix + iy * ih;
+                idx = iy * iw + ix;
                 for (int kx = 0; kx < kw; kx++) {
                     for (int ky = 0; ky < kh; ky++) {
                         result[idx] += kernel.getPixelValue(kx, ky) * img.getPixelValue(padsize + ix + (kx - kw / 2), padsize + iy + (ky - kh / 2));
