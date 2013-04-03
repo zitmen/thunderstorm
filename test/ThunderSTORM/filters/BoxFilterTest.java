@@ -24,7 +24,7 @@ public class BoxFilterTest {
             BoxFilter instance = new BoxFilter(5);
             float[] result = (float[]) instance.filterImage(image).getPixels();
             float[] expResult = (float[]) CSV.csv2fp("test/resources/rice_filter_box5.csv").getPixels();
-            assertArrayEquals(expResult, result, 0.0001f);
+            assertArrayEquals(expResult, result, 0.001f);
         } catch(IOException ex) {
             fail("Error in box filter test: " + ex.getMessage());
         }

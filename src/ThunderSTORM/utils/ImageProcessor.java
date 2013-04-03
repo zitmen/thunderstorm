@@ -1,5 +1,6 @@
 package ThunderSTORM.utils;
 
+import ij.process.Blitter;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ShortProcessor;
@@ -75,6 +76,15 @@ public class ImageProcessor {
         }
 
         return out;
+    }
+    
+    public static FloatProcessor cropImage(FloatProcessor im, int left, int top, int width, int height) {
+        assert(im != null);
+        assert((width > 0) && (height > 0));
+        assert((left >= 0) && (top >= 0) && ((left+width) <= im.getWidth()) && ((top+height) <= im.getHeight()));
+        
+        im.setRoi(left, top, width, height);
+        return (FloatProcessor) im.crop();
     }
 
     public static void threshold(FloatProcessor image, float threshold, float low_val, float high_val) {

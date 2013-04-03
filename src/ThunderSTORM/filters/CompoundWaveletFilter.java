@@ -2,14 +2,17 @@ package ThunderSTORM.filters;
 
 import ThunderSTORM.IModule;
 import static ThunderSTORM.utils.ImageProcessor.subtractImage;
+import static ThunderSTORM.utils.ImageProcessor.cropImage;
+import ThunderSTORM.utils.Padding;
 import ij.IJ;
-import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
+// Here we use double padding to simulate conv2 function and to keep the results identical to the Matlab version.
 public final class CompoundWaveletFilter implements IFilter, IModule {
 
+    private int margin;
     private boolean third_plane;
     
     private WaveletFilter w1, w2, w3;
@@ -19,22 +22,25 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
     public CompoundWaveletFilter(boolean third_plane) {
         this.third_plane = third_plane;
         //
-        w1 = new WaveletFilter(1);
-        w2 = new WaveletFilter(2);
-        w3 = new WaveletFilter(3);
+        w1 = new WaveletFilter(1, Padding.PADDING_ZERO);
+        w2 = new WaveletFilter(2, Padding.PADDING_ZERO);
+        w3 = new WaveletFilter(3, Padding.PADDING_ZERO);
+        //
+        this.margin = w3.getKernelX().getWidth() / 2;
     }
     
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
-        FloatProcessor V1 = w1.filterImage(image);
+        FloatProcessor padded = Padding.addBorder(image, margin, Padding.PADDING_DUPLICATE);
+        FloatProcessor V1 = w1.filterImage(padded);
         FloatProcessor V2 = w2.filterImage(V1);
         if (third_plane) {
             FloatProcessor V3 = w3.filterImage(V2);
-            return subtractImage(V2, V3);
+            return cropImage(subtractImage(V2, V3), margin, margin, image.getWidth(), image.getHeight());
         }
-        return subtractImage(V1, V2);
+        return cropImage(subtractImage(V1, V2), margin, margin, image.getWidth(), image.getHeight());
     }
-
+    
     @Override
     public String getName() {
         return "Wavelet filter";

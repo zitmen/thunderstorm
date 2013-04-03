@@ -7,6 +7,10 @@ public class ConvolutionFilter implements IFilter {
 
     private int padding_method;
     private FloatProcessor kernel = null, kernel_x = null, kernel_y = null;
+    
+    public final void updatePaddingMethod(int padding_method) {
+        this.padding_method = padding_method;
+    }
 
     public final void updateKernel(FloatProcessor kernel, boolean separable_kernel, int padding_method) {
         if (separable_kernel) {

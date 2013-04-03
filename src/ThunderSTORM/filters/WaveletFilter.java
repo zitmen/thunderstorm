@@ -18,4 +18,8 @@ public class WaveletFilter extends ConvolutionFilter {
         super(new FloatProcessor(1, getKernel(plane).length, getKernel(plane)), true, Padding.PADDING_DUPLICATE);   // the `getKernel(plane).length` is very ugly and slow, but the `super()` has to be on first line!
     }
     
+    public WaveletFilter(int plane, int padding_method) {
+        super(new FloatProcessor(1, getKernel(plane).length, getKernel(plane)), true, padding_method);   // the `getKernel(plane).length` is very ugly and slow, but the `super()` has to be on first line!
+    }
+    
 }

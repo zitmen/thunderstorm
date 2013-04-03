@@ -25,12 +25,12 @@ public class MedianFilterTest {
             MedianFilter instance = new MedianFilter(MedianFilter.CROSS, 3);
             float[] result = (float[]) instance.filterImage(image).getPixels();
             float[] expResult = (float[]) CSV.csv2fp("test/resources/rice_filter_median-cross3.csv").getPixels();
-            assertArrayEquals(expResult, result, 0.0001f);
+            assertArrayEquals(expResult, result, 0.001f);
             
             instance = new MedianFilter(MedianFilter.BOX, 3);
             result = (float[]) instance.filterImage(image).getPixels();
             expResult = (float[]) CSV.csv2fp("test/resources/rice_filter_median-box3.csv").getPixels();
-            assertArrayEquals(expResult, result, 0.0001f);
+            assertArrayEquals(expResult, result, 0.001f);
         } catch(IOException ex) {
             fail("Error in box filter test: " + ex.getMessage());
         }

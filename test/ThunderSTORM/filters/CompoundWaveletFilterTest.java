@@ -25,12 +25,12 @@ public class CompoundWaveletFilterTest {
             CompoundWaveletFilter instance = new CompoundWaveletFilter(false);
             float[] result = (float[]) instance.filterImage(image).getPixels();
             float[] expResult = (float[]) CSV.csv2fp("test/resources/rice_filter_compound-wavelet-V1-V2.csv").getPixels();
-            assertArrayEquals(expResult, result, 5.0f);
+            assertArrayEquals(expResult, result, 0.001f);
             
             instance = new CompoundWaveletFilter(true);
             result = (float[]) instance.filterImage(image).getPixels();
             expResult = (float[]) CSV.csv2fp("test/resources/rice_filter_compound-wavelet-V2-V3.csv").getPixels();
-            assertArrayEquals(expResult, result, 5.0f);
+            assertArrayEquals(expResult, result, 0.001f);
         } catch(IOException ex) {
             fail("Error in box filter test: " + ex.getMessage());
         }
