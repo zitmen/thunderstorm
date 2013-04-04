@@ -4,13 +4,16 @@ import ij.process.FloatProcessor;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+/**
+ * @author Martin Ovesny <martin.ovesny[at]lf1.cuni.cz>
+ */
 public class ConvolutionFilterTest {
     
     /**
      * Test of updateKernel method, of class ConvolutionFilter.
      */
     @Test
-    public void testUpdateKernel_3args_1() {
+    public void testUpdateKernel() {
         System.out.println("updateKernel");
         FloatProcessor kernel = null;
         boolean separable_kernel = false;
@@ -19,13 +22,14 @@ public class ConvolutionFilterTest {
         instance.updateKernel(kernel, separable_kernel, padding_method);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
+        // testnout, jestli budou funkce getKernel* vracet, co vracet maji (vcetne null)
     }
 
     /**
      * Test of updateKernel method, of class ConvolutionFilter.
      */
     @Test
-    public void testUpdateKernel_3args_2() {
+    public void testUpdateKernelStrictlySeparable() {
         System.out.println("updateKernel");
         FloatProcessor kernel_x = null;
         FloatProcessor kernel_y = null;
@@ -34,6 +38,7 @@ public class ConvolutionFilterTest {
         instance.updateKernel(kernel_x, kernel_y, padding_method);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
+        // testnout, jestli budou funkce getKernel* vracet, co vracet maji (vcetne null)
     }
 
     /**
@@ -49,47 +54,8 @@ public class ConvolutionFilterTest {
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
+        // testnout asi na nejakym peknym kernelu, jestli se vysledek ze separable rovna vysledku ze slozenyho
+        // ...to uz neni potreba pak dal porovnavat, protoze tedty na konvoluci jako takovou uz mam v Convolution::convolve
     }
 
-    /**
-     * Test of getKernelX method, of class ConvolutionFilter.
-     */
-    @Test
-    public void testGetKernelX() {
-        System.out.println("getKernelX");
-        ConvolutionFilter instance = null;
-        FloatProcessor expResult = null;
-        FloatProcessor result = instance.getKernelX();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getKernelY method, of class ConvolutionFilter.
-     */
-    @Test
-    public void testGetKernelY() {
-        System.out.println("getKernelY");
-        ConvolutionFilter instance = null;
-        FloatProcessor expResult = null;
-        FloatProcessor result = instance.getKernelY();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getKernel method, of class ConvolutionFilter.
-     */
-    @Test
-    public void testGetKernel() {
-        System.out.println("getKernel");
-        ConvolutionFilter instance = null;
-        FloatProcessor expResult = null;
-        FloatProcessor result = instance.getKernel();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 }
