@@ -1,7 +1,5 @@
 package ThunderSTORM;
 
-// TODO: speed & refactoring; profiling
-
 import ThunderSTORM.UI.AnalysisOptionsDialog;
 import ThunderSTORM.detectors.LocalMaximaDetector;
 import ThunderSTORM.detectors.NonMaxSuppressionDetector;

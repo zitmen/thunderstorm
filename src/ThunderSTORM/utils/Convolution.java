@@ -11,7 +11,7 @@ public class Convolution {
 
         int kw = kernel.getWidth(), kh = kernel.getHeight(), padsize = java.lang.Math.max(kw, kh) / 2;
         int iw = image.getWidth(), ih = image.getHeight(), idx;
-        FloatProcessor img = (FloatProcessor) Padding.addBorder(image, padsize, padding_type);
+        FloatProcessor img = (FloatProcessor) Padding.addBorder(image, padding_type, padsize);
 
         // convolution
         float[] result = new float[iw * ih];

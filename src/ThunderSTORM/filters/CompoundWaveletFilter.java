@@ -31,7 +31,7 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
     
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
-        FloatProcessor padded = Padding.addBorder(image, margin, Padding.PADDING_DUPLICATE);
+        FloatProcessor padded = Padding.addBorder(image, Padding.PADDING_DUPLICATE, margin);
         FloatProcessor V1 = w1.filterImage(padded);
         FloatProcessor V2 = w2.filterImage(V1);
         if (third_plane) {

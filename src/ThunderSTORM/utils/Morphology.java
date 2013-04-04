@@ -9,7 +9,7 @@ public class Morphology {
     public static FloatProcessor dilate(FloatProcessor image, FloatProcessor kernel) {
         float val;
         int xc = kernel.getWidth() / 2, yc = kernel.getHeight()/ 2;
-        FloatProcessor img = Padding.addBorder(image, max(xc, yc), Padding.PADDING_DUPLICATE);
+        FloatProcessor img = Padding.addBorder(image, Padding.PADDING_DUPLICATE, max(xc, yc));
         FloatProcessor out = (FloatProcessor) image.createProcessor(image.getWidth(), image.getHeight());
         for(int x = xc, xm = xc+image.getWidth(); x < xm; x++) {
             for(int y = yc, ym = yc+image.getHeight(); y < ym; y++) {
