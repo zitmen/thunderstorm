@@ -5,16 +5,16 @@ import java.util.Vector;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class WatershedDetectorTest {
+public class CentroidOfConnectedComponentsDetectorTest {
     
     /**
-     * Test of detectMoleculeCandidates method, of class WatershedDetector.
+     * Test of detectMoleculeCandidates method, of class CentroidOfConnectedComponentsDetector.
      */
     @Test
     public void testDetectMoleculeCandidates() {
         System.out.println("detectMoleculeCandidates");
         FloatProcessor image = null;
-        WatershedDetector instance = null;
+        CentroidOfConnectedComponentsDetector instance = null;
         Vector expResult = null;
         Vector result = instance.detectMoleculeCandidates(image);
         assertEquals(expResult, result);

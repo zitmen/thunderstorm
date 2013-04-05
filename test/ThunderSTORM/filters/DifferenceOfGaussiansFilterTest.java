@@ -14,7 +14,8 @@ public class DifferenceOfGaussiansFilterTest {
      */
     @Test
     public void testFilterImage() {
-        System.out.println("filterImage");
+        System.out.println("DifferenceOfGaussiansFilter::filterImage");
+        // TODO: test g1>g2, g2<g1, and g1==g2
         FloatProcessor image = null;
         DifferenceOfGaussiansFilter instance = null;
         FloatProcessor expResult = null;

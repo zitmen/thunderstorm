@@ -1,7 +1,6 @@
 package Watershed;
 
 import ij.process.ByteProcessor;
-import ij.process.ImageProcessor;
 import java.util.Vector;
 
 /*

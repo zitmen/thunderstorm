@@ -3,7 +3,7 @@ package ThunderSTORM;
 import ThunderSTORM.UI.AnalysisOptionsDialog;
 import ThunderSTORM.detectors.LocalMaximaDetector;
 import ThunderSTORM.detectors.NonMaxSuppressionDetector;
-import ThunderSTORM.detectors.WatershedDetector;
+import ThunderSTORM.detectors.CentroidOfConnectedComponentsDetector;
 import ThunderSTORM.estimators.LeastSquaresEstimator;
 import ThunderSTORM.filters.BoxFilter;
 import ThunderSTORM.filters.CompoundWaveletFilter;
@@ -65,7 +65,7 @@ public final class Thunder_STORM implements PlugInFilter {
             @Override
             public void run() {
                 // Create and set up the window.
-                JFrame frame = new JFrame("CardLayoutDemo");
+                JFrame frame = new JFrame("ThunderSTORM analysis");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
                 // Create and set up the content pane.
@@ -81,7 +81,7 @@ public final class Thunder_STORM implements PlugInFilter {
                 Vector<IModule> detectors = new Vector<IModule>();
                 detectors.add(new LocalMaximaDetector(Graph.CONNECTIVITY_8, 10.0));
                 detectors.add(new NonMaxSuppressionDetector(3, 6.0));
-                detectors.add(new WatershedDetector(false, 1.0));
+                detectors.add(new CentroidOfConnectedComponentsDetector(false, 1.0));
                 
                 Vector<IModule> estimators = new Vector<IModule>();
                 estimators.add(new LeastSquaresEstimator(11));
@@ -98,8 +98,9 @@ public final class Thunder_STORM implements PlugInFilter {
     
     public static void main(String[] args) {
         Thunder_STORM thunder = new Thunder_STORM();
-        ImagePlus image = IJ.openImage("../eye_00010.tif");
+        //ImagePlus image = IJ.openImage("../eye_00010.tif");
         //ImagePlus image = IJ.openImage("../tubulins1_00020.tif");
+        ImagePlus image = IJ.openImage("../tubulins1_01400.tif");
         ImageWindow wnd = new ImageWindow(image);
         wnd.setVisible(true);
         thunder.setup(null, image);

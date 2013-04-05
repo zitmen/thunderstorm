@@ -34,6 +34,9 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
         FloatProcessor padded = Padding.addBorder(image, Padding.PADDING_DUPLICATE, margin);
         FloatProcessor V1 = w1.filterImage(padded);
         FloatProcessor V2 = w2.filterImage(V1);
+        
+        //double stddev = cropImage(subtractImage(image, V1), margin, margin, image.getWidth(), image.getHeight()).getStatistics().stdDev;
+        
         if (third_plane) {
             FloatProcessor V3 = w3.filterImage(V2);
             return cropImage(subtractImage(V2, V3), margin, margin, image.getWidth(), image.getHeight());

@@ -8,7 +8,6 @@ import static ThunderSTORM.utils.ImageProcessor.threshold;
 import ThunderSTORM.utils.Point;
 import Watershed.WatershedAlgorithm;
 import ij.IJ;
-import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -19,7 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public final class WatershedDetector implements IDetector, IModule {
+public final class CentroidOfConnectedComponentsDetector implements IDetector, IModule {
 
     private boolean upsample;
     private double threshold;
@@ -27,22 +26,16 @@ public final class WatershedDetector implements IDetector, IModule {
     private JTextField thrTextField;
     private JCheckBox upCheckBox;
     
-    public WatershedDetector(boolean upsample, double threshold) {
+    public CentroidOfConnectedComponentsDetector(boolean upsample, double threshold) {
         this.upsample = upsample;
         this.threshold = threshold;
     }
 
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
-        ImagePlus imp = new ImagePlus();
-        imp.setProcessor(image.convertToShort(false)); IJ.save(imp, "../output_wavelets.tif");
-        
         // thresholding first to make the image binary
-        threshold(image, (float) threshold*11.627f, 1.0f, 0.0f); // these are in reverse (1=low,0=high) on purpose!
-                                                         //the result is negated image, which is exactly what i need
-        
-        imp.setProcessor(image.convertToShort(false)); IJ.save(imp, "../output_threshold.tiff");
-        
+        threshold(image, (float) threshold*37.90533335114699f, 1.0f, 0.0f); // these are in reverse (1=low,0=high) on purpose!
+                                                                            //the result is negated image, which is exactly what i need
         // watershed transform with[out] upscaling
         if (upsample) {
             image.setInterpolationMethod(FloatProcessor.NEAREST_NEIGHBOR);
@@ -54,20 +47,18 @@ public final class WatershedDetector implements IDetector, IModule {
         if (upsample) {
             image = (FloatProcessor) image.resize(image.getWidth() / 2);
         }
-
         // finding a center of gravity (with subpixel precision)
         Vector<Point> detections = new Vector<Point>();
         for (Graph.ConnectedComponent c : Graph.getConnectedComponents((ImageProcessor) image, Graph.CONNECTIVITY_8)) {
             detections.add(c.centroid());
             detections.lastElement().val = null;
         }
-
         return detections;
     }
 
     @Override
     public String getName() {
-        return "Watershed transform";
+        return "Centroid of connected components";
     }
 
     @Override
