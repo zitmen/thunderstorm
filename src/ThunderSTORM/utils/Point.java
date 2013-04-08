@@ -1,6 +1,7 @@
 package ThunderSTORM.utils;
 
 import static java.lang.Math.round;
+import java.util.Comparator;
 
 public class Point<T extends Number> {
 
@@ -147,6 +148,34 @@ public class Point<T extends Number> {
             return "[" + x.toString() + "," + y.toString() + "]";
         } else {
             return "[" + x.toString() + "," + y.toString() + "]=" + val.toString();
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Point) {
+            Point pt = (Point)o;
+            return (x.equals(pt.x) && y.equals(pt.y) && val.equals(pt.val));
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + (this.x != null ? this.x.hashCode() : 0);
+        hash = 79 * hash + (this.y != null ? this.y.hashCode() : 0);
+        hash = 79 * hash + (this.val != null ? this.val.hashCode() : 0);
+        return hash;
+    }
+    
+    public static class XYComparator implements Comparator<Point> {
+        @Override
+        public int compare(Point p1, Point p2) {
+            double px1 = p1.x.doubleValue(), px2 = p2.x.doubleValue();
+            double py1 = p1.y.doubleValue(), py2 = p2.y.doubleValue();
+            if(px1 == px2) return (int) java.lang.Math.ceil(py1 - py2);
+            return (int) java.lang.Math.ceil(px1 - px2);
         }
     }
 }
