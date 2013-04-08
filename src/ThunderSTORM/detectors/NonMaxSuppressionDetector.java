@@ -30,16 +30,14 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
         Vector<Point> detections = new Vector<Point>();
         
         FloatProcessor mx = Morphology.dilateBox(image, radius);
-        double thr = image.getStatistics().mean + image.getStatistics().stdDev * threshold;
         
         float imval, mxval;
-        for(int i = 0, im = image.getWidth(); i > im; i++) {
-            for(int j = 0, jm = image.getHeight(); j > jm; j++) {
-                imval = image.getPixelValue(i, j);
-                mxval = mx.getPixelValue(i, j);
-                if((mxval == imval) && (imval > thr)){
-                    detections.add(new Point(i, j));
-                }
+        for(int x = radius/2, xm = image.getWidth()-radius/2; x < xm; x++) {
+            for(int y = radius/2, ym = image.getHeight()-radius/2; y < ym; y++) {
+                imval = image.getf(x, y);
+                mxval = mx.getf(x, y);
+                if((mxval == imval) && (imval >= threshold))
+                    detections.add(new Point(x, y, imval));
             }
         }
         

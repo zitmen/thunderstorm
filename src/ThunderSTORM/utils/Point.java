@@ -155,7 +155,33 @@ public class Point<T extends Number> {
     public boolean equals(Object o) {
         if(o instanceof Point) {
             Point pt = (Point)o;
-            return (x.equals(pt.x) && y.equals(pt.y) && val.equals(pt.val));
+            boolean bx = false, by = false, bval = false;
+            //
+            // x
+            if((x != null) && (pt.x != null)) {
+                if(x.equals(pt.x)) bx = true;
+            } else if((x == null) && (pt.x == null)) {
+                bx = true;
+            }
+            if(bx == false) return false;
+            //
+            // y
+            if((y != null) && (pt.y != null)) {
+                if(y.equals(pt.y)) by = true;
+            } else if((y == null) && (pt.y == null)) {
+                by = true;
+            }
+            if(by == false) return false;
+            //
+            // val
+            if((val != null) && (pt.val != null)) {
+                if(val.equals(pt.val)) bval = true;
+            } else if((val == null) && (pt.val == null)) {
+                bval = true;
+            }
+            if(bval == false) return false;
+            //
+            return true;
         }
         return false;
     }

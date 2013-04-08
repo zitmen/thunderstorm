@@ -20,10 +20,8 @@ public class NonMaxSuppressionDetectorTest {
     public void testDetectMoleculeCandidates() {
         System.out.println("NonMaxSuppressionDetector::detectMoleculeCandidates");
         
-        // TODO: NONMAXSUPPRESSION!!!
-        /*
         Vector<Point> result, expResult;
-        LocalMaximaDetector instance;
+        NonMaxSuppressionDetector instance;
         FloatProcessor image = new FloatProcessor(new float [][] {  // transposed
             { 9f, 9f, 7f, 7f, 6f },
             { 4f, 6f, 7f, 5f, 6f },
@@ -31,17 +29,12 @@ public class NonMaxSuppressionDetectorTest {
             { 2f, 3f, 4f, 3f, 2f },
             { 2f, 3f, 3f, 3f, 2f }
         });
-        instance = new LocalMaximaDetector(Graph.CONNECTIVITY_4, 5f);
+        instance = new NonMaxSuppressionDetector(3, 3.0);
         expResult = new Vector<Point>();
-        expResult.add(new Point(0,0,9f));
-        expResult.add(new Point(0,1,9f));
-        expResult.add(new Point(0,3,7f));
-        expResult.add(new Point(1,2,7f));
-        expResult.add(new Point(1,4,6f));
+        expResult.add(new Point(3,2,4f));
         result = instance.detectMoleculeCandidates(image);
         Collections.sort(result, new Point.XYComparator());
-        assertEquals("Searching for a maximum in 4-neighborhood failed!", expResult, result);
-        */
+        assertEquals(expResult, result);
     }
 
 }

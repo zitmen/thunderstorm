@@ -8,6 +8,8 @@ import static ThunderSTORM.utils.ImageProcessor.threshold;
 import ThunderSTORM.utils.Point;
 import Watershed.WatershedAlgorithm;
 import ij.IJ;
+import ij.ImagePlus;
+import ij.plugin.filter.EDM;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -34,16 +36,32 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
         // thresholding first to make the image binary
-        threshold(image, (float) threshold*37.90533335114699f, 1.0f, 0.0f); // these are in reverse (1=low,0=high) on purpose!
-                                                                            //the result is negated image, which is exactly what i need
+        //threshold(image, (float) threshold, 0.0f, 255.0f); // these are in reverse (1=low,0=high) on purpose!
+                                                           //the result is negated image, which is exactly what i need
         // watershed transform with[out] upscaling
         if (upsample) {
             image.setInterpolationMethod(FloatProcessor.NEAREST_NEIGHBOR);
             image = (FloatProcessor) image.resize(image.getWidth() * 2);
         }
         // run the watershed algorithm - it works only with ByteProcessor! that's all I need though
-        FloatProcessor w = (FloatProcessor) WatershedAlgorithm.run((ByteProcessor) image.convertToByte(false)).convertToFloat();
-        image = applyMask(w, image);
+        //FloatProcessor w = (FloatProcessor) WatershedAlgorithm.run((ByteProcessor) image.convertToByte(false)).convertToFloat();
+        //ByteProcessor w = (ByteProcessor) image.convertToByte(false);
+        FloatProcessor w = (FloatProcessor) image.duplicate();
+        ////EDM edm = new EDM();
+        ImagePlus imp = new ImagePlus(null, w);
+        w.setThreshold(threshold, threshold, ImageProcessor.NO_LUT_UPDATE);
+        //edm.setup("watershed", imp);
+        //edm.run(w);
+        //edm.setup("final", imp);
+        //edm.toEDM(w);
+        ////edm.toWatershed(w);
+        IJ.run(imp, "Convert to Mask", "");
+        IJ.run(imp, "Watershed", "");
+        //EDM().toWatershed(w);
+        imp.show();
+        IJ.save(imp, "../watershed.png");
+        
+        image = applyMask((FloatProcessor)w.convertToFloat(), image);
         if (upsample) {
             image = (FloatProcessor) image.resize(image.getWidth() / 2);
         }

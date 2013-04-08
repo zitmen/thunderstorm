@@ -15,10 +15,9 @@ public class Morphology {
             for(int y = yc, ym = yc+image.getHeight(); y < ym; y++) {
                 for(int i = 0, im = kernel.getWidth(); i < im; i++) {
                     for(int j = 0, jm = kernel.getHeight(); j < jm; j++) {
-                        val = kernel.getPixelValue(i, j) * img.getPixelValue(x+(i-xc), y+(j-yc));
-                        if(val > out.getPixelValue(i, j)) {
+                        val = kernel.getf(i, j) * img.getf(x+(i-xc), y+(j-yc));
+                        if(val > out.getf(x-xc,y-yc))
                             out.setf(x-xc, y-yc, val);
-                        }
                     }
                 }
             }
