@@ -5,6 +5,9 @@ import java.util.Vector;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+/**
+ * @author Martin Ovesny <martin.ovesny[at]lf1.cuni.cz>
+ */
 public class LocalMaximaDetectorTest {
     
     /**
@@ -12,7 +15,8 @@ public class LocalMaximaDetectorTest {
      */
     @Test
     public void testDetectMoleculeCandidates() {
-        System.out.println("detectMoleculeCandidates");
+        System.out.println("LocalMaximadetector::detectMoleculeCandidates");
+        
         FloatProcessor image = null;
         LocalMaximaDetector instance = null;
         Vector expResult = null;

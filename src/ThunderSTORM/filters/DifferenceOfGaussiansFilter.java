@@ -3,6 +3,7 @@ package ThunderSTORM.filters;
 import ThunderSTORM.IModule;
 import ThunderSTORM.utils.GridBagHelper;
 import ThunderSTORM.utils.ImageProcessor;
+import ThunderSTORM.utils.Padding;
 import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
@@ -16,7 +17,7 @@ import javax.swing.JTextField;
 // However there is a question of how much is the performance degraded due to the memory allocation of 2 images instead of 1.
 public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
 
-    private int size;
+    private int size, padding;
     private double sigma_g1, sigma_g2;
     
     private JTextField sigma1TextField, sigma2TextField, sizeTextField;
@@ -24,14 +25,23 @@ public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
     private GaussianFilter g1, g2;
     
     private void updateKernels() {
-        g1 = new GaussianFilter(size, sigma_g1);
-        g2 = new GaussianFilter(size, sigma_g2);
+        g1 = new GaussianFilter(size, sigma_g1, padding);
+        g2 = new GaussianFilter(size, sigma_g2, padding);
     }
     
     public DifferenceOfGaussiansFilter(int size, double sigma_g1, double sigma_g2) {
         this.size = size;
         this.sigma_g1 = sigma_g1;
         this.sigma_g2 = sigma_g2;
+        this.padding = Padding.PADDING_DUPLICATE;
+        updateKernels();
+    }
+    
+    public DifferenceOfGaussiansFilter(int size, double sigma_g1, double sigma_g2, int padding_method) {
+        this.size = size;
+        this.sigma_g1 = sigma_g1;
+        this.sigma_g2 = sigma_g2;
+        this.padding = padding_method;
         updateKernels();
     }
 

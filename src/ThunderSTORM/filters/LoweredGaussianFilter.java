@@ -4,9 +4,9 @@ import ThunderSTORM.IModule;
 import ThunderSTORM.utils.GridBagHelper;
 import static ThunderSTORM.utils.Math.mean;
 import ThunderSTORM.utils.ImageProcessor;
+import ThunderSTORM.utils.Padding;
 import ij.IJ;
 import ij.process.FloatProcessor;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,19 +18,27 @@ public final class LoweredGaussianFilter implements IFilter, IModule {
     private GaussianFilter g;
     private UniformFilter u;
     
-    private int size;
+    private int size, padding;
     private double sigma;
     
     private JTextField sizeTextField, sigmaTextField;
     
     private void updateKernel() {
-        g = new GaussianFilter(size, sigma);
-        u = new UniformFilter(size, mean((float []) g.getKernelX().getPixels()));
+        g = new GaussianFilter(size, sigma, padding);
+        u = new UniformFilter(size, mean((float []) g.getKernelX().getPixels()), padding);
     }
     
     public LoweredGaussianFilter(int size, double sigma) {
         this.size = size;
         this.sigma = sigma;
+        this.padding = Padding.PADDING_DUPLICATE;
+        updateKernel();
+    }
+    
+    public LoweredGaussianFilter(int size, double sigma, int padding_method) {
+        this.size = size;
+        this.sigma = sigma;
+        this.padding = padding_method;
         updateKernel();
     }
 

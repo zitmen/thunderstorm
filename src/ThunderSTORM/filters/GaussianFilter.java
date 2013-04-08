@@ -28,11 +28,17 @@ public final class GaussianFilter extends ConvolutionFilter implements IModule {
     }
     
     private void updateKernel() {
-        super.updateKernel(new FloatProcessor(1, size, getKernel(size, sigma)), true, Padding.PADDING_DUPLICATE);
+        super.updateKernel(new FloatProcessor(1, size, getKernel(size, sigma)), true);
     }
 
     public GaussianFilter(int size, double sigma) {
         super(new FloatProcessor(1, size, getKernel(size, sigma)), true, Padding.PADDING_DUPLICATE);
+        this.size = size;
+        this.sigma = sigma;
+    }
+    
+    public GaussianFilter(int size, double sigma, int padding_method) {
+        super(new FloatProcessor(1, size, getKernel(size, sigma)), true, padding_method);
         this.size = size;
         this.sigma = sigma;
     }

@@ -5,6 +5,9 @@ import java.util.Vector;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+/**
+ * @author Martin Ovesny <martin.ovesny[at]lf1.cuni.cz>
+ */
 public class CentroidOfConnectedComponentsDetectorTest {
     
     /**
@@ -12,7 +15,8 @@ public class CentroidOfConnectedComponentsDetectorTest {
      */
     @Test
     public void testDetectMoleculeCandidates() {
-        System.out.println("detectMoleculeCandidates");
+        System.out.println("CentroidOfConnectedComponentsDetector::detectMoleculeCandidates");
+        
         FloatProcessor image = null;
         CentroidOfConnectedComponentsDetector instance = null;
         Vector expResult = null;

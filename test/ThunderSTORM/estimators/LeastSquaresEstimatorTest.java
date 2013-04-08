@@ -6,6 +6,9 @@ import java.util.Vector;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+/**
+ * @author Martin Ovesny <martin.ovesny[at]lf1.cuni.cz>
+ */
 public class LeastSquaresEstimatorTest {
     
     /**
@@ -13,7 +16,8 @@ public class LeastSquaresEstimatorTest {
      */
     @Test
     public void testEstimateParameters() {
-        System.out.println("estimateParameters");
+        System.out.println("LeastSquaresEstimator::estimateParameters");
+        
         FloatProcessor image = null;
         Vector<Point> detections = null;
         LeastSquaresEstimator instance = null;
