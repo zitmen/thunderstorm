@@ -7,6 +7,7 @@ import static ThunderSTORM.utils.ImageProcessor.applyMask;
 import static ThunderSTORM.utils.ImageProcessor.threshold;
 import ThunderSTORM.utils.Point;
 import ij.IJ;
+import ij.ImagePlus;
 import ij.plugin.filter.EDM;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
@@ -30,6 +31,14 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
         this.upsample = upsample;
         this.threshold = threshold;
     }
+    
+    public void updateThreshol(double threshold) {
+        this.threshold = threshold;
+    }
+    
+    public void updateUpsample(boolean upsample) {
+        this.upsample = upsample;
+    }
 
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
@@ -45,16 +54,12 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
         EDM edm = new EDM();
         edm.setup("watershed", null);
         edm.run(w);
-        //
         image = applyMask((FloatProcessor)w.convertToFloat(), image);
-        //
-        if (upsample) {
-            image = (FloatProcessor) image.resize(image.getWidth() / 2);
-        }
         // finding a center of gravity (with subpixel precision)
         Vector<Point> detections = new Vector<Point>();
         for (Graph.ConnectedComponent c : Graph.getConnectedComponents((ImageProcessor) image, Graph.CONNECTIVITY_8)) {
             detections.add(c.centroid());
+            if(upsample) detections.lastElement().scaleXY(0.5);
             detections.lastElement().val = null;
         }
         return detections;

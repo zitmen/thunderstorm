@@ -8,6 +8,10 @@ public class SymmetricGaussianPSF extends GaussianPSF {
         super(x, y);
     }
     
+    public SymmetricGaussianPSF(double x, double y, double I, double s, double b) {
+        super(x, y, I, s, b);
+    }
+    
     @Override
     public double getValueAt(PSF where) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
