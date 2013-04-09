@@ -36,23 +36,19 @@ public class CentroidOfConnectedComponentsDetectorTest {
         Collections.sort(result, new Point.XYComparator());
         assertEquals(expResult, result);
         
-        /*
-        // why the hell the stupid watershed does not work??!! not even with upsampling!
+        
         image = new FloatProcessor(new float [][] {  // transposed
-            { 1f, 1f, 3f, 1f, 1f, 1f, 3f, 1f, 1f },
-            { 1f, 3f, 5f, 3f, 1f, 3f, 5f, 3f, 1f },
-            { 3f, 5f, 8f, 5f, 3f, 5f, 8f, 5f, 3f },
-            { 1f, 3f, 5f, 3f, 1f, 3f, 5f, 3f, 1f },
-            { 1f, 1f, 3f, 1f, 1f, 1f, 3f, 1f, 1f }
+            { 3f, 5f, 3f, 1f, 3f, 5f, 3f },
+            { 5f, 8f, 5f, 3f, 5f, 8f, 5f },
+            { 3f, 5f, 3f, 1f, 3f, 5f, 3f }
         });
         instance = new CentroidOfConnectedComponentsDetector(false, 3.0);
         expResult = new Vector<Point>();
-        expResult.add(new Point(2.0,2.0));
-        expResult.add(new Point(2.0,6.0));
+        expResult.add(new Point(1.0,1.0));
+        expResult.add(new Point(1.0,5.0));
         result = instance.detectMoleculeCandidates(image);
         Collections.sort(result, new Point.XYComparator());
         assertEquals(expResult, result);
-        */
     }
 
 }

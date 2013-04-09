@@ -106,7 +106,7 @@ public class ImageProcessor {
         FloatProcessor result = new FloatProcessor(image.getWidth(), image.getHeight(), (float[]) image.getPixelsCopy());
         for (int x = 0, xm = image.getWidth(); x < xm; x++) {
             for (int y = 0, ym = image.getHeight(); y < ym; y++) {
-                if (mask.getPixelValue(x, y) != 0.0f) {
+                if (mask.getf(x, y) == 0.0f) {
                     result.setf(x, y, 0.0f);
                 }
             }
