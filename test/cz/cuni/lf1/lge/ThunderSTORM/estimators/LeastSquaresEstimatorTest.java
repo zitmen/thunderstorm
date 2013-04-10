@@ -51,6 +51,8 @@ public class LeastSquaresEstimatorTest {
             // 5. for all fits get dist2(fits)
             // 6. for all: if dist2(fits) > dist2(detections) then FAIL!
             //
+            // Bonus: try the C++ implementation - compare the speed and precision. Try it also in a Linux distro in VirtualBox.
+            //
             assertEquals(expResult, result);
         } catch(IOException ex) {
             fail("Error in LSE test (this test also involves CompoundWaveletFilter and CentroidOfConnectedComponentsDetector): " + ex.getMessage());

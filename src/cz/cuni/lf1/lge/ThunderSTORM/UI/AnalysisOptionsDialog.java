@@ -87,15 +87,12 @@ public class AnalysisOptionsDialog implements ActionListener {
             ((IModule)estimator).readParameters();
             //
             Vector<PSF> results = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
-            //Vector<Point> results = detector.detectMoleculeCandidates(filter.filterImage(fp));
             //
             double [] xCoord = new double[results.size()];
             double [] yCoord = new double[results.size()];
             for(int i = 0; i < results.size(); i++) {
                 xCoord[i] = results.elementAt(i).xpos;
                 yCoord[i] = results.elementAt(i).ypos;
-                //xCoord[i] = results.elementAt(i).x.doubleValue() + 0.5;
-                //yCoord[i] = results.elementAt(i).y.doubleValue() + 0.5;
             }    
             RenderingOverlay.showPointsInImage(imp, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
         } else {

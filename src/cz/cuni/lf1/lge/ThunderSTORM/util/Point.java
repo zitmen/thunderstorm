@@ -50,9 +50,10 @@ public class Point<T extends Number> {
         this.val = val;
     }
 
-    public void setLocation(T x, T y) {
+    public Point setLocation(T x, T y) {
         this.x = x;
         this.y = y;
+        return this;
     }
 
     public void set(T x, T y, T val) {

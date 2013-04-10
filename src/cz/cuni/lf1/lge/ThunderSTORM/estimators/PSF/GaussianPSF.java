@@ -4,6 +4,15 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 
 // Note: this is now a rotationaly symmetric 2D Gaussian function
 public class GaussianPSF extends PSF {
+
+    public static boolean checkRange(double[] parameters) {
+        // check for negative values
+        for(int i = 0; i < parameters.length; i++)
+            if(parameters[i] < 0)
+                return false;
+        
+        return true;
+    }
     
     public double sigma;
     //public double sigma_x;

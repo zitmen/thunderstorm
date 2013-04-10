@@ -40,6 +40,7 @@ public class LMA {
      * Set true to print details while fitting.
      */
     public boolean verbose = false;
+    public boolean log_errors = false;
     /**
      * The model function to be fitted, y = y(x[], a[]), where
      * <code>x[]</code> the array of x-values and
@@ -501,12 +502,14 @@ public class LMA {
             double dy = yDataPoints[i] - function.getY(xDataPoints[i], a);
             // check if NaN occurred
             if (Double.isNaN(dy)) {
-                System.err.println(
-                        "Chi2 calculation produced a NaN value at point " + i + ":\n"
-                        + " x = " + Arrays.toString(xDataPoints[i]) + "\n"
-                        + " y = " + yDataPoints[i] + "\n"
-                        + " parameters: " + Arrays.toString(a) + "\n"
-                        + " iteration count = " + iterationCount);
+                if(log_errors) {
+                    System.err.println(
+                            "Chi2 calculation produced a NaN value at point " + i + ":\n"
+                            + " x = " + Arrays.toString(xDataPoints[i]) + "\n"
+                            + " y = " + yDataPoints[i] + "\n"
+                            + " parameters: " + Arrays.toString(a) + "\n"
+                            + " iteration count = " + iterationCount);
+                }
                 return Double.NaN;
             }
             result += weights[i] * dy * dy;

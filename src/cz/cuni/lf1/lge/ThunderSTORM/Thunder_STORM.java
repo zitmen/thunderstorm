@@ -13,7 +13,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.GaussianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.LoweredGaussianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
@@ -21,9 +20,7 @@ import ij.plugin.filter.PlugInFilter;
 import static ij.plugin.filter.PlugInFilter.DOES_16;
 import static ij.plugin.filter.PlugInFilter.DOES_32;
 import static ij.plugin.filter.PlugInFilter.DOES_8G;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import java.util.Collections;
 import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -100,20 +97,6 @@ public final class Thunder_STORM implements PlugInFilter {
     }
     
     public static void main(String[] args) {
-        Vector<Point> result, expResult;
-        CentroidOfConnectedComponentsDetector instance;
-        FloatProcessor image = new FloatProcessor(new float [][] {  // transposed
-            { 5f, 1f },
-            { 1f, 5f }
-        });
-        instance = new CentroidOfConnectedComponentsDetector(true, 3.0);
-        expResult = new Vector<Point>();
-        expResult.add(new Point(0.16,0.16));
-        expResult.add(new Point(1.25,1.25));
-        result = instance.detectMoleculeCandidates(image);
-        Collections.sort(result, new Point.XYComparator());
-        //
-        //
         Thunder_STORM thunder = new Thunder_STORM();
         //ImagePlus image = IJ.openImage("../eye_00010.tif");
         //ImagePlus image = IJ.openImage("../tubulins1_00020.tif");
