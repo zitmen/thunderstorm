@@ -514,6 +514,7 @@ public class LMA {
             }
             result += weights[i] * dy * dy;
         }
+        
         return result;
     }
 

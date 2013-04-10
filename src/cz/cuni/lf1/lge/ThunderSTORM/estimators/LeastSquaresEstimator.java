@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import ij.IJ;
+import java.util.Arrays;
 
 public class LeastSquaresEstimator implements IEstimator, IModule {
     
@@ -72,7 +73,7 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
             Point p = detections.elementAt(d);
             
             // [GaussianPSF] params = {x0,y0,Intensity,sigma,background}
-            double[] init_guess = new double[]{ p.getX().doubleValue(), p.getY().doubleValue(), image.getPixelValue(p.roundToInteger().getX().intValue(), p.roundToInteger().getY().intValue()), 1.6, 100.0 };
+            double[] init_guess = new double[]{ p.getX().doubleValue(), p.getY().doubleValue(), image.getf(p.roundToInteger().getX().intValue(), p.roundToInteger().getY().intValue()), 1.6, Double.MAX_VALUE };
             
             // extract the fitting area of a certain radius
             double[][] x = new double[fitrad2][2];
@@ -82,7 +83,8 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
                     int idx = r * fitrad + c;
                     x[idx][0] = (int) init_guess[0] + c - fitrad_2;  // x
                     x[idx][1] = (int) init_guess[1] + r - fitrad_2;  // y
-                    y[idx] = new Float(image.getPixelValue((int) x[idx][0], (int) x[idx][1])).doubleValue();    // G(x,y)
+                    y[idx] = new Float(image.getf((int)x[idx][0], (int)x[idx][1])).doubleValue();    // G(x,y)
+                    if(y[idx] < init_guess[4]) init_guess[4] = y[idx];  // background = minimal value in the fitting region
                 }
             }
             
