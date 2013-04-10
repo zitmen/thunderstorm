@@ -1,7 +1,7 @@
-package cz.cuni.lf1.lge.ThunderSTORM.utils;
+package cz.cuni.lf1.lge.ThunderSTORM.util;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.utils.Math.mean;
-import static cz.cuni.lf1.lge.ThunderSTORM.utils.Math.sum;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.mean;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sum;
 import java.util.LinkedList;
 import java.util.Vector;
 

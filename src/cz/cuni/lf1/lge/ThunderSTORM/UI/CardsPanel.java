@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
-import cz.cuni.lf1.lge.ThunderSTORM.utils.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import java.awt.CardLayout;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;

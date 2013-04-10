@@ -1,11 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.utils.ImageProcessor.applyMask;
-import static cz.cuni.lf1.lge.ThunderSTORM.utils.ImageProcessor.threshold;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.applyMask;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.threshold;
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
-import cz.cuni.lf1.lge.ThunderSTORM.utils.Graph;
-import cz.cuni.lf1.lge.ThunderSTORM.utils.GridBagHelper;
-import cz.cuni.lf1.lge.ThunderSTORM.utils.Point;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.plugin.filter.EDM;
 import ij.process.ByteProcessor;

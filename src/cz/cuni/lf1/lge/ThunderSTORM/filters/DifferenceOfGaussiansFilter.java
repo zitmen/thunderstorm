@@ -1,9 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
-import cz.cuni.lf1.lge.ThunderSTORM.utils.GridBagHelper;
-import cz.cuni.lf1.lge.ThunderSTORM.utils.ImageProcessor;
-import cz.cuni.lf1.lge.ThunderSTORM.utils.Padding;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;

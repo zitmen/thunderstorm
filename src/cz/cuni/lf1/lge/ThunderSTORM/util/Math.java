@@ -1,4 +1,4 @@
-package cz.cuni.lf1.lge.ThunderSTORM.utils;
+package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 public class Math {
     

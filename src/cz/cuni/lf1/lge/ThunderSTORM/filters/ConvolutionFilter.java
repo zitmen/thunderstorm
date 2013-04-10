@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
-import cz.cuni.lf1.lge.ThunderSTORM.utils.Convolution;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Convolution;
 import ij.process.FloatProcessor;
 
 public class ConvolutionFilter implements IFilter {

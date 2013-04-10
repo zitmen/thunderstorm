@@ -1,7 +1,7 @@
-package cz.cuni.lf1.lge.ThunderSTORM.utils;
+package cz.cuni.lf1.lge.ThunderSTORM.util;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.utils.Math.round;
-import static cz.cuni.lf1.lge.ThunderSTORM.utils.Math.ceil;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.round;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.ceil;
 import java.util.Comparator;
 
 public class Point<T extends Number> {

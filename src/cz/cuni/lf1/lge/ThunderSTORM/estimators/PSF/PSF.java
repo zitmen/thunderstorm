@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.utils.Math.ceil;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.ceil;
 import java.util.Comparator;
 
 public abstract class PSF {

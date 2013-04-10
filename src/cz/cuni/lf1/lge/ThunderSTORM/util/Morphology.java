@@ -1,6 +1,6 @@
-package cz.cuni.lf1.lge.ThunderSTORM.utils;
+package cz.cuni.lf1.lge.ThunderSTORM.util;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.utils.Math.max;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 import ij.process.FloatProcessor;
 import java.util.Arrays;
 

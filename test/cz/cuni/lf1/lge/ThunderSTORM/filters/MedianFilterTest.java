@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
-import cz.cuni.lf1.lge.ThunderSTORM.utils.CSV;
+import cz.cuni.lf1.lge.ThunderSTORM.util.CSV;
 import ij.IJ;
 import ij.process.FloatProcessor;
 import java.io.IOException;

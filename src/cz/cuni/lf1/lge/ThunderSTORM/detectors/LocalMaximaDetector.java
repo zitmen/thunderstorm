@@ -1,9 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
-import cz.cuni.lf1.lge.ThunderSTORM.utils.Graph;
-import cz.cuni.lf1.lge.ThunderSTORM.utils.GridBagHelper;
-import cz.cuni.lf1.lge.ThunderSTORM.utils.Point;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;

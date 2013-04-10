@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.utils;
 
+import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
 import org.junit.Test;
 import static org.junit.Assert.*;

@@ -1,9 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.utils.ImageProcessor.subtractImage;
-import static cz.cuni.lf1.lge.ThunderSTORM.utils.ImageProcessor.cropImage;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtractImage;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.cropImage;
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
-import cz.cuni.lf1.lge.ThunderSTORM.utils.Padding;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.IJ;
 import ij.process.FloatProcessor;
 import javax.swing.JCheckBox;

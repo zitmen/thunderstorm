@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.utils.Math.sqr;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 
 // Note: this is now a rotationaly symmetric 2D Gaussian function
 public class GaussianPSF extends PSF {
