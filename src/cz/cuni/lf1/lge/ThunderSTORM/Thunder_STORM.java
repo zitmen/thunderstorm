@@ -5,7 +5,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.CentroidOfConnectedComponentsDetec
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.LocalMaximaDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.NonMaxSuppressionDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.LeastSquaresEstimator;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.CompoundWaveletFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.DifferenceOfGaussiansFilter;
@@ -14,39 +13,45 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.GaussianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.LoweredGaussianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.GenericDialog;
 import ij.gui.ImageWindow;
-import ij.plugin.filter.PlugInFilter;
+import ij.plugin.filter.ExtendedPlugInFilter;
 import static ij.plugin.filter.PlugInFilter.DOES_16;
 import static ij.plugin.filter.PlugInFilter.DOES_32;
 import static ij.plugin.filter.PlugInFilter.DOES_8G;
-import ij.process.FloatProcessor;
+import static ij.plugin.filter.PlugInFilter.NO_CHANGES;
+import static ij.plugin.filter.PlugInFilter.NO_UNDO;
+import ij.plugin.filter.PlugInFilterRunner;
 import ij.process.ImageProcessor;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-public final class Thunder_STORM implements PlugInFilter {
+public final class Thunder_STORM implements ExtendedPlugInFilter {
 
     private ImagePlus imp;
+    private PlugInFilterRunner pfr;
+    
+    private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO ;
     
     @Override
     public int setup(String string, ImagePlus imp) {
         this.imp = imp;
         // Grayscale only, no changes to the image and therefore no undo
-        return DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO ;
+        return pluginFlags;
     }
-
+    
     @Override
-    public void run(final ImageProcessor ip) {
-        /**
-         * Create the GUI and show it.  For thread safety,
-         * this method should be invoked from the
-         * event dispatch thread.
-         */
+    public synchronized int showDialog(final ImagePlus imp, final String command, final PlugInFilterRunner pfr) {
+        this.pfr = pfr;
+        this.imp = imp; // should be the same as in the setup, but whatever.. :)
+        
         /* Use an appropriate Look and Feel */
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -61,42 +66,52 @@ public final class Thunder_STORM implements PlugInFilter {
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         }
-         
-        // Schedule a job for the event dispatch thread:
-        // creating and showing this application's GUI.
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                // Create and set up the window.
-                JFrame frame = new JFrame("ThunderSTORM analysis");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-                // Create and set up the content pane.
-                Vector<IModule> filters = new Vector<IModule>();
-                filters.add(new EmptyFilter());
-                filters.add(new BoxFilter(3));
-                filters.add(new MedianFilter(MedianFilter.BOX, 3));
-                filters.add(new GaussianFilter(11, 1.6));
-                filters.add(new DifferenceOfGaussiansFilter(11, 1.6, 1.0));
-                filters.add(new LoweredGaussianFilter(11, 1.6));
-                filters.add(new CompoundWaveletFilter(false));
-                
-                Vector<IModule> detectors = new Vector<IModule>();
-                detectors.add(new LocalMaximaDetector(Graph.CONNECTIVITY_8, 10.0));
-                detectors.add(new NonMaxSuppressionDetector(3, 6.0));
-                detectors.add(new CentroidOfConnectedComponentsDetector(false, 1.0));
-                
-                Vector<IModule> estimators = new Vector<IModule>();
-                estimators.add(new LeastSquaresEstimator(11));
-                
-                AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, ip, frame, filters, 6, detectors, 2, estimators, 0);
-                dialog.addComponentsToPane();
+        // Create and set up the content pane.
+        Vector<IModule> filters = new Vector<IModule>();
+        filters.add(new EmptyFilter());
+        filters.add(new BoxFilter(3));
+        filters.add(new MedianFilter(MedianFilter.BOX, 3));
+        filters.add(new GaussianFilter(11, 1.6));
+        filters.add(new DifferenceOfGaussiansFilter(11, 1.6, 1.0));
+        filters.add(new LoweredGaussianFilter(11, 1.6));
+        filters.add(new CompoundWaveletFilter(false));
 
-                // Display the window.
-                frame.pack();
-                frame.setVisible(true);
-            }
-        });
+        Vector<IModule> detectors = new Vector<IModule>();
+        detectors.add(new LocalMaximaDetector(Graph.CONNECTIVITY_8, 10.0));
+        detectors.add(new NonMaxSuppressionDetector(3, 6.0));
+        detectors.add(new CentroidOfConnectedComponentsDetector(false, 1.0));
+
+        Vector<IModule> estimators = new Vector<IModule>();
+        estimators.add(new LeastSquaresEstimator(11));
+
+        // Create and show the dialog
+        AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, pfr, command, filters, 6, detectors, 2, estimators, 0);
+        dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        dialog.addComponentsToPane();
+        dialog.pack();
+        dialog.setVisible(true);
+        
+        try {
+            wait(); // TODO: nefunguje...furt ceka
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        
+        if(dialog.wasCanceled())
+            return DONE;
+        else
+            return pluginFlags; // ok
+    }
+
+    @Override
+    public void setNPasses(int nPasses) {
+        //
+    }
+
+    @Override
+    public void run(final ImageProcessor ip) {
+        JOptionPane.showMessageDialog(null,"ALERT MESSAGE","TITLE",JOptionPane.WARNING_MESSAGE);
     }
     
     public static void main(String[] args) {

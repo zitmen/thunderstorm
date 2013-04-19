@@ -6,8 +6,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import ij.ImagePlus;
+import ij.plugin.filter.PlugInFilterRunner;
 import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
@@ -16,24 +16,26 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
  
-public class AnalysisOptionsDialog implements ActionListener {
+public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 
     private CardsPanel filters, detectors, estimators;
     private JButton preview, ok, cancel;
-    private JFrame frame;
-    private FloatProcessor fp;
     private ImagePlus imp;
+    private PlugInFilterRunner pfr;
+    private boolean canceled;
     
-    // TODO: predavani IP je uplne dementni...tohle je tu jen pro jednoduchost, abych videl aspon nejakej vysledek!! REFACTOR!!
-    public AnalysisOptionsDialog(ImagePlus imp, ImageProcessor ip, JFrame frame, Vector<IModule> filters, int default_filter, Vector<IModule> detectors, int default_detector, Vector<IModule> estimators, int default_estimator) {
-        this.imp = imp;
-        this.fp = (FloatProcessor)ip.convertToFloat();
+    public AnalysisOptionsDialog(ImagePlus imp, PlugInFilterRunner pfr, String command, Vector<IModule> filters, int default_filter, Vector<IModule> detectors, int default_detector, Vector<IModule> estimators, int default_estimator) {
+        super((JFrame)null, command);
         //
-        this.frame = frame;
+        this.canceled = false;
+        //
+        this.imp = imp;
+        this.pfr = pfr;
         //
         this.filters = new CardsPanel(filters);
         this.detectors = new CardsPanel(detectors);
@@ -49,7 +51,7 @@ public class AnalysisOptionsDialog implements ActionListener {
     }
      
     public void addComponentsToPane() {
-        Container pane = frame.getContentPane();
+        Container pane = getContentPane();
         //
         pane.setLayout(new GridLayout(7,1));
         pane.add(filters.getPanel("Filters: "));
@@ -74,9 +76,9 @@ public class AnalysisOptionsDialog implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals("Cancel")) {
-            frame.dispose();
+            dispose();
         } else if(e.getActionCommand().equals("Ok")) {
-            throw new UnsupportedOperationException("Run the analysis!");
+            dispose(false);
         } else if(e.getActionCommand().equals("Preview")) {
             IFilter filter = (IFilter)filters.getActiveComboBoxItem();
             IDetector detector = (IDetector)detectors.getActiveComboBoxItem();
@@ -86,6 +88,7 @@ public class AnalysisOptionsDialog implements ActionListener {
             ((IModule)detector).readParameters();
             ((IModule)estimator).readParameters();
             //
+            FloatProcessor fp = (FloatProcessor)imp.getProcessor().convertToFloat();
             Vector<PSF> results = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
             //
             double [] xCoord = new double[results.size()];
@@ -93,11 +96,31 @@ public class AnalysisOptionsDialog implements ActionListener {
             for(int i = 0; i < results.size(); i++) {
                 xCoord[i] = results.elementAt(i).xpos;
                 yCoord[i] = results.elementAt(i).ypos;
-            }    
-            RenderingOverlay.showPointsInImage(imp, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
+            }
+            //
+            ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(pfr.getSliceNumber()), fp);
+            RenderingOverlay.showPointsInImage(impPreview, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
+            impPreview.show();
         } else {
             throw new UnsupportedOperationException("Command '" + e.getActionCommand() + "' is not supported!");
         }
     }
     
+    @Override
+    public synchronized void dispose() {
+        canceled = true;
+        super.dispose();
+        notifyAll();
+    }
+    
+    public synchronized void dispose(boolean cancel) {
+        canceled = cancel;
+        super.dispose();
+        notifyAll();
+    }
+
+    public boolean wasCanceled() {
+        return canceled;
+    }
+
 }
