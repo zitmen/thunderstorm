@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import java.awt.Color;
@@ -133,7 +134,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         try {
             semaphore.acquire();
         } catch (InterruptedException ex) {
-            ex.printStackTrace();
+            IJ.error(ex.getMessage());
         }
         return canceled;
     }

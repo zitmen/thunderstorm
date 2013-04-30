@@ -65,13 +65,13 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
             //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
             //UIManager.put("swing.boldMetal", Boolean.FALSE);
         } catch (UnsupportedLookAndFeelException ex) {
-            ex.printStackTrace();
+            IJ.error(ex.getMessage());
         } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
+            IJ.error(ex.getMessage());
         } catch (InstantiationException ex) {
-            ex.printStackTrace();
+            IJ.error(ex.getMessage());
         } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
+            IJ.error(ex.getMessage());
         }
         
         // Create and set up the content pane.
