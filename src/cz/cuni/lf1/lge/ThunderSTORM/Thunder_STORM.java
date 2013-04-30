@@ -2,21 +2,25 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.CentroidOfConnectedComponentsDetector;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.LocalMaximaDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.NonMaxSuppressionDetector;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.LeastSquaresEstimator;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.CompoundWaveletFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.DifferenceOfGaussiansFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.EmptyFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.GaussianFilter;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.LoweredGaussianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.GenericDialog;
-import ij.gui.ImageWindow;
+import ij.measure.ResultsTable;
+import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.ExtendedPlugInFilter;
 import static ij.plugin.filter.PlugInFilter.DOES_16;
 import static ij.plugin.filter.PlugInFilter.DOES_32;
@@ -24,35 +28,36 @@ import static ij.plugin.filter.PlugInFilter.DOES_8G;
 import static ij.plugin.filter.PlugInFilter.NO_CHANGES;
 import static ij.plugin.filter.PlugInFilter.NO_UNDO;
 import ij.plugin.filter.PlugInFilterRunner;
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 public final class Thunder_STORM implements ExtendedPlugInFilter {
 
-    private ImagePlus imp;
-    private PlugInFilterRunner pfr;
+    private IFilter filter;
+    private IDetector detector;
+    private IEstimator estimator;
     
-    private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO ;
+    private int stackSize;
+    private int nProcessed;
+    
+    private final ReentrantLock lock = new ReentrantLock();
+    
+    private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS ;
     
     @Override
     public int setup(String string, ImagePlus imp) {
-        this.imp = imp;
         // Grayscale only, no changes to the image and therefore no undo
         return pluginFlags;
     }
     
     @Override
-    public synchronized int showDialog(final ImagePlus imp, final String command, final PlugInFilterRunner pfr) {
-        this.pfr = pfr;
-        this.imp = imp; // should be the same as in the setup, but whatever.. :)
-        
-        /* Use an appropriate Look and Feel */
+    public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
+        // Use an appropriate Look and Feel
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
             //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
@@ -66,7 +71,7 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         }
-
+        
         // Create and set up the content pane.
         Vector<IModule> filters = new Vector<IModule>();
         filters.add(new EmptyFilter());
@@ -86,42 +91,69 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
         estimators.add(new LeastSquaresEstimator(11));
 
         // Create and show the dialog
-        AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, pfr, command, filters, 6, detectors, 2, estimators, 0);
+        AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, 6, detectors, 2, estimators, 0);
         dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         dialog.addComponentsToPane();
         dialog.pack();
         dialog.setVisible(true);
-        
-        try {
-            wait(); // TODO: nefunguje...furt ceka
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
+        if(dialog.wasCanceled())    // This is a blocking call!!
+        {
+            filter = null;
+            detector = null;
+            estimator = null;
+            return DONE;    // cancel
         }
-        
-        if(dialog.wasCanceled())
-            return DONE;
         else
+        {
+            filter = dialog.getFilter();
+            detector = dialog.getDetector();
+            estimator = dialog.getEstimator();
             return pluginFlags; // ok
+        }
     }
 
     @Override
     public void setNPasses(int nPasses) {
-        //
+        stackSize = nPasses;
+        nProcessed = 0;
     }
 
     @Override
-    public void run(final ImageProcessor ip) {
-        JOptionPane.showMessageDialog(null,"ALERT MESSAGE","TITLE",JOptionPane.WARNING_MESSAGE);
-    }
-    
-    public static void main(String[] args) {
-        Thunder_STORM thunder = new Thunder_STORM();
-        //ImagePlus image = IJ.openImage("../eye_00010.tif");
-        //ImagePlus image = IJ.openImage("../tubulins1_00020.tif");
-        ImagePlus img = IJ.openImage("../tubulins1_01400.tif");
-        ImageWindow wnd = new ImageWindow(img);
-        wnd.setVisible(true);
-        thunder.setup(null, img);
-        thunder.run(img.getProcessor());
+    public void run(ImageProcessor ip) {
+        assert(filter != null) : "Filter was not selected!";
+        assert(detector != null) : "Detector was not selected!";
+        assert(estimator != null) : "Estimator was not selected!";
+        //
+        FloatProcessor fp = (FloatProcessor)ip.convertToFloat();
+        Vector<PSF> results = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
+        //
+        lock.lock();
+        try {
+            ResultsTable rt = Analyzer.getResultsTable();
+            if (rt == null) {
+                rt = new ResultsTable();
+                Analyzer.setResultsTable(rt);
+            }
+            int frame = ip.getSliceNumber();
+            for(PSF psf : results) {
+                rt.incrementCounter();
+                rt.addValue("frame", frame);
+                rt.addValue("x [nm]", psf.xpos);
+                rt.addValue("y [nm]", psf.ypos);
+                rt.show("Results");
+            }
+            //
+            nProcessed += 1;
+            //
+            if(nProcessed == stackSize) {
+                IJ.showProgress(1.0);
+                IJ.showStatus("ThunderSTORM finished.");
+            } else {
+                IJ.showProgress((double)nProcessed / (double)stackSize);
+                IJ.showStatus("ThunderSTORM processing frame " + Integer.toString(nProcessed) + " of " + Integer.toString(stackSize) + "...");
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 }

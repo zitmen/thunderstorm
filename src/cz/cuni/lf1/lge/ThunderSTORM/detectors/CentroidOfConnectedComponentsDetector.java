@@ -7,7 +7,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
-import ij.plugin.filter.EDM;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -17,6 +16,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ImageJHelpers.EDM;    // use this version instead of built-in ImageJ version,
+                                                                    // because the build-in version uses showStatus ans showProgress
+                                                                    // methods and it disturbs my progress/status info
 
 public final class CentroidOfConnectedComponentsDetector implements IDetector, IModule {
 
