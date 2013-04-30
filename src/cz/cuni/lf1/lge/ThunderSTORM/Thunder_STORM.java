@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.LocalMaximaDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.NonMaxSuppressionDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.LeastSquaresEstimator;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.CompoundWaveletFilter;
@@ -48,6 +49,7 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
     private final ReentrantLock lock = new ReentrantLock();
     
     private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS ;
+    private Vector<PSF>[] results;
     
     @Override
     public int setup(String string, ImagePlus imp) {
@@ -116,6 +118,7 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
     public void setNPasses(int nPasses) {
         stackSize = nPasses;
         nProcessed = 0;
+        results = new Vector[stackSize+1];  // indexing from 1 for simplicity
     }
 
     @Override
@@ -125,35 +128,41 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
         assert(estimator != null) : "Estimator was not selected!";
         //
         FloatProcessor fp = (FloatProcessor)ip.convertToFloat();
-        Vector<PSF> results = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
+        Vector<PSF> fits = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
+        boolean lastFrame = false;
         //
         lock.lock();
         try {
+            results[ip.getSliceNumber()] = fits;
+            nProcessed += 1;
+            lastFrame = (nProcessed == stackSize);
+        } finally {
+            lock.unlock();
+        }
+        //
+        if(lastFrame) {
             ResultsTable rt = Analyzer.getResultsTable();
             if (rt == null) {
                 rt = new ResultsTable();
                 Analyzer.setResultsTable(rt);
             }
-            int frame = ip.getSliceNumber();
-            for(PSF psf : results) {
-                rt.incrementCounter();
-                rt.addValue("frame", frame);
-                rt.addValue("x [nm]", psf.xpos);
-                rt.addValue("y [nm]", psf.ypos);
-                rt.show("Results");
+            for(int frame = 1; frame <= stackSize; frame++) {
+                for(PSF psf : results[frame]) {
+                    rt.incrementCounter();
+                    rt.addValue("frame", frame);
+                    rt.addValue("x [px]", psf.xpos);
+                    rt.addValue("y [px]", psf.ypos);
+                    rt.addValue("\u03C3 [px]", ((GaussianPSF)psf).sigma);
+                    rt.addValue("Intensity", psf.intensity);
+                    rt.addValue("background", psf.background);
+                }
             }
-            //
-            nProcessed += 1;
-            //
-            if(nProcessed == stackSize) {
-                IJ.showProgress(1.0);
-                IJ.showStatus("ThunderSTORM finished.");
-            } else {
-                IJ.showProgress((double)nProcessed / (double)stackSize);
-                IJ.showStatus("ThunderSTORM processing frame " + Integer.toString(nProcessed) + " of " + Integer.toString(stackSize) + "...");
-            }
-        } finally {
-            lock.unlock();
+            rt.show("Results");
+            IJ.showProgress(1.0);
+            IJ.showStatus("ThunderSTORM finished.");
+        } else {
+            IJ.showProgress((double)nProcessed / (double)stackSize);
+            IJ.showStatus("ThunderSTORM processing frame " + Integer.toString(nProcessed) + " of " + Integer.toString(stackSize) + "...");
         }
     }
 }
