@@ -4,8 +4,19 @@ import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ShortProcessor;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class ImageProcessor {
 
+    /**
+     *
+     * @param template
+     * @param width
+     * @param height
+     * @return
+     */
     public static ij.process.ImageProcessor newImageProcessor(ij.process.ImageProcessor template, int width, int height) {
         if (template instanceof FloatProcessor) {
             return new FloatProcessor(width, height);
@@ -19,6 +30,14 @@ public class ImageProcessor {
     }
 
     // align subsequence of an array into its center
+    /**
+     *
+     * @param line
+     * @param start
+     * @param end
+     * @param fill_left
+     * @param fill_right
+     */
     public static void alignArray(int[] line, int start, int end, int fill_left, int fill_right) {
         assert line != null;
         assert start < end;
@@ -38,6 +57,12 @@ public class ImageProcessor {
     }
 
     // [x,y] format
+    /**
+     *
+     * @param row
+     * @param rep
+     * @return
+     */
     public static int[][] replicateRow(int[] row, int rep) {
         assert rep > 0;
 
@@ -51,6 +76,12 @@ public class ImageProcessor {
     }
 
     // [x,y] format
+    /**
+     *
+     * @param col
+     * @param rep
+     * @return
+     */
     public static int[][] replicateColumn(int[] col, int rep) {
         assert rep > 0;
 
@@ -63,6 +94,12 @@ public class ImageProcessor {
         return mat;
     }
 
+    /**
+     *
+     * @param fp1
+     * @param fp2
+     * @return
+     */
     public static FloatProcessor subtractImage(FloatProcessor fp1, FloatProcessor fp2) {
         assert (fp1.getWidth() == fp2.getWidth());
         assert (fp1.getHeight() == fp2.getHeight());
@@ -77,6 +114,15 @@ public class ImageProcessor {
         return out;
     }
     
+    /**
+     *
+     * @param im
+     * @param left
+     * @param top
+     * @param width
+     * @param height
+     * @return
+     */
     public static FloatProcessor cropImage(FloatProcessor im, int left, int top, int width, int height) {
         assert(im != null);
         assert((width > 0) && (height > 0));
@@ -86,6 +132,13 @@ public class ImageProcessor {
         return (FloatProcessor) im.crop();
     }
 
+    /**
+     *
+     * @param image
+     * @param threshold
+     * @param low_val
+     * @param high_val
+     */
     public static void threshold(FloatProcessor image, float threshold, float low_val, float high_val) {
         for (int i = 0, im = image.getWidth(); i < im; i++) {
             for (int j = 0, jm = image.getHeight(); j < jm; j++) {
@@ -98,6 +151,12 @@ public class ImageProcessor {
         }
     }
 
+    /**
+     *
+     * @param image
+     * @param mask
+     * @return
+     */
     public static FloatProcessor applyMask(FloatProcessor image, FloatProcessor mask) {
         assert (image.getWidth() == mask.getWidth());
         assert (image.getHeight() == mask.getHeight());

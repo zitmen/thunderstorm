@@ -4,8 +4,18 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 import ij.process.FloatProcessor;
 import java.util.Arrays;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class Morphology {
     
+    /**
+     *
+     * @param image
+     * @param kernel
+     * @return
+     */
     public static FloatProcessor dilate(FloatProcessor image, FloatProcessor kernel) {
         float val;
         int xc = kernel.getWidth() / 2, yc = kernel.getHeight()/ 2;
@@ -25,6 +35,12 @@ public class Morphology {
         return out;
     }
 
+    /**
+     *
+     * @param image
+     * @param radius
+     * @return
+     */
     public static FloatProcessor dilateBox(FloatProcessor image, int radius) {
         return dilate(image, createBoxKernel(radius));
     }

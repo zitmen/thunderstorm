@@ -13,6 +13,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 // This filter uses the same trick to be effective as the DoG filter
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public final class LoweredGaussianFilter implements IFilter, IModule {
     
     private GaussianFilter g;
@@ -28,6 +32,11 @@ public final class LoweredGaussianFilter implements IFilter, IModule {
         u = new UniformFilter(size, mean((float []) g.getKernelX().getPixels()), padding);
     }
     
+    /**
+     *
+     * @param size
+     * @param sigma
+     */
     public LoweredGaussianFilter(int size, double sigma) {
         this.size = size;
         this.sigma = sigma;
@@ -35,6 +44,12 @@ public final class LoweredGaussianFilter implements IFilter, IModule {
         updateKernel();
     }
     
+    /**
+     *
+     * @param size
+     * @param sigma
+     * @param padding_method
+     */
     public LoweredGaussianFilter(int size, double sigma, int padding_method) {
         this.size = size;
         this.sigma = sigma;
@@ -42,16 +57,29 @@ public final class LoweredGaussianFilter implements IFilter, IModule {
         updateKernel();
     }
 
+    /**
+     *
+     * @param image
+     * @return
+     */
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         return ImageProcessor.subtractImage(g.filterImage(image), u.filterImage(image));
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return "Lowered Gaussian filter";
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public JPanel getOptionsPanel() {
         sizeTextField = new JTextField(Integer.toString(size), 20);
@@ -65,6 +93,9 @@ public final class LoweredGaussianFilter implements IFilter, IModule {
         return panel;
     }
 
+    /**
+     *
+     */
     @Override
     public void readParameters() {
         try {

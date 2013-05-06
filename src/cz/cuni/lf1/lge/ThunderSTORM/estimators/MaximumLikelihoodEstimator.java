@@ -9,6 +9,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class MaximumLikelihoodEstimator implements IEstimator, IModule {
 
     /* unify this for all estimators?? */
@@ -16,6 +20,10 @@ public class MaximumLikelihoodEstimator implements IEstimator, IModule {
     private int fitrad2;
     private int fitrad_2;
     
+    /**
+     *
+     * @param fitting_radius
+     */
     public MaximumLikelihoodEstimator(int fitting_radius) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         /*
@@ -25,6 +33,13 @@ public class MaximumLikelihoodEstimator implements IEstimator, IModule {
         */
     }
     
+    /**
+     *
+     * @param fp
+     * @param detections
+     * @param initial_guess
+     * @return
+     */
     public Vector<Point<Double>> ExponentialGaussianEstimator(FloatProcessor fp, Vector<Point> detections, PSF initial_guess) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         /*
@@ -57,11 +72,19 @@ public class MaximumLikelihoodEstimator implements IEstimator, IModule {
         */
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return "Maximizing log-likelihood";
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public JPanel getOptionsPanel() {
         JPanel panel = new JPanel();
@@ -70,11 +93,20 @@ public class MaximumLikelihoodEstimator implements IEstimator, IModule {
         return panel;
     }
 
+    /**
+     *
+     */
     @Override
     public void readParameters() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     *
+     * @param image
+     * @param detections
+     * @return
+     */
     @Override
     public Vector<PSF> estimateParameters(FloatProcessor image, Vector<Point> detections) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

@@ -22,6 +22,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
  
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 
     private CardsPanel filters, detectors, estimators;
@@ -33,6 +37,17 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     private IDetector activeDetector;
     private IEstimator activeEstimator;
     
+    /**
+     *
+     * @param imp
+     * @param command
+     * @param filters
+     * @param default_filter
+     * @param detectors
+     * @param default_detector
+     * @param estimators
+     * @param default_estimator
+     */
     public AnalysisOptionsDialog(ImagePlus imp, String command, Vector<IModule> filters, int default_filter, Vector<IModule> detectors, int default_detector, Vector<IModule> estimators, int default_estimator) {
         super((JFrame)null, command);
         //
@@ -60,6 +75,9 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         this.activeEstimator = null;
     }
      
+    /**
+     *
+     */
     public void addComponentsToPane() {
         Container pane = getContentPane();
         //
@@ -124,12 +142,20 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         }
     }
     
+    /**
+     *
+     * @param cancel
+     */
     public void dispose(boolean cancel) {
         canceled = cancel;
         semaphore.release();
         dispose();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean wasCanceled() {
         try {
             semaphore.acquire();
@@ -139,14 +165,26 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         return canceled;
     }
     
+    /**
+     *
+     * @return
+     */
     public IFilter getFilter() {
         return activeFilter;
     }
     
+    /**
+     *
+     * @return
+     */
     public IDetector getDetector() {
         return activeDetector;
     }
     
+    /**
+     *
+     * @return
+     */
     public IEstimator getEstimator() {
         return activeEstimator;
     }

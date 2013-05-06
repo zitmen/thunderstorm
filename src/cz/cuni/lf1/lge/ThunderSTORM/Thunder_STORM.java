@@ -37,6 +37,10 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+/**
+ *
+ * @author Martin
+ */
 public final class Thunder_STORM implements ExtendedPlugInFilter {
 
     private IFilter filter;

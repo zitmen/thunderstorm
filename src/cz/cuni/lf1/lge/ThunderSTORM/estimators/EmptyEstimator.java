@@ -5,8 +5,18 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 import java.util.Vector;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class EmptyEstimator implements IEstimator {
 
+    /**
+     *
+     * @param fp
+     * @param detections
+     * @return
+     */
     @Override
     public Vector<PSF> estimateParameters(FloatProcessor fp, Vector<Point> detections) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

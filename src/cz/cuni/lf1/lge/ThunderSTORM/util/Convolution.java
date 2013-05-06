@@ -2,8 +2,19 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import ij.process.FloatProcessor;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class Convolution {
 
+    /**
+     *
+     * @param image
+     * @param kernel
+     * @param padding_type
+     * @return
+     */
     public static FloatProcessor Convolve(FloatProcessor image, FloatProcessor kernel, int padding_type) {
         assert kernel.getWidth() % 2 == 1;
         assert kernel.getHeight() % 2 == 1;

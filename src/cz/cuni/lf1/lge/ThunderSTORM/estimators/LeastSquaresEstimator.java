@@ -18,6 +18,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import ij.IJ;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class LeastSquaresEstimator implements IEstimator, IModule {
     
     private int fitrad, fitrad2, fitrad_2;
@@ -34,6 +38,9 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
         return ((sqr(fit.x.doubleValue() - detection.x.doubleValue()) + sqr(fit.y.doubleValue() - detection.y.doubleValue())) <= (double)fitrad2);
     }
     
+    /**
+     *
+     */
     public static class Gaussian extends LMAMultiDimFunction {
 
         @Override
@@ -59,10 +66,20 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
         }
     }
     
+    /**
+     *
+     * @param fitting_region_size
+     */
     public LeastSquaresEstimator(int fitting_region_size) {
         updateFittingRadius(fitting_region_size);
     }
     
+    /**
+     *
+     * @param image
+     * @param detections
+     * @return
+     */
     @Override
     public Vector<PSF> estimateParameters(FloatProcessor image, Vector<Point> detections) {
         Vector<PSF> fits = new Vector<PSF>();
@@ -120,11 +137,19 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
         return fits;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return "Minimizing least squares error";
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public JPanel getOptionsPanel() {
         fitregsizeTextField = new JTextField(Integer.toString(fitrad), 20);
@@ -135,6 +160,9 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
         return panel;
     }
 
+    /**
+     *
+     */
     @Override
     public void readParameters() {
         try {

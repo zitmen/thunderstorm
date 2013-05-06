@@ -11,25 +11,45 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
  
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class CardsPanel implements ItemListener {
 
     private JPanel cardsPanel;
     private JComboBox cb;
     private Vector<IModule> items;
     
+    /**
+     *
+     * @param items
+     */
     public CardsPanel(Vector<IModule> items) {
         this.items = items;
         cardsPanel = createCardsPanel();
     }
     
+    /**
+     *
+     * @param index
+     */
     public void setDefaultComboBoxItem(int index) {
         cb.setSelectedIndex(index);
     }
     
+    /**
+     *
+     * @return
+     */
     public IModule getActiveComboBoxItem() {
         return items.elementAt(cb.getSelectedIndex());
     }
      
+    /**
+     *
+     * @return
+     */
     public final JPanel createCardsPanel() {
         String comboBoxItems[] = new String[items.size()];
         for(int i = 0; i < items.size(); i++) {
@@ -57,6 +77,11 @@ public class CardsPanel implements ItemListener {
         return panel;
     }
     
+    /**
+     *
+     * @param name
+     * @return
+     */
     public JPanel getPanel(String name) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel(name), GridBagHelper.pos(0, 0));

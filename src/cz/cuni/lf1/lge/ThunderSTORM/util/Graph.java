@@ -5,12 +5,26 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sum;
 import java.util.LinkedList;
 import java.util.Vector;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class Graph {
 
+    /**
+     *
+     */
     public static class ConnectedComponent {
 
+        /**
+         *
+         */
         public Vector<Point> points = new Vector<Point>();
 
+        /**
+         *
+         * @return
+         */
         public Point centroid() {
             int npts = points.size();
             double[] xarr = new double[npts];
@@ -27,11 +41,23 @@ public class Graph {
         }
     }
     
+    /**
+     *
+     */
     public static final int CONNECTIVITY_4 = 4;
+    /**
+     *
+     */
     public static final int CONNECTIVITY_8 = 8;
 
     // TODO: very slow because of too many allocations!
     // TODO: pixel.val is now a component id! it should be real intensity of the pixel --> this may be solved by calling the method with different image and with `thr` parameter
+    /**
+     *
+     * @param ip
+     * @param connectivity
+     * @return
+     */
     public static Vector<ConnectedComponent> getConnectedComponents(ij.process.ImageProcessor ip, int connectivity) {
         assert (ip != null);
         assert ((connectivity == CONNECTIVITY_4) || (connectivity == CONNECTIVITY_8));

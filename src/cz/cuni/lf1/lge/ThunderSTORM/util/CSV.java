@@ -10,8 +10,18 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class CSV {
     
+    /**
+     *
+     * @param fname
+     * @return
+     * @throws IOException
+     */
     public static FloatProcessor csv2fp(String fname) throws IOException {
         CSVReader csvReader = new CSVReader(new FileReader(fname));
         List<String[]> lines = csvReader.readAll();
@@ -29,6 +39,14 @@ public class CSV {
         return new FloatProcessor(array);
     }
 
+    /**
+     *
+     * @param fname
+     * @param start_row
+     * @param start_col
+     * @return
+     * @throws IOException
+     */
     public static Vector<PSF> csv2psf(String fname, int start_row, int start_col) throws IOException {
         CSVReader csvReader = new CSVReader(new FileReader(fname));
         List<String[]> lines = csvReader.readAll();
@@ -50,6 +68,14 @@ public class CSV {
         return loc;
     }
 
+    /**
+     *
+     * @param fname
+     * @param start_row
+     * @param start_col
+     * @return
+     * @throws IOException
+     */
     public static Vector<Point> csv2point(String fname, int start_row, int start_col) throws IOException {
         Vector<PSF> list = csv2psf(fname, start_row, start_col);
         Vector<Point> points = new Vector<Point>();

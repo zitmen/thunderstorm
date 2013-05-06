@@ -6,20 +6,36 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public final class BoxFilter extends UniformFilter implements IModule {
     
     private JTextField sizeTextField;
     
+    /**
+     *
+     * @param size
+     */
     public BoxFilter(int size) {
         super(size, 1.0f / (float) size);
     }
     
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return "Box (mean) filter";
         
     }
     
+    /**
+     *
+     * @return
+     */
     @Override
     public JPanel getOptionsPanel() {
         JPanel panel = new JPanel();
@@ -30,6 +46,9 @@ public final class BoxFilter extends UniformFilter implements IModule {
         return panel;
     }
     
+    /**
+     *
+     */
     @Override
     public void readParameters() {
         try {

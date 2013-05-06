@@ -20,6 +20,10 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.ImageJHelpers.EDM;    // use this 
                                                                     // because the build-in version uses showStatus ans showProgress
                                                                     // methods and it disturbs my progress/status info
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public final class CentroidOfConnectedComponentsDetector implements IDetector, IModule {
 
     private boolean upsample;
@@ -28,19 +32,37 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
     private JTextField thrTextField;
     private JCheckBox upCheckBox;
     
+    /**
+     *
+     * @param upsample
+     * @param threshold
+     */
     public CentroidOfConnectedComponentsDetector(boolean upsample, double threshold) {
         this.upsample = upsample;
         this.threshold = threshold;
     }
     
+    /**
+     *
+     * @param threshold
+     */
     public void updateThreshol(double threshold) {
         this.threshold = threshold;
     }
     
+    /**
+     *
+     * @param upsample
+     */
     public void updateUpsample(boolean upsample) {
         this.upsample = upsample;
     }
 
+    /**
+     *
+     * @param image
+     * @return
+     */
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
         // thresholding first to make the image binary
@@ -66,11 +88,19 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
         return detections;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return "Centroid of connected components";
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public JPanel getOptionsPanel() {
         thrTextField = new JTextField(Double.toString(threshold), 20);
@@ -84,6 +114,9 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
         return panel;
     }
 
+    /**
+     *
+     */
     @Override
     public void readParameters() {
         try {

@@ -4,64 +4,145 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.round;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.ceil;
 import java.util.Comparator;
 
+/**
+ * The class encapsulates X,Y representation of a single point and its
+ * intensity.
+ * 
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ * 
+ * @param <T> is a Number subclass, often Integer or Double
+ */
 public class Point<T extends Number> {
 
-    public T x, y, val;
+    /**
+     * X coordinate
+     */
+    public T x;
+    /**
+     * Y coordinate
+     */
+    public T y;
+    /**
+     * Intensity
+     */
+    public T val;
 
+    /**
+     * X, Y, and intenstity are set to null.
+     *
+     */
     public Point() {
         this.x = null;
         this.y = null;
         this.val = null;
     }
 
+    /**
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param val Intensity
+     */
     public Point(T x, T y, T val) {
         this.x = x;
         this.y = y;
         this.val = val;
     }
 
+    /**
+     * @param x X coordinate
+     * @param y Y coordinate
+     */
     public Point(T x, T y) {
         this.x = x;
         this.y = y;
         this.val = null;
     }
     
+    /**
+     * Returns X coordinate.
+     * 
+     * @return X coordinate
+     */
     public T getX() {
         return x;
     }
 
+    /**
+     * Returns Y coordinate.
+     * 
+     * @return Y coordinate
+     */
     public T getY() {
         return y;
     }
 
+    /**
+     * Returns intensity.
+     * 
+     * @return Intensity
+     */
     public T getVal() {
         return val;
     }
 
+    /**
+     * Sets X coordinate.
+     * 
+     * @param x X coordinate
+     */
     public void setX(T x) {
         this.x = x;
     }
 
+    /**
+     * Sets Y coordinate.
+     * 
+     * @param y Y coordinate
+     */
     public void setY(T y) {
         this.y = y;
     }
 
+    /**
+     * Sets intensity.
+     *
+     * @param val Intensity
+     */
     public void setVal(T val) {
         this.val = val;
     }
 
+    /**
+     * Sets position (X,Y coordinates) of the point.
+     * 
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @return this
+     */
     public Point setLocation(T x, T y) {
         this.x = x;
         this.y = y;
         return this;
     }
 
+    /**
+     * Sets position (X,Y coordinates) and intensity (value) of the point.
+     * 
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param val intensity
+     */
     public void set(T x, T y, T val) {
         this.x = x;
         this.y = y;
         this.val = val;
     }
     
+    /**
+     * Returns the point with its X,Y coordinates and intensity rounded to Integer.
+     * 
+     * @return the point with its X,Y coordinates and intensity rounded to Integer.
+     */
     public Point<Integer> roundToInteger() {
         assert ((x != null) && (y != null));
 
@@ -72,6 +153,11 @@ public class Point<T extends Number> {
         }
     }
     
+    /**
+     * Returns the point with its X,Y coordinates and intensity rounded to Long.
+     *
+     * @return the point with its X,Y coordinates and intensity rounded to Long.
+     */
     public Point<Long> roundToLong() {
         assert ((x != null) && (y != null));
 
@@ -82,6 +168,11 @@ public class Point<T extends Number> {
         }
     }
 
+    /**
+     * Returns the point with its X,Y coordinates and intensity as Integer (the decimal part is cut off).
+     * 
+     * @return the point with its X,Y coordinates and intensity rounded to Integer.
+     */
     public Point<Integer> toInteger() {
         assert ((x != null) && (y != null));
 
@@ -92,6 +183,12 @@ public class Point<T extends Number> {
         }
     }
 
+    /**
+     * Returns the point with its X,Y coordinates and intensity as Float (single precision).
+     * Clearly there may be a round off when converting from Double (double precision).
+     *
+     * @return the point with its X,Y coordinates and intensity as Float.
+     */
     public Point<Float> toFloat() {
         assert ((x != null) && (y != null));
 
@@ -102,6 +199,12 @@ public class Point<T extends Number> {
         }
     }
 
+    /**
+     * Returns the point with its X,Y coordinates and intensity as Byte (the decimal part is cut off).
+     * Clearly there may be an overflow or underflow when converting from larger type as Integer or Long.
+     * 
+     * @return the point with its X,Y coordinates and intensity as Byte.
+     */
     public Point<Byte> toByte() {
         assert ((x != null) && (y != null));
 
@@ -112,6 +215,11 @@ public class Point<T extends Number> {
         }
     }
 
+    /**
+     * Returns the point with its X,Y coordinates and intensity as Double (double precision).
+     * 
+     * @return the point with its X,Y coordinates and intensity as Double.
+     */
     public Point<Double> toDouble() {
         assert ((x != null) && (y != null));
 
@@ -122,6 +230,11 @@ public class Point<T extends Number> {
         }
     }
 
+    /**
+     * Returns the point with its X,Y coordinates and intensity as Long (the decimal part is cut off).
+     * 
+     * @return the point with its X,Y coordinates and intensity as Long.
+     */
     public Point<Long> toLong() {
         assert ((x != null) && (y != null));
 
@@ -132,6 +245,12 @@ public class Point<T extends Number> {
         }
     }
 
+    /**
+     * Returns the point with its X,Y coordinates and intensity as Short (the decimal part is cut off).
+     * Clearly there may be an overflow or underflow when converting from larger type as Integer or Long.
+     * 
+     * @return the point with its X,Y coordinates and intensity as Short.
+     */
     public Point<Short> toShort() {
         assert ((x != null) && (y != null));
 
@@ -198,6 +317,19 @@ public class Point<T extends Number> {
         return hash;
     }
     
+    /**
+     * Scaling the coordinates, e.g., for the purpose of converting between pixels
+     * and nanometers. The data type T of Point&lt;T&gt; remains the same as it was
+     * before calling this method.
+     * 
+     * <ol>
+     *   <li>the X,Y coordinates are converted to Double</li>
+     *   <li>the multiplication {@mathjax x = x \times factor} and {@mathjax y = y \times factor} is performed</li>
+     *   <li>the result is converted back to type T (there may be a round off or overflow error)</li>
+     * </ol>
+     * 
+     * @param factor scale by which the X,Y coordinates will be multiplied with
+     */
     public void scaleXY(double factor) {
         double nx = x.doubleValue() * factor;
         double ny = y.doubleValue() * factor;
@@ -222,6 +354,12 @@ public class Point<T extends Number> {
         }
     }
     
+    /**
+     * Comparator class for sorting the Point&lt;T&gt; instances.
+     * This comparator uses only X,Y coordinations, <strong>not</strong> the intensity.
+     * The left-most point will be ordered as first. If two or more points have the same X coordinate
+     * the point with the lowest value of Y coordinate will be ordered as first.
+     */
     public static class XYComparator implements Comparator<Point> {
         @Override
         public int compare(Point p1, Point p2) {

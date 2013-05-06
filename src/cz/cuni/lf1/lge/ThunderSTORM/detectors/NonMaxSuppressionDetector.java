@@ -12,6 +12,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public final class NonMaxSuppressionDetector implements IDetector, IModule {
 
     private int radius;
@@ -20,11 +24,21 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
     private JTextField thrTextField;
     private JTextField radiusTextField;
     
+    /**
+     *
+     * @param radius
+     * @param threshold
+     */
     public NonMaxSuppressionDetector(int radius, double threshold) {
         this.radius = radius;
         this.threshold = threshold;
     }
 
+    /**
+     *
+     * @param image
+     * @return
+     */
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
         Vector<Point> detections = new Vector<Point>();
@@ -44,11 +58,19 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
         return detections;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return "Non-maxima suppression";
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public JPanel getOptionsPanel() {
         thrTextField = new JTextField(Double.toString(threshold), 20);
@@ -62,6 +84,9 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
         return panel;
     }
 
+    /**
+     *
+     */
     @Override
     public void readParameters() {
         try {

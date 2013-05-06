@@ -15,6 +15,10 @@ import javax.swing.JTextField;
 // - convolution with a non-separable kernel has a computational complexity K*K*N
 // - this approach uses two separable convolutions and then calculating their difference, i.e., 2*(2*K*N)+N, which is asymtotically faster!
 // However there is a question of how much is the performance degraded due to the memory allocation of 2 images instead of 1.
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
 
     private int size, padding;
@@ -29,6 +33,12 @@ public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
         g2 = new GaussianFilter(size, sigma_g2, padding);
     }
     
+    /**
+     *
+     * @param size
+     * @param sigma_g1
+     * @param sigma_g2
+     */
     public DifferenceOfGaussiansFilter(int size, double sigma_g1, double sigma_g2) {
         this.size = size;
         this.sigma_g1 = sigma_g1;
@@ -37,6 +47,13 @@ public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
         updateKernels();
     }
     
+    /**
+     *
+     * @param size
+     * @param sigma_g1
+     * @param sigma_g2
+     * @param padding_method
+     */
     public DifferenceOfGaussiansFilter(int size, double sigma_g1, double sigma_g2, int padding_method) {
         this.size = size;
         this.sigma_g1 = sigma_g1;
@@ -45,16 +62,29 @@ public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
         updateKernels();
     }
 
+    /**
+     *
+     * @param image
+     * @return
+     */
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         return ImageProcessor.subtractImage(g1.filterImage(image), g2.filterImage(image));
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return "Difference of Gaussians";
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public JPanel getOptionsPanel() {
         sizeTextField = new JTextField(Integer.toString(size), 20);
@@ -71,6 +101,9 @@ public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
         return panel;
     }
 
+    /**
+     *
+     */
     @Override
     public void readParameters() {
         try {

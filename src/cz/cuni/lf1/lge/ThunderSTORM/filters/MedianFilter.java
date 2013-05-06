@@ -11,9 +11,19 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public final class MedianFilter implements IFilter, IModule {
 
+    /**
+     *
+     */
     public static final int CROSS = 4;
+    /**
+     *
+     */
     public static final int BOX = 8;
     private int pattern;
     private int size;
@@ -21,6 +31,11 @@ public final class MedianFilter implements IFilter, IModule {
     private JTextField sizeTextField;
     private JRadioButton patternCrossRadioButton, patternBoxRadioButton;
 
+    /**
+     *
+     * @param pattern
+     * @param size
+     */
     public MedianFilter(int pattern, int size) {
         assert ((pattern == BOX) || (pattern == CROSS));
 
@@ -28,6 +43,11 @@ public final class MedianFilter implements IFilter, IModule {
         this.size = size;
     }
 
+    /**
+     *
+     * @param image
+     * @return
+     */
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         FloatProcessor result = new FloatProcessor(image.getWidth(), image.getHeight());
@@ -74,11 +94,19 @@ public final class MedianFilter implements IFilter, IModule {
         return result;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return "Median filter";
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public JPanel getOptionsPanel() {
         patternBoxRadioButton = new JRadioButton("box");
@@ -97,6 +125,9 @@ public final class MedianFilter implements IFilter, IModule {
         return panel;
     }
 
+    /**
+     *
+     */
     @Override
     public void readParameters() {
         try {

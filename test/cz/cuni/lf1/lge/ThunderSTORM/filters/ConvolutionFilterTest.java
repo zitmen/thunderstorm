@@ -13,6 +13,9 @@ public class ConvolutionFilterTest {
     
     float [] kernel, kernel_x, kernel_y;
     
+    /**
+     *
+     */
     @Before
     public void prepareTest() {
         kernel = new float [] {

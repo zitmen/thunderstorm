@@ -13,6 +13,10 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class LocalMaximaDetector implements IDetector, IModule {
 
     private int connectivity;
@@ -21,6 +25,11 @@ public class LocalMaximaDetector implements IDetector, IModule {
     private JTextField thrTextField;
     private JRadioButton conn4RadioButton, conn8RadioButton;
     
+    /**
+     *
+     * @param connectivity
+     * @param threshold
+     */
     public LocalMaximaDetector(int connectivity, double threshold) {
         assert((connectivity == Graph.CONNECTIVITY_4) || (connectivity == Graph.CONNECTIVITY_8));
         
@@ -132,16 +141,29 @@ public class LocalMaximaDetector implements IDetector, IModule {
         return detections;
     }
     
+    /**
+     *
+     * @param image
+     * @return
+     */
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
         return ((connectivity == Graph.CONNECTIVITY_4) ? getMax4Candidates(image) : getMax8Candidates(image));
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return "Search for local maxima";
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public JPanel getOptionsPanel() {
         thrTextField = new JTextField("Threshold", 20);
@@ -160,6 +182,9 @@ public class LocalMaximaDetector implements IDetector, IModule {
         return panel;
     }
 
+    /**
+     *
+     */
     @Override
     public void readParameters() {
         try {

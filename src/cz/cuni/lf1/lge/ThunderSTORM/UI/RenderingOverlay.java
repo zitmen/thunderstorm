@@ -8,13 +8,27 @@ import java.awt.Color;
 
 /**
  *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
+ * @author Josef Borkovec &lt;josef.borkovec[at]lf1.cuni.cz&gt;
  */
 public class RenderingOverlay {
 
+    /**
+     *
+     */
     public static final int MARKER_CROSS = 1;
+    /**
+     *
+     */
     public static final int MARKER_CIRCLE = 2;
 
+    /**
+     *
+     * @param imp
+     * @param xCoord
+     * @param yCoord
+     * @param c
+     * @param markerType
+     */
     public static void showPointsInImage(ImagePlus imp, double[] xCoord, double[] yCoord, Color c, int markerType) {
         Overlay overlay = imp.getOverlay();
         if (overlay == null) {
@@ -24,6 +38,15 @@ public class RenderingOverlay {
         imp.setOverlay(overlay);
     }
 
+    /**
+     *
+     * @param imp
+     * @param xCoord
+     * @param yCoord
+     * @param slice
+     * @param c
+     * @param markerType
+     */
     public static void showPointsInImageSlice(ImagePlus imp, double[] xCoord, double[] yCoord, int slice, Color c, int markerType) {
         Overlay overlay = imp.getOverlay();
         if (overlay == null) {

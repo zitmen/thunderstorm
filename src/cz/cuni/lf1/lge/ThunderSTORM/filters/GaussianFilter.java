@@ -11,6 +11,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public final class GaussianFilter extends ConvolutionFilter implements IModule {
     
     private int size;
@@ -31,23 +35,42 @@ public final class GaussianFilter extends ConvolutionFilter implements IModule {
         super.updateKernel(new FloatProcessor(1, size, getKernel(size, sigma)), true);
     }
 
+    /**
+     *
+     * @param size
+     * @param sigma
+     */
     public GaussianFilter(int size, double sigma) {
         super(new FloatProcessor(1, size, getKernel(size, sigma)), true, Padding.PADDING_DUPLICATE);
         this.size = size;
         this.sigma = sigma;
     }
     
+    /**
+     *
+     * @param size
+     * @param sigma
+     * @param padding_method
+     */
     public GaussianFilter(int size, double sigma, int padding_method) {
         super(new FloatProcessor(1, size, getKernel(size, sigma)), true, padding_method);
         this.size = size;
         this.sigma = sigma;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return "Gaussian blur";
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public JPanel getOptionsPanel() {
         sizeTextField = new JTextField(Integer.toString(size), 20);
@@ -61,6 +84,9 @@ public final class GaussianFilter extends ConvolutionFilter implements IModule {
         return panel;
     }
 
+    /**
+     *
+     */
     @Override
     public void readParameters() {
         try {

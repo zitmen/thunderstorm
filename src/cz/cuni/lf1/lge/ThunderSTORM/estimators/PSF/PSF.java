@@ -3,19 +3,60 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.ceil;
 import java.util.Comparator;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public abstract class PSF {
     
+    /**
+     *
+     */
     public double xpos;
+    /**
+     *
+     */
     public double ypos;
+    /**
+     *
+     */
     public double zpos;
+    /**
+     *
+     */
     public double intensity;
+    /**
+     *
+     */
     public double background;
     
+    /**
+     *
+     * @param where
+     * @return
+     */
     public abstract double[] getGradient(PSF where);
+    /**
+     *
+     * @param where
+     * @return
+     */
     public abstract double getValueAt(PSF where);
+    /**
+     *
+     * @return
+     */
     public abstract double[] getParams();
+    /**
+     *
+     * @return
+     */
     public abstract String[] getTitles();
 
+    /**
+     *
+     * @param pixelsize
+     */
     public void convertXYToNanoMeters(double pixelsize) {
         xpos *= pixelsize;
         ypos *= pixelsize;
@@ -48,6 +89,9 @@ public abstract class PSF {
         return hash;
     }
     
+    /**
+     *
+     */
     public static class XYZComparator implements Comparator<PSF> {
         @Override
         public int compare(PSF p1, PSF p2) {

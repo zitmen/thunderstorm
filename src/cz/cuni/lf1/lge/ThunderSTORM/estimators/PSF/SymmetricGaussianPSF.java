@@ -1,17 +1,42 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class SymmetricGaussianPSF extends GaussianPSF {
     
+    /**
+     *
+     */
     public double sigma;
     
+    /**
+     *
+     * @param x
+     * @param y
+     */
     public SymmetricGaussianPSF(double x, double y) {
         super(x, y);
     }
     
+    /**
+     *
+     * @param x
+     * @param y
+     * @param I
+     * @param s
+     * @param b
+     */
     public SymmetricGaussianPSF(double x, double y, double I, double s, double b) {
         super(x, y, I, s, b);
     }
     
+    /**
+     *
+     * @param where
+     * @return
+     */
     @Override
     public double getValueAt(PSF where) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -21,6 +46,11 @@ public class SymmetricGaussianPSF extends GaussianPSF {
         */
     }
 
+    /**
+     *
+     * @param where
+     * @return
+     */
     @Override
     public double[] getGradient(PSF where) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -30,6 +60,10 @@ public class SymmetricGaussianPSF extends GaussianPSF {
         */
     }
     
+    /**
+     *
+     * @return
+     */
     @Override
     public double[] getParams() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -45,6 +79,10 @@ public class SymmetricGaussianPSF extends GaussianPSF {
         */
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String[] getTitles() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

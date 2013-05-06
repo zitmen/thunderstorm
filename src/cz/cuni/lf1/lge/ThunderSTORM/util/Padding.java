@@ -3,14 +3,37 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 import ij.process.Blitter;
 import ij.process.FloatProcessor;
 
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class Padding {
     
+    /**
+     *
+     */
     public static final int PADDING_NONE = 0;
+    /**
+     *
+     */
     public static final int PADDING_ZERO = 1;
+    /**
+     *
+     */
     public static final int PADDING_DUPLICATE = 2;
+    /**
+     *
+     */
     public static final int PADDING_CYCLIC = 3;
 
     // always returns a newly allocated image
+    /**
+     *
+     * @param image
+     * @param type
+     * @param size
+     * @return
+     */
     public static FloatProcessor addBorder(FloatProcessor image, int type, int size) {
         assert size >= 0;
         assert type >= 0 && type <= 3;

@@ -10,6 +10,10 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 // Here we use double padding to simulate conv2 function and to keep the results identical to the Matlab version.
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public final class CompoundWaveletFilter implements IFilter, IModule {
 
     private int margin;
@@ -19,6 +23,10 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
     
     private JCheckBox thirdCheckBox;
     
+    /**
+     *
+     * @param third_plane
+     */
     public CompoundWaveletFilter(boolean third_plane) {
         this.third_plane = third_plane;
         //
@@ -29,6 +37,11 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
         this.margin = w3.getKernelX().getWidth() / 2;
     }
     
+    /**
+     *
+     * @param image
+     * @return
+     */
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         FloatProcessor padded = Padding.addBorder(image, Padding.PADDING_DUPLICATE, margin);
@@ -44,11 +57,19 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
         return cropImage(subtractImage(V1, V2), margin, margin, image.getWidth(), image.getHeight());
     }
     
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return "Wavelet filter";
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public JPanel getOptionsPanel() {
         thirdCheckBox = new JCheckBox("third plane");
@@ -59,6 +80,9 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
         return panel;
     }
 
+    /**
+     *
+     */
     @Override
     public void readParameters() {
         try {

@@ -3,8 +3,17 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 
 // Note: this is now a rotationaly symmetric 2D Gaussian function
+/**
+ *
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ */
 public class GaussianPSF extends PSF {
 
+    /**
+     *
+     * @param parameters
+     * @return
+     */
     public static boolean checkRange(double[] parameters) {
         // check for negative values
         for(int i = 0; i < parameters.length; i++)
@@ -14,6 +23,9 @@ public class GaussianPSF extends PSF {
         return true;
     }
     
+    /**
+     *
+     */
     public double sigma;
     //public double sigma_x;
     //public double sigma_y;
@@ -27,15 +39,31 @@ public class GaussianPSF extends PSF {
     private final double[] params = new double[5];
     private final static String[] titles = new String[] { "x", "y", "I", "sigma", "b" };
 
+    /**
+     *
+     */
     public GaussianPSF() {
         //
     }
     
+    /**
+     *
+     * @param x
+     * @param y
+     */
     public GaussianPSF(double x, double y) {
         super.xpos = x;
         super.ypos = y;
     }
     
+    /**
+     *
+     * @param x
+     * @param y
+     * @param I
+     * @param s
+     * @param b
+     */
     public GaussianPSF(double x, double y, double I, double s, double b) {
         super.xpos = x;
         super.ypos = y;
@@ -45,12 +73,22 @@ public class GaussianPSF extends PSF {
     }
 
     // TODO: rozlisovat sigma_x, sigma_y a pridat rotaci o uhel (staci rotacni matice? mela by!)!!
+    /**
+     *
+     * @param where
+     * @return
+     */
     @Override
     public double getValueAt(PSF where) {
         return intensity/2.0/Math.PI/sqr(sigma) * Math.exp(-(sqr(xpos-where.xpos) + sqr(ypos-where.ypos)) / 2.0 / sqr(sigma)) + background;
     }
 
     // TODO: rozlisovat sigma_x, sigma_y a pridat rotaci o uhel (staci rotacni matice? mela by!)!!
+    /**
+     *
+     * @param where
+     * @return
+     */
     @Override
     public double[] getGradient(PSF where) {
         double arg = sqr(xpos - where.xpos) + sqr(ypos - where.ypos);
@@ -62,6 +100,10 @@ public class GaussianPSF extends PSF {
         return gradient;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public double[] getParams() {
         params[0] = xpos;
@@ -72,6 +114,10 @@ public class GaussianPSF extends PSF {
         return params;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String[] getTitles() {
         return titles;
