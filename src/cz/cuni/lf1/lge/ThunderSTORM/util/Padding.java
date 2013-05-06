@@ -10,29 +10,65 @@ import ij.process.FloatProcessor;
 public class Padding {
     
     /**
-     *
+     * No padding at all - size of an output image is the same as the size of an input image.
      */
     public static final int PADDING_NONE = 0;
+    
     /**
-     *
+     * An input image is padded image with zeros.
      */
     public static final int PADDING_ZERO = 1;
+    
     /**
-     *
+     * An input image if padded with the values closest to the border.
+     * For example the image
+     * <pre>
+     * {@code
+     * 123
+     * 456
+     * 789}
+     * </pre>
+     * will be padded as follows:
+     * <pre>
+     * {@code
+     * 11233
+     * 11233
+     * 44566
+     * 77899
+     * 77899}
+     * </pre>
      */
     public static final int PADDING_DUPLICATE = 2;
+    
     /**
-     *
+     * Circular padding of an input image. The image repeat itself in the border.
+     * For example the image
+     * <pre>
+     * {@code
+     * 123
+     * 456
+     * 789}
+     * </pre>
+     * will be padded as follows:
+     * <pre>
+     * {@code
+     * 94567
+     * 31231
+     * 64564
+     * 97897
+     * 31231}
+     * </pre>
      */
     public static final int PADDING_CYCLIC = 3;
 
-    // always returns a newly allocated image
     /**
+     * Method for padding an input image.
      *
-     * @param image
-     * @param type
-     * @param size
-     * @return
+     * @param image an input image
+     * @param type a padding method ({@code PADDING_NONE}, {@code PADDING_ZERO}, {@code PADDING_DUPLICATE}, or {@code PADDING_CYCLIC})
+     * @param size border width
+     * @throws UnsupportedOperationException if {@code type} is neither of the types listed above
+     * @return a <strong>new instance</strong> of FloatProcessor containing the padded input image
      */
     public static FloatProcessor addBorder(FloatProcessor image, int type, int size) {
         assert size >= 0;
