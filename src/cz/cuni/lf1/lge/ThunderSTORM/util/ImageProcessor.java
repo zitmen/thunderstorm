@@ -1,104 +1,22 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
-import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
-import ij.process.ShortProcessor;
 
 /**
- *
+ * Helper class to offer some additional functionality over the ImageProcessor from ImageJ.
+ * 
  * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class ImageProcessor {
 
     /**
+     * Subtract two images from each other.
+     * 
+     * The images are required to be of the same size.
      *
-     * @param template
-     * @param width
-     * @param height
-     * @return
-     */
-    public static ij.process.ImageProcessor newImageProcessor(ij.process.ImageProcessor template, int width, int height) {
-        if (template instanceof FloatProcessor) {
-            return new FloatProcessor(width, height);
-        } else if (template instanceof ShortProcessor) {
-            return new ShortProcessor(width, height);
-        } else if (template instanceof ByteProcessor) {
-            return new ByteProcessor(width, height);
-        } else {
-            throw new UnsupportedOperationException("The only supported processors are FloatProcessor, ShortProcessor, and ByteProcessor.");
-        }
-    }
-
-    // align subsequence of an array into its center
-    /**
-     *
-     * @param line
-     * @param start
-     * @param end
-     * @param fill_left
-     * @param fill_right
-     */
-    public static void alignArray(int[] line, int start, int end, int fill_left, int fill_right) {
-        assert line != null;
-        assert start < end;
-        assert start >= 0 && end < line.length;
-        assert (line.length - (end - start)) % 2 == 0;
-
-        int size = (line.length - (end - start)) / 2;
-        for (int i = line.length - 1, im = line.length - size; i >= im; i--) {
-            line[i] = fill_right;
-        }
-        for (int i = line.length - size - 1; i >= size; i--) {
-            line[i] = line[i - size];
-        }
-        for (int i = 0; i < size; i++) {
-            line[i] = fill_left;
-        }
-    }
-
-    // [x,y] format
-    /**
-     *
-     * @param row
-     * @param rep
-     * @return
-     */
-    public static int[][] replicateRow(int[] row, int rep) {
-        assert rep > 0;
-
-        int[][] mat = new int[row.length][rep];
-        for (int i = 0; i < row.length; i++) {
-            for (int j = 0; j < rep; j++) {
-                mat[i][j] = row[i];
-            }
-        }
-        return mat;
-    }
-
-    // [x,y] format
-    /**
-     *
-     * @param col
-     * @param rep
-     * @return
-     */
-    public static int[][] replicateColumn(int[] col, int rep) {
-        assert rep > 0;
-
-        int[][] mat = new int[rep][col.length];
-        for (int i = 0; i < col.length; i++) {
-            for (int j = 0; j < rep; j++) {
-                mat[j][i] = col[i];
-            }
-        }
-        return mat;
-    }
-
-    /**
-     *
-     * @param fp1
-     * @param fp2
-     * @return
+     * @param fp1 an input image which the other input image ({@code fp2}) will be subtracted from
+     * @param fp2 another input image which will be subtracted from {@code fp1}
+     * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fp3 = fp1 - fp2}
      */
     public static FloatProcessor subtractImage(FloatProcessor fp1, FloatProcessor fp2) {
         assert (fp1.getWidth() == fp2.getWidth());
@@ -115,13 +33,14 @@ public class ImageProcessor {
     }
     
     /**
-     *
-     * @param im
-     * @param left
-     * @param top
-     * @param width
-     * @param height
-     * @return
+     * Crop an input image to a specified region of interest (ROI).
+     * 
+     * @param im an input image
+     * @param left X coordinate of the left side of a ROI
+     * @param top Y coordinate of the top side of a ROI
+     * @param width width of a ROI
+     * @param height height of a ROI
+     * @return a <strong>new instance</strong> of FloatProcessor that contains the cropped image
      */
     public static FloatProcessor cropImage(FloatProcessor im, int left, int top, int width, int height) {
         assert(im != null);
@@ -133,11 +52,18 @@ public class ImageProcessor {
     }
 
     /**
-     *
-     * @param image
-     * @param threshold
-     * @param low_val
-     * @param high_val
+     * Apply a binary {@code threshold} to the {@code image}.
+     * 
+     * Instead of implicitly setting the pixels in thresholded image to 0 and 1,
+     * the pixels with their values equal or greater than threshold are set
+     * to {@code high_val}. The rest is res to {@code low_value}.
+     * 
+     * Note that this method <strong>modifies</strong> the input image.
+     * 
+     * @param image an input image
+     * @param threshold a threshold value
+     * @param low_val value that the pixels with values lesser then {@code threshold} are set to
+     * @param high_val value that the pixels with values equal or greater then {@code threshold} are set to
      */
     public static void threshold(FloatProcessor image, float threshold, float low_val, float high_val) {
         for (int i = 0, im = image.getWidth(); i < im; i++) {
@@ -152,10 +78,37 @@ public class ImageProcessor {
     }
 
     /**
-     *
-     * @param image
-     * @param mask
-     * @return
+     * Apply a {@code mask} to an input {@code image}.
+     * 
+     * The masking works simply by checking where is a 0 in the mask image and
+     * setting the corresponding pixel in the input image to 0 as well. Hence the
+     * mask does not have to be binary.
+     * 
+     * For example let's have the following input image:
+     * <pre>
+     * {@code
+     * 123
+     * 456
+     * 789}
+     * </pre>
+     * and the following mask:
+     * <pre>
+     * {@code
+     * 560
+     * 804
+     * 032}
+     * </pre>
+     * Then the result of applying the mask is:
+     * <pre>
+     * {@code
+     * 120
+     * 406
+     * 089}
+     * </pre>
+     * 
+     * @param image an input image
+     * @param mask a mask image
+     * @return a <strong>new instance</strong> of FloatProcessor that contains the input image after the mask was applied
      */
     public static FloatProcessor applyMask(FloatProcessor image, FloatProcessor mask) {
         assert (image.getWidth() == mask.getWidth());

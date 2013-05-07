@@ -1,12 +1,12 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.sun.media.sound.InvalidDataException;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import ij.process.FloatProcessor;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.util.List;
 import java.util.Vector;
 
@@ -27,8 +27,8 @@ public class CSV {
         List<String[]> lines = csvReader.readAll();
         csvReader.close();
         
-        if(lines.size() < 1) throw new InvalidDataException("CSV data have to be in a full square/rectangle matrix!");
-        if(lines.get(0).length < 1) throw new InvalidDataException("CSV data have to be in a full square/rectangle matrix!");
+        if(lines.size() < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
+        if(lines.get(0).length < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
         
         float [][] array = new float[lines.get(0).length][lines.size()];
         for(int c = 0; c < array.length; c++) {
@@ -52,8 +52,8 @@ public class CSV {
         List<String[]> lines = csvReader.readAll();
         csvReader.close();
         
-        if(lines.size() < 1) throw new InvalidDataException("CSV data have to be in a full square/rectangle matrix!");
-        if(lines.get(0).length < 1) throw new InvalidDataException("CSV data have to be in a full square/rectangle matrix!");
+        if(lines.size() < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
+        if(lines.get(0).length < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
         
         Vector<PSF> loc = new Vector<PSF>();
         for(int r = start_row, rm = lines.size(); r < rm; r++) {

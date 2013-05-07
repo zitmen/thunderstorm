@@ -86,7 +86,7 @@ public class CardsPanel implements ItemListener {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel(name), GridBagHelper.pos(0, 0));
         panel.add(cb, GridBagHelper.pos(1, 0));
-        panel.add(cardsPanel, GridBagHelper.pos_width(0, 1, 2, 1));
+        panel.add(cardsPanel, GridBagHelper.pos_size(0, 1, 2, 1));
         return panel;
     }
      

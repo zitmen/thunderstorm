@@ -12,18 +12,27 @@ import java.util.Vector;
 public class Graph {
 
     /**
-     *
-     */
+    * Representation of a connected component.
+    * 
+    * A connected component consists of nodes, int this particular case
+    * those are pixels. All the pixels are stored in Point structures.
+    * 
+    * @see Point
+    */
     public static class ConnectedComponent {
 
-        /**
-         *
-         */
-        public Vector<Point> points = new Vector<Point>();
+        
+        private Vector<Point> points = new Vector<Point>();
 
         /**
+         * Calculate centroid of all points stored in the component.
+         * 
+         * The centroid is calculated simply as mean value of X,Y position
+         * and the intensity of the centroid is calculated as sum of all the
+         * nodes in the component.
          *
-         * @return
+         * @return a <strong>new instance</strong> of Point class representing
+         *         the calculated centroid
          */
         public Point centroid() {
             int npts = points.size();
@@ -42,21 +51,40 @@ public class Graph {
     }
     
     /**
-     *
+     * South, North, East, and West pixels are connected.
+     * <pre>
+     * {@code
+     * .|.
+     * - -
+     * .|.}
+     * </pre>
      */
     public static final int CONNECTIVITY_4 = 4;
     /**
-     *
+     * South, North, East, West, SouthWest, SouthEast, NorthWest, and NorthEast pixels are connected.
+     * <pre>
+     * {@code
+     * \|/
+     * - -
+     * /|\}
+     * </pre>
      */
     public static final int CONNECTIVITY_8 = 8;
 
-    // TODO: very slow because of too many allocations!
-    // TODO: pixel.val is now a component id! it should be real intensity of the pixel --> this may be solved by calling the method with different image and with `thr` parameter
     /**
-     *
-     * @param ip
-     * @param connectivity
-     * @return
+     * Get connected components in image.
+     * 
+     * Take an input {@code image} as an undirected graph where the pixels with value greater than 0 are
+     * considered to be nodes. The edges between them are created accorging to the specified {@code connectivity} model.
+     * Then find <a href="http://en.wikipedia.org/wiki/Connected_component_(graph_theory)">connected components</a>
+     * as defined in graph theory.
+     * 
+     * @param ip an input image
+     * @param connectivity one of the connectivity models ({@code CONNECTIVITY_4} or {@code CONNECTIVITY_8})
+     * @return Vector of ConnectedComponents
+     * @see ConnectedComponent
+     * 
+     * @todo This method is much slower than it could be because of too many allocations!
      */
     public static Vector<ConnectedComponent> getConnectedComponents(ij.process.ImageProcessor ip, int connectivity) {
         assert (ip != null);
@@ -116,11 +144,9 @@ public class Graph {
                         if(s && e) queue.push(new Point<Integer>(px + 1, py + 1));  // south east
                     }
                 }
-                
                 components.add(c);
             }
         }
-
         return components;
     }
 }

@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.CentroidOfConnectedComponentsDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.LocalMaximaDetector;
@@ -20,6 +21,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.ExtendedPlugInFilter;
@@ -31,6 +33,7 @@ import static ij.plugin.filter.PlugInFilter.NO_UNDO;
 import ij.plugin.filter.PlugInFilterRunner;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
+import java.awt.Color;
 import java.util.Vector;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.JFrame;
@@ -54,6 +57,7 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
     
     private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS ;
     private Vector<PSF>[] results;
+    private FloatProcessor[] images;
     
     @Override
     public int setup(String string, ImagePlus imp) {
@@ -123,6 +127,7 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
         stackSize = nPasses;
         nProcessed = 0;
         results = new Vector[stackSize+1];  // indexing from 1 for simplicity
+        images = new FloatProcessor[stackSize+1];
     }
 
     @Override
@@ -138,6 +143,7 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
         lock.lock();
         try {
             results[ip.getSliceNumber()] = fits;
+            images[ip.getSliceNumber()] = fp;
             nProcessed += 1;
             lastFrame = (nProcessed == stackSize);
         } finally {
@@ -145,6 +151,9 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
         }
         //
         if(lastFrame) {
+            IJ.showStatus("ThunderSTORM is generating the results...");
+            //
+            // Show table with results
             ResultsTable rt = Analyzer.getResultsTable();
             if (rt == null) {
                 rt = new ResultsTable();
@@ -162,6 +171,25 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
                 }
             }
             rt.show("Results");
+            //
+            // Show detections in the image
+            ImageStack stack = new ImageStack(images[1].getWidth(),images[1].getHeight());
+            for(int frame = 1; frame <= stackSize; frame++)
+                stack.addSlice(images[frame]);
+            //
+            ImagePlus impPreview = new ImagePlus("ThunderSTORM results preview", stack);
+            for(int frame = 1; frame <= stackSize; frame++) {
+                double [] xCoord = new double[results[frame].size()];
+                double [] yCoord = new double[results[frame].size()];
+                for(int i = 0; i < results[frame].size(); i++) {
+                    xCoord[i] = results[frame].elementAt(i).xpos;
+                    yCoord[i] = results[frame].elementAt(i).ypos;
+                }
+                RenderingOverlay.showPointsInImageSlice(impPreview, xCoord, yCoord, frame, Color.red, RenderingOverlay.MARKER_CROSS);
+            }
+            impPreview.show("Results preview");
+            //
+            // Finished
             IJ.showProgress(1.0);
             IJ.showStatus("ThunderSTORM finished.");
         } else {

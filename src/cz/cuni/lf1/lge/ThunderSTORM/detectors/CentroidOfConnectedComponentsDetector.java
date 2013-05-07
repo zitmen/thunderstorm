@@ -110,7 +110,7 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
         panel.add(thrTextField, GridBagHelper.pos(1, 0));
-        panel.add(upCheckBox, GridBagHelper.pos_width(0, 1, 2, 1));
+        panel.add(upCheckBox, GridBagHelper.pos_size(0, 1, 2, 1));
         return panel;
     }
 
