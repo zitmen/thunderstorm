@@ -4,58 +4,83 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.ceil;
 import java.util.Comparator;
 
 /**
+ * Representation of PSF model.
  *
+ * <strong>Note:</strong> in a future release the PSF will be more abstract to
+ * allow easily work with any possible PSF out there, but right we use strictly
+ * the symmetric 2D Gaussian model.
+ * 
+ * <strong>This class and its children need to be refactored!</strong>
+ * 
  * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public abstract class PSF {
     
     /**
-     *
+     * X coordinate of molecule
      */
     public double xpos;
+    
     /**
-     *
+     * Y coordinate of molecule
      */
     public double ypos;
+    
     /**
-     *
+     * Z coordinate of molecule
      */
     public double zpos;
+    
     /**
-     *
+     * intensity of molecule
      */
     public double intensity;
+    
     /**
-     *
+     * background on which the molecule sits (offset)
      */
     public double background;
     
     /**
+     * Evaluate gradient of PSF at a specified point given by X,Y coordinates.
      *
-     * @param where
-     * @return
+     * @param where where we want to evaluate the gradient of PSF ({@code this}).
+     *              Only the values {@code where.x} and {@code where.y} should be used.
+     * @return the gradient of PSF at a point specified by {@code where.x} and {@code where.y}.
      */
     public abstract double[] getGradient(PSF where);
+    
     /**
+     * Evaluate PSF at a specified point given by X,Y coordinates.
      *
-     * @param where
-     * @return
+     * @param where where we want to evaluate the PSF ({@code this}).
+     *              Only the values {@code where.x} and {@code where.y} should be used.
+     * @return the intensity of PSF at a point specified by {@code where.x} and {@code where.y}.
      */
     public abstract double getValueAt(PSF where);
+    
     /**
+     * Returns parameters of PSF as an array, which is usually used by
+     * math libraries to perform estimation of the real parameters values.
      *
-     * @return
+     * @return parameters as an array
      */
     public abstract double[] getParams();
+    
     /**
+     * Returns names of parameters returned by {@code getParams} method, thus
+     * the order of returned elements must correspond to each other.
      *
-     * @return
+     * @return parameters' titles as an array
      */
     public abstract String[] getTitles();
 
     /**
+     * Conversion between pixels and nanometers with known pixelsize.
+     * 
+     * Simply multiply {@mathjax x[nm] = x[px] \cdot pixelsize}.
      *
-     * @param pixelsize
+     * @param pixelsize size of a single pixel in nanometers
      */
     public void convertXYToNanoMeters(double pixelsize) {
         xpos *= pixelsize;
@@ -90,7 +115,17 @@ public abstract class PSF {
     }
     
     /**
-     *
+     * Comparator class for sorting the {@code PSF} instances.
+     * 
+     * This comparator uses only all the parameters for comparison.
+     * The priority is
+     * <ol>
+     *   <li>x coordinate</li>
+     *   <li>y coordinate</li>
+     *   <li>z coordinate (is supposed to be zero for all molecules, because we use only a 2D localization in this version of ThunderSTORM)</li>
+     *   <li>intensity</li>
+     *   <li>background</li>
+     * </ol>
      */
     public static class XYZComparator implements Comparator<PSF> {
         @Override

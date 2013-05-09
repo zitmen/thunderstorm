@@ -5,14 +5,19 @@ import ij.process.FloatProcessor;
 import java.util.Vector;
 
 /**
+ * The interface every detector has to implement.
  *
  * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public interface IDetector {
     /**
+     * Detect molecules in {@code image} and return list of their X,Y positions.
      *
-     * @param image
-     * @return
+     * @param image an input (filtered) image
+     * @return a Vector of instances of Points with their X,Y coordinates set to
+     *         the positions where possible modelules were found
+     * 
+     * @see Point
      */
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image);
 }

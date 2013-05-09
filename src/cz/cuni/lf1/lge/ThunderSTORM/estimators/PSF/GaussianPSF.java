@@ -2,8 +2,11 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 
-// Note: this is now a rotationaly symmetric 2D Gaussian function
 /**
+ * General representation of Gaussian PSF model.
+ * 
+ * <strong>Note that this class will be completely changed in a future relase.</strong>
+ * Now the class represents only 2D symmetric Gaussian model.
  *
  * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
