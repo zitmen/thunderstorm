@@ -83,9 +83,9 @@ public class ConvolutionFilter implements IFilter {
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         // With non-separable kernels, the complexity is K*K*N,
-        if (kernel != null) return Convolution.Convolve(image, kernel, padding_method);
+        if (kernel != null) return Convolution.convolve2D(image, kernel, padding_method);
         // while with separable kernels of length K, the computational complexity is 2*K*N, where N is number of pixels of the image!
-        return Convolution.Convolve(Convolution.Convolve(image, kernel_y, padding_method), kernel_x, padding_method);
+        return Convolution.convolve2D(Convolution.convolve2D(image, kernel_y, padding_method), kernel_x, padding_method);
     }
     
     /**

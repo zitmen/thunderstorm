@@ -16,9 +16,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ImageJHelpers.EDM;    // use this version instead of built-in ImageJ version,
-                                                                    // because the build-in version uses showStatus ans showProgress
-                                                                    // methods and it disturbs my progress/status info
 
 /**
  *
@@ -74,9 +71,9 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
         }
         // run the watershed algorithm - it works only with ByteProcessor! that's all I need though
         ByteProcessor w = (ByteProcessor) image.convertToByte(false);
-        EDM edm = new EDM();
-        edm.setup("watershed", null);
-        edm.run(w);
+        ImageJ_EDM edm = new ImageJ_EDM();  // use this version instead of built-in ImageJ version,
+        edm.setup("watershed", null);       // because the build-in version uses showStatus and
+        edm.run(w);                         // showProgress methods and it disturbs my progress/status info
         image = applyMask((FloatProcessor)w.convertToFloat(), image);
         // finding a center of gravity (with subpixel precision)
         Vector<Point> detections = new Vector<Point>();

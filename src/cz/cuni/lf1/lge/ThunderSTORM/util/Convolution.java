@@ -3,19 +3,24 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 import ij.process.FloatProcessor;
 
 /**
+ * Convolution algorithm.
  *
  * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class Convolution {
 
     /**
+     * 2D convolution of an input image with a specified kernel.
+     * 
+     * A two dimensional convolution:
+     * {@mathjax (image*kernel)(s,t) = \int_{-\infty}^{+\infty}{\int_{-\infty}^{+\infty}{image(x,y) \cdot kernel(s-x,t-y) \; \mathrm{d}x\mathrm{d}y}}}
      *
-     * @param image
-     * @param kernel
-     * @param padding_type
-     * @return
+     * @param image an input image
+     * @param kernel convolution kernel
+     * @param padding_type one of the padding types ({@code PADDING_NONE}, {@code PADDING_ZERO}, {@code PADDING_DUPLICATE}, or {@code PADDING_CYCLIC})
+     * @return a <strong>new instance</strong> of FloatProcessor that contains the convolved image
      */
-    public static FloatProcessor Convolve(FloatProcessor image, FloatProcessor kernel, int padding_type) {
+    public static FloatProcessor convolve2D(FloatProcessor image, FloatProcessor kernel, int padding_type) {
         assert kernel.getWidth() % 2 == 1;
         assert kernel.getHeight() % 2 == 1;
 

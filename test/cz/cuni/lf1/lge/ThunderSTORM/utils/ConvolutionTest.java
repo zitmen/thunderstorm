@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class ConvolutionTest {
     
     /**
-     * Test of Convolve method, of class Convolution.
+     * Test of convolve2D method, of class Convolution.
      */
     @Test
     public void testConvolve() {
@@ -30,7 +30,7 @@ public class ConvolutionTest {
         
         // row vector kernel
         kernel = new FloatProcessor(3, 1, new float [] {0.1576f, 0.4854f, 0.4218f});
-        result = Convolution.Convolve(image, kernel, Padding.PADDING_ZERO);
+        result = Convolution.convolve2D(image, kernel, Padding.PADDING_ZERO);
         expResult = new float [] {
             12.0342f, 18.9778f, 11.8694f,  6.6690f, 10.6554f,
             11.9522f, 13.2316f,  7.7132f, 12.2698f, 13.6716f,
@@ -42,7 +42,7 @@ public class ConvolutionTest {
         
         // column vector kernel
         kernel = new FloatProcessor(1, 3, new float [] {0.9572f, 0.4854f, 0.8003f});
-        result = Convolution.Convolve(image, kernel, Padding.PADDING_ZERO);
+        result = Convolution.convolve2D(image, kernel, Padding.PADDING_ZERO);
         expResult = new float [] {
             30.2674f, 16.4356f,  7.1858f, 17.2840f, 22.5962f,
             28.5981f, 27.3774f, 16.6417f, 32.3420f, 40.8293f,
@@ -58,7 +58,7 @@ public class ConvolutionTest {
             0.1576f, 0.4854f, 0.4218f,
             0.9706f, 0.8003f, 0.9157f
         });
-        result = Convolution.Convolve(image, kernel, Padding.PADDING_ZERO);
+        result = Convolution.convolve2D(image, kernel, Padding.PADDING_ZERO);
         expResult = new float [] {
             38.8743f, 33.7818f, 32.7879f, 36.5015f, 27.9572f,
             58.4699f, 67.8308f, 70.8481f, 76.3634f, 56.8981f,

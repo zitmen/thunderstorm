@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import fi.utu.jaolho.LMA.LMA;
-import fi.utu.jaolho.LMA.LMAMultiDimFunction;
+import jaolho.data.lma.LMA;
+import jaolho.data.lma.LMAMultiDimFunction;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.exp;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.pow;

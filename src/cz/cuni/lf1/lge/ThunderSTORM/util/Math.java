@@ -49,7 +49,7 @@ public class Math {
      * Exponential function.
      *
      * @param x a value
-     * @return {@mathjax \e^x}
+     * @return {@mathjax \mathrm{e}^x}
      */
     public static double exp(double x) {
         return org.apache.commons.math3.util.FastMath.exp(x);
