@@ -11,18 +11,22 @@ import java.util.List;
 import java.util.Vector;
 
 /**
+ * Importing CSV files and translating them into internal plugin objects (FloatProcessor, PSF, Point).
  *
  * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class CSV {
     
     /**
+     * Read an input CSV file and interpret the data as an image (FloatProcessor).
      *
-     * @param fname
-     * @return
-     * @throws IOException
+     * @param fname path to an input CSV file
+     * @return a <strong>new instance</strong> of FloatProcessor that contains data from the input CSV file
+     * 
+     * @throws IOException if the input file specified by {@fname was not found or cannot be opened for reading}
+     * @throws InvalidObjectException if the input file does not contain any data
      */
-    public static FloatProcessor csv2fp(String fname) throws IOException {
+    public static FloatProcessor csv2fp(String fname) throws IOException, InvalidObjectException {
         CSVReader csvReader = new CSVReader(new FileReader(fname));
         List<String[]> lines = csvReader.readAll();
         csvReader.close();
@@ -40,14 +44,24 @@ public class CSV {
     }
 
     /**
+     * Read an input CSV file and interpret the data as a set of PSFs (Point Spread Functions).
+     * 
+     * The input data are supposed to be in the following format:
+     * <pre>{@code x,y,sigma,Intensity}</pre>
+     * The background parameter is by default set to zero and it is not expected to be
+     * found in the input file.
      *
-     * @param fname
-     * @param start_row
-     * @param start_col
-     * @return
-     * @throws IOException
+     * @param fname path to an input CSV file
+     * @param start_row row offset from which we want to read the data
+     * @param start_col column offset from which we want to read the data
+     * @return a Vector of PSFs initialized based on the data in CSV file
+     * 
+     * @throws IOException if the input file specified by {@fname was not found or cannot be opened for reading}
+     * @throws InvalidObjectException if the input file does not contain any data
+     * 
+     * @see PSF
      */
-    public static Vector<PSF> csv2psf(String fname, int start_row, int start_col) throws IOException {
+    public static Vector<PSF> csv2psf(String fname, int start_row, int start_col) throws IOException, InvalidObjectException {
         CSVReader csvReader = new CSVReader(new FileReader(fname));
         List<String[]> lines = csvReader.readAll();
         csvReader.close();
@@ -69,12 +83,21 @@ public class CSV {
     }
 
     /**
+     * Read an input CSV file and interpret the data as a set of Points.
+     * 
+     * This method actually calls the {@code csv2psf} method first and then
+     * converts all {@code PSF}s to {@code Point}s, i.e., fills the
+     * {@code x,y} coordinates.
      *
-     * @param fname
-     * @param start_row
-     * @param start_col
-     * @return
-     * @throws IOException
+     * @param fname path to an input CSV file
+     * @param start_row row offset from which we want to read the data
+     * @param start_col column offset from which we want to read the data
+     * @return a Vector of PSFs initialized based on the data in CSV file
+     * 
+     * @throws IOException if the input file specified by {@fname was not found or cannot be opened for reading}
+     * @throws InvalidObjectException if the input file does not contain any data
+     * 
+     * @see Point
      */
     public static Vector<Point> csv2point(String fname, int start_row, int start_col) throws IOException {
         Vector<PSF> list = csv2psf(fname, start_row, start_col);
