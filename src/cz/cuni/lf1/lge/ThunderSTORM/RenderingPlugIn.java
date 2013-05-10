@@ -1,6 +1,12 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import cz.cuni.lf1.rendering.ASHRendering;
+import cz.cuni.lf1.rendering.DensityRendering;
+import cz.cuni.lf1.rendering.HistogramRendering;
+import cz.cuni.lf1.rendering.RenderingMethod;
+import cz.cuni.lf1.rendering.ScatterRendering;
 import ij.IJ;
+import ij.ImagePlus;
 import ij.gui.GenericDialog;
 import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
@@ -30,15 +36,15 @@ public class RenderingPlugIn implements PlugIn {
 
     double[] xpos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_X_POS));
     double[] ypos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_Y_POS));
-    if (xpos != null && ypos != null) {
+    if (xpos == null || ypos == null) {
       IJ.error("results were null");
       return;
     }
 
     GenericDialog gd = new GenericDialog("New Image");
     gd.addChoice("Method", METHODS, "ASH");
-    gd.addNumericField("Image_size_X", 0, 0);
-    gd.addNumericField("Image_size_Y", 0, 0);
+    gd.addNumericField("Image_size_X", max(xpos), 2);
+    gd.addNumericField("Image_size_Y", max(ypos), 2);
     gd.addNumericField("Resolution", 0.2, 3);
 
     gd.showDialog();
@@ -50,14 +56,30 @@ public class RenderingPlugIn implements PlugIn {
     int imSizeY = (int) gd.getNextNumber();
     double resolution = gd.getNextNumber();
 
+    RenderingMethod renderer;
     if ("Density".equals(selectedMethod)) {
-      
+      renderer = new DensityRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).build();
     } else if ("ASH".equals(selectedMethod)) {
+      renderer = new ASHRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).shifts(2).build();
     } else if ("Histogram".equals(selectedMethod)) {
+      renderer = new HistogramRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).build();
     } else if ("Scatter".equals(selectedMethod)) {
+      renderer = new ScatterRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).build();
     } else {
-      IJ.error("Unknown rendering method.");
+      IJ.error("Unknown rendering method. " + selectedMethod);
       return;
     }
+    new ImagePlus(renderer.getClass().getSimpleName(), renderer.getRenderedImage(xpos, ypos, 0.2)).show();
+
+  }
+
+  private double max(double[] arr) {
+    double max = arr[0];
+    for (int i = 0; i < arr.length; i++) {
+      if (arr[i] > max) {
+        max = arr[i];
+      }
+    }
+    return max;
   }
 }
