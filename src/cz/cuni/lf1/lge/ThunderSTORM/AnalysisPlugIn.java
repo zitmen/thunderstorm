@@ -70,6 +70,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
      * to fill the {@code ResultsTable} and to visualize the detections directly
      * in image stack (a new copy of image stack is created).
      * 
+     * <strong>The {@code ResultsTable} is always guaranteed to contain columns <i>frame, x, y</i>!</strong>
+     * The other parameters are optional and can change for different PSFs.
+     * 
      * @param command command
      * @param imp ImagePlus instance holding the active image (not required)
      * @return flags specifying capabilities of the plugin
@@ -85,13 +88,14 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 rt = new ResultsTable();
                 Analyzer.setResultsTable(rt);
             }
+            rt.reset();
             for(int frame = 1; frame <= stackSize; frame++) {
                 for(PSF psf : results[frame]) {
                     rt.incrementCounter();
                     rt.addValue("frame", frame);
-                    rt.addValue("x [px]", psf.xpos);
-                    rt.addValue("y [px]", psf.ypos);
-                    rt.addValue("\u03C3 [px]", ((GaussianPSF)psf).sigma);
+                    rt.addValue("x", psf.xpos);
+                    rt.addValue("y", psf.ypos);
+                    rt.addValue("\u03C3", ((GaussianPSF)psf).sigma);
                     rt.addValue("Intensity", psf.intensity);
                     rt.addValue("background", psf.background);
                 }
