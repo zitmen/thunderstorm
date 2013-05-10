@@ -6,8 +6,6 @@ import java.util.Vector;
 
 /**
  * The interface every detector has to implement.
- *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public interface IDetector {
     /**

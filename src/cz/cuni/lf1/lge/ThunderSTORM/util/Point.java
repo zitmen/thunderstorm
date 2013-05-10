@@ -8,8 +8,6 @@ import java.util.Comparator;
  * The class encapsulates X,Y representation of a single point and its
  * intensity.
  * 
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
- * 
  * @param <T> is a Number subclass, often Integer or Double
  */
 public class Point<T extends Number> {

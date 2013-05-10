@@ -4,8 +4,6 @@ import ij.process.FloatProcessor;
 
 /**
  * The interface every filter has to implement.
- *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public interface IFilter {
     

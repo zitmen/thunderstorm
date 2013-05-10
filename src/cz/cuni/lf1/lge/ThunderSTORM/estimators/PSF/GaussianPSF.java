@@ -7,8 +7,6 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
  * 
  * <strong>Note that this class will be completely changed in a future relase.</strong>
  * Now the class represents only 2D symmetric Gaussian model.
- *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class GaussianPSF extends PSF {
 

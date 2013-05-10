@@ -19,8 +19,6 @@ import javax.swing.JPanel;
  * underneath the combo box.
  *
  * @see IModule
- * 
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class CardsPanel implements ItemListener {
 

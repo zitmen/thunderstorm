@@ -15,7 +15,6 @@ import javax.swing.JTextField;
 // This filter uses the same trick to be effective as the DoG filter
 /**
  *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public final class LoweredGaussianFilter implements IFilter, IModule {
     

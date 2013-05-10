@@ -8,8 +8,6 @@ import java.awt.Color;
 
 /**
  * Overlay for preview of results.
- *
- * @author Josef Borkovec &lt;josef.borkovec[at]lf1.cuni.cz&gt;
  */
 public class RenderingOverlay {
 

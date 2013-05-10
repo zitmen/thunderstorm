@@ -4,9 +4,6 @@ import java.util.Arrays;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- * @author Martin Ovesny <martin.ovesny[at]lf1.cuni.cz>
- */
 public class UniformFilterTest {
     
     /**

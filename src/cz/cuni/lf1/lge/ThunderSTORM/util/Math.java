@@ -13,8 +13,6 @@ import java.util.Arrays;
  * Our decision was to use highly optimized FastMath class from Apache Commons Math3
  * library, which performs much better in our scenario (many calls to {@code exp})
  * than the general Java Math class.
- * 
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class Math {
     

@@ -7,8 +7,6 @@ import java.util.Vector;
 
 /**
  * Methods for applying graph algorithms on images.
- *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class Graph {
 

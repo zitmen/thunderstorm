@@ -26,7 +26,6 @@ import javax.swing.JSeparator;
 
 /**
  *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 

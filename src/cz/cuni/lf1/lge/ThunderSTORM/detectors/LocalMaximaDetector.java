@@ -15,7 +15,6 @@ import javax.swing.JTextField;
 
 /**
  *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class LocalMaximaDetector implements IDetector, IModule {
 

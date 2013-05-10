@@ -6,7 +6,6 @@ import java.util.Arrays;
 
 /**
  *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class UniformFilter extends ConvolutionFilter {
 

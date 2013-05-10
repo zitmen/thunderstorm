@@ -20,7 +20,6 @@ import ij.IJ;
 
 /**
  *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class LeastSquaresEstimator implements IEstimator, IModule {
     

@@ -17,7 +17,6 @@ import javax.swing.JTextField;
 // However there is a question of how much is the performance degraded due to the memory allocation of 2 images instead of 1.
 /**
  *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
 

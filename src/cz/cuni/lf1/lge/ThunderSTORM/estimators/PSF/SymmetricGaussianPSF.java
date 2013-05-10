@@ -4,9 +4,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
  * Representation of 2D symmetric Gaussian PSF model.
  * 
  * <strong>Note that this class will be completely changed in a future relase.</strong>
- *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
- */public class SymmetricGaussianPSF extends GaussianPSF {
+ */
+public class SymmetricGaussianPSF extends GaussianPSF {
     
     /**
      *

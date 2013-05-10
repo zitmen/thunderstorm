@@ -18,8 +18,6 @@ import java.awt.GridBagConstraints;
  * </pre>
  * So the whole call of {@code panel.add} can be in a single line without
  * filling the {@code GridBagConstraints} class every single call.
- * 
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class GridBagHelper {
     
