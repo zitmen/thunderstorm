@@ -70,13 +70,42 @@
     properties which you can use, check the target you are overriding in the
     nbproject/build-impl.xml file. 
 
+  -->
+  <target name="-post-jar" depends="compile">
+
+    <!-- Change the value of this property to be the name of your JAR,
+         minus the .jar extension. It should not have spaces.
+         <property name="store.jar.name" value="MyJarName"/>
     -->
-    <target name="-post-compile">
-        <copy todir="${build.classes.dir}">
-            <fileset dir="lib/commons-math3-3.2"/>
-            <fileset dir="lib/opencsv-2.3"/>
-            <fileset dir="lib/Jama-1.0.3"/>
-            <fileset dir="lib/lma-1.3"/>
-        </copy>
-    </target>
+    <property name="store.jar.name" value="MarsRoverViewer"/>
+
+    <!-- don't edit below this line -->
+
+    <property name="store.dir" value="dist"/>
+    <property name="store.jar" value="${store.dir}/UBER_${ant.project.name}.jar"/>
+
+    <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
+
+    <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
+      <zipgroupfileset dir="dist" includes="*.jar"/>
+      <zipgroupfileset dir="lib/repackage" includes="*.jar" excludes="ij.jar"/>
+
+      <manifest>
+        <attribute name="Main-Class" value="${main.class}"/>
+      </manifest>
+    </jar>
+
+    <zip destfile="${store.jar}">
+      <zipfileset src="${store.dir}/temp_final.jar"
+                        excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
+    </zip>
+
+    <delete file="${store.dir}/temp_final.jar"/>
+
+  </target>
+  <target name="-post-compile">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="lib/lma-1.3"/>
+    </copy>
+  </target>
 </project>
