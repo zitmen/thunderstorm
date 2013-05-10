@@ -128,9 +128,6 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
 
         // Create and show the dialog
         AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, 6, detectors, 2, estimators, 0);
-        dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        dialog.addComponentsToPane();
-        dialog.pack();
         dialog.setVisible(true);
         if(dialog.wasCanceled())    // This is a blocking call!!
         {

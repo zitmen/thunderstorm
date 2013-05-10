@@ -53,7 +53,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
   public AnalysisOptionsDialog(ImagePlus imp, String command, Vector<IModule> filters, int default_filter, Vector<IModule> detectors, int default_detector, Vector<IModule> estimators, int default_estimator) {
     super((JFrame) null, command);
     //
-    this.canceled = false;
+    this.canceled = true;
     //
     this.imp = imp;
     //
@@ -71,12 +71,15 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     this.activeFilter = null;
     this.activeDetector = null;
     this.activeEstimator = null;
+
+    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    addComponentsToPane();
   }
 
   /**
    *
    */
-  public void addComponentsToPane() {
+  private void addComponentsToPane() {
     Container pane = getContentPane();
     //
     pane.setLayout(new GridBagLayout());
@@ -105,6 +108,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     buttons.add(ok);
     buttons.add(cancel);
     pane.add(buttons, componentConstraints);
+
+    pack();
   }
 
   /**
@@ -114,7 +119,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getActionCommand().equals("Cancel")) {
-      dispose(true);
+      closeDialog(true);
     } else if (e.getActionCommand().equals("Ok")) {
       activeFilter = (IFilter) filters.getActiveComboBoxItem();
       activeDetector = (IDetector) detectors.getActiveComboBoxItem();
@@ -124,7 +129,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
       ((IModule) activeDetector).readParameters();
       ((IModule) activeEstimator).readParameters();
       //
-      dispose(false);
+      closeDialog(false);
     } else if (e.getActionCommand().equals("Preview")) {
       activeFilter = (IFilter) filters.getActiveComboBoxItem();
       activeDetector = (IDetector) detectors.getActiveComboBoxItem();
@@ -152,13 +157,18 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     }
   }
 
+  @Override
+  public void dispose() {
+    super.dispose();
+    semaphore.release();
+  }
+
   /**
    *
    * @param cancel
    */
-  public void dispose(boolean cancel) {
+  public void closeDialog(boolean cancel) {
     canceled = cancel;
-    semaphore.release();
     dispose();
   }
 
