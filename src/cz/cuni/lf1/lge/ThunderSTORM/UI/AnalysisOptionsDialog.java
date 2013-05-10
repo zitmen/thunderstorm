@@ -57,13 +57,9 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     //
     this.imp = imp;
     //
-    this.filters = new CardsPanel(filters);
-    this.detectors = new CardsPanel(detectors);
-    this.estimators = new CardsPanel(estimators);
-    //
-    this.filters.setDefaultComboBoxItem(default_filter);
-    this.detectors.setDefaultComboBoxItem(default_detector);
-    this.estimators.setDefaultComboBoxItem(default_estimator);
+    this.filters = new CardsPanel(filters, default_filter);
+    this.detectors = new CardsPanel(detectors, default_detector);
+    this.estimators = new CardsPanel(estimators, default_estimator);
     //
     this.preview = new JButton("Preview");
     this.ok = new JButton("Ok");
@@ -111,6 +107,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     pane.add(buttons, componentConstraints);
   }
 
+  /**
+   * 
+   * @param e 
+   */
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getActionCommand().equals("Cancel")) {

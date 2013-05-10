@@ -7,29 +7,37 @@ import ij.gui.Overlay;
 import java.awt.Color;
 
 /**
+ * Overlay for preview of results.
  *
  * @author Josef Borkovec &lt;josef.borkovec[at]lf1.cuni.cz&gt;
  */
 public class RenderingOverlay {
 
     /**
-     *
+     * Cross.
      */
     public static final int MARKER_CROSS = 1;
+    
     /**
-     *
+     * Circle.
      */
     public static final int MARKER_CIRCLE = 2;
 
     /**
+     * Put markers at the positions of positions of molecules specified by X,Y coordinates on to an input image.
+     * 
+     * If the input {@code ImagePlus} instance contains a stack, the marker will be put
+     * into one global Overlay, which is shown for each slice of the stack.
      *
-     * @param imp
-     * @param xCoord
-     * @param yCoord
-     * @param c
-     * @param markerType
+     * @param imp image window to which the markers will be drawn
+     * @param xCoord array of X coordinates
+     * @param yCoord array of Y coordinates
+     * @param c color of markers
+     * @param markerType one of the predefined marker-types ({@code MARKER_CIRCLE} or {@code MARKER_CROSS})
      */
     public static void showPointsInImage(ImagePlus imp, double[] xCoord, double[] yCoord, Color c, int markerType) {
+        assert(xCoord.length == yCoord.length);
+        
         Overlay overlay = imp.getOverlay();
         if (overlay == null) {
             overlay = new Overlay();
@@ -39,15 +47,19 @@ public class RenderingOverlay {
     }
 
     /**
-     *
-     * @param imp
-     * @param xCoord
-     * @param yCoord
-     * @param slice
-     * @param c
-     * @param markerType
+     * Put markers at the positions of positions of molecules specified by X,Y coordinates on to a specific slice of a stack.
+     * 
+     * @param imp image window to which the markers will be drawn
+     * @param xCoord array of X coordinates
+     * @param yCoord array of Y coordinates
+     * @param slice slice number (indexing starts from 1). If the slice number is 0, the markers
+     *              will be put into one global Overlay, which is shown for each slice of the stack.
+     * @param c color of markers
+     * @param markerType one of the predefined marker-types ({@code MARKER_CIRCLE} or {@code MARKER_CROSS})
      */
     public static void showPointsInImageSlice(ImagePlus imp, double[] xCoord, double[] yCoord, int slice, Color c, int markerType) {
+        assert(xCoord.length == yCoord.length);
+        
         Overlay overlay = imp.getOverlay();
         if (overlay == null) {
             overlay = new Overlay();

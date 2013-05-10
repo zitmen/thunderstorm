@@ -41,8 +41,18 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 /**
+ * ThunderSTORM plugin.
+ * 
+ * <br /><strong>Commands:</strong>
+ * <ul>
+ *   <li>analysis: open the options dialog, process an image stack to revieve
+ *                 a list of localized molecules which will get displayed in
+ *                 the ResultsTable and previed in a new ImageStack with detections
+ *                 marked as crosses in Overlay of each slice of the stack</li>
+ *   <li>rendering: TODO</li>
+ * </ul>
  *
- * @author Martin
+ * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public final class Thunder_STORM implements ExtendedPlugInFilter {
 
@@ -59,12 +69,28 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
     private Vector<PSF>[] results;
     private FloatProcessor[] images;
     
+    /**
+     * Returns flags specifying capabilities of the plugin.
+     * 
+     * @param command command, e.g., "analysis", "rendering", etc. (not required in this version)
+     * @param imp ImagePlus instance holding the active image (not required in this version)
+     * @return flags specifying capabilities of the plugin
+     */
     @Override
-    public int setup(String string, ImagePlus imp) {
+    public int setup(String command, ImagePlus imp) {
         // Grayscale only, no changes to the image and therefore no undo
         return pluginFlags;
     }
     
+    /**
+     * Show the options dialog for a particular command and block the current
+     * processing thread until user confirms his settings or cancels the operation.
+     * 
+     * @param command command, e.g., "analysis", "rendering", etc. (not required in this version)
+     * @param imp ImagePlus instance holding the active image (not required in this version)
+     * @param pfr (not required in this version)
+     * @return 
+     */
     @Override
     public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
         // Use an appropriate Look and Feel
@@ -122,6 +148,13 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
         }
     }
 
+    /**
+     * Gives the plugin information about the number of passes through the image stack we want to process.
+     * 
+     * Allocation of resources to store the results is done here.
+     * 
+     * @param nPasses number of passes through the image stack we want to process
+     */
     @Override
     public void setNPasses(int nPasses) {
         stackSize = nPasses;
@@ -130,6 +163,16 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
         images = new FloatProcessor[stackSize+1];
     }
 
+    /**
+     * Run the plugin.
+     * 
+     * This method is ran in parallel, thus saving the results must be synchronized,
+     * which is achieved by using the ReentrantLock. When processing the last frame,
+     * the ResultsTable is filled and the image stack with visualization of detections
+     * is built.
+     * 
+     * @param ip input image
+     */
     @Override
     public void run(ImageProcessor ip) {
         assert(filter != null) : "Filter was not selected!";
