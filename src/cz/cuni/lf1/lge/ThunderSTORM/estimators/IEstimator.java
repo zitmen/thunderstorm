@@ -7,8 +7,6 @@ import java.util.Vector;
 
 /**
  * The interface every estimator has to implement.
- *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public interface IEstimator {
     

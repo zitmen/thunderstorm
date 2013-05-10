@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 // Here we use double padding to simulate conv2 function and to keep the results identical to the Matlab version.
 /**
  *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public final class CompoundWaveletFilter implements IFilter, IModule {
 

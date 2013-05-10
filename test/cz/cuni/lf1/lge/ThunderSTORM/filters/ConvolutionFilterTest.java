@@ -6,9 +6,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 
-/**
- * @author Martin Ovesny <martin.ovesny[at]lf1.cuni.cz>
- */
 public class ConvolutionFilterTest {
     
     float [] kernel, kernel_x, kernel_y;

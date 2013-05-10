@@ -11,8 +11,6 @@ import java.util.Comparator;
  * the symmetric 2D Gaussian model.
  * 
  * <strong>This class and its children need to be refactored!</strong>
- * 
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public abstract class PSF {
     

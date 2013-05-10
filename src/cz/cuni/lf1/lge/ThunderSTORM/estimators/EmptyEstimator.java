@@ -7,7 +7,6 @@ import java.util.Vector;
 
 /**
  *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class EmptyEstimator implements IEstimator {
 

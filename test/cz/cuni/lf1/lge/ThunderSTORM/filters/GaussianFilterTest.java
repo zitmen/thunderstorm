@@ -5,9 +5,6 @@ import ij.process.FloatProcessor;
 import static org.junit.Assert.assertArrayEquals;
 import org.junit.Test;
 
-/**
- * @author Martin Ovesny <martin.ovesny[at]lf1.cuni.cz>
- */
 public class GaussianFilterTest {
     
     /**

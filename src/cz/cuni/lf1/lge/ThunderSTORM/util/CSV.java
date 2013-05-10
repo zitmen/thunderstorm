@@ -12,8 +12,6 @@ import java.util.Vector;
 
 /**
  * Importing CSV files and translating them into internal plugin objects (FloatProcessor, PSF, Point).
- *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class CSV {
     

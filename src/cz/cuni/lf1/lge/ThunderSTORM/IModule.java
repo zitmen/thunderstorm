@@ -9,8 +9,6 @@ import javax.swing.JPanel;
  * appear in the main window of this plugin.
  * For example different filters, detectors or estimators which are listed
  * in the combo boxes in the {@code AnalysisOptionsDialog}.
- *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public interface IModule {
     

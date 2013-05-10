@@ -6,8 +6,6 @@ import java.util.Arrays;
 
 /**
  * Morphological operations (only dilation was needed so far).
- * 
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class Morphology {
     

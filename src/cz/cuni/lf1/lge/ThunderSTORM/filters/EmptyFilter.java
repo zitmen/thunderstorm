@@ -6,7 +6,6 @@ import javax.swing.JPanel;
 
 /**
  *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public final class EmptyFilter implements IFilter, IModule {
 

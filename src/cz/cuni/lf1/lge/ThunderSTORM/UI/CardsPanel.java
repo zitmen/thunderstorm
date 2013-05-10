@@ -12,8 +12,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
  
 /**
+ * UI panel which contains a combo box with selection different modules
+ * (they must implement IModule) and their options panels.
+ * 
+ * When a module is selected from the combo box, its options panel gets shown
+ * underneath the combo box.
  *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
+ * @see IModule
  */
 public class CardsPanel implements ItemListener {
 
@@ -22,35 +27,30 @@ public class CardsPanel implements ItemListener {
     private Vector<IModule> items;
     
     /**
+     * Initialize the panel.
+     * 
+     * Insert names of modules into the combo box, initialize the options panels
+     * of the modules, and show the options panel of {@code items[index_default]} module.
      *
-     * @param items
+     * @param items Vector of modules you want to insert into the combo box
+     * @param index_default index of an item you want to be selected
      */
-    public CardsPanel(Vector<IModule> items) {
+    public CardsPanel(Vector<IModule> items, int index_default) {
         this.items = items;
         cardsPanel = createCardsPanel();
+        cb.setSelectedIndex(index_default);
     }
     
     /**
+     * Return the the module selected in the combo box.
      *
-     * @param index
-     */
-    public void setDefaultComboBoxItem(int index) {
-        cb.setSelectedIndex(index);
-    }
-    
-    /**
-     *
-     * @return
+     * @return the module selected in the combo box
      */
     public IModule getActiveComboBoxItem() {
         return items.elementAt(cb.getSelectedIndex());
     }
-     
-    /**
-     *
-     * @return
-     */
-    public final JPanel createCardsPanel() {
+    
+    private JPanel createCardsPanel() {
         String comboBoxItems[] = new String[items.size()];
         for(int i = 0; i < items.size(); i++) {
             comboBoxItems[i] = items.elementAt(i).getName();
@@ -78,18 +78,28 @@ public class CardsPanel implements ItemListener {
     }
     
     /**
+     * Return a JPanel containing all the options of the inserted modules.
      *
-     * @param name
-     * @return
+     * @param title title of the panel shown next to the combo box
+     * @return a <strong>new instance</strong> of JPanel which contains
+     *         the label with title of panel, the combo box with all the modules,
+     *         and the options panels with the options of selected module on top
+     *         (the other options are hidden and they will get shown after a
+     *         specific module gets selected from the combo box)
      */
-    public JPanel getPanel(String name) {
+    public JPanel getPanel(String title) {
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.add(new JLabel(name), GridBagHelper.pos(0, 0));
+        panel.add(new JLabel(title), GridBagHelper.pos(0, 0));
         panel.add(cb, GridBagHelper.pos(1, 0));
         panel.add(cardsPanel, GridBagHelper.pos_size(0, 1, 2, 1));
         return panel;
     }
-     
+    
+    /**
+     * Select a options panel of a selected module in the combo box.
+     * 
+     * @param evt event object (not required)
+     */
     @Override
     public void itemStateChanged(ItemEvent evt) {
         CardLayout cl = (CardLayout)(cardsPanel.getLayout());

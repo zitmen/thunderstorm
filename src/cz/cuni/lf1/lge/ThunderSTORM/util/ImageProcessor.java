@@ -4,8 +4,6 @@ import ij.process.FloatProcessor;
 
 /**
  * Helper class to offer some additional functionality over the ImageProcessor from ImageJ.
- * 
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class ImageProcessor {
 

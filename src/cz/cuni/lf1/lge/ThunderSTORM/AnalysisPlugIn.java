@@ -36,15 +36,18 @@ import ij.process.ImageProcessor;
 import java.awt.Color;
 import java.util.Vector;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 /**
- *
- * @author Martin
+ * ThunderSTORM Analysis plugin.
+ * 
+ * Open the options dialog, process an image stack to recieve
+ * a list of localized molecules which will get displayed in
+ * the {@code ResultsTable} and previed in a new {@code ImageStack} with detections
+ * marked as crosses in {@code Overlay} of each slice of the stack.
  */
-public final class Thunder_STORM implements ExtendedPlugInFilter {
+public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
     private IFilter filter;
     private IDetector detector;
@@ -55,99 +58,25 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
     
     private final ReentrantLock lock = new ReentrantLock();
     
-    private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS ;
+    private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING ;
     private Vector<PSF>[] results;
     private FloatProcessor[] images;
     
+    /**
+     * Returns flags specifying capabilities of the plugin.
+     * 
+     * This method is called before an actual analysis and returns flags supported
+     * by the plugin. The method is also called after the processing is finished
+     * to fill the {@code ResultsTable} and to visualize the detections directly
+     * in image stack (a new copy of image stack is created).
+     * 
+     * @param command command
+     * @param imp ImagePlus instance holding the active image (not required)
+     * @return flags specifying capabilities of the plugin
+     */
     @Override
-    public int setup(String string, ImagePlus imp) {
-        // Grayscale only, no changes to the image and therefore no undo
-        return pluginFlags;
-    }
-    
-    @Override
-    public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
-        // Use an appropriate Look and Feel
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-            //UIManager.put("swing.boldMetal", Boolean.FALSE);
-        } catch (UnsupportedLookAndFeelException ex) {
-            IJ.error(ex.getMessage());
-        } catch (IllegalAccessException ex) {
-            IJ.error(ex.getMessage());
-        } catch (InstantiationException ex) {
-            IJ.error(ex.getMessage());
-        } catch (ClassNotFoundException ex) {
-            IJ.error(ex.getMessage());
-        }
-        
-        // Create and set up the content pane.
-        Vector<IModule> filters = new Vector<IModule>();
-        filters.add(new EmptyFilter());
-        filters.add(new BoxFilter(3));
-        filters.add(new MedianFilter(MedianFilter.BOX, 3));
-        filters.add(new GaussianFilter(11, 1.6));
-        filters.add(new DifferenceOfGaussiansFilter(11, 1.6, 1.0));
-        filters.add(new LoweredGaussianFilter(11, 1.6));
-        filters.add(new CompoundWaveletFilter(false));
-
-        Vector<IModule> detectors = new Vector<IModule>();
-        detectors.add(new LocalMaximaDetector(Graph.CONNECTIVITY_8, 10.0));
-        detectors.add(new NonMaxSuppressionDetector(3, 6.0));
-        detectors.add(new CentroidOfConnectedComponentsDetector(false, 1.0));
-
-        Vector<IModule> estimators = new Vector<IModule>();
-        estimators.add(new LeastSquaresEstimator(11));
-
-        // Create and show the dialog
-        AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, 6, detectors, 2, estimators, 0);
-        dialog.setVisible(true);
-        if(dialog.wasCanceled())    // This is a blocking call!!
-        {
-            filter = null;
-            detector = null;
-            estimator = null;
-            return DONE;    // cancel
-        }
-        else
-        {
-            filter = dialog.getFilter();
-            detector = dialog.getDetector();
-            estimator = dialog.getEstimator();
-            return pluginFlags; // ok
-        }
-    }
-
-    @Override
-    public void setNPasses(int nPasses) {
-        stackSize = nPasses;
-        nProcessed = 0;
-        results = new Vector[stackSize+1];  // indexing from 1 for simplicity
-        images = new FloatProcessor[stackSize+1];
-    }
-
-    @Override
-    public void run(ImageProcessor ip) {
-        assert(filter != null) : "Filter was not selected!";
-        assert(detector != null) : "Detector was not selected!";
-        assert(estimator != null) : "Estimator was not selected!";
-        //
-        FloatProcessor fp = (FloatProcessor)ip.convertToFloat();
-        Vector<PSF> fits = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
-        boolean lastFrame = false;
-        //
-        lock.lock();
-        try {
-            results[ip.getSliceNumber()] = fits;
-            images[ip.getSliceNumber()] = fp;
-            nProcessed += 1;
-            lastFrame = (nProcessed == stackSize);
-        } finally {
-            lock.unlock();
-        }
-        //
-        if(lastFrame) {
+    public int setup(String command, ImagePlus imp) {
+        if(command.equals("final")) {
             IJ.showStatus("ThunderSTORM is generating the results...");
             //
             // Show table with results
@@ -189,9 +118,114 @@ public final class Thunder_STORM implements ExtendedPlugInFilter {
             // Finished
             IJ.showProgress(1.0);
             IJ.showStatus("ThunderSTORM finished.");
+            return DONE;
         } else {
-            IJ.showProgress((double)nProcessed / (double)stackSize);
-            IJ.showStatus("ThunderSTORM processing frame " + Integer.toString(nProcessed) + " of " + Integer.toString(stackSize) + "...");
+            return pluginFlags; // Grayscale only, no changes to the image and therefore no undo
         }
+    }
+    
+    /**
+     * Show the options dialog for a particular command and block the current
+     * processing thread until user confirms his settings or cancels the operation.
+     * 
+     * @param command command (not required)
+     * @param imp ImagePlus instance holding the active image (not required)
+     * @param pfr instance that initiated this plugin (not required)
+     * @return 
+     */
+    @Override
+    public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
+        // Use an appropriate Look and Feel
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+            //UIManager.put("swing.boldMetal", Boolean.FALSE);
+        } catch (UnsupportedLookAndFeelException ex) {
+            IJ.error(ex.getMessage());
+        } catch (IllegalAccessException ex) {
+            IJ.error(ex.getMessage());
+        } catch (InstantiationException ex) {
+            IJ.error(ex.getMessage());
+        } catch (ClassNotFoundException ex) {
+            IJ.error(ex.getMessage());
+        }
+        
+        // Create and set up the content pane.
+        Vector<IModule> filters = new Vector<IModule>();
+        filters.add(new EmptyFilter());
+        filters.add(new BoxFilter(3));
+        filters.add(new MedianFilter(MedianFilter.BOX, 3));
+        filters.add(new GaussianFilter(11, 1.6));
+        filters.add(new DifferenceOfGaussiansFilter(11, 1.6, 1.0));
+        filters.add(new LoweredGaussianFilter(11, 1.6));
+        filters.add(new CompoundWaveletFilter(false));
+
+        Vector<IModule> detectors = new Vector<IModule>();
+        detectors.add(new LocalMaximaDetector(Graph.CONNECTIVITY_8, 10.0));
+        detectors.add(new NonMaxSuppressionDetector(3, 6.0));
+        detectors.add(new CentroidOfConnectedComponentsDetector(false, 1.0));
+
+        Vector<IModule> estimators = new Vector<IModule>();
+        estimators.add(new LeastSquaresEstimator(11));
+
+        // Create and show the dialog
+        AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, 6, detectors, 2, estimators, 0);
+        dialog.setVisible(true);
+        if(dialog.wasCanceled()) {  // This is a blocking call!!
+            filter = null;
+            detector = null;
+            estimator = null;
+            return DONE;    // cancel
+        } else {
+            filter = dialog.getFilter();
+            detector = dialog.getDetector();
+            estimator = dialog.getEstimator();
+            return pluginFlags; // ok
+        }
+    }
+
+    /**
+     * Gives the plugin information about the number of passes through the image stack we want to process.
+     * 
+     * Allocation of resources to store the results is done here.
+     * 
+     * @param nPasses number of passes through the image stack we want to process
+     */
+    @Override
+    public void setNPasses(int nPasses) {
+        stackSize = nPasses;
+        nProcessed = 0;
+        results = new Vector[stackSize+1];  // indexing from 1 for simplicity
+        images = new FloatProcessor[stackSize+1];
+    }
+
+    /**
+     * Run the plugin.
+     * 
+     * This method is ran in parallel, thus saving the results must be synchronized,
+     * which is achieved by using the ReentrantLock.
+     * 
+     * @param ip input image
+     */
+    @Override
+    public void run(ImageProcessor ip) {
+        assert(filter != null) : "Filter was not selected!";
+        assert(detector != null) : "Detector was not selected!";
+        assert(estimator != null) : "Estimator was not selected!";
+        //
+        FloatProcessor fp = (FloatProcessor)ip.convertToFloat();
+        Vector<PSF> fits = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
+        //
+        lock.lock();
+        try {
+            results[ip.getSliceNumber()] = fits;
+            images[ip.getSliceNumber()] = fp;
+            nProcessed += 1;
+        } finally {
+            lock.unlock();
+        }
+        //
+        IJ.showProgress((double)nProcessed / (double)stackSize);
+        IJ.showStatus("ThunderSTORM processing frame " + Integer.toString(nProcessed) + " of " + Integer.toString(stackSize) + "...");
     }
 }

@@ -5,8 +5,6 @@ import ij.process.FloatProcessor;
 
 /**
  * Padding of images, which is very useful for convolution and other image filters.
- *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class Padding {
     

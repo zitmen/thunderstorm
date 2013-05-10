@@ -5,7 +5,6 @@ import ij.process.FloatProcessor;
 
 /**
  *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class ConvolutionFilter implements IFilter {
 

@@ -4,8 +4,6 @@ import ij.process.FloatProcessor;
 
 /**
  * Convolution algorithm.
- *
- * @author Martin Ovesny &lt;martin.ovesny[at]lf1.cuni.cz&gt;
  */
 public class Convolution {
 
