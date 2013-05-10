@@ -1,4 +1,4 @@
-package cz.cuni.lf1.lge.ThunderSTORM.rendering;
+package cz.cuni.lf1.lge.ThunderSTORM;
 
 import ij.IJ;
 import ij.gui.GenericDialog;
@@ -10,11 +10,11 @@ import ij.plugin.filter.Analyzer;
  *
  * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
-public class RenderingPlugin implements PlugIn {
+public class RenderingPlugIn implements PlugIn {
 
   private static final String[] METHODS = new String[]{"Density", "ASH", "Histogram", "Scatter"};
-  private static final String LABEL_X_POS = "x [px]";
-  private static final String LABEL_Y_POS = "y [px]";
+  private static final String LABEL_X_POS = "x";
+  private static final String LABEL_Y_POS = "y";
 
   @Override
   public void run(String string) {
