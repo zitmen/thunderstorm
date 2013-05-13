@@ -73,14 +73,6 @@
   -->
   <target name="-post-jar" depends="compile">
 
-    <!-- Change the value of this property to be the name of your JAR,
-         minus the .jar extension. It should not have spaces.
-         <property name="store.jar.name" value="MyJarName"/>
-    -->
-    <property name="store.jar.name" value="MarsRoverViewer"/>
-
-    <!-- don't edit below this line -->
-
     <property name="store.dir" value="dist"/>
     <property name="store.jar" value="${store.dir}/UBER_${ant.project.name}.jar"/>
 
