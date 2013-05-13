@@ -35,7 +35,7 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import java.awt.Color;
 import java.util.Vector;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -54,10 +54,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     private IEstimator estimator;
     
     private int stackSize;
-    private int nProcessed;
-    
-    private final ReentrantLock lock = new ReentrantLock();
-    
+    private AtomicInteger nProcessed = new AtomicInteger(0);
+   
     private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING ;
     private Vector<PSF>[] results;
     private FloatProcessor[] images;
@@ -198,7 +196,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     @Override
     public void setNPasses(int nPasses) {
         stackSize = nPasses;
-        nProcessed = 0;
+        nProcessed.set(0);
         results = new Vector[stackSize+1];  // indexing from 1 for simplicity
         images = new FloatProcessor[stackSize+1];
     }
@@ -220,16 +218,13 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         FloatProcessor fp = (FloatProcessor)ip.convertToFloat();
         Vector<PSF> fits = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
         //
-        lock.lock();
-        try {
+        
             results[ip.getSliceNumber()] = fits;
             images[ip.getSliceNumber()] = fp;
-            nProcessed += 1;
-        } finally {
-            lock.unlock();
-        }
+            nProcessed.incrementAndGet();
+        
         //
-        IJ.showProgress((double)nProcessed / (double)stackSize);
-        IJ.showStatus("ThunderSTORM processing frame " + Integer.toString(nProcessed) + " of " + Integer.toString(stackSize) + "...");
+        IJ.showProgress((double)nProcessed.intValue() / (double)stackSize);
+        IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
     }
 }
