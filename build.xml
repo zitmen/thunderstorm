@@ -95,9 +95,4 @@
     <delete file="${store.dir}/temp_final.jar"/>
 
   </target>
-  <target name="-post-compile">
-    <copy todir="${build.classes.dir}">
-      <fileset dir="lib/lma-1.3"/>
-    </copy>
-  </target>
 </project>
