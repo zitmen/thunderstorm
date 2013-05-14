@@ -14,7 +14,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 /**
- *
+ * Detection of local maxima points.
  */
 public class LocalMaximaDetector implements IDetector, IModule {
 
@@ -24,19 +24,6 @@ public class LocalMaximaDetector implements IDetector, IModule {
     private JTextField thrTextField;
     private JRadioButton conn4RadioButton, conn8RadioButton;
     
-    /**
-     *
-     * @param connectivity
-     * @param threshold
-     */
-    public LocalMaximaDetector(int connectivity, double threshold) {
-        assert((connectivity == Graph.CONNECTIVITY_4) || (connectivity == Graph.CONNECTIVITY_8));
-        
-        this.connectivity = connectivity;
-        this.threshold = threshold;
-    }
-    
-    // values local, (w)est, (e)ast, (n)orth, (s)outh are precomputed too speed things up speed
     private boolean isMax4Thr(FloatProcessor image, int x, int y, float local, boolean w, boolean e, boolean n, boolean s) {
         if(local < threshold) return false;
         
@@ -141,28 +128,51 @@ public class LocalMaximaDetector implements IDetector, IModule {
     }
     
     /**
+     * Constructor.
+     * 
+     * @param connectivity determines in whar neighbourhood will be maxima looked for
+     * @param threshold points with their intensities lower than the threshold will not be included in a list of molecule candidates
+     */
+    public LocalMaximaDetector(int connectivity, double threshold) {
+        assert((connectivity == Graph.CONNECTIVITY_4) || (connectivity == Graph.CONNECTIVITY_8));
+        
+        this.connectivity = connectivity;
+        this.threshold = threshold;
+    }
+    
+    /**
+     * Detection of candidates using the local maxima method.
+     * 
+     * Examples:
+     * <pre>
+     * {@code
+     * 5487
+     * 1934
+     * 4467}
+     * </pre>
+     * Points [x=1,y=1]=9 and [x=3,y=2]=7 were detected as local maxima.
+     * 
+     * <pre>
+     * {@code
+     * 5487
+     * 1994
+     * 4467}
+     * </pre>
+     * Points [x=1,y=1]=9 and [x=2,y=1]=9 were detected as local maxima.
      *
-     * @param image
-     * @return
+     * @param image an input image
+     * @return {@code Vector} of detected {@code Points} {x,y,I}
      */
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
         return ((connectivity == Graph.CONNECTIVITY_4) ? getMax4Candidates(image) : getMax8Candidates(image));
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String getName() {
         return "Search for local maxima";
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public JPanel getOptionsPanel() {
         thrTextField = new JTextField("Threshold", 20);
@@ -181,9 +191,6 @@ public class LocalMaximaDetector implements IDetector, IModule {
         return panel;
     }
 
-    /**
-     *
-     */
     @Override
     public void readParameters() {
         try {

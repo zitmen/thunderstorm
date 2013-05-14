@@ -4,7 +4,17 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Convolution;
 import ij.process.FloatProcessor;
 
 /**
- *
+ * General convolution filter that performs 2D convolution of an input image with
+ * a specified kernel.
+ * 
+ * The trick here is that it is possible to specify kernel either as 2D matrix,
+ * or one or two 1D vectors. Thus if a kernel is separable, then you should
+ * factorize your kernel from a matrix to a vector (in case of symmetric kernel)
+ * or two vectors (in case of asymmetric kernel). This inevitably leads to reducing
+ * the computational complexity from {@mathjax (W_i \cdot H_i) \cdot (W_k \cdot H_k)}
+ * to {@mathjax (W_i \cdot H_i) \cdot (W_k + H_k)}, given that {@mathjax W} stands for width,
+ * {@mathjax H} stands for height, and subscripts {@mathjax i,k} stand for image and kernel,
+ * respectively.
  */
 public class ConvolutionFilter implements IFilter {
 
@@ -12,19 +22,26 @@ public class ConvolutionFilter implements IFilter {
     private FloatProcessor kernel = null, kernel_x = null, kernel_y = null;
     
     /**
-     *
-     * @param padding_method
+     * Change the current padding method.
+     * 
+     * @param padding_method a padding method
+     * 
+     * @see Padding
      */
     public final void updatePaddingMethod(int padding_method) {
         this.padding_method = padding_method;
     }
 
     /**
+     * Replace the current kernel by a new one.
+     * 
+     * The desciption of this method is identical with the description of contructor
+     * {@code ConvolutionFilter(FloatProcessor, boolean, int)} with exception of the padding argument.
      *
      * @param kernel
      * @param separable_kernel
      */
-    public final void updateKernel(FloatProcessor kernel, boolean separable_kernel) {
+    protected final void updateKernel(FloatProcessor kernel, boolean separable_kernel) {
         if (separable_kernel) {
             this.kernel = null;
             if (kernel.getWidth() > 1) {    // kernel = kernel_x -> to get kernel_y (transposition) it has to be rotated to right
@@ -42,21 +59,31 @@ public class ConvolutionFilter implements IFilter {
     }
     
     /**
+     * Replace the current kernel by a new one.
+     * 
+     * The desciption of this method is identical with the description of contructor
+     * {@code ConvolutionFilter(FloatProcessor, FloatProcessor, int)} with exception of the padding argument.
      *
      * @param kernel_x
      * @param kernel_y
      */
-    public final void updateKernel(FloatProcessor kernel_x, FloatProcessor kernel_y) {
+    protected final void updateKernel(FloatProcessor kernel_x, FloatProcessor kernel_y) {
         this.kernel = null;
         this.kernel_x = kernel_x;
         this.kernel_y = kernel_y;
     }
     
     /**
+     * Initialize the filter.
+     * 
+     * Create either a non-separable kernel from a 2D {@code kernel} matrix, or separable
+     * symmetric kernel from a single vector. And also set a padding method.
      *
-     * @param kernel
-     * @param separable_kernel
-     * @param padding_method
+     * @param kernel if {@code separable_kernel} is true, then 2D kernel matrix, or a 1D vector otherwise (can be row or column)
+     * @param separable_kernel is the kernel entered in as separable?
+     * @param padding_method a padding method
+     * 
+     * @see Padding
      */
     public ConvolutionFilter(FloatProcessor kernel, boolean separable_kernel, int padding_method) {
         updateKernel(kernel, separable_kernel);
@@ -64,21 +91,24 @@ public class ConvolutionFilter implements IFilter {
     }
     
     /**
+     * Initialize the filter.
+     * 
+     * Create a separable kernel using X and Y component vectors and specify a padding method.
+     * This method is usually used for specifying assymetric kernels, which have different
+     * X and Y components. For other types of kernels you can call
+     * {@code ConvolutionFilter(FloatProcessor, boolean, int)} signature instead.
      *
-     * @param kernel_x
-     * @param kernel_y
-     * @param padding_method
+     * @param kernel_x X component of a separable kernel (must be a row vector)
+     * @param kernel_y Y component of a separable kernel (must be a column vector)
+     * @param padding_method a padding method
+     * 
+     * @see Padding
      */
     public ConvolutionFilter(FloatProcessor kernel_x, FloatProcessor kernel_y, int padding_method) {
         updateKernel(kernel_x, kernel_y);
         updatePaddingMethod(padding_method);
     }
 
-    /**
-     *
-     * @param image
-     * @return
-     */
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         // With non-separable kernels, the complexity is K*K*N,
@@ -88,24 +118,27 @@ public class ConvolutionFilter implements IFilter {
     }
     
     /**
+     * Return a row vector, which is part of a separable kernel or return null if the kernel is not separable.
      *
-     * @return
+     * @return a row vector, which is part of a separable kernel or return null if the kernel is not separable
      */
     public FloatProcessor getKernelX(){
         return kernel_x;
     }
     
     /**
+     * Return a column vector, which is part of a separable kernel or return null if the kernel is not separable.
      *
-     * @return
+     * @return a column vector, which is part of a separable kernel or return null if the kernel is not separable
      */
     public FloatProcessor getKernelY(){
         return kernel_y;
     }
     
     /**
+     * Return a 2D kernel matrix, or return null if the kernel is separable.
      *
-     * @return
+     * @return a 2D kernel matrix, or return null if the kernel is separable
      */
     public FloatProcessor getKernel(){
         return kernel;

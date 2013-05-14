@@ -5,41 +5,28 @@ import ij.process.FloatProcessor;
 import javax.swing.JPanel;
 
 /**
- *
+ * No filtering.
+ * 
+ * This is useful in case of detectors of estimators that work better with raw images.
+ * The {@code filterImage} method returns the {@code image} that it got on its input.
  */
 public final class EmptyFilter implements IFilter, IModule {
 
-    /**
-     *
-     * @param image
-     * @return
-     */
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         return image;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String getName() {
         return "No filter";
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public JPanel getOptionsPanel() {
         return null;
     }
 
-    /**
-     *
-     */
     @Override
     public void readParameters() {
         // nothing to do here

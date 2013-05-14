@@ -9,9 +9,16 @@ import ij.process.FloatProcessor;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-// Here we use double padding to simulate conv2 function and to keep the results identical to the Matlab version.
 /**
- *
+ * This wavelet filter is implemented as an undecimated wavelet transform using B-spline of third order.
+ * 
+ * This filter uses the separable kernel feature.
+ * Note that in the convolution with the wavelet kernels we use padding twice to
+ * simulate {@code conv2} function from Matlab to keep the results identical to
+ * the results we got in Matlab version of ThunderSTORM.
+ * 
+ * @see WaveletFilter
+ * @see ConvolutionFilter
  */
 public final class CompoundWaveletFilter implements IFilter, IModule {
 
@@ -23,8 +30,9 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
     private JCheckBox thirdCheckBox;
     
     /**
+     * Initialize the filter with all the wavelet kernels needed to create the wavelet transform.
      *
-     * @param third_plane
+     * @param third_plane if {@code true} use 3rd plane for detection; otherwise use 2nd plane instead
      */
     public CompoundWaveletFilter(boolean third_plane) {
         this.third_plane = third_plane;
@@ -36,18 +44,11 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
         this.margin = w3.getKernelX().getWidth() / 2;
     }
     
-    /**
-     *
-     * @param image
-     * @return
-     */
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         FloatProcessor padded = Padding.addBorder(image, Padding.PADDING_DUPLICATE, margin);
         FloatProcessor V1 = w1.filterImage(padded);
         FloatProcessor V2 = w2.filterImage(V1);
-        
-        //double stddev = cropImage(subtractImage(image, V1), margin, margin, image.getWidth(), image.getHeight()).getStatistics().stdDev;
         
         if (third_plane) {
             FloatProcessor V3 = w3.filterImage(V2);
@@ -56,19 +57,11 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
         return cropImage(subtractImage(V1, V2), margin, margin, image.getWidth(), image.getHeight());
     }
     
-    /**
-     *
-     * @return
-     */
     @Override
     public String getName() {
         return "Wavelet filter";
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public JPanel getOptionsPanel() {
         thirdCheckBox = new JCheckBox("third plane");
@@ -79,9 +72,6 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
         return panel;
     }
 
-    /**
-     *
-     */
     @Override
     public void readParameters() {
         try {

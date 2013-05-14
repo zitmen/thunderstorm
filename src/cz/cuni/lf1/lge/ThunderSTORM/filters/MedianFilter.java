@@ -12,18 +12,36 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 /**
- *
+ * Apply a median filter on an input image.
  */
 public final class MedianFilter implements IFilter, IModule {
 
     /**
-     *
+     * Setting the cross pattern will calculate the median of 5 values (center, left, right, top, and bottom).
+     * 
+     * Cross pattern:
+     * <pre>
+     * {@code
+     * .#.
+     * ###
+     * .#.}
+     * </pre>
      */
     public static final int CROSS = 4;
+    
     /**
-     *
+     * Setting the cross pattern will calculate the median of all 9 values.
+     * 
+     * Box pattern:
+     * <pre>
+     * {@code
+     * ###
+     * ###
+     * ###}
+     * </pre>
      */
     public static final int BOX = 8;
+    
     private int pattern;
     private int size;
     
@@ -31,9 +49,11 @@ public final class MedianFilter implements IFilter, IModule {
     private JRadioButton patternCrossRadioButton, patternBoxRadioButton;
 
     /**
-     *
-     * @param pattern
-     * @param size
+     * Initialize the filter.
+     * 
+     * @param pattern one of the pre-defined patterns ({@code BOX or CROSS})
+     * @param size size of the median filter, typically 3, 5, or 7, which selects
+     *             points from a box of size 3x3, 5x5, or 7x7 respectively
      */
     public MedianFilter(int pattern, int size) {
         assert ((pattern == BOX) || (pattern == CROSS));
@@ -43,9 +63,13 @@ public final class MedianFilter implements IFilter, IModule {
     }
 
     /**
+     * Go through the input {@code image}, calculate median at each position,
+     * and save the result into the output image at the same position as the
+     * median was calculated at.
      *
-     * @param image
-     * @return
+     * @param image an input image
+     * @return a <strong>new instance</strong> of FloatProcessor that contains
+     *         the filtered image (matrix of medians)
      */
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
@@ -93,19 +117,11 @@ public final class MedianFilter implements IFilter, IModule {
         return result;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String getName() {
         return "Median filter";
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public JPanel getOptionsPanel() {
         patternBoxRadioButton = new JRadioButton("box");
@@ -124,9 +140,6 @@ public final class MedianFilter implements IFilter, IModule {
         return panel;
     }
 
-    /**
-     *
-     */
     @Override
     public void readParameters() {
         try {

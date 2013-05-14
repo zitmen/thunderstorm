@@ -19,12 +19,17 @@ import javax.swing.JTextField;
 import ij.IJ;
 
 /**
- *
+ * Estimator of shape of pre-defined PSF based on least square error.
+ * 
+ * Note that in this version of ThunderSTORM, the fitting is performed using
+ * Levenberg-Marquardt algorithm and there is only one possible PSF,
+ * namely 2D symmetric Gaussian function.
+ * 
+ * This will be changed in a future version of ThunderSTORM.
  */
 public class LeastSquaresEstimator implements IEstimator, IModule {
     
-    private int fitrad, fitrad2, fitrad_2;
-    
+    private int fitrad, fitrad2, fitrad_2;  // fitrad, fitrad^2, fitrad/2
     private JTextField fitregsizeTextField;
     
     private void updateFittingRadius(int fitting_region_size) {
@@ -38,7 +43,9 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
     }
     
     /**
-     *
+     * Definition od PSF function, the 2D symmetric Gaussian function.
+     * 
+     * This will be changed in a future version of ThunderSTORM.
      */
     public static class Gaussian extends LMAMultiDimFunction {
 
@@ -66,19 +73,14 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
     }
     
     /**
+     * Initialize the estimator.
      *
-     * @param fitting_region_size
+     * @param fitting_region_size size of a region where the estimation (fitting) is performed
      */
     public LeastSquaresEstimator(int fitting_region_size) {
         updateFittingRadius(fitting_region_size);
     }
     
-    /**
-     *
-     * @param image
-     * @param detections
-     * @return
-     */
     @Override
     public Vector<PSF> estimateParameters(FloatProcessor image, Vector<Point> detections) {
         Vector<PSF> fits = new Vector<PSF>();
@@ -136,19 +138,11 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
         return fits;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String getName() {
         return "Minimizing least squares error";
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public JPanel getOptionsPanel() {
         fitregsizeTextField = new JTextField(Integer.toString(fitrad), 20);
@@ -159,9 +153,6 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
         return panel;
     }
 
-    /**
-     *
-     */
     @Override
     public void readParameters() {
         try {

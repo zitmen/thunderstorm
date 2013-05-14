@@ -9,16 +9,13 @@ import java.util.Vector;
 import javax.swing.JPanel;
 
 /**
- *
+ * This estimator does no estimation, it just packs {@code Point}s found in detection phase into {@code PSF} objects.
+ * 
+ * This is suitable for quick preview of filtering/detection or for some basic molecule counting applications
+ * where the pixel precision is not an issue.
  */
 public class EmptyEstimator implements IEstimator, IModule {
 
-    /**
-     *
-     * @param fp
-     * @param detections
-     * @return
-     */
     @Override
     public Vector<PSF> estimateParameters(FloatProcessor fp, Vector<Point> detections) {
         Vector<PSF> locations = new Vector<PSF>();
@@ -28,27 +25,16 @@ public class EmptyEstimator implements IEstimator, IModule {
         return locations;
     }
     
-    /**
-     *
-     * @return
-     */
     @Override
     public String getName() {
         return "No estimator";
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public JPanel getOptionsPanel() {
         return null;
     }
 
-    /**
-     *
-     */
     @Override
     public void readParameters() {
         // nothing to do here

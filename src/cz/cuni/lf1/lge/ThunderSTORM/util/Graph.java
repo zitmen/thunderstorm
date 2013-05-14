@@ -57,6 +57,7 @@ public class Graph {
      * - -
      * .|.}
      * </pre>
+     * Note that the dots are here used just for sake of formatting.
      */
     public static final int CONNECTIVITY_4 = 4;
     /**

@@ -7,34 +7,37 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
+ * Box filter is a uniform convolution filter with its kernel filled with ones,
+ * i.e., it is a mean filter, because it calculates mean value of intensities of
+ * surrounding pixels.
  *
+ * This filter uses the separable kernel feature.
+ * 
+ * @see ConvolutionFilter
  */
 public final class BoxFilter extends UniformFilter implements IModule {
     
     private JTextField sizeTextField;
     
     /**
+     * Initialize the filter.
      *
-     * @param size
+     * @param size size of a box (if size is 5, then the box is 5x5 pixels)
      */
     public BoxFilter(int size) {
         super(size, 1.0f / (float) size);
     }
     
-    /**
-     *
-     * @return
-     */
+    private void updateKernel() {
+        super.updateKernel(size, 1.0f / (float) size);
+    }
+    
     @Override
     public String getName() {
         return "Box (mean) filter";
         
     }
     
-    /**
-     *
-     * @return
-     */
     @Override
     public JPanel getOptionsPanel() {
         JPanel panel = new JPanel();
@@ -45,14 +48,11 @@ public final class BoxFilter extends UniformFilter implements IModule {
         return panel;
     }
     
-    /**
-     *
-     */
     @Override
     public void readParameters() {
         try {
-            int s = Integer.parseInt(sizeTextField.getText());
-            super.updateKernel(s, 1.0f / (float) s);
+            size = Integer.parseInt(sizeTextField.getText());
+            updateKernel();
         } catch(NumberFormatException ex) {
             IJ.showMessage("Error!", ex.getMessage());
         }

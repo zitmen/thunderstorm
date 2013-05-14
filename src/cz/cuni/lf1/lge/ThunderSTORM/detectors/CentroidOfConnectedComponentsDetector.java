@@ -18,7 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- *
+ * Look for pixels with their intensities equal or greater then a threshold and if there
+ * are more of these pixels connected together account them as a single molecule, unless
+ * a shape of these connected pixels indicates that there is in fact more of them.
  */
 public final class CentroidOfConnectedComponentsDetector implements IDetector, IModule {
 
@@ -29,9 +31,12 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
     private JCheckBox upCheckBox;
     
     /**
-     *
-     * @param upsample
-     * @param threshold
+     * Filter initialization.
+     * 
+     * @param upsample if {@code true}, the input image will be upsamplex by factor of 2
+     *                 to achieve more accurate recognition of two or more molecules that
+     *                 are connected together
+     * @param threshold a threshold value of intensity
      */
     public CentroidOfConnectedComponentsDetector(boolean upsample, double threshold) {
         this.upsample = upsample;
@@ -39,25 +44,34 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
     }
     
     /**
+     * Detection algorithm works simply by applying a binary threshold on an input image,
+     * then by upsampling, if it is set to be done, and finally simple recognition if
+     * there is only one molecule or more molecules in a single group of pixels region.
+     * 
+     * In more detail this is how it is done:
+     * <ol>
+     *   <li>apply the binary threshold</li>
+     *   <li>if upsampling was enabled, upsample by factor of 2</li>
+     *   <li>
+     *       perform a watershed transform (this is the trick for recognition of more connected molecules;
+     *       also this is why the upsampling can help, because the distance transform in the watershed algorithm
+     *       will assign the same values to all the pixels if there are two connected molecules of radius 1;
+     *       after the resampling, this boundary case is no more an issue); the result of the watershed transform
+     *       is the same looking image but isteda of intensities pixels contain molecule id
+     *   </li>
+     *   <li>
+     *       then we think of the image resulting of the watershed transform as an undirected graph with 8-connectivity
+     *       and find all connected components with the same id
+     *   </li>
+     *   <li>
+     *       finally, positions of molecules are calculated as centroids of components with the same id and ,of course,
+     *       if the resampling was applied at the beginning of the algorithm, then the positions are downsampled to
+     *       correspond with the original size of the input image
+     *   </li>
+     * </ol>
      *
-     * @param threshold
-     */
-    public void updateThreshol(double threshold) {
-        this.threshold = threshold;
-    }
-    
-    /**
-     *
-     * @param upsample
-     */
-    public void updateUpsample(boolean upsample) {
-        this.upsample = upsample;
-    }
-
-    /**
-     *
-     * @param image
-     * @return
+     * @param image an input image
+     * @return a {@code Vector} of {@code Points} containing positions of detected molecules
      */
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
@@ -84,19 +98,11 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
         return detections;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String getName() {
         return "Centroid of connected components";
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public JPanel getOptionsPanel() {
         thrTextField = new JTextField(Double.toString(threshold), 20);
@@ -110,9 +116,6 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
         return panel;
     }
 
-    /**
-     *
-     */
     @Override
     public void readParameters() {
         try {

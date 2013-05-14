@@ -12,7 +12,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
+ * Gaussian filter is a convolution filter with its kernel filled with values of normalized
+ * 2D Gaussian function written as {@mathjax \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{x^2}{2 \sigma^2}}}.
  *
+ * This kernel is symmetric and it is also separable, thus the filter uses the separable kernel feature.
+ * 
+ * @see ConvolutionFilter
  */
 public final class GaussianFilter extends ConvolutionFilter implements IModule {
     
@@ -35,9 +40,11 @@ public final class GaussianFilter extends ConvolutionFilter implements IModule {
     }
 
     /**
+     * Initialize filter to use a kernel with a specified size filled with values
+     * of the 2D Gaussian function with a specified {@mathjax \sigma} ({@code sigma}).
      *
-     * @param size
-     * @param sigma
+     * @param size size of the kernel
+     * @param sigma {@mathjax \sigma} of the 2D Gaussian function
      */
     public GaussianFilter(int size, double sigma) {
         super(new FloatProcessor(1, size, getKernel(size, sigma)), true, Padding.PADDING_DUPLICATE);
@@ -46,10 +53,15 @@ public final class GaussianFilter extends ConvolutionFilter implements IModule {
     }
     
     /**
+     * Initialize filter to use a kernel with a specified size filled with values
+     * of the 2D Gaussian function with a specified {@mathjax \sigma} ({@code sigma})
+     * and also set a padding method.
      *
-     * @param size
-     * @param sigma
-     * @param padding_method
+     * @param size size of the kernel
+     * @param sigma {@mathjax \sigma} of the 2D Gaussian function
+     * @param padding_method a padding method
+     * 
+     * @see Padding
      */
     public GaussianFilter(int size, double sigma, int padding_method) {
         super(new FloatProcessor(1, size, getKernel(size, sigma)), true, padding_method);
@@ -57,19 +69,11 @@ public final class GaussianFilter extends ConvolutionFilter implements IModule {
         this.sigma = sigma;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String getName() {
         return "Gaussian blur";
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public JPanel getOptionsPanel() {
         sizeTextField = new JTextField(Integer.toString(size), 20);
@@ -83,9 +87,6 @@ public final class GaussianFilter extends ConvolutionFilter implements IModule {
         return panel;
     }
 
-    /**
-     *
-     */
     @Override
     public void readParameters() {
         try {

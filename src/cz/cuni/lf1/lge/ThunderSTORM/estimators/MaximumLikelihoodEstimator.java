@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- *
+ * <strong>This is not implemented yet!</strong>
  */
 public class MaximumLikelihoodEstimator implements IEstimator, IModule {
 

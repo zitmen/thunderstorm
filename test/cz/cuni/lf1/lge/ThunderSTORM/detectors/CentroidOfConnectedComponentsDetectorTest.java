@@ -59,7 +59,7 @@ public class CentroidOfConnectedComponentsDetectorTest {
         Collections.sort(result, new Point.XYComparator());
         assertEquals(expResult, result);
         
-        instance.updateUpsample(true);
+        instance = new CentroidOfConnectedComponentsDetector(true, 3.0);
         expResult.clear();
         // these coordinates are little off, because watershed has to remove part of
         // one pixel to divide the regions; the higher upsample factor, the more

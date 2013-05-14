@@ -13,7 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- *
+ * Detect pixels with its intensity equal or greater then a threshold and also with its
+ * value not changed after a morphological dilation is performed.
  */
 public final class NonMaxSuppressionDetector implements IDetector, IModule {
 
@@ -24,9 +25,10 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
     private JTextField radiusTextField;
     
     /**
-     *
-     * @param radius
-     * @param threshold
+     * Initialize the filter.
+     * 
+     * @param radius a radius of morphological dilation
+     * @param threshold a threshold value
      */
     public NonMaxSuppressionDetector(int radius, double threshold) {
         this.radius = radius;
@@ -34,9 +36,12 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
     }
 
     /**
+     * Detection is performed by applying a grayscale dilation with square uniform kernel
+     * of specified radius and then selecting points with their intensity same before and after
+     * the dilation and at the same time at least as high as a specified threshold.
      *
-     * @param image
-     * @return
+     * @param image an input image
+     * @return  a {@code Vector} of {@code Points} containing positions of detected molecules
      */
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
@@ -57,19 +62,11 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
         return detections;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String getName() {
         return "Non-maxima suppression";
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public JPanel getOptionsPanel() {
         thrTextField = new JTextField(Double.toString(threshold), 20);
@@ -83,9 +80,6 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
         return panel;
     }
 
-    /**
-     *
-     */
     @Override
     public void readParameters() {
         try {
