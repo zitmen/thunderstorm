@@ -30,7 +30,7 @@ public class RenderingPlugIn implements PlugIn {
   @Override
   public void run(String string) {
     ResultsTable rt = Analyzer.getResultsTable();
-    if (rt == null) {
+    if (rt == null || !IJ.isResultsWindow()) {
       IJ.error("Requires Results window open");
       return;
     }
