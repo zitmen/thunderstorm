@@ -46,7 +46,7 @@ public class RenderingPlugIn implements PlugIn {
       return;
     }
 
-    GenericDialog gd = new GenericDialog("New Image");
+    GenericDialog gd = new GenericDialog("SMLM rendering");
     gd.addChoice("Method", METHODS, "ASH");
     gd.addNumericField("Image_size_X", Math.ceil(max(xpos)) + 2, 2);
     gd.addNumericField("Image_size_Y", Math.ceil(max(ypos)) + 2, 2);

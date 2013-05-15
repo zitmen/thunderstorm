@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
@@ -25,11 +26,12 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 /**
- * Dialog with settings of filters, detectors, estimators, and other parameters used for analysis.
+ * Dialog with settings of filters, detectors, estimators, and other parameters
+ * used for analysis.
  */
 public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 
-  private CardsPanel filters, detectors, estimators;
+  private CardsPanel filters, detectors, estimators, renderers;
   private JButton preview, ok, cancel;
   private ImagePlus imp;
   private boolean canceled;
@@ -37,20 +39,31 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
   private IFilter activeFilter;
   private IDetector activeDetector;
   private IEstimator activeEstimator;
+  private IRenderer activeRenderer;
 
   /**
    * Initialize and show the analysis options dialog.
    *
    * @param imp {@code ImagePlus} that was active when the plugin was executed
    * @param title title of the frame
-   * @param filters vector of filter modules (they all must implement {@code IFilter} interface)
-   * @param default_filter {@code filters[default_filter]} will be initially selected in combo box
-   * @param detectors vector of detector modules (they all must implement {@code IDetector} interface)
-   * @param default_detector {@code detector[default_detector]} will be initially selected in combo box
-   * @param estimators vector of estimator modules (they all must implement {@code IEstimator} interface)
-   * @param default_estimator {@code estimator[default_estimator]} will be initially selected in combo box
+   * @param filters vector of filter modules (they all must implement
+   * {@code IFilter} interface)
+   * @param default_filter {@code filters[default_filter]} will be initially
+   * selected in combo box
+   * @param detectors vector of detector modules (they all must implement
+   * {@code IDetector} interface)
+   * @param default_detector {@code detector[default_detector]} will be
+   * initially selected in combo box
+   * @param estimators vector of estimator modules (they all must implement
+   * {@code IEstimator} interface)
+   * @param default_estimator {@code estimator[default_estimator]} will be
+   * initially selected in combo box
    */
-  public AnalysisOptionsDialog(ImagePlus imp, String title, Vector<IModule> filters, int default_filter, Vector<IModule> detectors, int default_detector, Vector<IModule> estimators, int default_estimator) {
+  public AnalysisOptionsDialog(ImagePlus imp, String title,
+          Vector<IModule> filters, int default_filter,
+          Vector<IModule> detectors, int default_detector,
+          Vector<IModule> estimators, int default_estimator,
+          Vector<IModule> renderers, int default_renderer) {
     super((JFrame) null, title);
     //
     this.canceled = true;
@@ -60,6 +73,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     this.filters = new CardsPanel(filters, default_filter);
     this.detectors = new CardsPanel(detectors, default_detector);
     this.estimators = new CardsPanel(estimators, default_estimator);
+    this.renderers = new CardsPanel(renderers, default_renderer);
     //
     this.preview = new JButton("Preview");
     this.ok = new JButton("Ok");
@@ -71,6 +85,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     this.activeFilter = null;
     this.activeDetector = null;
     this.activeEstimator = null;
+    this.activeRenderer = null;
 
     setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     addComponentsToPane();
@@ -94,6 +109,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
     pane.add(estimators.getPanel("Estimators: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
+    pane.add(renderers.getPanel("Renderers: "), componentConstraints);
+    pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
     //
     preview.addActionListener(this);
     ok.addActionListener(this);
@@ -111,16 +128,16 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 
   /**
    * Action handler.
-   * 
-   * There are three possible actions. Canceling the analysis, confirming the settings of analysis,
-   * and preview the results of analysis on a single frame selected in active {@code ImagePlus} window.
-   * 
-   * @param e event object holding the action details. It gets processed as follows:
-   *          <ul>
-   *            <li>actionCommand == "Cancel": cancel the analysis</li>
-   *            <li>actionCommand == "Ok": confirm the settings and run the analysis</li>
-   *            <li>actionCommand == "Preview": preview the results of analysis with the current selected settings on a single frame</li>
-   *          </ul>
+   *
+   * There are three possible actions. Canceling the analysis, confirming the
+   * settings of analysis, and preview the results of analysis on a single frame
+   * selected in active {@code ImagePlus} window.
+   *
+   * @param e event object holding the action details. It gets processed as
+   * follows: <ul> <li>actionCommand == "Cancel": cancel the analysis</li>
+   * <li>actionCommand == "Ok": confirm the settings and run the analysis</li>
+   * <li>actionCommand == "Preview": preview the results of analysis with the
+   * current selected settings on a single frame</li> </ul>
    */
   @Override
   public void actionPerformed(ActionEvent e) {
@@ -130,10 +147,12 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
       activeFilter = (IFilter) filters.getActiveComboBoxItem();
       activeDetector = (IDetector) detectors.getActiveComboBoxItem();
       activeEstimator = (IEstimator) estimators.getActiveComboBoxItem();
+      activeRenderer = (IRenderer) renderers.getActiveComboBoxItem();
       //
       ((IModule) activeFilter).readParameters();
       ((IModule) activeDetector).readParameters();
       ((IModule) activeEstimator).readParameters();
+      activeRenderer.readParameters();
       //
       closeDialog(false);
     } else if (e.getActionCommand().equals("Preview")) {
@@ -164,7 +183,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
   }
 
   /**
-   * Override the default {@code JDialog.dispose} method to release the {@code semaphore} (see {@wasCanceled}).
+   * Override the default {@code JDialog.dispose} method to release the
+   * {@code semaphore} (see {
+   *
+   * @wasCanceled}).
    */
   @Override
   public void dispose() {
@@ -175,7 +197,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
   /**
    * Close (dispose) the dialog.
    *
-   * @param cancel is the dialog closing because the operation has been canceled?
+   * @param cancel is the dialog closing because the operation has been
+   * canceled?
    */
   public void closeDialog(boolean cancel) {
     canceled = cancel;
@@ -183,16 +206,18 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
   }
 
   /**
-   * Query if the dialog was closed by canceling (cancel button or red cross window button)
-   * or by clicking on OK.
-   * 
-   * <strong>This is a blocking call!</strong> Meaning that when creating a non-modal dialog
-   * it is created and runs in its own thread and does not block the creator thread.
-   * Call this method, however, calls {@code semaphore.acquire}, which is a blocking call
-   * and waits until the semaphore is released (if it wasn't already) which is done after closing
-   * the dialog. Clearly, if this wasn't a blocking call, there wouldn't be a way to know how was
-   * the dialog closed, because it wouldn't need to be closed at the time of calling this method.
-   * 
+   * Query if the dialog was closed by canceling (cancel button or red cross
+   * window button) or by clicking on OK.
+   *
+   * <strong>This is a blocking call!</strong> Meaning that when creating a
+   * non-modal dialog it is created and runs in its own thread and does not
+   * block the creator thread. Call this method, however, calls
+   * {@code semaphore.acquire}, which is a blocking call and waits until the
+   * semaphore is released (if it wasn't already) which is done after closing
+   * the dialog. Clearly, if this wasn't a blocking call, there wouldn't be a
+   * way to know how was the dialog closed, because it wouldn't need to be
+   * closed at the time of calling this method.
+   *
    * @return {@code true} if the dialog was canceled, {@code false} otherwise
    */
   public boolean wasCanceled() {
@@ -229,5 +254,9 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
    */
   public IEstimator getEstimator() {
     return activeEstimator;
+  }
+
+  public IRenderer getRenderer() {
+    return activeRenderer;
   }
 }
