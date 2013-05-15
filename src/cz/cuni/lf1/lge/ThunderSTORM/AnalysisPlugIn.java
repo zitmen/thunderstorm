@@ -18,10 +18,12 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.GaussianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.LoweredGaussianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRenderingWrapper;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.EmptyRenderer;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRenderingWrapper;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ScatterRenderingWrapper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
-import cz.cuni.lf1.rendering.ASHRendering;
-import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
-import cz.cuni.lf1.rendering.QueuedRenderer;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -55,16 +57,12 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   private IFilter filter;
   private IDetector detector;
   private IEstimator estimator;
-  
+  private IRenderer renderer;
   private int stackSize;
   private AtomicInteger nProcessed = new AtomicInteger(0);
-  
   private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING;
   private Vector<PSF>[] results;
   private FloatProcessor[] images;
-  
-  private QueuedRenderer renderingOnTheFly;
-  private ImagePlus renderedImage;
 
   /**
    * Returns flags specifying capabilities of the plugin.
@@ -118,7 +116,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         RenderingOverlay.showPointsInImageSlice(impPreview, extractX(results[frame]), extractY(results[frame]), frame, Color.red, RenderingOverlay.MARKER_CROSS);
       }
       impPreview.show("Results preview");
-      renderingOnTheFly.repaintLater();
+      renderer.repaintAsync();
       //
       // Finished
       IJ.showProgress(1.0);
@@ -174,8 +172,13 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     Vector<IModule> estimators = new Vector<IModule>();
     estimators.add(new LeastSquaresEstimator(11));
 
+    Vector<IModule> renderers = new Vector<IModule>();
+    renderers.add(new EmptyRenderer());
+    renderers.add(new ASHRenderingWrapper(imp.getWidth(), imp.getHeight()));
+    renderers.add(new HistogramRenderingWrapper(imp.getWidth(), imp.getHeight()));
+    renderers.add(new ScatterRenderingWrapper(imp.getWidth(), imp.getHeight()));
     // Create and show the dialog
-    AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, 6, detectors, 2, estimators, 0);
+    AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, 6, detectors, 2, estimators, 0, renderers, 0);
     dialog.setVisible(true);
     if (dialog.wasCanceled()) {  // This is a blocking call!!
       filter = null;
@@ -186,19 +189,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       filter = dialog.getFilter();
       detector = dialog.getDetector();
       estimator = dialog.getEstimator();
+      renderer = dialog.getRenderer();
 
-      IncrementalRenderingMethod method = new ASHRendering.Builder().roi(0, imp.getWidth(), 0, imp.getHeight()).resolution(0.2).shifts(2).build();
-      renderedImage = new ImagePlus("rendering", method.getRenderedImage());
-      renderingOnTheFly = new QueuedRenderer(
-              method,
-              new Runnable() {
-                @Override
-                public void run() {
-                  renderedImage.show();
-                  IJ.run(renderedImage, "Enhance Contrast", "saturated=0.35");
-                }
-              },
-              20);
       return pluginFlags; // ok
     }
   }
@@ -240,7 +232,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     images[ip.getSliceNumber()] = fp;
     nProcessed.incrementAndGet();
 
-    renderingOnTheFly.renderLater(extractX(fits), extractY(fits), 0.2);
+    renderer.renderAsync(extractX(fits), extractY(fits), 0.2);
     //
     IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
     IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
