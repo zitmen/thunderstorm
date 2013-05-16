@@ -74,11 +74,7 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            third_plane = thirdCheckBox.isSelected();
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+        third_plane = thirdCheckBox.isSelected();
     }
     
 }

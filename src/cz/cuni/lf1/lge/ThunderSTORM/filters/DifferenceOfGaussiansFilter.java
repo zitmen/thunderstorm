@@ -124,14 +124,10 @@ public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            size = Integer.parseInt(sizeTextField.getText());
-            sigma_g1 = Double.parseDouble(sigma1TextField.getText());
-            sigma_g2 = Double.parseDouble(sigma2TextField.getText());
-            updateKernels();
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+        size = Integer.parseInt(sizeTextField.getText());
+        sigma_g1 = Double.parseDouble(sigma1TextField.getText());
+        sigma_g2 = Double.parseDouble(sigma2TextField.getText());
+        updateKernels();
     }
     
 }

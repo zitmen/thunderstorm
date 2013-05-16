@@ -142,12 +142,8 @@ public final class MedianFilter implements IFilter, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            size = Integer.parseInt(sizeTextField.getText());
-            if(patternBoxRadioButton.isSelected()) pattern = BOX;
-            if(patternCrossRadioButton.isSelected()) pattern = CROSS;
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+        size = Integer.parseInt(sizeTextField.getText());
+        if(patternBoxRadioButton.isSelected()) pattern = BOX;
+        if(patternCrossRadioButton.isSelected()) pattern = CROSS;
     }
 }

@@ -50,12 +50,8 @@ public final class BoxFilter extends UniformFilter implements IModule {
     
     @Override
     public void readParameters() {
-        try {
-            size = Integer.parseInt(sizeTextField.getText());
-            updateKernel();
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+          size = Integer.parseInt(sizeTextField.getText());
+          updateKernel();
     }
     
 }

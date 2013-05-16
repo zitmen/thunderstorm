@@ -19,6 +19,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.LoweredGaussianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRenderingWrapper;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.DensityRenderingWrapper;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.EmptyRenderer;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRenderingWrapper;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
@@ -175,6 +176,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     Vector<IModule> renderers = new Vector<IModule>();
     renderers.add(new EmptyRenderer());
     renderers.add(new ASHRenderingWrapper(imp.getWidth(), imp.getHeight()));
+    renderers.add(new DensityRenderingWrapper(imp.getWidth(), imp.getHeight()));
     renderers.add(new HistogramRenderingWrapper(imp.getWidth(), imp.getHeight()));
     renderers.add(new ScatterRenderingWrapper(imp.getWidth(), imp.getHeight()));
     // Create and show the dialog
@@ -224,6 +226,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     assert (filter != null) : "Filter was not selected!";
     assert (detector != null) : "Detector was not selected!";
     assert (estimator != null) : "Estimator was not selected!";
+    assert (renderer != null) : "Renderer was not selected!";
     //
     FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
     Vector<PSF> fits = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));

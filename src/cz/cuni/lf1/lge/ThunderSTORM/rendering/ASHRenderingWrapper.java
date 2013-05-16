@@ -43,12 +43,8 @@ public class ASHRenderingWrapper extends AbstractRenderingWrapper {
 
   @Override
   public void readParameters() {
-    try {
-      shifts = Integer.parseInt(shiftsTextField.getText());
-      super.readParameters();
-    } catch (NumberFormatException ex) {
-      IJ.showMessage("Error!", ex.getMessage());
-    }
+    shifts = Integer.parseInt(shiftsTextField.getText());
+    super.readParameters();
   }
 
   @Override

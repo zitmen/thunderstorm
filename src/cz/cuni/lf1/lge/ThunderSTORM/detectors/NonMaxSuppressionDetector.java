@@ -82,12 +82,8 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            threshold = Double.parseDouble(thrTextField.getText());
-            radius = Integer.parseInt(radiusTextField.getText());
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+          threshold = Double.parseDouble(thrTextField.getText());
+          radius = Integer.parseInt(radiusTextField.getText());
     }
 
 }

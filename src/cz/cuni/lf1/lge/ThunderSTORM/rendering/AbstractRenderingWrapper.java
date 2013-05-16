@@ -66,19 +66,12 @@ public abstract class AbstractRenderingWrapper implements IRenderer {
 
   @Override
   public void readParameters() {
-    try {
-      resolution = Double.parseDouble(resolutionTextField.getText());
-      repaintFrequency = Integer.parseInt(repaintFrequencyTextField.getText());
+    resolution = Double.parseDouble(resolutionTextField.getText());
+    repaintFrequency = Integer.parseInt(repaintFrequencyTextField.getText());
 
-      IncrementalRenderingMethod method = getMethod();
-      image = new ImagePlus(method.getClass().getSimpleName(), method.getRenderedImage());
-      renderer = new QueuedRenderer(method, repaint, repaintFrequency);
-
-    } catch (NumberFormatException ex) {
-      IJ.showMessage("Error!", ex.getMessage());
-    } catch (IllegalArgumentException ex) {
-      IJ.showMessage("Error!", ex.getMessage());
-    }
+    IncrementalRenderingMethod method = getMethod();
+    image = new ImagePlus(method.getClass().getSimpleName(), method.getRenderedImage());
+    renderer = new QueuedRenderer(method, repaint, repaintFrequency);
   }
 
   protected abstract IncrementalRenderingMethod getMethod();

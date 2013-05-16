@@ -98,13 +98,9 @@ public final class LoweredGaussianFilter implements IFilter, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            size = Integer.parseInt(sizeTextField.getText());
-            sigma = Double.parseDouble(sigmaTextField.getText());
-            updateKernel();
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+        size = Integer.parseInt(sizeTextField.getText());
+        sigma = Double.parseDouble(sigmaTextField.getText());
+        updateKernel();
     }
     
 }

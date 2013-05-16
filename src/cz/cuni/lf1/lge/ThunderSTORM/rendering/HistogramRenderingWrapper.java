@@ -40,12 +40,8 @@ public class HistogramRenderingWrapper extends AbstractRenderingWrapper {
 
   @Override
   public void readParameters() {
-    try {
-      avg = Integer.parseInt(avgTextField.getText());
-      super.readParameters();
-    } catch (NumberFormatException ex) {
-      IJ.showMessage("Error!", ex.getMessage());
-    }
+    avg = Integer.parseInt(avgTextField.getText());
+    super.readParameters();
   }
 
   @Override

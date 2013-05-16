@@ -193,13 +193,9 @@ public class LocalMaximaDetector implements IDetector, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            threshold = Double.parseDouble(thrTextField.getText());
-            if(conn4RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_4;
-            if(conn8RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_8;
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+          threshold = Double.parseDouble(thrTextField.getText());
+          if(conn4RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_4;
+          if(conn8RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_8;
     }
 
 }

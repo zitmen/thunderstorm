@@ -118,12 +118,8 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
 
     @Override
     public void readParameters() {
-        try {
-            threshold = Double.parseDouble(thrTextField.getText());
-            upsample = upCheckBox.isSelected();
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+          threshold = Double.parseDouble(thrTextField.getText());
+          upsample = upCheckBox.isSelected();
     }
     
 }

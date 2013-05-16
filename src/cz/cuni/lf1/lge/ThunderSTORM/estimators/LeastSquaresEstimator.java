@@ -155,11 +155,7 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            updateFittingRadius(Integer.parseInt(fitregsizeTextField.getText()));
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+          updateFittingRadius(Integer.parseInt(fitregsizeTextField.getText()));
     }
     
 }

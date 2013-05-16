@@ -149,10 +149,15 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
       activeEstimator = (IEstimator) estimators.getActiveComboBoxItem();
       activeRenderer = (IRenderer) renderers.getActiveComboBoxItem();
       //
-      ((IModule) activeFilter).readParameters();
-      ((IModule) activeDetector).readParameters();
-      ((IModule) activeEstimator).readParameters();
-      activeRenderer.readParameters();
+      try {
+        ((IModule) activeFilter).readParameters();
+        ((IModule) activeDetector).readParameters();
+        ((IModule) activeEstimator).readParameters();
+        activeRenderer.readParameters();
+      } catch (Exception ex) {
+        IJ.showMessage("Error!", ex.getMessage());
+        return;
+      }
       //
       closeDialog(false);
     } else if (e.getActionCommand().equals("Preview")) {
@@ -160,9 +165,14 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
       activeDetector = (IDetector) detectors.getActiveComboBoxItem();
       activeEstimator = (IEstimator) estimators.getActiveComboBoxItem();
       //
-      ((IModule) activeFilter).readParameters();
-      ((IModule) activeDetector).readParameters();
-      ((IModule) activeEstimator).readParameters();
+      try {
+        ((IModule) activeFilter).readParameters();
+        ((IModule) activeDetector).readParameters();
+        ((IModule) activeEstimator).readParameters();
+      } catch (Exception ex) {
+        IJ.showMessage("Error!", ex.getMessage());
+        return;
+      }
       //
       FloatProcessor fp = (FloatProcessor) imp.getProcessor().convertToFloat();
       Vector<PSF> results = activeEstimator.estimateParameters(fp, activeDetector.detectMoleculeCandidates(activeFilter.filterImage(fp)));
