@@ -16,7 +16,7 @@ import ij.process.FloatProcessor;
  * {@mathjax H} stands for height, and subscripts {@mathjax i,k} stand for image and kernel,
  * respectively.
  */
-public class ConvolutionFilter implements IFilter {
+public class ConvolutionFilter {
 
     private int padding_method;
     private FloatProcessor kernel = null, kernel_x = null, kernel_y = null;
@@ -109,7 +109,6 @@ public class ConvolutionFilter implements IFilter {
         updatePaddingMethod(padding_method);
     }
 
-    @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         // With non-separable kernels, the complexity is K*K*N,
         if (kernel != null) return Convolution.convolve2D(image, kernel, padding_method);

@@ -1,10 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.gauss;
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
-import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
@@ -19,7 +17,7 @@ import javax.swing.JTextField;
  * 
  * @see ConvolutionFilter
  */
-public final class GaussianFilter extends ConvolutionFilter implements IModule {
+public final class GaussianFilter extends ConvolutionFilter implements IFilter {
     
     private int size;
     private double sigma;

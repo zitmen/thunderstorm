@@ -7,7 +7,6 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.exp;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.pow;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -16,7 +15,6 @@ import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import ij.IJ;
 
 /**
  * Estimator of shape of pre-defined PSF based on least square error.
@@ -27,7 +25,7 @@ import ij.IJ;
  * 
  * This will be changed in a future version of ThunderSTORM.
  */
-public class LeastSquaresEstimator implements IEstimator, IModule {
+public class LeastSquaresEstimator implements IEstimator {
     
     private int fitrad, fitrad2, fitrad_2;  // fitrad, fitrad^2, fitrad/2
     private JTextField fitregsizeTextField;

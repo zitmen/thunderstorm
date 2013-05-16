@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
@@ -31,7 +30,10 @@ import javax.swing.JSeparator;
  */
 public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 
-  private CardsPanel filters, detectors, estimators, renderers;
+  private CardsPanel<IFilter> filters;
+  private CardsPanel<IDetector> detectors;
+  private CardsPanel<IEstimator> estimators;
+  private CardsPanel<IRenderer> renderers;
   private JButton preview, ok, cancel;
   private ImagePlus imp;
   private boolean canceled;
@@ -60,20 +62,20 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
    * initially selected in combo box
    */
   public AnalysisOptionsDialog(ImagePlus imp, String title,
-          Vector<IModule> filters, int default_filter,
-          Vector<IModule> detectors, int default_detector,
-          Vector<IModule> estimators, int default_estimator,
-          Vector<IModule> renderers, int default_renderer) {
+          Vector<IFilter> filters, int default_filter,
+          Vector<IDetector> detectors, int default_detector,
+          Vector<IEstimator> estimators, int default_estimator,
+          Vector<IRenderer> renderers, int default_renderer) {
     super((JFrame) null, title);
     //
     this.canceled = true;
     //
     this.imp = imp;
     //
-    this.filters = new CardsPanel(filters, default_filter);
-    this.detectors = new CardsPanel(detectors, default_detector);
-    this.estimators = new CardsPanel(estimators, default_estimator);
-    this.renderers = new CardsPanel(renderers, default_renderer);
+    this.filters = new CardsPanel<IFilter>(filters, default_filter);
+    this.detectors = new CardsPanel<IDetector>(detectors, default_detector);
+    this.estimators = new CardsPanel<IEstimator>(estimators, default_estimator);
+    this.renderers = new CardsPanel<IRenderer>(renderers, default_renderer);
     //
     this.preview = new JButton("Preview");
     this.ok = new JButton("Ok");
@@ -144,15 +146,15 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     if (e.getActionCommand().equals("Cancel")) {
       closeDialog(true);
     } else if (e.getActionCommand().equals("Ok")) {
-      activeFilter = (IFilter) filters.getActiveComboBoxItem();
-      activeDetector = (IDetector) detectors.getActiveComboBoxItem();
-      activeEstimator = (IEstimator) estimators.getActiveComboBoxItem();
-      activeRenderer = (IRenderer) renderers.getActiveComboBoxItem();
+      activeFilter = filters.getActiveComboBoxItem();
+      activeDetector = detectors.getActiveComboBoxItem();
+      activeEstimator = estimators.getActiveComboBoxItem();
+      activeRenderer = renderers.getActiveComboBoxItem();
       //
       try {
-        ((IModule) activeFilter).readParameters();
-        ((IModule) activeDetector).readParameters();
-        ((IModule) activeEstimator).readParameters();
+        activeFilter.readParameters();
+        activeDetector.readParameters();
+        activeEstimator.readParameters();
         activeRenderer.readParameters();
       } catch (Exception ex) {
         IJ.showMessage("Error!", ex.getMessage());
@@ -161,14 +163,14 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
       //
       closeDialog(false);
     } else if (e.getActionCommand().equals("Preview")) {
-      activeFilter = (IFilter) filters.getActiveComboBoxItem();
-      activeDetector = (IDetector) detectors.getActiveComboBoxItem();
-      activeEstimator = (IEstimator) estimators.getActiveComboBoxItem();
+      activeFilter = filters.getActiveComboBoxItem();
+      activeDetector = detectors.getActiveComboBoxItem();
+      activeEstimator = estimators.getActiveComboBoxItem();
       //
       try {
-        ((IModule) activeFilter).readParameters();
-        ((IModule) activeDetector).readParameters();
-        ((IModule) activeEstimator).readParameters();
+         activeFilter.readParameters();
+         activeDetector.readParameters();
+         activeEstimator.readParameters();
       } catch (Exception ex) {
         IJ.showMessage("Error!", ex.getMessage());
         return;

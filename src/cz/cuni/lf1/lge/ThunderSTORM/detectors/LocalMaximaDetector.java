@@ -1,10 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Vector;
@@ -16,7 +14,7 @@ import javax.swing.JTextField;
 /**
  * Detection of local maxima points.
  */
-public class LocalMaximaDetector implements IDetector, IModule {
+public class LocalMaximaDetector implements IDetector {
 
     private int connectivity;
     private double threshold;

@@ -1,10 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Morphology;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Vector;
@@ -16,7 +14,7 @@ import javax.swing.JTextField;
  * Detect pixels with its intensity equal or greater then a threshold and also with its
  * value not changed after a morphological dilation is performed.
  */
-public final class NonMaxSuppressionDetector implements IDetector, IModule {
+public final class NonMaxSuppressionDetector implements IDetector {
 
     private int radius;
     private double threshold;

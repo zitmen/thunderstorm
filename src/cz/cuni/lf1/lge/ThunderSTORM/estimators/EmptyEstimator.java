@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -14,7 +13,7 @@ import javax.swing.JPanel;
  * This is suitable for quick preview of filtering/detection or for some basic molecule counting applications
  * where the pixel precision is not an issue.
  */
-public class EmptyEstimator implements IEstimator, IModule {
+public class EmptyEstimator implements IEstimator {
 
     @Override
     public Vector<PSF> estimateParameters(FloatProcessor fp, Vector<Point> detections) {

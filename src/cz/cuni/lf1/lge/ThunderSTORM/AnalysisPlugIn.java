@@ -156,7 +156,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     }
 
     // Create and set up the content pane.
-    Vector<IModule> filters = new Vector<IModule>();
+    Vector<IFilter> filters = new Vector<IFilter>();
     filters.add(new EmptyFilter());
     filters.add(new BoxFilter(3));
     filters.add(new MedianFilter(MedianFilter.BOX, 3));
@@ -165,15 +165,15 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     filters.add(new LoweredGaussianFilter(11, 1.6));
     filters.add(new CompoundWaveletFilter(false));
 
-    Vector<IModule> detectors = new Vector<IModule>();
+    Vector<IDetector> detectors = new Vector<IDetector>();
     detectors.add(new LocalMaximaDetector(Graph.CONNECTIVITY_8, 10.0));
     detectors.add(new NonMaxSuppressionDetector(3, 6.0));
     detectors.add(new CentroidOfConnectedComponentsDetector(false, 1.0));
 
-    Vector<IModule> estimators = new Vector<IModule>();
+    Vector<IEstimator> estimators = new Vector<IEstimator>();
     estimators.add(new LeastSquaresEstimator(11));
 
-    Vector<IModule> renderers = new Vector<IModule>();
+    Vector<IRenderer> renderers = new Vector<IRenderer>();
     renderers.add(new EmptyRenderer());
     renderers.add(new ASHRenderingWrapper(imp.getWidth(), imp.getHeight()));
     renderers.add(new DensityRenderingWrapper(imp.getWidth(), imp.getHeight()));
