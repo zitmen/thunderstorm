@@ -39,14 +39,11 @@ public final class LoweredGaussianFilter implements IFilter {
   }
 
   /**
-   * Initialize the filter using the Gaussian kernel with specified size and
-     * {
-   *
-   * @mathjax \sigma} normalized to 0 as described above.
+   * Initialize the filter using the Gaussian kernel with specified size 
+   * and {@mathjax \sigma} normalized to 0 as described above.
    *
    * @param size size of the kernel
-   * @param sigma {
-   * @mathjax \sigma} of the Gaussian function
+   * @param sigma {@mathjax \sigma} of the Gaussian function
    */
   public LoweredGaussianFilter(int size, double sigma) {
     this.size = size;
@@ -56,15 +53,12 @@ public final class LoweredGaussianFilter implements IFilter {
   }
 
   /**
-   * Initialize the filter using the Gaussian kernel with specified size and
-     * {
-   *
-   * @mathjax \sigma} normalized to 0 as described above. And also select one of
-   * the padding methods.
+   * Initialize the filter using the Gaussian kernel with specified size 
+   * and {@mathjax \sigma} normalized to 0 as described above. And also 
+   * select one of the padding methods.
    *
    * @param size size of the kernel
-   * @param sigma {
-   * @mathjax \sigma} of the Gaussian function
+   * @param sigma {@mathjax \sigma} of the Gaussian function
    * @param padding_method a padding method
    *
    * @see Padding
