@@ -2,11 +2,9 @@ package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.applyMask;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.threshold;
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import ij.IJ;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -22,7 +20,7 @@ import javax.swing.JTextField;
  * are more of these pixels connected together account them as a single molecule, unless
  * a shape of these connected pixels indicates that there is in fact more of them.
  */
-public final class CentroidOfConnectedComponentsDetector implements IDetector, IModule {
+public final class CentroidOfConnectedComponentsDetector implements IDetector {
 
     private boolean upsample;
     private double threshold;

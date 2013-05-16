@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
+import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 import java.util.Vector;
@@ -7,7 +8,7 @@ import java.util.Vector;
 /**
  * The interface every detector has to implement.
  */
-public interface IDetector {
+public interface IDetector extends IModule{
     /**
      * Detect molecules in {@code image} and return list of their X,Y positions.
      *

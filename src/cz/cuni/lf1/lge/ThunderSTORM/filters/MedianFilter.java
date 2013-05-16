@@ -1,8 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Arrays;
@@ -14,7 +12,7 @@ import javax.swing.JTextField;
 /**
  * Apply a median filter on an input image.
  */
-public final class MedianFilter implements IFilter, IModule {
+public final class MedianFilter implements IFilter {
 
     /**
      * Setting the cross pattern will calculate the median of 5 values (center, left, right, top, and bottom).
