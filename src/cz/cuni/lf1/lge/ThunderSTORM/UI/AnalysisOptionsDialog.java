@@ -66,7 +66,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
           Vector<IDetector> detectors, int default_detector,
           Vector<IEstimator> estimators, int default_estimator,
           Vector<IRenderer> renderers, int default_renderer) {
-    super((JFrame) null, title);
+    super(IJ.getInstance(), title);
     //
     this.canceled = true;
     //
