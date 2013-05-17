@@ -97,10 +97,10 @@ public class LeastSquaresEstimator implements IEstimator {
             double[] init_guess = new double[]{ p.getX().doubleValue(), p.getY().doubleValue(), image.getf(p.roundToInteger().getX().intValue(), p.roundToInteger().getY().intValue()), 1.6, Double.MAX_VALUE };
             
             // Throw away all points near the border of the image
-            if((init_guess[0] - (double)fitrad) <= 0.0) continue;    // x - left
-            if((init_guess[1] - (double)fitrad) <= 0.0) continue;    // y - top
-            if((init_guess[0] + (double)fitrad) >= (double)img_w) continue;  // x - right
-            if((init_guess[1] + (double)fitrad) >= (double)img_h) continue;  // y - bottom
+            if((init_guess[0] - (double)fitrad_2) <= 0.0) continue;    // x - left
+            if((init_guess[1] - (double)fitrad_2) <= 0.0) continue;    // y - top
+            if((init_guess[0] + (double)fitrad_2) >= (double)img_w) continue;  // x - right
+            if((init_guess[1] + (double)fitrad_2) >= (double)img_h) continue;  // y - bottom
             
             // extract the fitting area of a certain radius
             double[][] x = new double[fitrad2][2];
