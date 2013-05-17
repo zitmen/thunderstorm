@@ -124,6 +124,10 @@ public class LocalMaximaDetector implements IDetector {
         
         return detections;
     }
+
+  public LocalMaximaDetector() {
+    this(Graph.CONNECTIVITY_8, 10.0);
+  }
     
     /**
      * Constructor.

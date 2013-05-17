@@ -2,11 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.rendering.ASHRendering;
-import cz.cuni.lf1.rendering.DensityRendering;
 import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
-import cz.cuni.lf1.rendering.QueuedRenderer;
-import ij.IJ;
-import ij.ImagePlus;
 import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,6 +16,9 @@ public class ASHRenderingWrapper extends AbstractRenderingWrapper {
 
   JTextField shiftsTextField;
   int shifts;
+
+  public ASHRenderingWrapper() {
+  }
 
   public ASHRenderingWrapper(int sizeX, int sizeY) {
     super(sizeX, sizeY);

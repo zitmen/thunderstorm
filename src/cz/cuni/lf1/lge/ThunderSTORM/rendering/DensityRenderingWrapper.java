@@ -9,6 +9,9 @@ import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
  */
 public class DensityRenderingWrapper extends AbstractRenderingWrapper {
 
+  public DensityRenderingWrapper() {
+  }
+
   public DensityRenderingWrapper(int sizeX, int sizeY) {
     super(sizeX, sizeY);
   }

@@ -37,6 +37,11 @@ public final class GaussianFilter extends ConvolutionFilter implements IFilter {
         super.updateKernel(new FloatProcessor(1, size, getKernel(size, sigma)), true);
     }
 
+  public GaussianFilter() {
+    this(11, 1.6);
+  }
+
+    
     /**
      * Initialize filter to use a kernel with a specified size filled with values
      * of the 2D Gaussian function with a specified {@mathjax \sigma} ({@code sigma}).

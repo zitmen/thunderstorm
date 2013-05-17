@@ -46,6 +46,10 @@ public final class MedianFilter implements IFilter {
     private JTextField sizeTextField;
     private JRadioButton patternCrossRadioButton, patternBoxRadioButton;
 
+  public MedianFilter() {
+    this(BOX,3);
+  }
+
     /**
      * Initialize the filter.
      * 

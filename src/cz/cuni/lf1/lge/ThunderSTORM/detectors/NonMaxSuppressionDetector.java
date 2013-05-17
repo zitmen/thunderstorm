@@ -21,6 +21,10 @@ public final class NonMaxSuppressionDetector implements IDetector {
     
     private JTextField thrTextField;
     private JTextField radiusTextField;
+
+  public NonMaxSuppressionDetector() {
+    this(3, 6.0);
+  }
     
     /**
      * Initialize the filter.

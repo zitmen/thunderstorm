@@ -69,6 +69,10 @@ public class LeastSquaresEstimator implements IEstimator {
             throw new RuntimeException("No such parameter index: " + parameterIndex);
         }
     }
+
+  public LeastSquaresEstimator() {
+    this(11);
+  }
     
     /**
      * Initialize the estimator.

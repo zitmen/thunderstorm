@@ -48,6 +48,10 @@ public final class DifferenceOfGaussiansFilter implements IFilter {
         g1 = new GaussianFilter(size, sigma_g1, padding);
         g2 = new GaussianFilter(size, sigma_g2, padding);
     }
+
+  public DifferenceOfGaussiansFilter() {
+    this(11, 1.6, 1.0);
+  }
     
     /**
      * Initialize the filter with a kernel of specified size and {@mathjax \sigma_1}

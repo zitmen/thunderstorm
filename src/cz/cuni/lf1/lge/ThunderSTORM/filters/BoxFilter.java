@@ -17,6 +17,10 @@ public final class BoxFilter extends UniformFilter implements IFilter {
 
   private JTextField sizeTextField;
 
+  public BoxFilter(){
+    this(3);
+  }
+  
   /**
    * Initialize the filter.
    *

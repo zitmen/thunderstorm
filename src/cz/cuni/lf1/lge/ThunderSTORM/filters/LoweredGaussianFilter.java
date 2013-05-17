@@ -38,6 +38,10 @@ public final class LoweredGaussianFilter implements IFilter {
     u = new UniformFilter(size, mean((float[]) g.getKernelX().getPixels()), padding);
   }
 
+  public LoweredGaussianFilter() {
+    this(11, 1.6);
+  }
+  
   /**
    * Initialize the filter using the Gaussian kernel with specified size 
    * and {@mathjax \sigma} normalized to 0 as described above.

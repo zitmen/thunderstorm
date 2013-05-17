@@ -27,6 +27,10 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector {
     
     private JTextField thrTextField;
     private JCheckBox upCheckBox;
+
+  public CentroidOfConnectedComponentsDetector() {
+    this(false, 1.0);
+  }
     
     /**
      * Filter initialization.

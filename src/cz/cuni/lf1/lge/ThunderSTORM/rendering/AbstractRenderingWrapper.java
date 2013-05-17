@@ -31,7 +31,16 @@ public abstract class AbstractRenderingWrapper implements IRenderer {
     }
   };
 
+  public AbstractRenderingWrapper() {
+  }
+
   public AbstractRenderingWrapper(int sizeX, int sizeY) {
+    this.sizeX = sizeX;
+    this.sizeY = sizeY;
+  }
+
+  @Override
+  public void setSize(int sizeX, int sizeY) {
     this.sizeX = sizeX;
     this.sizeY = sizeY;
   }

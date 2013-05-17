@@ -26,6 +26,10 @@ public final class CompoundWaveletFilter implements IFilter {
     private WaveletFilter w1, w2, w3;
     
     private JCheckBox thirdCheckBox;
+
+  public CompoundWaveletFilter() {
+    this(false);
+  }
     
     /**
      * Initialize the filter with all the wavelet kernels needed to create the wavelet transform.

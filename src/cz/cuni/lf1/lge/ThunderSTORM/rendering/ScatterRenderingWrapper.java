@@ -9,6 +9,9 @@ import cz.cuni.lf1.rendering.ScatterRendering;
  */
 public class ScatterRenderingWrapper extends AbstractRenderingWrapper {
 
+  public ScatterRenderingWrapper() {
+  }
+
   public ScatterRenderingWrapper(int sizeX, int sizeY) {
     super(sizeX, sizeY);
   }
