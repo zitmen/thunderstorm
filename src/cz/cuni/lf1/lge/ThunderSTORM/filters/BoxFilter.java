@@ -14,6 +14,10 @@ import java.util.HashMap;
  */
 public final class BoxFilter extends UniformFilter implements IFilter {
 
+  public BoxFilter() {
+    this(3);
+  }
+
   /**
    * Initialize the filter.
    *
