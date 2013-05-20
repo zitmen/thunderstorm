@@ -30,8 +30,8 @@ public class Function extends Node {
     public RetVal eval() {
         if(name.equals("var")) return new RetVal(var());
         if(name.equals("std")) return new RetVal(std());
-        if(name.equals("mean")) return new RetVal(var());
-        if(name.equals("med")) return new RetVal(var());
+        if(name.equals("mean")) return new RetVal(mean());
+        if(name.equals("med")) return new RetVal(med());
         // the following will never happen due to the semanticCheck in the constructor
         assert(true);
         return null;
