@@ -1,10 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
-import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.HashMap;
@@ -38,7 +36,7 @@ import javax.swing.JTextField;
  * 
  * @see ConvolutionFilter
  */
-public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
+public final class DifferenceOfGaussiansFilter implements IFilter {
     
     private FloatProcessor input = null, result = null, result_g1 = null, result_g2 = null;
     private HashMap<String, FloatProcessor> export_variables = null;
@@ -54,6 +52,10 @@ public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
         g1 = new GaussianFilter(size, sigma_g1, padding);
         g2 = new GaussianFilter(size, sigma_g2, padding);
     }
+
+  public DifferenceOfGaussiansFilter() {
+    this(11, 1.6, 1.0);
+  }
     
     /**
      * Initialize the filter with a kernel of specified size and {@mathjax \sigma_1}
@@ -132,14 +134,10 @@ public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            size = Integer.parseInt(sizeTextField.getText());
-            sigma_g1 = Double.parseDouble(sigma1TextField.getText());
-            sigma_g2 = Double.parseDouble(sigma2TextField.getText());
-            updateKernels();
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+        size = Integer.parseInt(sizeTextField.getText());
+        sigma_g1 = Double.parseDouble(sigma1TextField.getText());
+        sigma_g2 = Double.parseDouble(sigma2TextField.getText());
+        updateKernels();
     }
     
     @Override

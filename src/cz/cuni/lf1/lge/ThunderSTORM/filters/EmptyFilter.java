@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import ij.process.FloatProcessor;
 import java.util.HashMap;
 import javax.swing.JPanel;
@@ -11,7 +10,7 @@ import javax.swing.JPanel;
  * This is useful in case of detectors of estimators that work better with raw images.
  * The {@code filterImage} method returns the {@code image} that it got on its input.
  */
-public final class EmptyFilter implements IFilter, IModule {
+public final class EmptyFilter implements IFilter {
     
     private FloatProcessor input = null;
     private HashMap<String, FloatProcessor> export_variables = null;

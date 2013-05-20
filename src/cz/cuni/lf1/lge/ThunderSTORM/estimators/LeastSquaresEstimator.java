@@ -7,7 +7,6 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.exp;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.pow;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -16,7 +15,6 @@ import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import ij.IJ;
 
 /**
  * Estimator of shape of pre-defined PSF based on least square error.
@@ -27,7 +25,7 @@ import ij.IJ;
  * 
  * This will be changed in a future version of ThunderSTORM.
  */
-public class LeastSquaresEstimator implements IEstimator, IModule {
+public class LeastSquaresEstimator implements IEstimator {
     
     private int fitrad, fitrad2, fitrad_2;  // fitrad, fitrad^2, fitrad/2
     private JTextField fitregsizeTextField;
@@ -71,6 +69,10 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
             throw new RuntimeException("No such parameter index: " + parameterIndex);
         }
     }
+
+  public LeastSquaresEstimator() {
+    this(11);
+  }
     
     /**
      * Initialize the estimator.
@@ -95,10 +97,10 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
             double[] init_guess = new double[]{ p.getX().doubleValue(), p.getY().doubleValue(), image.getf(p.roundToInteger().getX().intValue(), p.roundToInteger().getY().intValue()), 1.6, Double.MAX_VALUE };
             
             // Throw away all points near the border of the image
-            if((init_guess[0] - (double)fitrad) <= 0.0) continue;    // x - left
-            if((init_guess[1] - (double)fitrad) <= 0.0) continue;    // y - top
-            if((init_guess[0] + (double)fitrad) >= (double)img_w) continue;  // x - right
-            if((init_guess[1] + (double)fitrad) >= (double)img_h) continue;  // y - bottom
+            if((init_guess[0] - (double)fitrad_2) <= 0.0) continue;    // x - left
+            if((init_guess[1] - (double)fitrad_2) <= 0.0) continue;    // y - top
+            if((init_guess[0] + (double)fitrad_2) >= (double)img_w) continue;  // x - right
+            if((init_guess[1] + (double)fitrad_2) >= (double)img_h) continue;  // y - bottom
             
             // extract the fitting area of a certain radius
             double[][] x = new double[fitrad2][2];
@@ -155,11 +157,7 @@ public class LeastSquaresEstimator implements IEstimator, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            updateFittingRadius(Integer.parseInt(fitregsizeTextField.getText()));
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+          updateFittingRadius(Integer.parseInt(fitregsizeTextField.getText()));
     }
     
 }

@@ -1,5 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
+import cz.cuni.lf1.lge.ThunderSTORM.IModule;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
@@ -8,7 +10,7 @@ import java.util.Vector;
 /**
  * The interface every estimator has to implement.
  */
-public interface IEstimator {
+public interface IEstimator extends IModule{
     
     /**
      * Estimate parameters of individual molecules based on the initial rough guessed

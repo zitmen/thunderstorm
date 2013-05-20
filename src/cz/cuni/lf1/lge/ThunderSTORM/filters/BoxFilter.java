@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
-import ij.IJ;
+import ij.process.FloatProcessor;
+import java.util.HashMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -12,10 +12,10 @@ import javax.swing.JTextField;
  * surrounding pixels.
  *
  * This filter uses the separable kernel feature.
- * 
+ *
  * @see ConvolutionFilter
  */
-public final class BoxFilter extends UniformFilter implements IModule {
+public final class BoxFilter extends UniformFilter implements IFilter {
     
     private JTextField sizeTextField;
     
@@ -26,6 +26,7 @@ public final class BoxFilter extends UniformFilter implements IModule {
      */
     public BoxFilter(int size) {
         super(size, 1.0f / (float) size);
+        export_variables = null;
     }
     
     private void updateKernel() {
@@ -50,12 +51,7 @@ public final class BoxFilter extends UniformFilter implements IModule {
     
     @Override
     public void readParameters() {
-        try {
-            size = Integer.parseInt(sizeTextField.getText());
-            updateKernel();
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+        size = Integer.parseInt(sizeTextField.getText());
     }
     
     @Override
@@ -63,4 +59,13 @@ public final class BoxFilter extends UniformFilter implements IModule {
         return "Box";
     }
     
+    @Override
+    public HashMap<String, FloatProcessor> exportVariables() {
+        if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
+        //
+        export_variables.put("I", input);
+        export_variables.put("F", result);
+        return export_variables;
+    }
+
 }

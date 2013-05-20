@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
@@ -10,7 +9,7 @@ import javax.swing.JPanel;
 /**
  * <strong>This is not implemented yet!</strong>
  */
-public class CenterOfGravityEstimator implements IEstimator, IModule {
+public class CenterOfGravityEstimator implements IEstimator {
 
     @Override
     public String getName() {

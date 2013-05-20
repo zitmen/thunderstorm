@@ -2,30 +2,14 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.CentroidOfConnectedComponentsDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.LocalMaximaDetector;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.NonMaxSuppressionDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.LeastSquaresEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.CompoundWaveletFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.DifferenceOfGaussiansFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.EmptyFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.GaussianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.LoweredGaussianFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRenderingWrapper;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.EmptyRenderer;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRenderingWrapper;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ScatterRenderingWrapper;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -35,6 +19,7 @@ import ij.plugin.filter.ExtendedPlugInFilter;
 import static ij.plugin.filter.PlugInFilter.DOES_16;
 import static ij.plugin.filter.PlugInFilter.DOES_32;
 import static ij.plugin.filter.PlugInFilter.DOES_8G;
+import static ij.plugin.filter.PlugInFilter.DONE;
 import static ij.plugin.filter.PlugInFilter.NO_CHANGES;
 import static ij.plugin.filter.PlugInFilter.NO_UNDO;
 import ij.plugin.filter.PlugInFilterRunner;
@@ -157,59 +142,41 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     }
 
     // Create and set up the content pane.
-    Vector<IModule> filters = new Vector<IModule>();
-    filters.add(new EmptyFilter());
-    filters.add(new BoxFilter(3));
-    filters.add(new MedianFilter(MedianFilter.BOX, 3));
-    filters.add(new GaussianFilter(11, 1.6));
-    filters.add(new DifferenceOfGaussiansFilter(11, 1.6, 1.0));
-    filters.add(new LoweredGaussianFilter(11, 1.6));
-    filters.add(new CompoundWaveletFilter(false));
-    int default_filter = 6;
-    
-    // TODO: tenhle hnus musi pryc
-    Vector<IFilter> f = new Vector<IFilter>();
-    for(IModule flt : filters) {
-        f.add((IFilter)flt);
-    }
-    //
-    Thresholder.loadFilters(f);
-    Thresholder.setActiveFilter(default_filter);
-
-    Vector<IModule> detectors = new Vector<IModule>();
     try {
-        detectors.add(new LocalMaximaDetector(Graph.CONNECTIVITY_8, "10*std(F)"));
-        detectors.add(new NonMaxSuppressionDetector(3, "6*std(F)"));
-        detectors.add(new CentroidOfConnectedComponentsDetector(false, "std(I-Wave.V1)"));
-    } catch (ThresholdFormulaException ex) {
-        IJ.error("Thresholding: " + ex.getMessage());
-    }
-    int default_detector = 2;
+      Vector<IFilter> filters = ModuleLoader.getModules(IFilter.class);
+      Vector<IDetector> detectors = ModuleLoader.getModules(IDetector.class);
+      Vector<IEstimator> estimators = ModuleLoader.getModules(IEstimator.class);
+      Vector<IRenderer> renderers = ModuleLoader.getModules(IRenderer.class);
+      for (IRenderer r : renderers) {
+        r.setSize(imp.getWidth(), imp.getHeight());
+      }
+      
+      int default_filter = 0;
+      int default_detector = 0;
+      int default_estimator = 0;
+      
+      Thresholder.loadFilters(filters);
+      Thresholder.setActiveFilter(default_filter);
 
-    Vector<IModule> estimators = new Vector<IModule>();
-    estimators.add(new LeastSquaresEstimator(11));
-    int default_estimator = 0;
+      // Create and show the dialog
+      AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, default_filter, detectors, default_detector, estimators, default_estimator, renderers, 0);
+      dialog.setVisible(true);
+      if (dialog.wasCanceled()) {  // This is a blocking call!!
+        filter = null;
+        detector = null;
+        estimator = null;
+        return DONE;    // cancel
+      } else {
+        filter = dialog.getFilter();
+        detector = dialog.getDetector();
+        estimator = dialog.getEstimator();
+        renderer = dialog.getRenderer();
 
-    Vector<IModule> renderers = new Vector<IModule>();
-    renderers.add(new EmptyRenderer());
-    renderers.add(new ASHRenderingWrapper(imp.getWidth(), imp.getHeight()));
-    renderers.add(new HistogramRenderingWrapper(imp.getWidth(), imp.getHeight()));
-    renderers.add(new ScatterRenderingWrapper(imp.getWidth(), imp.getHeight()));
-    // Create and show the dialog
-    AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, default_filter, detectors, default_detector, estimators, default_estimator, renderers, 0);
-    dialog.setVisible(true);
-    if (dialog.wasCanceled()) {  // This is a blocking call!!
-      filter = null;
-      detector = null;
-      estimator = null;
-      return DONE;    // cancel
-    } else {
-      filter = dialog.getFilter();
-      detector = dialog.getDetector();
-      estimator = dialog.getEstimator();
-      renderer = dialog.getRenderer();
-
-      return pluginFlags; // ok
+        return pluginFlags; // ok
+      }
+    } catch (Exception ex) {
+      IJ.log(ex.getMessage());
+      return DONE;
     }
   }
 
@@ -242,6 +209,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     assert (filter != null) : "Filter was not selected!";
     assert (detector != null) : "Detector was not selected!";
     assert (estimator != null) : "Estimator was not selected!";
+    assert (renderer != null) : "Renderer was not selected!";
     //
     FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
     Vector<PSF> fits = null;

@@ -1,12 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.gauss;
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
-import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
+import java.util.HashMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -19,7 +18,7 @@ import javax.swing.JTextField;
  * 
  * @see ConvolutionFilter
  */
-public final class GaussianFilter extends ConvolutionFilter implements IModule {
+public final class GaussianFilter extends ConvolutionFilter implements IFilter {
     
     private int size;
     private double sigma;
@@ -39,6 +38,11 @@ public final class GaussianFilter extends ConvolutionFilter implements IModule {
         super.updateKernel(new FloatProcessor(1, size, getKernel(size, sigma)), true);
     }
 
+  public GaussianFilter() {
+    this(11, 1.6);
+  }
+
+    
     /**
      * Initialize filter to use a kernel with a specified size filled with values
      * of the 2D Gaussian function with a specified {@mathjax \sigma} ({@code sigma}).
@@ -89,18 +93,23 @@ public final class GaussianFilter extends ConvolutionFilter implements IModule {
 
     @Override
     public void readParameters() {
-        try {
-            size = Integer.parseInt(sizeTextField.getText());
-            sigma = Double.parseDouble(sigmaTextField.getText());
-            updateKernel();
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+          size = Integer.parseInt(sizeTextField.getText());
+          sigma = Double.parseDouble(sigmaTextField.getText());
+          updateKernel();
     }
     
     @Override
     public String getFilterVarName() {
         return "Gauss";
+    }
+
+    @Override
+    public HashMap<String, FloatProcessor> exportVariables() {
+        if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
+        //
+        export_variables.put("I", input);
+        export_variables.put("F", result);
+        return export_variables;
     }
     
 }

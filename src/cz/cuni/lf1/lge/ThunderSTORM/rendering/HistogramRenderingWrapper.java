@@ -3,7 +3,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.rendering.HistogramRendering;
 import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
-import ij.IJ;
 import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,6 +16,9 @@ public class HistogramRenderingWrapper extends AbstractRenderingWrapper {
 
   JTextField avgTextField;
   int avg;
+
+  public HistogramRenderingWrapper() {
+  }
 
   public HistogramRenderingWrapper(int sizeX, int sizeY) {
     super(sizeX, sizeY);
@@ -40,12 +42,8 @@ public class HistogramRenderingWrapper extends AbstractRenderingWrapper {
 
   @Override
   public void readParameters() {
-    try {
-      avg = Integer.parseInt(avgTextField.getText());
-      super.readParameters();
-    } catch (NumberFormatException ex) {
-      IJ.showMessage("Error!", ex.getMessage());
-    }
+    avg = Integer.parseInt(avgTextField.getText());
+    super.readParameters();
   }
 
   @Override

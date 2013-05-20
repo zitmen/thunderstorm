@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
@@ -12,7 +11,7 @@ import javax.swing.JTextField;
 /**
  * <strong>This is not implemented yet!</strong>
  */
-public class MaximumLikelihoodEstimator implements IEstimator, IModule {
+public class MaximumLikelihoodEstimator implements IEstimator {
 
     /* unify this for all estimators?? */
     private int fitrad;

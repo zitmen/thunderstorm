@@ -1,12 +1,13 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
+import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import ij.process.FloatProcessor;
 import java.util.HashMap;
 
 /**
  * The interface every filter has to implement.
  */
-public interface IFilter {
+public interface IFilter extends IModule {
     
     /**
      * Apply a filter on an input image and return the result.

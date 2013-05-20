@@ -1,8 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Arrays;
@@ -15,7 +13,7 @@ import javax.swing.JTextField;
 /**
  * Apply a median filter on an input image.
  */
-public final class MedianFilter implements IFilter, IModule {
+public final class MedianFilter implements IFilter {
 
     private FloatProcessor input = null, result = null;
     private HashMap<String, FloatProcessor> export_variables = null;
@@ -51,6 +49,10 @@ public final class MedianFilter implements IFilter, IModule {
     
     private JTextField sizeTextField;
     private JRadioButton patternCrossRadioButton, patternBoxRadioButton;
+
+  public MedianFilter() {
+    this(BOX,3);
+  }
 
     /**
      * Initialize the filter.
@@ -147,13 +149,9 @@ public final class MedianFilter implements IFilter, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            size = Integer.parseInt(sizeTextField.getText());
-            if(patternBoxRadioButton.isSelected()) pattern = BOX;
-            if(patternCrossRadioButton.isSelected()) pattern = CROSS;
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+        size = Integer.parseInt(sizeTextField.getText());
+        if(patternBoxRadioButton.isSelected()) pattern = BOX;
+        if(patternCrossRadioButton.isSelected()) pattern = CROSS;
     }
     
     @Override

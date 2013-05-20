@@ -1,12 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Vector;
@@ -18,7 +16,7 @@ import javax.swing.JTextField;
 /**
  * Detection of local maxima points.
  */
-public class LocalMaximaDetector implements IDetector, IModule {
+public class LocalMaximaDetector implements IDetector {
 
     private int connectivity;
     private String threshold;
@@ -128,6 +126,10 @@ public class LocalMaximaDetector implements IDetector, IModule {
         
         return detections;
     }
+
+  public LocalMaximaDetector() throws ThresholdFormulaException {
+    this(Graph.CONNECTIVITY_8, "10*std(F)");
+  }
     
     /**
      * Constructor.
@@ -196,13 +198,9 @@ public class LocalMaximaDetector implements IDetector, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            threshold = thrTextField.getText();
-            if(conn4RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_4;
-            if(conn8RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_8;
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+        threshold = thrTextField.getText();
+        if(conn4RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_4;
+        if(conn8RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_8;
     }
 
 }

@@ -1,12 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Morphology;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Vector;
@@ -18,13 +16,17 @@ import javax.swing.JTextField;
  * Detect pixels with its intensity equal or greater then a threshold and also with its
  * value not changed after a morphological dilation is performed.
  */
-public final class NonMaxSuppressionDetector implements IDetector, IModule {
+public final class NonMaxSuppressionDetector implements IDetector {
 
     private int radius;
     private String threshold;
     
     private JTextField thrTextField;
     private JTextField radiusTextField;
+
+  public NonMaxSuppressionDetector() throws ThresholdFormulaException {
+    this(3, "6*std(F)");
+  }
     
     /**
      * Initialize the filter.
@@ -83,12 +85,8 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            threshold = thrTextField.getText();
-            radius = Integer.parseInt(radiusTextField.getText());
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+        threshold = thrTextField.getText();
+        radius = Integer.parseInt(radiusTextField.getText());
     }
 
 }

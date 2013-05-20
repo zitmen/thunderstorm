@@ -10,7 +10,7 @@ public class EmptyRenderer implements IRenderer {
 
   @Override
   public String getName() {
-    return "Empty Renderer";
+    return "No Renderer";
   }
 
   @Override
@@ -32,5 +32,9 @@ public class EmptyRenderer implements IRenderer {
 
   @Override
   public void repaintAsync() {
+  }
+
+  @Override
+  public void setSize(int width, int height) {
   }
 }

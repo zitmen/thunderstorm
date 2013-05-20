@@ -17,13 +17,13 @@ import java.util.HashMap;
  * {@mathjax H} stands for height, and subscripts {@mathjax i,k} stand for image and kernel,
  * respectively.
  */
-public class ConvolutionFilter implements IFilter {
+public class ConvolutionFilter {
 
     private int padding_method;
     private FloatProcessor kernel = null, kernel_x = null, kernel_y = null;
     
-    private FloatProcessor input = null, result = null;
-    private HashMap<String,FloatProcessor> export_variables = null;
+    protected FloatProcessor input = null, result = null;
+    protected HashMap<String,FloatProcessor> export_variables = null;
     
     /**
      * Change the current padding method.
@@ -114,7 +114,6 @@ public class ConvolutionFilter implements IFilter {
         export_variables = null;
     }
 
-    @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         input = image;
         // With non-separable kernels, the complexity is K*K*N,
@@ -152,20 +151,6 @@ public class ConvolutionFilter implements IFilter {
      */
     public FloatProcessor getKernel(){
         return kernel;
-    }
-
-    @Override
-    public String getFilterVarName() {
-        return "Conv";
-    }
-
-    @Override
-    public HashMap<String, FloatProcessor> exportVariables() {
-        if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
-        //
-        export_variables.put("I", input);
-        export_variables.put("F", result);
-        return export_variables;
     }
             
 }

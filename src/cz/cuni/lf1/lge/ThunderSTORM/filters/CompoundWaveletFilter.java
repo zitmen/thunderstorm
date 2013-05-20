@@ -2,9 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtract;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.crop;
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
-import ij.IJ;
 import ij.process.FloatProcessor;
 import java.util.HashMap;
 import javax.swing.JCheckBox;
@@ -21,7 +19,7 @@ import javax.swing.JPanel;
  * @see WaveletFilter
  * @see ConvolutionFilter
  */
-public final class CompoundWaveletFilter implements IFilter, IModule {
+public final class CompoundWaveletFilter implements IFilter {
     
     private FloatProcessor input = null, result = null, result_V1 = null, result_V2 = null, result_V3 = null;
     private HashMap<String, FloatProcessor> export_variables = null;
@@ -32,6 +30,10 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
     private WaveletFilter w1, w2, w3;
     
     private JCheckBox thirdCheckBox;
+
+  public CompoundWaveletFilter() {
+    this(false);
+  }
     
     /**
      * Initialize the filter with all the wavelet kernels needed to create the wavelet transform.
@@ -84,11 +86,7 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
 
     @Override
     public void readParameters() {
-        try {
-            third_plane = thirdCheckBox.isSelected();
-        } catch(NumberFormatException ex) {
-            IJ.showMessage("Error!", ex.getMessage());
-        }
+        third_plane = thirdCheckBox.isSelected();
     }
     
     @Override

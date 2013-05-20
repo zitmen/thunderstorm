@@ -20,11 +20,11 @@ import javax.swing.JPanel;
  *
  * @see IModule
  */
-public class CardsPanel implements ItemListener {
+public class CardsPanel<T extends IModule> implements ItemListener {
 
     private JPanel cardsPanel;
     private JComboBox cb;
-    private Vector<IModule> items;
+    private Vector<T> items;
     
     /**
      * Initialize the panel.
@@ -35,7 +35,7 @@ public class CardsPanel implements ItemListener {
      * @param items Vector of modules you want to insert into the combo box
      * @param index_default index of an item you want to be selected
      */
-    public CardsPanel(Vector<IModule> items, int index_default) {
+    public CardsPanel(Vector<T> items, int index_default) {
         this.items = items;
         cardsPanel = createCardsPanel();
         cb.setSelectedIndex(index_default);
@@ -46,7 +46,7 @@ public class CardsPanel implements ItemListener {
      *
      * @return the module selected in the combo box
      */
-    public IModule getActiveComboBoxItem() {
+    public T getActiveComboBoxItem() {
         return items.elementAt(cb.getSelectedIndex());
     }
     
