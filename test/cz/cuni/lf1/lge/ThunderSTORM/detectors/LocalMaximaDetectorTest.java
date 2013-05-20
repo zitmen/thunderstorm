@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
@@ -14,7 +15,7 @@ public class LocalMaximaDetectorTest {
      * Test of detectMoleculeCandidates method, of class LocalMaximaDetector.
      */
     @Test
-    public void testDetectMoleculeCandidates() {
+    public void testDetectMoleculeCandidates() throws ThresholdFormulaException {
         System.out.println("LocalMaximadetector::detectMoleculeCandidates");
         
         Vector<Point> result, expResult;
@@ -26,7 +27,7 @@ public class LocalMaximaDetectorTest {
             { 2f, 3f, 4f, 3f, 2f },
             { 2f, 3f, 3f, 3f, 2f }
         });
-        instance = new LocalMaximaDetector(Graph.CONNECTIVITY_4, 5f);
+        instance = new LocalMaximaDetector(Graph.CONNECTIVITY_4, "5.0");
         expResult = new Vector<Point>();
         expResult.add(new Point(0,0,9f));
         expResult.add(new Point(0,1,9f));
@@ -37,7 +38,7 @@ public class LocalMaximaDetectorTest {
         Collections.sort(result, new Point.XYComparator());
         assertEquals("Searching for a maximum in 4-neighborhood failed!", expResult, result);
         
-        instance = new LocalMaximaDetector(Graph.CONNECTIVITY_8, 0f);
+        instance = new LocalMaximaDetector(Graph.CONNECTIVITY_8, "0.0");
         expResult = new Vector<Point>();
         expResult.add(new Point(0,0,9f));
         expResult.add(new Point(0,1,9f));

@@ -1,6 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Morphology;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -19,7 +21,7 @@ import javax.swing.JTextField;
 public final class NonMaxSuppressionDetector implements IDetector, IModule {
 
     private int radius;
-    private double threshold;
+    private String threshold;
     
     private JTextField thrTextField;
     private JTextField radiusTextField;
@@ -30,7 +32,7 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
      * @param radius a radius of morphological dilation
      * @param threshold a threshold value
      */
-    public NonMaxSuppressionDetector(int radius, double threshold) {
+    public NonMaxSuppressionDetector(int radius, String threshold) throws ThresholdFormulaException {
         this.radius = radius;
         this.threshold = threshold;
     }
@@ -44,17 +46,16 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
      * @return  a {@code Vector} of {@code Points} containing positions of detected molecules
      */
     @Override
-    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
+    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws ThresholdFormulaException {
         Vector<Point> detections = new Vector<Point>();
-        
         FloatProcessor mx = Morphology.dilateBox(image, radius);
         
-        float imval, mxval;
+        float imval, mxval, thr = Thresholder.getThreshold(threshold);
         for(int x = radius/2, xm = image.getWidth()-radius/2; x < xm; x++) {
             for(int y = radius/2, ym = image.getHeight()-radius/2; y < ym; y++) {
                 imval = image.getf(x, y);
                 mxval = mx.getf(x, y);
-                if((mxval == imval) && (imval >= threshold))
+                if((mxval == imval) && (imval >= thr))
                     detections.add(new Point(x, y, imval));
             }
         }
@@ -69,7 +70,7 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
 
     @Override
     public JPanel getOptionsPanel() {
-        thrTextField = new JTextField(Double.toString(threshold), 20);
+        thrTextField = new JTextField(threshold.toString(), 20);
         radiusTextField = new JTextField(Integer.toString(radius), 20);
         //
         JPanel panel = new JPanel(new GridBagLayout());
@@ -83,7 +84,7 @@ public final class NonMaxSuppressionDetector implements IDetector, IModule {
     @Override
     public void readParameters() {
         try {
-            threshold = Double.parseDouble(thrTextField.getText());
+            threshold = thrTextField.getText();
             radius = Integer.parseInt(radiusTextField.getText());
         } catch(NumberFormatException ex) {
             IJ.showMessage("Error!", ex.getMessage());

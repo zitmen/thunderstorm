@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 import java.util.Collections;
@@ -13,7 +14,7 @@ public class CentroidOfConnectedComponentsDetectorTest {
      * Test of detectMoleculeCandidates method, of class CentroidOfConnectedComponentsDetector.
      */
     @Test
-    public void testDetectMoleculeCandidates() {
+    public void testDetectMoleculeCandidates() throws ThresholdFormulaException {
         System.out.println("CentroidOfConnectedComponentsDetector::detectMoleculeCandidates");
         
         Vector<Point> result, expResult;
@@ -25,7 +26,7 @@ public class CentroidOfConnectedComponentsDetectorTest {
             { 2f, 3f, 5f, 6f, 8f },
             { 2f, 3f, 3f, 3f, 2f }
         });
-        instance = new CentroidOfConnectedComponentsDetector(false, 5.0);
+        instance = new CentroidOfConnectedComponentsDetector(false, "5.0");
         expResult = new Vector<Point>();
         expResult.add(new Point(0.5,1.5));
         expResult.add(new Point(3.0,3.0));
@@ -39,7 +40,7 @@ public class CentroidOfConnectedComponentsDetectorTest {
             { 5f, 8f, 5f, 3f, 5f, 8f, 5f },
             { 3f, 5f, 3f, 1f, 3f, 5f, 3f }
         });
-        instance = new CentroidOfConnectedComponentsDetector(false, 3.0);
+        instance = new CentroidOfConnectedComponentsDetector(false, "3.0");
         expResult = new Vector<Point>();
         expResult.add(new Point(1.0,1.0));
         expResult.add(new Point(1.0,5.0));
@@ -52,14 +53,14 @@ public class CentroidOfConnectedComponentsDetectorTest {
             { 5f, 1f },
             { 1f, 5f }
         });
-        instance = new CentroidOfConnectedComponentsDetector(false, 3.0);
+        instance = new CentroidOfConnectedComponentsDetector(false, "3.0");
         expResult = new Vector<Point>();
         expResult.add(new Point(0.5,0.5));
         result = instance.detectMoleculeCandidates(image);
         Collections.sort(result, new Point.XYComparator());
         assertEquals(expResult, result);
         
-        instance = new CentroidOfConnectedComponentsDetector(true, 3.0);
+        instance = new CentroidOfConnectedComponentsDetector(true, "3.0");
         expResult.clear();
         // these coordinates are little off, because watershed has to remove part of
         // one pixel to divide the regions; the higher upsample factor, the more

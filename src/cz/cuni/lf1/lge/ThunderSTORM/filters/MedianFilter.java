@@ -6,6 +6,7 @@ import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Arrays;
+import java.util.HashMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -15,6 +16,9 @@ import javax.swing.JTextField;
  * Apply a median filter on an input image.
  */
 public final class MedianFilter implements IFilter, IModule {
+
+    private FloatProcessor input = null, result = null;
+    private HashMap<String, FloatProcessor> export_variables = null;
 
     /**
      * Setting the cross pattern will calculate the median of 5 values (center, left, right, top, and bottom).
@@ -73,7 +77,8 @@ public final class MedianFilter implements IFilter, IModule {
      */
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
-        FloatProcessor result = new FloatProcessor(image.getWidth(), image.getHeight());
+        input = image;
+        result = new FloatProcessor(image.getWidth(), image.getHeight());
         if (pattern == BOX) {
             float [] items = new float[size*size];
             
@@ -150,4 +155,19 @@ public final class MedianFilter implements IFilter, IModule {
             IJ.showMessage("Error!", ex.getMessage());
         }
     }
+    
+    @Override
+    public String getFilterVarName() {
+        return "Med";
+    }
+    
+    @Override
+    public HashMap<String, FloatProcessor> exportVariables() {
+        if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
+        //
+        export_variables.put("I", input);
+        export_variables.put("F", result);
+        return export_variables;
+    }
+
 }

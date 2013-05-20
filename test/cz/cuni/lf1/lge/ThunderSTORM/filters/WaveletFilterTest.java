@@ -37,12 +37,12 @@ public class WaveletFilterTest {
             try {
                 instance = new WaveletFilter(0);
                 fail("Wavelet filter: planes < 1 should be by design unsupported!");
-            } catch(UnsupportedOperationException ex) { }
+            } catch(IndexOutOfBoundsException ex) { }
             
             try {
                 instance = new WaveletFilter(4);
                 fail("Wavelet filter: planes > 3 should be by design unsupported!");
-            } catch(UnsupportedOperationException ex) { }
+            } catch(IndexOutOfBoundsException ex) { }
         } catch(IOException ex) {
             fail("Error in box filter test: " + ex.getMessage());
         }

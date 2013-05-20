@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import ij.process.FloatProcessor;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.pow;
 
 /**
  * Helper class to offer some additional functionality over the ImageProcessor from ImageJ.
@@ -8,7 +9,48 @@ import ij.process.FloatProcessor;
 public class ImageProcessor {
 
     /**
-     * Subtract two images from each other.
+     * Add two images.
+     * 
+     * The images are required to be of the same size.
+     *
+     * @param fp1 an input image which the other input image ({@code fp2}) will be added to
+     * @param fp2 another input image which will be added to {@code fp1}
+     * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fp3 = fp1 + fp2}
+     */
+    public static FloatProcessor add(FloatProcessor fp1, FloatProcessor fp2) {
+        assert (fp1.getWidth() == fp2.getWidth());
+        assert (fp1.getHeight() == fp2.getHeight());
+
+        FloatProcessor out = new FloatProcessor(fp1.getWidth(), fp1.getHeight());
+        for (int i = 0, im = fp1.getWidth(); i < im; i++) {
+            for (int j = 0, jm = fp1.getHeight(); j < jm; j++) {
+                out.setf(i, j, fp1.getPixelValue(i, j) + fp2.getPixelValue(i, j));
+            }
+        }
+
+        return out;
+    }
+    
+    /**
+     * Add a scalar value to an image.
+     * 
+     * @param val an input value will be added to the input image ({@code fp})
+     * @param fp an input image
+     * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fpv = val + fp}
+     */
+    public static FloatProcessor add(float val, FloatProcessor fp) {
+        FloatProcessor out = new FloatProcessor(fp.getWidth(), fp.getHeight());
+        for (int i = 0, im = fp.getWidth(); i < im; i++) {
+            for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
+                out.setf(i, j, val + fp.getPixelValue(i, j));
+            }
+        }
+
+        return out;
+    }
+    
+    /**
+     * Subtract one image to the other.
      * 
      * The images are required to be of the same size.
      *
@@ -16,7 +58,7 @@ public class ImageProcessor {
      * @param fp2 another input image which will be subtracted from {@code fp1}
      * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fp3 = fp1 - fp2}
      */
-    public static FloatProcessor subtractImage(FloatProcessor fp1, FloatProcessor fp2) {
+    public static FloatProcessor subtract(FloatProcessor fp1, FloatProcessor fp2) {
         assert (fp1.getWidth() == fp2.getWidth());
         assert (fp1.getHeight() == fp2.getHeight());
 
@@ -24,6 +66,146 @@ public class ImageProcessor {
         for (int i = 0, im = fp1.getWidth(); i < im; i++) {
             for (int j = 0, jm = fp1.getHeight(); j < jm; j++) {
                 out.setf(i, j, fp1.getPixelValue(i, j) - fp2.getPixelValue(i, j));
+            }
+        }
+
+        return out;
+    }
+    
+    /**
+     * Subtract an image from a scalar.
+     * 
+     * @param val an input value which the input image ({@code fp}) will be subtracted from
+     * @param fp an input image
+     * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fpv = val - fp}
+     */
+    public static FloatProcessor subtract(float val, FloatProcessor fp) {
+        FloatProcessor out = new FloatProcessor(fp.getWidth(), fp.getHeight());
+        for (int i = 0, im = fp.getWidth(); i < im; i++) {
+            for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
+                out.setf(i, j, val - fp.getPixelValue(i, j));
+            }
+        }
+
+        return out;
+    }
+    
+    /**
+     * Subtract a scalar value from an image.
+     * 
+     * @param val an input value which will be substracted from the input image ({@code fp})
+     * @param fp an input image
+     * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fpv = fp - val}
+     */
+    public static FloatProcessor subtract(FloatProcessor fp, float val) {
+        return add(-val, fp);
+    }
+    
+    /**
+     * Multiply two images.
+     * 
+     * The images are required to be of the same size.
+     *
+     * @param fp1 an input image which the other input image ({@code fp2}) will be multiplied with
+     * @param fp2 another input image which will be multiplied with {@code fp1}
+     * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fp3 = fp1 * fp2}
+     */
+    public static FloatProcessor multiply(FloatProcessor fp1, FloatProcessor fp2) {
+        assert (fp1.getWidth() == fp2.getWidth());
+        assert (fp1.getHeight() == fp2.getHeight());
+
+        FloatProcessor out = new FloatProcessor(fp1.getWidth(), fp1.getHeight());
+        for (int i = 0, im = fp1.getWidth(); i < im; i++) {
+            for (int j = 0, jm = fp1.getHeight(); j < jm; j++) {
+                out.setf(i, j, fp1.getPixelValue(i, j) * fp2.getPixelValue(i, j));
+            }
+        }
+
+        return out;
+    }
+    
+    /**
+     * Multiply an image by a scalar value.
+     * 
+     * @param val an input value which the input image ({@code fp}) will be multiplied with
+     * @param fp an input image
+     * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fpv = val * fp}
+     */
+    public static FloatProcessor multiply(float val, FloatProcessor fp) {
+        FloatProcessor out = new FloatProcessor(fp.getWidth(), fp.getHeight());
+        for (int i = 0, im = fp.getWidth(); i < im; i++) {
+            for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
+                out.setf(i, j, val * fp.getPixelValue(i, j));
+            }
+        }
+
+        return out;
+    }
+    
+    /**
+     * Divide values of one image by values of the other image.
+     * 
+     * The images are required to be of the same size.
+     *
+     * @param fp1 an input image which the other input image ({@code fp2}) will be divided by
+     * @param fp2 another input image which will divide the {@code fp1}
+     * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fp3 = fp1 / fp2}
+     */
+    public static FloatProcessor divide(FloatProcessor fp1, FloatProcessor fp2) {
+        assert (fp1.getWidth() == fp2.getWidth());
+        assert (fp1.getHeight() == fp2.getHeight());
+
+        FloatProcessor out = new FloatProcessor(fp1.getWidth(), fp1.getHeight());
+        for (int i = 0, im = fp1.getWidth(); i < im; i++) {
+            for (int j = 0, jm = fp1.getHeight(); j < jm; j++) {
+                out.setf(i, j, fp1.getPixelValue(i, j) / fp2.getPixelValue(i, j));
+            }
+        }
+
+        return out;
+    }
+    
+    /**
+     * Divide a scalar value by values from an image.
+     * 
+     * @param val an input value which the input image ({@code fp}) will divide
+     * @param fp an input image
+     * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fpv = val / fp}
+     */
+    public static FloatProcessor divide(float val, FloatProcessor fp) {
+        FloatProcessor out = new FloatProcessor(fp.getWidth(), fp.getHeight());
+        for (int i = 0, im = fp.getWidth(); i < im; i++) {
+            for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
+                out.setf(i, j, val / fp.getPixelValue(i, j));
+            }
+        }
+
+        return out;
+    }
+    
+    /**
+     * Divide an image by a scalar value.
+     * 
+     * @param val an input value which will divide the input image ({@code fp})
+     * @param fp an input image
+     * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fpv = fp / val}
+     */
+    public static FloatProcessor divide(FloatProcessor fp, float val) {
+        return multiply(1.0f/val, fp);
+    }
+    
+    /**
+     * Calculate a {@code val}-th power of an image {@code fp}.
+     * 
+     * @param val {@code val}-th power of {@code fp}
+     * @param fp an input image
+     * @return a <strong>new instance</strong> of FloatProcessor: {@mathjax fpv = fp ^ val}
+     */
+    public static FloatProcessor power(FloatProcessor fp, float val) {
+        FloatProcessor out = new FloatProcessor(fp.getWidth(), fp.getHeight());
+        for (int i = 0, im = fp.getWidth(); i < im; i++) {
+            for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
+                out.setf(i, j, (float)pow((double)fp.getPixelValue(i, j), (double)val));
             }
         }
 
@@ -40,7 +222,7 @@ public class ImageProcessor {
      * @param height height of a ROI
      * @return a <strong>new instance</strong> of FloatProcessor that contains the cropped image
      */
-    public static FloatProcessor cropImage(FloatProcessor im, int left, int top, int width, int height) {
+    public static FloatProcessor crop(FloatProcessor im, int left, int top, int width, int height) {
         assert(im != null);
         assert((width > 0) && (height > 0));
         assert((left >= 0) && (top >= 0) && ((left+width) <= im.getWidth()) && ((top+height) <= im.getHeight()));

@@ -3,6 +3,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.applyMask;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.threshold;
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -25,7 +27,7 @@ import javax.swing.JTextField;
 public final class CentroidOfConnectedComponentsDetector implements IDetector, IModule {
 
     private boolean upsample;
-    private double threshold;
+    private String threshold;
     
     private JTextField thrTextField;
     private JCheckBox upCheckBox;
@@ -38,7 +40,7 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
      *                 are connected together
      * @param threshold a threshold value of intensity
      */
-    public CentroidOfConnectedComponentsDetector(boolean upsample, double threshold) {
+    public CentroidOfConnectedComponentsDetector(boolean upsample, String threshold) throws ThresholdFormulaException {
         this.upsample = upsample;
         this.threshold = threshold;
     }
@@ -74,9 +76,9 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
      * @return a {@code Vector} of {@code Points} containing positions of detected molecules
      */
     @Override
-    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
+    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws ThresholdFormulaException {
         // thresholding first to make the image binary
-        threshold(image, (float) threshold, 0.0f, 255.0f);
+        threshold(image, Thresholder.getThreshold(threshold), 0.0f, 255.0f);
         // watershed transform with[out] upscaling
         if (upsample) {
             image.setInterpolationMethod(FloatProcessor.NEAREST_NEIGHBOR);
@@ -105,7 +107,7 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
 
     @Override
     public JPanel getOptionsPanel() {
-        thrTextField = new JTextField(Double.toString(threshold), 20);
+        thrTextField = new JTextField(threshold.toString(), 20);
         upCheckBox = new JCheckBox("upsample");
         upCheckBox.setSelected(upsample);
         //
@@ -119,7 +121,7 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
     @Override
     public void readParameters() {
         try {
-            threshold = Double.parseDouble(thrTextField.getText());
+            threshold = thrTextField.getText();
             upsample = upCheckBox.isSelected();
         } catch(NumberFormatException ex) {
             IJ.showMessage("Error!", ex.getMessage());

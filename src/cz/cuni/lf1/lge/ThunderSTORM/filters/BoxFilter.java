@@ -58,4 +58,9 @@ public final class BoxFilter extends UniformFilter implements IModule {
         }
     }
     
+    @Override
+    public String getFilterVarName() {
+        return "Box";
+    }
+    
 }

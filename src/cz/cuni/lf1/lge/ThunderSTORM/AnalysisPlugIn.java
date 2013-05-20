@@ -23,6 +23,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.EmptyRenderer;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRenderingWrapper;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ScatterRenderingWrapper;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import ij.IJ;
 import ij.ImagePlus;
@@ -163,14 +165,30 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     filters.add(new DifferenceOfGaussiansFilter(11, 1.6, 1.0));
     filters.add(new LoweredGaussianFilter(11, 1.6));
     filters.add(new CompoundWaveletFilter(false));
+    int default_filter = 6;
+    
+    // TODO: tenhle hnus musi pryc
+    Vector<IFilter> f = new Vector<IFilter>();
+    for(IModule flt : filters) {
+        f.add((IFilter)flt);
+    }
+    //
+    Thresholder.loadFilters(f);
+    Thresholder.setActiveFilter(default_filter);
 
     Vector<IModule> detectors = new Vector<IModule>();
-    detectors.add(new LocalMaximaDetector(Graph.CONNECTIVITY_8, 10.0));
-    detectors.add(new NonMaxSuppressionDetector(3, 6.0));
-    detectors.add(new CentroidOfConnectedComponentsDetector(false, 1.0));
+    try {
+        detectors.add(new LocalMaximaDetector(Graph.CONNECTIVITY_8, "10*std(F)"));
+        detectors.add(new NonMaxSuppressionDetector(3, "6*std(F)"));
+        detectors.add(new CentroidOfConnectedComponentsDetector(false, "std(I-Wave.V1)"));
+    } catch (ThresholdFormulaException ex) {
+        IJ.error("Thresholding: " + ex.getMessage());
+    }
+    int default_detector = 2;
 
     Vector<IModule> estimators = new Vector<IModule>();
     estimators.add(new LeastSquaresEstimator(11));
+    int default_estimator = 0;
 
     Vector<IModule> renderers = new Vector<IModule>();
     renderers.add(new EmptyRenderer());
@@ -178,7 +196,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     renderers.add(new HistogramRenderingWrapper(imp.getWidth(), imp.getHeight()));
     renderers.add(new ScatterRenderingWrapper(imp.getWidth(), imp.getHeight()));
     // Create and show the dialog
-    AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, 6, detectors, 2, estimators, 0, renderers, 0);
+    AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, default_filter, detectors, default_detector, estimators, default_estimator, renderers, 0);
     dialog.setVisible(true);
     if (dialog.wasCanceled()) {  // This is a blocking call!!
       filter = null;
@@ -226,7 +244,12 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     assert (estimator != null) : "Estimator was not selected!";
     //
     FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
-    Vector<PSF> fits = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
+    Vector<PSF> fits = null;
+    try {
+        fits = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
+    } catch (ThresholdFormulaException ex) {
+        IJ.error("Thresholding: " + ex.getMessage());
+    }
     //
     results[ip.getSliceNumber()] = fits;
     images[ip.getSliceNumber()] = fp;

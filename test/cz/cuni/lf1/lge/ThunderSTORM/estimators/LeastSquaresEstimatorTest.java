@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.CentroidOfConnectedComponentsDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.CompoundWaveletFilter;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.CSV;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -67,13 +68,13 @@ public class LeastSquaresEstimatorTest {
      * Test of estimateParameters method, of class LeastSquaresEstimator.
      */
     @Test
-    public void testEstimateParameters() {
+    public void testEstimateParameters() throws ThresholdFormulaException {
         System.out.println("LeastSquaresEstimator::estimateParameters");
         
         try {
             FloatProcessor image = (FloatProcessor) IJ.openImage("test/resources/tubulins1_00020.tif").getProcessor().convertToFloat();
             FloatProcessor filtered = (new CompoundWaveletFilter(false)).filterImage(image);
-            Vector<Point> detections = (new CentroidOfConnectedComponentsDetector(false, 14.2835)).detectMoleculeCandidates(filtered);
+            Vector<Point> detections = (new CentroidOfConnectedComponentsDetector(false, "14.2835")).detectMoleculeCandidates(filtered);
             Vector<PSF> fits = (new LeastSquaresEstimator(11)).estimateParameters(image, detections);
             for(PSF fit : fits) {
                 fit.convertXYToNanoMeters(150.0);

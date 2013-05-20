@@ -1,11 +1,12 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtractImage;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.cropImage;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtract;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.crop;
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.IJ;
 import ij.process.FloatProcessor;
+import java.util.HashMap;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
@@ -21,6 +22,9 @@ import javax.swing.JPanel;
  * @see ConvolutionFilter
  */
 public final class CompoundWaveletFilter implements IFilter, IModule {
+    
+    private FloatProcessor input = null, result = null, result_V1 = null, result_V2 = null, result_V3 = null;
+    private HashMap<String, FloatProcessor> export_variables = null;
 
     private int margin;
     private boolean third_plane;
@@ -46,15 +50,21 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
     
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
+        input = image;
         FloatProcessor padded = Padding.addBorder(image, Padding.PADDING_DUPLICATE, margin);
         FloatProcessor V1 = w1.filterImage(padded);
         FloatProcessor V2 = w2.filterImage(V1);
+        FloatProcessor V3 = w3.filterImage(V2);
+        result_V1 = crop(V1, margin, margin, image.getWidth(), image.getHeight());
+        result_V2 = crop(V2, margin, margin, image.getWidth(), image.getHeight());
+        result_V3 = crop(V3, margin, margin, image.getWidth(), image.getHeight());
         
-        if (third_plane) {
-            FloatProcessor V3 = w3.filterImage(V2);
-            return cropImage(subtractImage(V2, V3), margin, margin, image.getWidth(), image.getHeight());
-        }
-        return cropImage(subtractImage(V1, V2), margin, margin, image.getWidth(), image.getHeight());
+        if (third_plane)
+            result = crop(subtract(V2, V3), margin, margin, image.getWidth(), image.getHeight());
+        else
+            result = crop(subtract(V1, V2), margin, margin, image.getWidth(), image.getHeight());
+        
+        return result;
     }
     
     @Override
@@ -79,6 +89,23 @@ public final class CompoundWaveletFilter implements IFilter, IModule {
         } catch(NumberFormatException ex) {
             IJ.showMessage("Error!", ex.getMessage());
         }
+    }
+    
+    @Override
+    public String getFilterVarName() {
+        return "Wave";
+    }
+    
+    @Override
+    public HashMap<String, FloatProcessor> exportVariables() {
+        if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
+        //
+        export_variables.put("I", input);
+        export_variables.put("F", result);
+        export_variables.put("V1", result_V1);
+        export_variables.put("V2", result_V2);
+        export_variables.put("V3", result_V3);
+        return export_variables;
     }
     
 }

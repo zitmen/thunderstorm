@@ -8,6 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
+import java.util.HashMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -27,6 +28,9 @@ import javax.swing.JTextField;
  *
  */
 public final class LoweredGaussianFilter implements IFilter, IModule {
+    
+    private FloatProcessor input = null, result = null;
+    private HashMap<String, FloatProcessor> export_variables;
     
     private GaussianFilter g;
     private UniformFilter u;
@@ -75,7 +79,9 @@ public final class LoweredGaussianFilter implements IFilter, IModule {
 
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
-        return ImageProcessor.subtractImage(g.filterImage(image), u.filterImage(image));
+        input = image;
+        result = ImageProcessor.subtract(g.filterImage(image), u.filterImage(image));
+        return result;
     }
 
     @Override
@@ -105,6 +111,20 @@ public final class LoweredGaussianFilter implements IFilter, IModule {
         } catch(NumberFormatException ex) {
             IJ.showMessage("Error!", ex.getMessage());
         }
+    }
+    
+    @Override
+    public String getFilterVarName() {
+        return "LowGauss";
+    }
+    
+    @Override
+    public HashMap<String, FloatProcessor> exportVariables() {
+        if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
+        //
+        export_variables.put("I", input);
+        export_variables.put("F", result);
+        return export_variables;
     }
     
 }

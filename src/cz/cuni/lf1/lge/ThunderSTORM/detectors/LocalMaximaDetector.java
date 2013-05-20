@@ -1,6 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -19,13 +21,13 @@ import javax.swing.JTextField;
 public class LocalMaximaDetector implements IDetector, IModule {
 
     private int connectivity;
-    private double threshold;
+    private String threshold;
     
     private JTextField thrTextField;
     private JRadioButton conn4RadioButton, conn8RadioButton;
     
-    private boolean isMax4Thr(FloatProcessor image, int x, int y, float local, boolean w, boolean e, boolean n, boolean s) {
-        if(local < threshold) return false;
+    private boolean isMax4Thr(FloatProcessor image, float thr, int x, int y, float local, boolean w, boolean e, boolean n, boolean s) {
+        if(local < thr) return false;
         
         if(w) if(image.getf(x-1,y  ) > local) return false;
         if(e) if(image.getf(x+1,y  ) > local) return false;
@@ -34,8 +36,8 @@ public class LocalMaximaDetector implements IDetector, IModule {
         return true;
     }
     
-    private boolean isMax8Thr(FloatProcessor image, int x, int y, float local, boolean w, boolean e, boolean n, boolean s) {
-        if(isMax4Thr(image, x, y, local, w, e, n, s) == false) return false;
+    private boolean isMax8Thr(FloatProcessor image, float thr, int x, int y, float local, boolean w, boolean e, boolean n, boolean s) {
+        if(isMax4Thr(image, thr, x, y, local, w, e, n, s) == false) return false;
         
         if(w && n) if(image.getf(x-1,y-1) > local) return false;
         if(w && s) if(image.getf(x-1,y+1) > local) return false;
@@ -45,84 +47,84 @@ public class LocalMaximaDetector implements IDetector, IModule {
     }
     
     // the following two methods are duplicates, because of speed...this way I dont need to check every iteration if it is 4 or 8 neighbourhood version
-    private Vector<Point> getMax4Candidates(FloatProcessor image) {
+    private Vector<Point> getMax4Candidates(FloatProcessor image, float thr) {
         Vector<Point> detections = new Vector<Point>();
         int cx = image.getWidth(), cy = image.getHeight();
         
         // inner part of the image
         for(int x = 1, xm = cx-1; x < xm; x++) {
             for(int y = 1, ym = cy-1; y < ym; y++) {
-                if(isMax4Thr(image, x, y, image.getf(x,y), true, true, true, true))
+                if(isMax4Thr(image, thr, x, y, image.getf(x,y), true, true, true, true))
                     detections.add(new Point(x, y, image.getf(x,y)));
             }
         }
         // left border of the image
         for(int x = 0, y = 1, ym = cy-1; y < ym; y++) {
-            if(isMax4Thr(image, x, y, image.getf(x,y), false, true, true, true))
+            if(isMax4Thr(image, thr, x, y, image.getf(x,y), false, true, true, true))
                 detections.add(new Point(x, y, image.getf(x,y)));
         }
         // right border of the image
         for(int x = cx-1, y = 1, ym = cy-1; y < ym; y++) {
-            if(isMax4Thr(image, x, y, image.getf(x,y), true, false, true, true))
+            if(isMax4Thr(image, thr, x, y, image.getf(x,y), true, false, true, true))
                 detections.add(new Point(x, y, image.getf(x,y)));
         }
         // top border of the image
         for(int x = 1, xm = cx-1, y = 0; x < xm; x++) {
-            if(isMax4Thr(image, x, y, image.getf(x,y), true, true, false, true))
+            if(isMax4Thr(image, thr, x, y, image.getf(x,y), true, true, false, true))
                 detections.add(new Point(x, y, image.getf(x,y)));
         }
         // bottom border of the image
         for(int x = 1, xm = cx-1, y = cy-1; x < xm; x++) {
-            if(isMax4Thr(image, x, y, image.getf(x,y), true, true, true, false))
+            if(isMax4Thr(image, thr, x, y, image.getf(x,y), true, true, true, false))
                 detections.add(new Point(x, y, image.getf(x,y)));
         }
         // corners
         cx -= 1; cy -= 1;
-        if(isMax4Thr(image, 0 , 0, image.getf(0 , 0), false, true , false, true )) detections.add(new Point( 0, 0, image.getf( 0, 0)));
-        if(isMax4Thr(image, cx, 0, image.getf(cx, 0), true , false, false, true )) detections.add(new Point(cx, 0, image.getf(cx, 0)));
-        if(isMax4Thr(image, 0 ,cy, image.getf(0 ,cy), false, true , true , false)) detections.add(new Point( 0,cy, image.getf( 0,cy)));
-        if(isMax4Thr(image, cx,cy, image.getf(cx,cy), true , false, true , false)) detections.add(new Point(cx,cy, image.getf(cx,cy)));
+        if(isMax4Thr(image, thr, 0 , 0, image.getf(0 , 0), false, true , false, true )) detections.add(new Point( 0, 0, image.getf( 0, 0)));
+        if(isMax4Thr(image, thr, cx, 0, image.getf(cx, 0), true , false, false, true )) detections.add(new Point(cx, 0, image.getf(cx, 0)));
+        if(isMax4Thr(image, thr, 0 ,cy, image.getf(0 ,cy), false, true , true , false)) detections.add(new Point( 0,cy, image.getf( 0,cy)));
+        if(isMax4Thr(image, thr, cx,cy, image.getf(cx,cy), true , false, true , false)) detections.add(new Point(cx,cy, image.getf(cx,cy)));
         
         return detections;
     }
     
-    private Vector<Point> getMax8Candidates(FloatProcessor image) {
+    private Vector<Point> getMax8Candidates(FloatProcessor image, float thr) {
         Vector<Point> detections = new Vector<Point>();
         int cx = image.getWidth(), cy = image.getHeight();
         
         // inner part of the image
         for(int x = 1, xm = cx-1; x < xm; x++) {
             for(int y = 1, ym = cy-1; y < ym; y++) {
-                if(isMax8Thr(image, x, y, image.getf(x,y), true, true, true, true))
+                if(isMax8Thr(image, thr, x, y, image.getf(x,y), true, true, true, true))
                     detections.add(new Point(x, y, image.getf(x,y)));
             }
         }
         // left border of the image
         for(int x = 0, y = 1, ym = cy-1; y < ym; y++) {
-            if(isMax8Thr(image, x, y, image.getf(x,y), false, true, true, true))
+            if(isMax8Thr(image, thr, x, y, image.getf(x,y), false, true, true, true))
                 detections.add(new Point(x, y, image.getf(x,y)));
         }
         // right border of the image
         for(int x = cx-1, y = 1, ym = cy-1; y < ym; y++) {
-            if(isMax8Thr(image, x, y, image.getf(x,y), true, false, true, true))
+            if(isMax8Thr(image, thr, x, y, image.getf(x,y), true, false, true, true))
                 detections.add(new Point(x, y, image.getf(x,y)));
         }
         // top border of the image
         for(int x = 1, xm = cx-1, y = 0; x < xm; x++) {
-            if(isMax8Thr(image, x, y, image.getf(x,y), true, true, false, true))
+            if(isMax8Thr(image, thr, x, y, image.getf(x,y), true, true, false, true))
                 detections.add(new Point(x, y, image.getf(x,y)));
         }
         // bottom border of the image
         for(int x = 1, xm = cx-1, y = cy-1; x < xm; x++) {
-            if(isMax8Thr(image, x, y, image.getf(x,y), true, true, true, false))
+            if(isMax8Thr(image, thr, x, y, image.getf(x,y), true, true, true, false))
                 detections.add(new Point(x, y, image.getf(x,y)));
         }
         // corners
         cx -= 1; cy -= 1;
-        if(isMax8Thr(image,  0, 0, image.getf( 0, 0), false, true , false, true )) detections.add(new Point( 0, 0, image.getf( 0, 0)));
-        if(isMax8Thr(image, cx, 0, image.getf(cx, 0), true , false, false, true )) detections.add(new Point(cx, 0, image.getf(cx, 0)));
-        if(isMax8Thr(image,  0,cy, image.getf( 0,cy), false, true , true , false)) detections.add(new Point( 0,cy, image.getf( 0,cy)));
-        if(isMax8Thr(image, cx,cy, image.getf(cx,cy), true , false, true , false)) detections.add(new Point(cx,cy, image.getf(cx,cy)));
+        if(isMax8Thr(image, thr,  0, 0, image.getf( 0, 0), false, true , false, true )) detections.add(new Point( 0, 0, image.getf( 0, 0)));
+        if(isMax8Thr(image, thr, cx, 0, image.getf(cx, 0), true , false, false, true )) detections.add(new Point(cx, 0, image.getf(cx, 0)));
+        if(isMax8Thr(image, thr,  0,cy, image.getf( 0,cy), false, true , true , false)) detections.add(new Point( 0,cy, image.getf( 0,cy)));
+        if(isMax8Thr(image, thr, cx,cy, image.getf(cx,cy), true , false, true , false)) detections.add(new Point(cx,cy, image.getf(cx,cy)));
         
         return detections;
     }
@@ -133,7 +135,7 @@ public class LocalMaximaDetector implements IDetector, IModule {
      * @param connectivity determines in whar neighbourhood will be maxima looked for
      * @param threshold points with their intensities lower than the threshold will not be included in a list of molecule candidates
      */
-    public LocalMaximaDetector(int connectivity, double threshold) {
+    public LocalMaximaDetector(int connectivity, String threshold) throws ThresholdFormulaException {
         assert((connectivity == Graph.CONNECTIVITY_4) || (connectivity == Graph.CONNECTIVITY_8));
         
         this.connectivity = connectivity;
@@ -164,8 +166,9 @@ public class LocalMaximaDetector implements IDetector, IModule {
      * @return {@code Vector} of detected {@code Points} {x,y,I}
      */
     @Override
-    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) {
-        return ((connectivity == Graph.CONNECTIVITY_4) ? getMax4Candidates(image) : getMax8Candidates(image));
+    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws ThresholdFormulaException {
+        float thr = Thresholder.getThreshold(threshold);
+        return ((connectivity == Graph.CONNECTIVITY_4) ? getMax4Candidates(image, thr) : getMax8Candidates(image, thr));
     }
 
     @Override
@@ -175,7 +178,7 @@ public class LocalMaximaDetector implements IDetector, IModule {
 
     @Override
     public JPanel getOptionsPanel() {
-        thrTextField = new JTextField("Threshold", 20);
+        thrTextField = new JTextField(threshold.toString(), 20);
         conn4RadioButton = new JRadioButton("4-neighbourhood");
         conn8RadioButton = new JRadioButton("8-neighbourhood");
         //
@@ -194,7 +197,7 @@ public class LocalMaximaDetector implements IDetector, IModule {
     @Override
     public void readParameters() {
         try {
-            threshold = Double.parseDouble(thrTextField.getText());
+            threshold = thrTextField.getText();
             if(conn4RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_4;
             if(conn8RadioButton.isSelected()) connectivity = Graph.CONNECTIVITY_8;
         } catch(NumberFormatException ex) {

@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.IJ;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
+import java.util.HashMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -38,6 +39,9 @@ import javax.swing.JTextField;
  * @see ConvolutionFilter
  */
 public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
+    
+    private FloatProcessor input = null, result = null, result_g1 = null, result_g2 = null;
+    private HashMap<String, FloatProcessor> export_variables = null;
 
     private int size, padding;
     private double sigma_g1, sigma_g2;
@@ -98,7 +102,11 @@ public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
 
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
-        return ImageProcessor.subtractImage(g1.filterImage(image), g2.filterImage(image));
+        input = image;
+        result_g1 = g1.filterImage(image);
+        result_g2 = g2.filterImage(image);
+        result = ImageProcessor.subtract(result_g1, result_g2);
+        return result;
     }
 
     @Override
@@ -132,6 +140,22 @@ public final class DifferenceOfGaussiansFilter implements IFilter, IModule {
         } catch(NumberFormatException ex) {
             IJ.showMessage("Error!", ex.getMessage());
         }
+    }
+    
+    @Override
+    public String getFilterVarName() {
+        return "DoG";
+    }
+    
+    @Override
+    public HashMap<String, FloatProcessor> exportVariables() {
+        if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
+        //
+        export_variables.put("I", input);
+        export_variables.put("F", result);
+        export_variables.put("G1", result_g1);
+        export_variables.put("G2", result_g2);
+        return export_variables;
     }
     
 }

@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 import java.util.Collections;
@@ -13,7 +14,7 @@ public class NonMaxSuppressionDetectorTest {
      * Test of detectMoleculeCandidates method, of class NonMaxSuppressionDetector.
      */
     @Test
-    public void testDetectMoleculeCandidates() {
+    public void testDetectMoleculeCandidates() throws ThresholdFormulaException {
         System.out.println("NonMaxSuppressionDetector::detectMoleculeCandidates");
         
         Vector<Point> result, expResult;
@@ -25,7 +26,7 @@ public class NonMaxSuppressionDetectorTest {
             { 2f, 3f, 4f, 3f, 2f },
             { 2f, 3f, 3f, 3f, 2f }
         });
-        instance = new NonMaxSuppressionDetector(3, 3.0);
+        instance = new NonMaxSuppressionDetector(3, "3.0");
         expResult = new Vector<Point>();
         expResult.add(new Point(3,2,4f));
         result = instance.detectMoleculeCandidates(image);

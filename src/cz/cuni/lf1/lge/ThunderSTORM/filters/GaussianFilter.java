@@ -98,4 +98,9 @@ public final class GaussianFilter extends ConvolutionFilter implements IModule {
         }
     }
     
+    @Override
+    public String getFilterVarName() {
+        return "Gauss";
+    }
+    
 }

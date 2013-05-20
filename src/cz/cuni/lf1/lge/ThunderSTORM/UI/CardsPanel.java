@@ -42,12 +42,21 @@ public class CardsPanel implements ItemListener {
     }
     
     /**
-     * Return the the module selected in the combo box.
+     * Return the module selected in the combo box.
      *
      * @return the module selected in the combo box
      */
     public IModule getActiveComboBoxItem() {
         return items.elementAt(cb.getSelectedIndex());
+    }
+    
+    /**
+     * Return the index of module selected in the combo box.
+     *
+     * @return the index of module selected in the combo box
+     */
+    public int getActiveComboBoxItemIndex() {
+        return cb.getSelectedIndex();
     }
     
     private JPanel createCardsPanel() {

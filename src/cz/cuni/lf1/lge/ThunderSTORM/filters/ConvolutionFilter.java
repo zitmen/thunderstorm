@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import cz.cuni.lf1.lge.ThunderSTORM.util.Convolution;
 import ij.process.FloatProcessor;
+import java.util.HashMap;
 
 /**
  * General convolution filter that performs 2D convolution of an input image with
@@ -20,6 +21,9 @@ public class ConvolutionFilter implements IFilter {
 
     private int padding_method;
     private FloatProcessor kernel = null, kernel_x = null, kernel_y = null;
+    
+    private FloatProcessor input = null, result = null;
+    private HashMap<String,FloatProcessor> export_variables = null;
     
     /**
      * Change the current padding method.
@@ -107,14 +111,20 @@ public class ConvolutionFilter implements IFilter {
     public ConvolutionFilter(FloatProcessor kernel_x, FloatProcessor kernel_y, int padding_method) {
         updateKernel(kernel_x, kernel_y);
         updatePaddingMethod(padding_method);
+        export_variables = null;
     }
 
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
+        input = image;
         // With non-separable kernels, the complexity is K*K*N,
-        if (kernel != null) return Convolution.convolve2D(image, kernel, padding_method);
+        if (kernel != null) {
+            result = Convolution.convolve2D(image, kernel, padding_method);
+            return result;
+        }
         // while with separable kernels of length K, the computational complexity is 2*K*N, where N is number of pixels of the image!
-        return Convolution.convolve2D(Convolution.convolve2D(image, kernel_y, padding_method), kernel_x, padding_method);
+        result = Convolution.convolve2D(Convolution.convolve2D(image, kernel_y, padding_method), kernel_x, padding_method);
+        return result;
     }
     
     /**
@@ -142,6 +152,20 @@ public class ConvolutionFilter implements IFilter {
      */
     public FloatProcessor getKernel(){
         return kernel;
+    }
+
+    @Override
+    public String getFilterVarName() {
+        return "Conv";
+    }
+
+    @Override
+    public HashMap<String, FloatProcessor> exportVariables() {
+        if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
+        //
+        export_variables.put("I", input);
+        export_variables.put("F", result);
+        return export_variables;
     }
             
 }

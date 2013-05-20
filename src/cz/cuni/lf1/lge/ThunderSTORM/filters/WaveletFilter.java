@@ -37,7 +37,7 @@ public class WaveletFilter extends ConvolutionFilter {
      * 
      * @throws IndexOutOfBoundsException if the requested plane is not in range of supported plane, i.e., it is not in range from 1 to 3
      */
-    public WaveletFilter(int plane) throws UnsupportedOperationException {
+    public WaveletFilter(int plane) throws IndexOutOfBoundsException {
         super(new FloatProcessor(1, kernels[plane-1].length, kernels[plane-1]), true, Padding.PADDING_DUPLICATE);
     }
     
