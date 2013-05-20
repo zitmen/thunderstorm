@@ -17,9 +17,13 @@ public abstract class Node {
     }
     
     public RetVal getVariable(String filter, String var) {
-        for(IFilter f : Thresholder.getLoadedFilters()) {
-            if(f.getFilterVarName().equals(filter)) {
-                return new RetVal(f.exportVariables().get(var));
+        if(filter == null) {   // active filter
+            return new RetVal(Thresholder.getActiveFilter().exportVariables().get(var));
+        } else {    // the other ones
+            for(IFilter f : Thresholder.getLoadedFilters()) {
+                if(f.getFilterVarName().equals(filter)) {
+                    return new RetVal(f.exportVariables().get(var));
+                }
             }
         }
         return new RetVal((FloatProcessor)null);
