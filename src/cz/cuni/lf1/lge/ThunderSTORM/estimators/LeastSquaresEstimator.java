@@ -28,7 +28,7 @@ import javax.swing.JTextField;
 public class LeastSquaresEstimator implements IEstimator {
     
     private int fitrad, fitrad2, fitrad_2;  // fitrad, fitrad^2, fitrad/2
-    private JTextField fitregsizeTextField;
+    
     
     private void updateFittingRadius(int fitting_region_size) {
         this.fitrad = fitting_region_size;
@@ -140,24 +140,5 @@ public class LeastSquaresEstimator implements IEstimator {
         return fits;
     }
 
-    @Override
-    public String getName() {
-        return "Minimizing least squares error";
-    }
-
-    @Override
-    public JPanel getOptionsPanel() {
-        fitregsizeTextField = new JTextField(Integer.toString(fitrad), 20);
-        //
-        JPanel panel = new JPanel();
-        panel.add(new JLabel("Fitting region size: "));
-        panel.add(fitregsizeTextField);
-        return panel;
-    }
-
-    @Override
-    public void readParameters() {
-          updateFittingRadius(Integer.parseInt(fitregsizeTextField.getText()));
-    }
-    
+   
 }

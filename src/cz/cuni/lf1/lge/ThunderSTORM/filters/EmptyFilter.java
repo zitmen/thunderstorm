@@ -2,7 +2,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import ij.process.FloatProcessor;
 import java.util.HashMap;
-import javax.swing.JPanel;
 
 /**
  * No filtering.
@@ -19,21 +18,6 @@ public final class EmptyFilter implements IFilter {
     public FloatProcessor filterImage(FloatProcessor image) {
         input = image;
         return image;
-    }
-
-    @Override
-    public String getName() {
-        return "No filter";
-    }
-
-    @Override
-    public JPanel getOptionsPanel() {
-        return null;
-    }
-
-    @Override
-    public void readParameters() {
-        // nothing to do here
     }
 
     @Override

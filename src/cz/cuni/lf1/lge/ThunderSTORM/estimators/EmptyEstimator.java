@@ -24,17 +24,14 @@ public class EmptyEstimator implements IEstimator {
         return locations;
     }
     
-    @Override
     public String getName() {
         return "No estimator";
     }
 
-    @Override
     public JPanel getOptionsPanel() {
         return null;
     }
 
-    @Override
     public void readParameters() {
         // nothing to do here
     }

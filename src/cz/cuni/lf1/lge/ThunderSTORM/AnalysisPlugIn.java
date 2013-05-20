@@ -3,12 +3,15 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import ij.IJ;
@@ -42,15 +45,16 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
-  private IFilterUI filter;
-  private IDetector detector;
-  private IEstimator estimator;
-  private IRenderer renderer;
   private int stackSize;
   private AtomicInteger nProcessed = new AtomicInteger(0);
   private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING;
   private Vector<PSF>[] results;
   private FloatProcessor[] images;
+  private ThreadLocalModule<IFilterUI, IFilter> threadLocalFilter;
+  private ThreadLocalModule<IEstimatorUI, IEstimator> threadLocalEstimator;
+  private ThreadLocalModule<IDetectorUI, IDetector> threadLocalDetector;
+  private IRenderer renderingQueue;
+  Vector<ThreadLocalModule<IFilterUI, IFilter>> threadLocalAllFilters;
 
   /**
    * Returns flags specifying capabilities of the plugin.
@@ -104,7 +108,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         RenderingOverlay.showPointsInImageSlice(impPreview, extractX(results[frame]), extractY(results[frame]), frame, Color.red, RenderingOverlay.MARKER_CROSS);
       }
       impPreview.show("Results preview");
-      renderer.repaintAsync();
+      renderingQueue.repaintLater();
       //
       // Finished
       IJ.showProgress(1.0);
@@ -145,34 +149,36 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     // Create and set up the content pane.
     try {
       Vector<IFilterUI> filters = ModuleLoader.getModules(IFilterUI.class);
-      Vector<IDetector> detectors = ModuleLoader.getModules(IDetector.class);
-      Vector<IEstimator> estimators = ModuleLoader.getModules(IEstimator.class);
-      Vector<IRenderer> renderers = ModuleLoader.getModules(IRenderer.class);
-      for (IRenderer r : renderers) {
-        r.setSize(imp.getWidth(), imp.getHeight());
+      Vector<IDetectorUI> detectors = ModuleLoader.getModules(IDetectorUI.class);
+      Vector<IEstimatorUI> estimators = ModuleLoader.getModules(IEstimatorUI.class);
+      Vector<IRendererUI> renderers = ModuleLoader.getModules(IRendererUI.class);
+
+      threadLocalAllFilters = new Vector<ThreadLocalModule<IFilterUI, IFilter>>();
+      for (IFilterUI f : filters) {
+        threadLocalAllFilters.add(new ThreadLocalModule<IFilterUI, IFilter>(f));
       }
-      
+
+
       int default_filter = 0;
       int default_detector = 0;
       int default_estimator = 0;
-      
-      Thresholder.loadFilters(filters);
+
+      Thresholder.loadFilters(threadLocalAllFilters);
       Thresholder.setActiveFilter(default_filter);
 
       // Create and show the dialog
       AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, default_filter, detectors, default_detector, estimators, default_estimator, renderers, 0);
       dialog.setVisible(true);
       if (dialog.wasCanceled()) {  // This is a blocking call!!
-        filter = null;
-        detector = null;
-        estimator = null;
         return DONE;    // cancel
       } else {
-        filter = dialog.getFilter();
-        detector = dialog.getDetector();
-        estimator = dialog.getEstimator();
-        renderer = dialog.getRenderer();
+        threadLocalFilter = threadLocalAllFilters.get(dialog.getFilterIndex());
+        threadLocalDetector = new ThreadLocalModule<IDetectorUI, IDetector>(dialog.getDetector());
+        threadLocalEstimator = new ThreadLocalModule<IEstimatorUI, IEstimator>(dialog.getEstimator());
 
+        IRendererUI rendererPanel = dialog.getRenderer();
+        rendererPanel.setSize(imp.getWidth(), imp.getHeight());
+        renderingQueue = rendererPanel.getImplementation();
         return pluginFlags; // ok
       }
     } catch (Exception ex) {
@@ -207,27 +213,28 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
    */
   @Override
   public void run(ImageProcessor ip) {
-    assert (filter != null) : "Filter was not selected!";
-    assert (detector != null) : "Detector was not selected!";
-    assert (estimator != null) : "Estimator was not selected!";
-    assert (renderer != null) : "Renderer was not selected!";
+    assert (threadLocalFilter.get() != null) : "Filter was not selected!";
+    assert (threadLocalDetector.get() != null) : "Detector was not selected!";
+    assert (threadLocalEstimator.get() != null) : "Estimator was not selected!";
+    assert (renderingQueue != null) : "Renderer was not selected!";
     //
     FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
     Vector<PSF> fits = null;
     try {
-        fits = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.getInstance().filterImage(fp)));
+      fits = threadLocalEstimator.get().estimateParameters(fp, threadLocalDetector.get().detectMoleculeCandidates(threadLocalFilter.get().filterImage(fp)));
     } catch (ThresholdFormulaException ex) {
-        IJ.error("Thresholding: " + ex.getMessage());
+      IJ.error("Thresholding: " + ex.getMessage());
     }
     //
     results[ip.getSliceNumber()] = fits;
     images[ip.getSliceNumber()] = fp;
     nProcessed.incrementAndGet();
 
-    renderer.renderAsync(extractX(fits), extractY(fits), 0.2);
+    renderingQueue.renderLater(extractX(fits), extractY(fits), 0.2);
     //
     IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
     IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
+
   }
 
   private double[] extractX(Vector<PSF> fits) {

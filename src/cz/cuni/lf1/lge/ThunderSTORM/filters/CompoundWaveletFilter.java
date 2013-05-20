@@ -5,8 +5,6 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.crop;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
 import java.util.HashMap;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
 
 /**
  * This wavelet filter is implemented as an undecimated wavelet transform using B-spline of third order.
@@ -29,7 +27,7 @@ public final class CompoundWaveletFilter implements IFilter {
     
     private WaveletFilter w1, w2, w3;
     
-    private JCheckBox thirdCheckBox;
+    
 
   public CompoundWaveletFilter() {
     this(false);
@@ -69,25 +67,6 @@ public final class CompoundWaveletFilter implements IFilter {
         return result;
     }
     
-    @Override
-    public String getName() {
-        return "Wavelet filter";
-    }
-
-    @Override
-    public JPanel getOptionsPanel() {
-        thirdCheckBox = new JCheckBox("third plane");
-        thirdCheckBox.setSelected(third_plane);
-        //
-        JPanel panel = new JPanel();
-        panel.add(thirdCheckBox);
-        return panel;
-    }
-
-    @Override
-    public void readParameters() {
-        third_plane = thirdCheckBox.isSelected();
-    }
     
     @Override
     public String getFilterVarName() {

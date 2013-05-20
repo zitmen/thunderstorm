@@ -35,7 +35,7 @@ public class ModuleLoader {
    * no-args constructor)
    * @throws RuntimeException if no modules were loaded.
    */
-  public static <T extends IModule> Vector<T> getModules(Class<T> c) {
+  public static <T extends IModuleUI> Vector<T> getModules(Class<T> c) {
     ServiceLoader loader = ServiceLoader.load(c, IJ.getClassLoader());
 
     Vector<T> retval = new Vector<T>();

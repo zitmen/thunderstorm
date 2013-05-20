@@ -1,4 +1,4 @@
-package cz.cuni.lf1.lge.ThunderSTORM.rendering;
+package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.rendering.ASHRendering;
@@ -12,15 +12,15 @@ import javax.swing.JTextField;
  *
  * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
-public class ASHRenderingWrapper extends AbstractRenderingWrapper {
+public class ASHRenderingUI extends AbstractRenderingUI {
 
   JTextField shiftsTextField;
   int shifts;
 
-  public ASHRenderingWrapper() {
+  public ASHRenderingUI() {
   }
 
-  public ASHRenderingWrapper(int sizeX, int sizeY) {
+  public ASHRenderingUI(int sizeX, int sizeY) {
     super(sizeX, sizeY);
   }
 
@@ -46,8 +46,9 @@ public class ASHRenderingWrapper extends AbstractRenderingWrapper {
     super.readParameters();
   }
 
+  
   @Override
-  protected IncrementalRenderingMethod getMethod() {
+  public IncrementalRenderingMethod getMethod() {
     return new ASHRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).shifts(shifts).build();
   }
 }

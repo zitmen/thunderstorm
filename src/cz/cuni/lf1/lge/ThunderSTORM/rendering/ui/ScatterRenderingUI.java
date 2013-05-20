@@ -1,4 +1,4 @@
-package cz.cuni.lf1.lge.ThunderSTORM.rendering;
+package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
 import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.rendering.ScatterRendering;
@@ -7,12 +7,12 @@ import cz.cuni.lf1.rendering.ScatterRendering;
  *
  * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
-public class ScatterRenderingWrapper extends AbstractRenderingWrapper {
+public class ScatterRenderingUI extends AbstractRenderingUI {
 
-  public ScatterRenderingWrapper() {
+  public ScatterRenderingUI() {
   }
 
-  public ScatterRenderingWrapper(int sizeX, int sizeY) {
+  public ScatterRenderingUI(int sizeX, int sizeY) {
     super(sizeX, sizeY);
   }
 
@@ -22,7 +22,7 @@ public class ScatterRenderingWrapper extends AbstractRenderingWrapper {
   }
 
   @Override
-  protected IncrementalRenderingMethod getMethod() {
+  public IncrementalRenderingMethod getMethod() {
     return new ScatterRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).build();
   }
 }

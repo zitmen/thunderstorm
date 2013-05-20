@@ -37,7 +37,7 @@ public class BoxFilterUI implements IFilterUI {
   }
 
   @Override
-  public IFilter getInstance() {
+  public IFilter getImplementation() {
     return new BoxFilter(size);
   }
 }

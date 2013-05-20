@@ -1,4 +1,4 @@
-package cz.cuni.lf1.lge.ThunderSTORM.rendering;
+package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.rendering.HistogramRendering;
@@ -12,15 +12,15 @@ import javax.swing.JTextField;
  *
  * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
-public class HistogramRenderingWrapper extends AbstractRenderingWrapper {
+public class HistogramRenderingUI extends AbstractRenderingUI {
 
   JTextField avgTextField;
   int avg;
 
-  public HistogramRenderingWrapper() {
+  public HistogramRenderingUI() {
   }
 
-  public HistogramRenderingWrapper(int sizeX, int sizeY) {
+  public HistogramRenderingUI(int sizeX, int sizeY) {
     super(sizeX, sizeY);
   }
 
@@ -47,7 +47,8 @@ public class HistogramRenderingWrapper extends AbstractRenderingWrapper {
   }
 
   @Override
-  protected IncrementalRenderingMethod getMethod() {
+  public IncrementalRenderingMethod getMethod() {
     return new HistogramRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).average(avg).build();
   }
+
 }

@@ -1,4 +1,4 @@
-package cz.cuni.lf1.lge.ThunderSTORM.rendering;
+package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
 import cz.cuni.lf1.rendering.DensityRendering;
 import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
@@ -7,12 +7,12 @@ import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
  *
  * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
-public class DensityRenderingWrapper extends AbstractRenderingWrapper {
+public class DensityRenderingUI extends AbstractRenderingUI {
 
-  public DensityRenderingWrapper() {
+  public DensityRenderingUI() {
   }
 
-  public DensityRenderingWrapper(int sizeX, int sizeY) {
+  public DensityRenderingUI(int sizeX, int sizeY) {
     super(sizeX, sizeY);
   }
 
@@ -22,7 +22,7 @@ public class DensityRenderingWrapper extends AbstractRenderingWrapper {
   }
 
   @Override
-  protected IncrementalRenderingMethod getMethod() {
+  public IncrementalRenderingMethod getMethod() {
     return new DensityRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).build();
   }
 }

@@ -1,8 +1,9 @@
-package cz.cuni.lf1.lge.ThunderSTORM.rendering;
+package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
-import cz.cuni.lf1.rendering.QueuedRenderer;
 import ij.IJ;
 import ij.ImagePlus;
 import java.awt.GridBagLayout;
@@ -14,9 +15,8 @@ import javax.swing.JTextField;
  *
  * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
-public abstract class AbstractRenderingWrapper implements IRenderer {
+public abstract class AbstractRenderingUI implements IRendererUI {
 
-  protected QueuedRenderer renderer;    //must be set in subclass
   protected double resolution;
   protected int sizeX;
   protected int sizeY;
@@ -31,10 +31,10 @@ public abstract class AbstractRenderingWrapper implements IRenderer {
     }
   };
 
-  public AbstractRenderingWrapper() {
+  public AbstractRenderingUI() {
   }
 
-  public AbstractRenderingWrapper(int sizeX, int sizeY) {
+  public AbstractRenderingUI(int sizeX, int sizeY) {
     this.sizeX = sizeX;
     this.sizeY = sizeY;
   }
@@ -45,20 +45,6 @@ public abstract class AbstractRenderingWrapper implements IRenderer {
     this.sizeY = sizeY;
   }
 
-  @Override
-  public void renderAsync(double[] x, double[] y, double[] dx) {
-    renderer.renderLater(x, y, dx);
-  }
-
-  @Override
-  public void renderAsync(double[] x, double[] y, double dx) {
-    renderer.renderLater(x, y, dx);
-  }
-
-  @Override
-  public void repaintAsync() {
-    renderer.repaintLater();
-  }
 
   @Override
   public JPanel getOptionsPanel() {
@@ -77,11 +63,16 @@ public abstract class AbstractRenderingWrapper implements IRenderer {
   public void readParameters() {
     resolution = Double.parseDouble(resolutionTextField.getText());
     repaintFrequency = Integer.parseInt(repaintFrequencyTextField.getText());
-
+  }
+  
+  @Override
+  public IRenderer getImplementation(){
     IncrementalRenderingMethod method = getMethod();
     image = new ImagePlus(method.getClass().getSimpleName(), method.getRenderedImage());
-    renderer = new QueuedRenderer(method, repaint, repaintFrequency);
+    return new RenderingQueue(method, repaint, repaintFrequency);
   }
 
   protected abstract IncrementalRenderingMethod getMethod();
+  
+ 
 }

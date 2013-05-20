@@ -2,15 +2,10 @@ package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Morphology;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
-import java.awt.GridBagLayout;
 import java.util.Vector;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 /**
  * Detect pixels with its intensity equal or greater then a threshold and also with its
@@ -21,9 +16,6 @@ public final class NonMaxSuppressionDetector implements IDetector {
     private int radius;
     private String threshold;
     
-    private JTextField thrTextField;
-    private JTextField radiusTextField;
-
   public NonMaxSuppressionDetector() throws ThresholdFormulaException {
     this(3, "6*std(F)");
   }
@@ -63,30 +55,6 @@ public final class NonMaxSuppressionDetector implements IDetector {
         }
         
         return detections;
-    }
-
-    @Override
-    public String getName() {
-        return "Non-maxima suppression";
-    }
-
-    @Override
-    public JPanel getOptionsPanel() {
-        thrTextField = new JTextField(threshold.toString(), 20);
-        radiusTextField = new JTextField(Integer.toString(radius), 20);
-        //
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
-        panel.add(thrTextField, GridBagHelper.pos(1, 0));
-        panel.add(new JLabel("Radius: "), GridBagHelper.pos(0, 1));
-        panel.add(radiusTextField, GridBagHelper.pos(1, 1));
-        return panel;
-    }
-
-    @Override
-    public void readParameters() {
-        threshold = thrTextField.getText();
-        radius = Integer.parseInt(radiusTextField.getText());
     }
 
 }

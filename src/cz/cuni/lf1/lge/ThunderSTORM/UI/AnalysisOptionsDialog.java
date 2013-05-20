@@ -1,13 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
@@ -34,17 +32,17 @@ import javax.swing.JSeparator;
 public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 
     private CardsPanel<IFilterUI> filters;
-    private CardsPanel<IDetector> detectors;
-    private CardsPanel<IEstimator> estimators;
-    private CardsPanel<IRenderer> renderers;
+    private CardsPanel<IDetectorUI> detectors;
+    private CardsPanel<IEstimatorUI> estimators;
+    private CardsPanel<IRendererUI> renderers;
     private JButton preview, ok, cancel;
     private ImagePlus imp;
     private boolean canceled;
     private Semaphore semaphore;    // ensures waiting for a dialog without the dialog being modal!
     private IFilterUI activeFilter;
-    private IDetector activeDetector;
-    private IEstimator activeEstimator;
-    private IRenderer activeRenderer;
+    private IDetectorUI activeDetector;
+    private IEstimatorUI activeEstimator;
+    private IRendererUI activeRenderer;
 
     /**
      * Initialize and show the analysis options dialog.
@@ -66,9 +64,9 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
      */
     public AnalysisOptionsDialog(ImagePlus imp, String title,
             Vector<IFilterUI> filters, int default_filter,
-            Vector<IDetector> detectors, int default_detector,
-            Vector<IEstimator> estimators, int default_estimator,
-            Vector<IRenderer> renderers, int default_renderer) {
+            Vector<IDetectorUI> detectors, int default_detector,
+            Vector<IEstimatorUI> estimators, int default_estimator,
+            Vector<IRendererUI> renderers, int default_renderer) {
         //
         super(IJ.getInstance(), title);
         //
@@ -77,9 +75,9 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         this.imp = imp;
         //
         this.filters = new CardsPanel<IFilterUI>(filters, default_filter);
-        this.detectors = new CardsPanel<IDetector>(detectors, default_detector);
-        this.estimators = new CardsPanel<IEstimator>(estimators, default_estimator);
-        this.renderers = new CardsPanel<IRenderer>(renderers, default_renderer);
+        this.detectors = new CardsPanel<IDetectorUI>(detectors, default_detector);
+        this.estimators = new CardsPanel<IEstimatorUI>(estimators, default_estimator);
+        this.renderers = new CardsPanel<IRendererUI>(renderers, default_renderer);
         //
         this.preview = new JButton("Preview");
         this.ok = new JButton("Ok");
@@ -150,7 +148,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         if (e.getActionCommand().equals("Cancel")) {
             closeDialog(true);
         } else if (e.getActionCommand().equals("Ok")) {
-            Thresholder.setActiveFilter(filters.getActiveComboBoxItemIndex());
+            //Thresholder.setActiveFilter(filters.getActiveComboBoxItemIndex());
             //
             activeFilter = filters.getActiveComboBoxItem();
             activeDetector = detectors.getActiveComboBoxItem();
@@ -164,7 +162,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             //
             closeDialog(false);
         } else if (e.getActionCommand().equals("Preview")) {
-            Thresholder.setActiveFilter(filters.getActiveComboBoxItemIndex());
+            //Thresholder.setActiveFilter(filters.getActiveComboBoxItemIndex());
             //
             activeFilter = filters.getActiveComboBoxItem();
             activeDetector =  detectors.getActiveComboBoxItem();
@@ -177,7 +175,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             FloatProcessor fp = (FloatProcessor) imp.getProcessor().convertToFloat();
             Vector<PSF> results = null;
             try {
-                results = activeEstimator.estimateParameters(fp, activeDetector.detectMoleculeCandidates(activeFilter.getInstance().filterImage(fp)));
+                results = activeEstimator.getImplementation().estimateParameters(fp, activeDetector.getImplementation().detectMoleculeCandidates(activeFilter.getImplementation().filterImage(fp)));
             } catch (ThresholdFormulaException ex) {
                 IJ.error("Thresholding: " + ex.getMessage());
             }
@@ -252,13 +250,16 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     public IFilterUI getFilter() {
         return activeFilter;
     }
+    public int getFilterIndex() {
+        return filters.getActiveComboBoxItemIndex();
+    }
 
     /**
      * Return a detector selected from the combo box.
      *
      * @return selected detector
      */
-    public IDetector getDetector() {
+    public IDetectorUI getDetector() {
         return activeDetector;
     }
 
@@ -267,11 +268,11 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
      *
      * @return selected estimator
      */
-    public IEstimator getEstimator() {
+    public IEstimatorUI getEstimator() {
         return activeEstimator;
     }
 
-    public IRenderer getRenderer() {
+    public IRendererUI getRenderer() {
         return activeRenderer;
     }
 }

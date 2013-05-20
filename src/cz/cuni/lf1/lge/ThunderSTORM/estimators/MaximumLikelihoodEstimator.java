@@ -74,7 +74,6 @@ public class MaximumLikelihoodEstimator implements IEstimator {
      *
      * @return
      */
-    @Override
     public String getName() {
         return "Maximizing log-likelihood";
     }
@@ -83,7 +82,6 @@ public class MaximumLikelihoodEstimator implements IEstimator {
      *
      * @return
      */
-    @Override
     public JPanel getOptionsPanel() {
         JPanel panel = new JPanel();
         panel.add(new JLabel("Fitting region size: "));
@@ -94,7 +92,6 @@ public class MaximumLikelihoodEstimator implements IEstimator {
     /**
      *
      */
-    @Override
     public void readParameters() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

@@ -32,5 +32,5 @@ public interface IModuleUI<T extends IModule> {
      */
     public void readParameters();
     
-    public T getInstance();
+    public T getImplementation();
 }

@@ -1,14 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
-import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
-import java.awt.GridBagLayout;
 import java.util.HashMap;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 /**
  * Filtering by Difference of Gaussians (DoG) is a convolution with a kernel
@@ -44,7 +39,7 @@ public final class DifferenceOfGaussiansFilter implements IFilter {
     private int size, padding;
     private double sigma_g1, sigma_g2;
     
-    private JTextField sigma1TextField, sigma2TextField, sizeTextField;
+   
     
     private GaussianFilter g1, g2;
     
@@ -111,34 +106,6 @@ public final class DifferenceOfGaussiansFilter implements IFilter {
         return result;
     }
 
-    @Override
-    public String getName() {
-        return "Difference of Gaussians";
-    }
-
-    @Override
-    public JPanel getOptionsPanel() {
-        sizeTextField = new JTextField(Integer.toString(size), 20);
-        sigma1TextField = new JTextField(Double.toString(sigma_g1), 20);
-        sigma2TextField = new JTextField(Double.toString(sigma_g2), 20);
-        //
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.add(new JLabel("Size: "), GridBagHelper.pos(0,0));
-        panel.add(sizeTextField, GridBagHelper.pos(1,0));
-        panel.add(new JLabel("Sigma1: "), GridBagHelper.pos(0,1));
-        panel.add(sigma1TextField, GridBagHelper.pos(1,1));
-        panel.add(new JLabel("Sigma2: "), GridBagHelper.pos(0,2));
-        panel.add(sigma2TextField, GridBagHelper.pos(1,2));
-        return panel;
-    }
-
-    @Override
-    public void readParameters() {
-        size = Integer.parseInt(sizeTextField.getText());
-        sigma_g1 = Double.parseDouble(sigma1TextField.getText());
-        sigma_g2 = Double.parseDouble(sigma2TextField.getText());
-        updateKernels();
-    }
     
     @Override
     public String getFilterVarName() {

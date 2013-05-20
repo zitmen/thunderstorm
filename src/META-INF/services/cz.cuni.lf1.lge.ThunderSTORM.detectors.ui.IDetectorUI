@@ -1,0 +1,3 @@
+cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.CentroidOfConnectedComponentsDetectorUI
+cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.LocalMaximaDetectorUI
+cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.NonMaxSuppressionDetectorUI
