@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
+import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import java.awt.CardLayout;
 import java.awt.GridBagLayout;
@@ -20,7 +21,7 @@ import javax.swing.JPanel;
  *
  * @see IModule
  */
-public class CardsPanel<T extends IModule> implements ItemListener {
+public class CardsPanel<T extends IModuleUI> implements ItemListener {
 
     private JPanel cardsPanel;
     private JComboBox cb;

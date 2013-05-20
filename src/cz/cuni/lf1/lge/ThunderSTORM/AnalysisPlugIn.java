@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
@@ -41,7 +42,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
-  private IFilter filter;
+  private IFilterUI filter;
   private IDetector detector;
   private IEstimator estimator;
   private IRenderer renderer;
@@ -143,7 +144,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
     // Create and set up the content pane.
     try {
-      Vector<IFilter> filters = ModuleLoader.getModules(IFilter.class);
+      Vector<IFilterUI> filters = ModuleLoader.getModules(IFilterUI.class);
       Vector<IDetector> detectors = ModuleLoader.getModules(IDetector.class);
       Vector<IEstimator> estimators = ModuleLoader.getModules(IEstimator.class);
       Vector<IRenderer> renderers = ModuleLoader.getModules(IRenderer.class);
@@ -214,7 +215,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
     Vector<PSF> fits = null;
     try {
-        fits = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.filterImage(fp)));
+        fits = estimator.estimateParameters(fp, detector.detectMoleculeCandidates(filter.getInstance().filterImage(fp)));
     } catch (ThresholdFormulaException ex) {
         IJ.error("Thresholding: " + ex.getMessage());
     }
