@@ -9,6 +9,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 import java.util.Vector;
@@ -25,10 +26,11 @@ import javax.swing.JTextField;
  * 
  * This will be changed in a future version of ThunderSTORM.
  */
-public class LeastSquaresEstimator implements IEstimator {
+public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
     
     private int fitrad, fitrad2, fitrad_2;  // fitrad, fitrad^2, fitrad/2
-    
+    private JTextField fitregsizeTextField;
+    private int fitreg = 5;
     
     private void updateFittingRadius(int fitting_region_size) {
         this.fitrad = fitting_region_size;
@@ -140,5 +142,29 @@ public class LeastSquaresEstimator implements IEstimator {
         return fits;
     }
 
-   
+
+  @Override
+  public String getName() {
+    return "Minimizing least squares error";
+  }
+
+  @Override
+  public JPanel getOptionsPanel() {
+    fitregsizeTextField = new JTextField(Integer.toString(fitreg), 20);
+    //
+    JPanel panel = new JPanel();
+    panel.add(new JLabel("Fitting region size: "));
+    panel.add(fitregsizeTextField);
+    return panel;
+  }
+
+  @Override
+  public void readParameters() {
+    fitreg = Integer.parseInt(fitregsizeTextField.getText());
+  }
+
+  @Override
+  public IEstimator getImplementation() {
+    return new LeastSquaresEstimator(fitreg);
+  }
 }

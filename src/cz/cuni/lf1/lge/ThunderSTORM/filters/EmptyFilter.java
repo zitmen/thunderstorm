@@ -1,7 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import ij.process.FloatProcessor;
 import java.util.HashMap;
+import javax.swing.JPanel;
 
 /**
  * No filtering.
@@ -9,7 +11,7 @@ import java.util.HashMap;
  * This is useful in case of detectors of estimators that work better with raw images.
  * The {@code filterImage} method returns the {@code image} that it got on its input.
  */
-public final class EmptyFilter implements IFilter {
+public final class EmptyFilter implements IFilter, IFilterUI {
     
     private FloatProcessor input = null;
     private HashMap<String, FloatProcessor> export_variables = null;
@@ -22,7 +24,7 @@ public final class EmptyFilter implements IFilter {
 
     @Override
     public String getFilterVarName() {
-        return null;
+        return "empty";
     }
 
     @Override
@@ -33,5 +35,23 @@ public final class EmptyFilter implements IFilter {
         export_variables.put("F", input);
         return export_variables;
     }
-    
+    @Override
+  public String getName() {
+    return "No filter";
+  }
+
+  @Override
+  public JPanel getOptionsPanel() {
+    return null;
+  }
+
+  @Override
+  public void readParameters() {
+    // nothing to do here
+  }
+
+  @Override
+  public IFilter getImplementation() {
+    return new EmptyFilter();
+  }
 }

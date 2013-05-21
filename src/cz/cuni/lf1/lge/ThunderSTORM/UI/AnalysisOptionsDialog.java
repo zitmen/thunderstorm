@@ -18,6 +18,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.concurrent.Semaphore;
 import javax.swing.Box;
@@ -166,7 +167,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         IJ.error("Thresholding: " + ex.getMessage());
         return;
       } catch (Exception ex) {
-        IJ.error(ex.getMessage());
+        IJ.error("Error: " + ex.getMessage());
         return;
       }
       //
@@ -194,13 +195,13 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
           yCoord[i] = results.elementAt(i).ypos;
         }
         //
-        ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), fp);
+        ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().duplicate());
         RenderingOverlay.showPointsInImage(impPreview, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
         impPreview.show();
       } catch (ThresholdFormulaException ex) {
         IJ.error("Thresholding: " + ex.getMessage());
       } catch (Exception ex) {
-        IJ.error(ex.getMessage());
+        IJ.error("Error: " + ex.getMessage());
       }
 
     } else {

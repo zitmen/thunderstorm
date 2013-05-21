@@ -1,25 +1,35 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.applyMask;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.threshold;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import ij.IJ;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
+import java.awt.GridBagLayout;
 import java.util.Vector;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * Look for pixels with their intensities equal or greater then a threshold and if there
  * are more of these pixels connected together account them as a single molecule, unless
  * a shape of these connected pixels indicates that there is in fact more of them.
  */
-public final class CentroidOfConnectedComponentsDetector implements IDetector {
+public final class CentroidOfConnectedComponentsDetector implements IDetector, IDetectorUI{
 
     private boolean upsample;
     private String threshold;
+    private JTextField thrTextField;
+    private JCheckBox upCheckBox;
 
   public CentroidOfConnectedComponentsDetector() throws ThresholdFormulaException {
     this(false, "std(I-Wave.V1)");
@@ -93,6 +103,35 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector {
         return detections;
     }
 
+  @Override
+  public String getName() {
+    return "Centroid of connected components";
+  }
+
+  @Override
+  public JPanel getOptionsPanel() {
+    thrTextField = new JTextField(threshold.toString(), 20);
+    upCheckBox = new JCheckBox("upsample");
+    upCheckBox.setSelected(upsample);
+    //
+    JPanel panel = new JPanel(new GridBagLayout());
+    panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
+    panel.add(thrTextField, GridBagHelper.pos(1, 0));
+    panel.add(upCheckBox, GridBagHelper.pos_size(0, 1, 2, 1));
+    return panel;
+  }
+
+  @Override
+  public void readParameters() {
+    threshold = thrTextField.getText();
+    upsample = upCheckBox.isSelected();
+    Thresholder.parseThreshold(threshold);
+  }
+
+  @Override
+  public IDetector getImplementation() {
+    return this;
+  }
     
     
 }

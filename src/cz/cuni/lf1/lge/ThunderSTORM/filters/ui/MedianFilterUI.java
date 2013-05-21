@@ -58,6 +58,6 @@ public class MedianFilterUI implements IFilterUI {
 
   @Override
   public IFilter getImplementation() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return new MedianFilter(pattern, size);
   }
 }

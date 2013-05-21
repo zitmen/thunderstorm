@@ -1,20 +1,28 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
+import java.awt.GridBagLayout;
 import java.util.Vector;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
 /**
  * Detection of local maxima points.
  */
-public class LocalMaximaDetector implements IDetector {
+public class LocalMaximaDetector implements IDetector, IDetectorUI {
 
     private int connectivity;
     private String threshold;
-    
+    private JTextField thrTextField;
+    private JRadioButton conn4RadioButton, conn8RadioButton;
         
     private boolean isMax4Thr(FloatProcessor image, float thr, int x, int y, float local, boolean w, boolean e, boolean n, boolean s) {
         if(local < thr) return false;
@@ -167,4 +175,43 @@ public class LocalMaximaDetector implements IDetector {
 
     
 
+  @Override
+  public String getName() {
+    return "Search for local maxima";
+  }
+
+  @Override
+  public JPanel getOptionsPanel() {
+    thrTextField = new JTextField(threshold.toString(), 20);
+    conn4RadioButton = new JRadioButton("4-neighbourhood");
+    conn8RadioButton = new JRadioButton("8-neighbourhood");
+    //
+    conn4RadioButton.setSelected(connectivity == Graph.CONNECTIVITY_4);
+    conn8RadioButton.setSelected(connectivity == Graph.CONNECTIVITY_8);
+    //
+    JPanel panel = new JPanel(new GridBagLayout());
+    panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
+    panel.add(thrTextField, GridBagHelper.pos(1, 0));
+    panel.add(new JLabel("Connectivity: "), GridBagHelper.pos(0, 1));
+    panel.add(conn8RadioButton, GridBagHelper.pos(1, 1));
+    panel.add(conn4RadioButton, GridBagHelper.pos(1, 2));
+    return panel;
+  }
+
+  @Override
+  public void readParameters() {
+    threshold = thrTextField.getText();
+    Thresholder.parseThreshold(threshold);
+    if (conn4RadioButton.isSelected()) {
+      connectivity = Graph.CONNECTIVITY_4;
+    }
+    if (conn8RadioButton.isSelected()) {
+      connectivity = Graph.CONNECTIVITY_8;
+    }
+  }
+
+  @Override
+  public IDetector getImplementation() {
+    return this;
+  }
 }
