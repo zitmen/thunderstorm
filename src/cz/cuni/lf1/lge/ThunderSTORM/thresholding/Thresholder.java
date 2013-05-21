@@ -16,7 +16,7 @@ public class Thresholder {
         active_filter = index;
     }
     
-    private static void parseThreshold(String formula) throws ThresholdFormulaException {
+    public static void parseThreshold(String formula) throws ThresholdFormulaException {
         thresholds.put(formula, new ThresholdInterpreter(formula));
     }
     

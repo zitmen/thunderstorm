@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.detectors.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.NonMaxSuppressionDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
@@ -41,15 +42,12 @@ public class NonMaxSuppressionDetectorUI implements IDetectorUI {
   @Override
   public void readParameters() {
     threshold = thrTextField.getText();
+    Thresholder.parseThreshold(threshold);
     radius = Integer.parseInt(radiusTextField.getText());
   }
 
   @Override
   public IDetector getImplementation() {
-    try {
-      return new NonMaxSuppressionDetector(radius, threshold);
-    } catch (ThresholdFormulaException ex) {
-      throw new RuntimeException(ex);
-    }
+    return new NonMaxSuppressionDetector(radius, threshold);
   }
 }

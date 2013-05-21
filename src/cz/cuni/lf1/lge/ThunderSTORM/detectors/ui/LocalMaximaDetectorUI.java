@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.detectors.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.LocalMaximaDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import java.awt.GridBagLayout;
@@ -48,6 +49,7 @@ public class LocalMaximaDetectorUI implements IDetectorUI {
   @Override
   public void readParameters() {
     threshold = thrTextField.getText();
+    Thresholder.parseThreshold(threshold);
     if (conn4RadioButton.isSelected()) {
       connectivity = Graph.CONNECTIVITY_4;
     }
@@ -58,10 +60,6 @@ public class LocalMaximaDetectorUI implements IDetectorUI {
 
   @Override
   public IDetector getImplementation() {
-    try {
-      return new LocalMaximaDetector(connectivity, threshold);
-    } catch (ThresholdFormulaException ex) {
-      throw new RuntimeException(ex);
-    }
+    return new LocalMaximaDetector(connectivity, threshold);
   }
 }

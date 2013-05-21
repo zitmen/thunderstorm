@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.detectors.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.CentroidOfConnectedComponentsDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import java.awt.GridBagLayout;
 import javax.swing.JCheckBox;
@@ -43,14 +44,11 @@ public class CentroidOfConnectedComponentsDetectorUI implements IDetectorUI {
   public void readParameters() {
     threshold = thrTextField.getText();
     upsample = upCheckBox.isSelected();
+    Thresholder.parseThreshold(threshold);
   }
 
   @Override
   public IDetector getImplementation() {
-    try {
-      return new CentroidOfConnectedComponentsDetector(upsample, threshold);
-    } catch (ThresholdFormulaException ex) {
-      throw new RuntimeException(ex);
-    }
+    return new CentroidOfConnectedComponentsDetector(upsample, threshold);
   }
 }

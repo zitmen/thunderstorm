@@ -12,7 +12,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import ij.IJ;
 import ij.ImagePlus;
@@ -44,7 +43,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  * {@code Overlay} of each slice of the stack.
  */
 public final class AnalysisPlugIn implements ExtendedPlugInFilter {
-
+  
   private int stackSize;
   private AtomicInteger nProcessed = new AtomicInteger(0);
   private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING;
@@ -152,17 +151,17 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       Vector<IDetectorUI> detectors = ModuleLoader.getModules(IDetectorUI.class);
       Vector<IEstimatorUI> estimators = ModuleLoader.getModules(IEstimatorUI.class);
       Vector<IRendererUI> renderers = ModuleLoader.getModules(IRendererUI.class);
-
+      
       threadLocalAllFilters = new Vector<ThreadLocalModule<IFilterUI, IFilter>>();
       for (IFilterUI f : filters) {
         threadLocalAllFilters.add(new ThreadLocalModule<IFilterUI, IFilter>(f));
       }
-
-
+      
+      
       int default_filter = 0;
       int default_detector = 0;
       int default_estimator = 0;
-
+      
       Thresholder.loadFilters(threadLocalAllFilters);
       Thresholder.setActiveFilter(default_filter);
 
@@ -172,17 +171,17 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       if (dialog.wasCanceled()) {  // This is a blocking call!!
         return DONE;    // cancel
       } else {
-        threadLocalFilter = threadLocalAllFilters.get(dialog.getFilterIndex());
+        threadLocalFilter = threadLocalAllFilters.get(dialog.getFilterIndex()); //use the same filter implementation object as the thresholder
         threadLocalDetector = new ThreadLocalModule<IDetectorUI, IDetector>(dialog.getDetector());
         threadLocalEstimator = new ThreadLocalModule<IEstimatorUI, IEstimator>(dialog.getEstimator());
-
+        
         IRendererUI rendererPanel = dialog.getRenderer();
         rendererPanel.setSize(imp.getWidth(), imp.getHeight());
         renderingQueue = rendererPanel.getImplementation();
         return pluginFlags; // ok
       }
     } catch (Exception ex) {
-      IJ.log(ex.getMessage());
+      IJ.error(ex.getMessage());
       return DONE;
     }
   }
@@ -221,22 +220,25 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
     Vector<PSF> fits = null;
     try {
-      fits = threadLocalEstimator.get().estimateParameters(fp, threadLocalDetector.get().detectMoleculeCandidates(threadLocalFilter.get().filterImage(fp)));
-    } catch (ThresholdFormulaException ex) {
+      fits = threadLocalEstimator.get().estimateParameters(
+              fp,
+              threadLocalDetector.get().detectMoleculeCandidates(
+              threadLocalFilter.get().filterImage(fp)));
+    } catch (Exception ex) {
       IJ.error("Thresholding: " + ex.getMessage());
     }
     //
     results[ip.getSliceNumber()] = fits;
     images[ip.getSliceNumber()] = fp;
     nProcessed.incrementAndGet();
-
+    
     renderingQueue.renderLater(extractX(fits), extractY(fits), 0.2);
     //
     IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
     IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
-
+    
   }
-
+  
   private double[] extractX(Vector<PSF> fits) {
     double[] x = new double[fits.size()];
     for (int i = 0; i < fits.size(); i++) {
@@ -244,7 +246,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     }
     return x;
   }
-
+  
   private double[] extractY(Vector<PSF> fits) {
     double[] y = new double[fits.size()];
     for (int i = 0; i < fits.size(); i++) {
