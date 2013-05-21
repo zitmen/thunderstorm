@@ -35,7 +35,7 @@ public class ModuleLoader {
    * no-args constructor)
    * @throws RuntimeException if no modules were loaded.
    */
-  public static <T extends IModuleUI> Vector<T> getModules(Class<T> c) {
+  public static <T extends IModuleUI> Vector<T> getUIModules(Class<T> c) {
     ServiceLoader loader = ServiceLoader.load(c, IJ.getClassLoader());
 
     Vector<T> retval = new Vector<T>();
@@ -57,4 +57,28 @@ public class ModuleLoader {
     }
     return retval;
   }
+  
+  public static <T extends IModule> Vector<T> getModules(Class<T> c) {
+    ServiceLoader loader = ServiceLoader.load(c, IJ.getClassLoader());
+
+    Vector<T> retval = new Vector<T>();
+    try {
+      for (Iterator<T> it = loader.iterator(); it.hasNext();) {
+        //when something goes wrong while loading modules, log the error and try to continue
+        try {
+          retval.add(it.next());
+        } catch (ServiceConfigurationError e) {
+          IJ.log(e.getMessage());
+        }
+      }
+    } catch (Throwable e) {
+      IJ.log(e.getMessage());
+    }
+    if (retval.isEmpty()) {
+      //throw exception only when no modules are succesfully loaded
+      throw new RuntimeException("No modules of type " + c.getSimpleName() + " loaded.");
+    }
+    return retval;
+  }
+  
 }

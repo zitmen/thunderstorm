@@ -147,10 +147,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
     // Create and set up the content pane.
     try {
-      Vector<IFilterUI> filters = ModuleLoader.getModules(IFilterUI.class);
-      Vector<IDetectorUI> detectors = ModuleLoader.getModules(IDetectorUI.class);
-      Vector<IEstimatorUI> estimators = ModuleLoader.getModules(IEstimatorUI.class);
-      Vector<IRendererUI> renderers = ModuleLoader.getModules(IRendererUI.class);
+      Vector<IFilterUI> filters = ModuleLoader.getUIModules(IFilterUI.class);
+      Vector<IDetectorUI> detectors = ModuleLoader.getUIModules(IDetectorUI.class);
+      Vector<IEstimatorUI> estimators = ModuleLoader.getUIModules(IEstimatorUI.class);
+      Vector<IRendererUI> renderers = ModuleLoader.getUIModules(IRendererUI.class);
       
       threadLocalAllFilters = new Vector<ThreadLocalModule<IFilterUI, IFilter>>();
       for (IFilterUI f : filters) {
