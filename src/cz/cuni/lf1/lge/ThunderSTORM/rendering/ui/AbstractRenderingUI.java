@@ -27,7 +27,9 @@ public abstract class AbstractRenderingUI implements IRendererUI {
     @Override
     public void run() {
       image.show();
-      IJ.run(image, "Enhance Contrast", "saturated=0.05");
+      if (image.isVisible()) {
+        IJ.run(image, "Enhance Contrast", "saturated=0.05");
+      }
     }
   };
 
@@ -44,7 +46,6 @@ public abstract class AbstractRenderingUI implements IRendererUI {
     this.sizeX = sizeX;
     this.sizeY = sizeY;
   }
-
 
   @Override
   public JPanel getOptionsPanel() {
@@ -64,15 +65,13 @@ public abstract class AbstractRenderingUI implements IRendererUI {
     resolution = Double.parseDouble(resolutionTextField.getText());
     repaintFrequency = Integer.parseInt(repaintFrequencyTextField.getText());
   }
-  
+
   @Override
-  public IRenderer getImplementation(){
+  public IRenderer getImplementation() {
     IncrementalRenderingMethod method = getMethod();
     image = new ImagePlus(method.getClass().getSimpleName(), method.getRenderedImage());
     return new RenderingQueue(method, repaint, repaintFrequency);
   }
 
   protected abstract IncrementalRenderingMethod getMethod();
-  
- 
 }
