@@ -17,7 +17,7 @@ import javax.swing.JTextField;
  */
 public class LocalMaximaDetectorUI implements IDetectorUI {
 
-  private int connectivity;
+  private int connectivity = Graph.CONNECTIVITY_8;
   private String threshold = "10*std(F)";
   private JTextField thrTextField;
   private JRadioButton conn4RadioButton, conn8RadioButton;

@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 public class BoxFilterUI implements IFilterUI {
 
   private JTextField sizeTextField;
-  private int size;
+  private int size = 3;
 
   @Override
   public String getName() {

@@ -15,8 +15,8 @@ import javax.swing.JTextField;
 public class DifferenceOfGaussiansFilterUI implements IFilterUI {
 
   private JTextField sigma1TextField, sigma2TextField, sizeTextField;
-  private double sigma_g1, sigma_g2;
-  private int size;
+  private double sigma_g1 = 1.6, sigma_g2 = 1;
+  private int size = 11;
 
   @Override
   public String getName() {

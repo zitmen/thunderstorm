@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 public class LeastSquaresEstimatorUI implements IEstimatorUI {
 
   private JTextField fitregsizeTextField;
-  private int radius;
+  private int fitreg = 5;
 
   @Override
   public String getName() {
@@ -22,7 +22,7 @@ public class LeastSquaresEstimatorUI implements IEstimatorUI {
 
   @Override
   public JPanel getOptionsPanel() {
-    fitregsizeTextField = new JTextField(Integer.toString(radius), 20);
+    fitregsizeTextField = new JTextField(Integer.toString(fitreg), 20);
     //
     JPanel panel = new JPanel();
     panel.add(new JLabel("Fitting region size: "));
@@ -32,11 +32,11 @@ public class LeastSquaresEstimatorUI implements IEstimatorUI {
 
   @Override
   public void readParameters() {
-    radius = Integer.parseInt(fitregsizeTextField.getText());
+    fitreg = Integer.parseInt(fitregsizeTextField.getText());
   }
 
   @Override
   public IEstimator getImplementation() {
-    return new LeastSquaresEstimator(radius);
+    return new LeastSquaresEstimator(fitreg);
   }
 }

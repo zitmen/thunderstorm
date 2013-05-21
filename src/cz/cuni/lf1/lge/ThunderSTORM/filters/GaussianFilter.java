@@ -1,14 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.gauss;
-import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
-import java.awt.GridBagLayout;
 import java.util.HashMap;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 /**
  * Gaussian filter is a convolution filter with its kernel filled with values of normalized

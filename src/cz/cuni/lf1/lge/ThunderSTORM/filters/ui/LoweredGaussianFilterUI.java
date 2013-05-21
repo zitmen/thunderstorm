@@ -14,8 +14,8 @@ import javax.swing.JTextField;
  */
 public class LoweredGaussianFilterUI implements IFilterUI {
 
-  private int size;
-  private double sigma;
+  private int size = 11;
+  private double sigma = 1.6;
   private JTextField sizeTextField, sigmaTextField;
 
   @Override

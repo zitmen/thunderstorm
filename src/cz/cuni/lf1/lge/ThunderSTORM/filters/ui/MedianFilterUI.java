@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter;
 import static cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter.BOX;
 import static cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter.CROSS;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
@@ -16,8 +17,8 @@ import javax.swing.JTextField;
  */
 public class MedianFilterUI implements IFilterUI {
 
-  private int pattern;
-  private int size;
+  private int pattern = MedianFilter.BOX;
+  private int size = 3;
   private JTextField sizeTextField;
   private JRadioButton patternCrossRadioButton, patternBoxRadioButton;
 

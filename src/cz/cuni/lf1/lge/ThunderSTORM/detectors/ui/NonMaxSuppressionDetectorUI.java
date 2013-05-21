@@ -15,7 +15,7 @@ import javax.swing.JTextField;
  */
 public class NonMaxSuppressionDetectorUI implements IDetectorUI {
 
-  private int radius;
+  private int radius = 3;
   private String threshold = "6*std(F)";
   private JTextField thrTextField;
   private JTextField radiusTextField;
