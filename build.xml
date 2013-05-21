@@ -93,6 +93,8 @@
     </zip>
 
     <delete file="${store.dir}/temp_final.jar"/>
+    
+    <copy file="${store.dir}/UBER_${ant.project.name}.jar" tofile="C:/Program Files/ImageJ/plugins/${ant.project.name}.jar"/>
 
   </target>
 </project>

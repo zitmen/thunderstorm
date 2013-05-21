@@ -1,8 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
+import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
-import ij.gui.GenericDialog;
 import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
 import ij.plugin.filter.Analyzer;
@@ -24,7 +24,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
             ie = ModuleLoader.getModules(IImportExport.class);
             
             // Create and show the dialog
-            GenericDialog gd = new GenericDialog(command);
+            GenericDialogPlus gd = new GenericDialogPlus(command);
             
             modules = new String[ie.size()];
             for(int i = 0; i < modules.length; i++) {
@@ -32,13 +32,11 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
             }
             gd.addChoice("File type", modules, modules[active_ie]);
             ((Choice)gd.getChoices().get(0)).addItemListener(this);
-            
-            gd.addStringField("File path", "C:\\Users\\Martin\\Plocha\\results.txt");
-            // TODO: add browse button
-
+            gd.addFileField("Choose a file", System.getProperty("user.home") + "\\results.txt");
             gd.showDialog();
+            
             if(!gd.wasCanceled()) {
-                if("Export results".equals(command)) {
+                if("export".equals(command)) {
                     exportToFile(gd.getNextString());
                 } else {
                     importFromFile(gd.getNextString());
@@ -48,7 +46,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
             IJ.log(ex.getMessage());
         }
     }
-
+    
     @Override
     public void itemStateChanged(ItemEvent e) {
         String selected = (String) e.getItem();
@@ -67,8 +65,12 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
             return;
         }
         
+        IJ.showStatus("ThunderSTORM is exporting your results...");
+        IJ.showProgress(0.0);            
         IImportExport exporter = ie.elementAt(active_ie);
         exporter.exportToFile(fpath, rt);
+        IJ.showProgress(1.0);
+        IJ.showStatus("ThunderSTORM has exported your results.");
     }
     
     private void importFromFile(String fpath) throws IOException {
@@ -78,8 +80,14 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
             Analyzer.setResultsTable(rt);
         }
         
+        IJ.showStatus("ThunderSTORM is importing your file...");
+        IJ.showProgress(0.0);
+        rt.reset();
         IImportExport importer = ie.elementAt(active_ie);
         importer.importFromFile(fpath, rt);
+        rt.show("Results");
+        IJ.showProgress(1.0);
+        IJ.showStatus("ThunderSTORM has imported your file.");
     }
 
 }

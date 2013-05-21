@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
+import ij.IJ;
 import ij.measure.ResultsTable;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -43,13 +44,20 @@ public class XMLImportExport implements IImportExport {
 
                 if(event.isStartElement()) {
                     StartElement startElement = event.asStartElement();
-                    // If we have a item element...
+
+                    // the root element?
+                    if (startElement.getName().getLocalPart().equals(ROOT)) {
+                        // skip over it
+                        continue;
+                    }
+                    
+                    // an item element?
                     if (startElement.getName().getLocalPart().equals(ITEM)) {
-                        // ... we do nothing
+                        rt.incrementCounter();
                         continue;
                     }
 
-                    // Fill the new item
+                    // fill a new item
                     if (event.isStartElement()) {
                         String name = event.asStartElement().getName().getLocalPart();
                         String value = eventReader.nextEvent().asCharacters().getData();
@@ -78,10 +86,12 @@ public class XMLImportExport implements IImportExport {
             
             // Create a EventFactory
             XMLEventFactory eventFactory = XMLEventFactory.newInstance();
+            XMLEvent tab = eventFactory.createDTD("\t");
             XMLEvent end = eventFactory.createDTD("\n");
             // Create and write Start Tag
             StartDocument startDocument = eventFactory.createStartDocument();
             eventWriter.add(startDocument);
+            eventWriter.add(end);
 
             // Create open tag of the root element
             StartElement resultsStartElement = eventFactory.createStartElement("", "", ROOT);
@@ -95,6 +105,7 @@ public class XMLImportExport implements IImportExport {
             
             for(int r = 0; r < nrows; r++) {
                 StartElement moleculeStartElement = eventFactory.createStartElement("", "", ITEM);
+                eventWriter.add(tab);
                 eventWriter.add(moleculeStartElement);
                 eventWriter.add(end);
 
@@ -102,8 +113,10 @@ public class XMLImportExport implements IImportExport {
                     createNode(eventWriter, headers[c], Double.toString(rt.getValueAsDouble(c,r)));
                 }
                 
+                eventWriter.add(tab);
                 eventWriter.add(eventFactory.createEndElement("", "", ITEM));
                 eventWriter.add(end);
+                IJ.showProgress((double)r / (double)nrows);
             }
 
             // Close the root element
@@ -120,7 +133,7 @@ public class XMLImportExport implements IImportExport {
     private void createNode(XMLEventWriter eventWriter, String name, String value) throws XMLStreamException {
         XMLEventFactory eventFactory = XMLEventFactory.newInstance();
         XMLEvent end = eventFactory.createDTD("\n");
-        XMLEvent tab = eventFactory.createDTD("\t");
+        XMLEvent tab = eventFactory.createDTD("\t\t");
         // Create Start node
         StartElement sElement = eventFactory.createStartElement("", "", name);
         eventWriter.add(tab);

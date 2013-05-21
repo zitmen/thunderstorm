@@ -4,11 +4,9 @@ import com.json.generators.JSONGenerator;
 import com.json.generators.JsonGeneratorFactory;
 import com.json.parsers.JSONParser;
 import com.json.parsers.JsonParserFactory;
+import ij.IJ;
 import ij.measure.ResultsTable;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -40,11 +38,14 @@ public class JSONImportExport implements IImportExport {
         Map rootJson = (Map)jsonData.get(JSON_ROOT);
         List al = (List)rootJson.get(ROOT);
         
+        int r = 0, nrows = al.size();
         for(Object item : al) {
+            rt.incrementCounter();
             Iterator it = ((Map)item).entrySet().iterator();
             while(it.hasNext()) {
                 Map.Entry pairs = (Map.Entry)it.next();
                 rt.addValue((String)pairs.getKey(), Double.parseDouble((String)pairs.getValue()));
+                IJ.showProgress((double)(r++) / (double)nrows);
                 it.remove(); // avoids a ConcurrentModificationException
             }
         }
@@ -63,6 +64,7 @@ public class JSONImportExport implements IImportExport {
             for(int c = 0; c < ncols; c++)
                 molecule.put(headers[c], rt.getValueAsDouble(c,r));
             results[r] = molecule;
+            IJ.showProgress((double)r / (double)nrows);
         }
 
         HashMap data = new HashMap();

@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import ij.IJ;
 import ij.measure.ResultsTable;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -23,10 +24,7 @@ abstract public class DLMImportExport implements IImportExport {
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.reset();
-        
-        CSVReader csvReader;
-        csvReader = new CSVReader(new FileReader(fp), separator);
+        CSVReader csvReader = new CSVReader(new FileReader(fp), separator);
         List<String[]> lines;
         lines = csvReader.readAll();
         csvReader.close();
@@ -34,15 +32,18 @@ abstract public class DLMImportExport implements IImportExport {
         if(lines.size() < 1) return;
         if(lines.get(0).length < 2) return; // header + at least 1 record!
         
-        String header;
+        String [] headers = new String[lines.get(0).length];
         for(int c = 0, cm = lines.get(0).length; c < cm; c++) {
-            header = lines.get(0)[c];
-            for(int r = 1, rm = lines.size(); r < rm; r++) {
-                rt.addValue(header, Double.parseDouble(lines.get(r)[c]));
-            }
+            headers[c] = lines.get(0)[c];
         }
         
-        rt.updateResults();
+        for(int r = 1, rm = lines.size(); r < rm; r++) {
+            rt.incrementCounter();
+            for(int c = 0, cm = lines.get(r).length; c < cm; c++) {
+                rt.addValue(headers[c], Double.parseDouble(lines.get(r)[c]));
+            }
+            IJ.showProgress((double)r / (double)rm);
+        }
     }
 
     @Override
@@ -59,11 +60,12 @@ abstract public class DLMImportExport implements IImportExport {
             headers[c] = rt.getColumnHeading(c);
         lines.add(headers);
         
-        String [] values = new String[ncols];
+        String [][] values = new String[nrows][ncols];
         for(int r = 0; r < nrows; r++) {
             for(int c = 0; c < ncols; c++)
-                values[c] = Double.toString(rt.getValueAsDouble(c,r));
-            lines.add(values);
+                values[r][c] = Double.toString(rt.getValueAsDouble(c,r));
+            lines.add(values[r]);
+            IJ.showProgress((double)r / (double)nrows);
         }
         
         CSVWriter csvWriter = new CSVWriter(new FileWriter(fp), separator);
