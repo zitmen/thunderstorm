@@ -94,7 +94,9 @@
 
     <delete file="${store.dir}/temp_final.jar"/>
     
-    <copy file="${store.dir}/UBER_${ant.project.name}.jar" tofile="C:/Program Files/ImageJ/plugins/${ant.project.name}.jar"/>
+    <property file="build.properties" description="local override"/>
+    <property name="imagej.path" value="C:/Program Files/ImageJ/plugins" description="path to plugins directory, can be overriden in build.properties"/>
+    <copy file="${store.dir}/UBER_${ant.project.name}.jar" tofile="${imagej.path}/${ant.project.name}.jar" failonerror="false"/>
 
   </target>
 </project>
