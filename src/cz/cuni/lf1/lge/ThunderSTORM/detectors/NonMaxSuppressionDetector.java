@@ -6,6 +6,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Morphology;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import ij.Macro;
+import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Vector;
@@ -23,10 +25,12 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
     private String threshold;
     private JTextField thrTextField;
     private JTextField radiusTextField;
+    private final static String DEFAULT_THRESHOLD = "6*std(F)";
+    private final static int DEFAULT_RADIUS = 3;
     
-  public NonMaxSuppressionDetector() throws ThresholdFormulaException {
-    this(3, "6*std(F)");
-  }
+    public NonMaxSuppressionDetector() throws ThresholdFormulaException {
+      this(DEFAULT_RADIUS, DEFAULT_THRESHOLD);
+    }
     
     /**
      * Initialize the filter.
@@ -73,8 +77,8 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
 
   @Override
   public JPanel getOptionsPanel() {
-    thrTextField = new JTextField(threshold.toString(), 20);
-    radiusTextField = new JTextField(Integer.toString(radius), 20);
+    thrTextField = new JTextField(DEFAULT_THRESHOLD, 20);
+    radiusTextField = new JTextField(Integer.toString(DEFAULT_RADIUS), 20);
     //
     JPanel panel = new JPanel(new GridBagLayout());
     panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
@@ -94,5 +98,22 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
   @Override
   public IDetector getImplementation() {
     return new NonMaxSuppressionDetector(radius, threshold);
+  }
+
+  @Override
+  public void recordOptions() {
+    if (!DEFAULT_THRESHOLD.equals(threshold)){
+      Recorder.recordOption("threshold", threshold);
+    }
+    if (radius != DEFAULT_RADIUS){
+      Recorder.recordOption("radius", Integer.toString(radius));
+    }
+  }
+
+  @Override
+  public void readMacroOptions(String options) {
+    threshold = Macro.getValue(options, "threshold", DEFAULT_THRESHOLD);
+    radius = Integer.parseInt(Macro.getValue(options, "radius", Integer.toString(DEFAULT_RADIUS)));
+    Thresholder.parseThreshold(threshold);
   }
 }

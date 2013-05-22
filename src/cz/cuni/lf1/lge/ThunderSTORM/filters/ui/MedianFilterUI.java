@@ -5,6 +5,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter;
 import static cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter.BOX;
 import static cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter.CROSS;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import ij.Macro;
+import ij.plugin.frame.Recorder;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,10 +19,12 @@ import javax.swing.JTextField;
  */
 public class MedianFilterUI implements IFilterUI {
 
-  private int pattern = MedianFilter.BOX;
-  private int size = 3;
+  private int pattern;
+  private int size;
   private JTextField sizeTextField;
   private JRadioButton patternCrossRadioButton, patternBoxRadioButton;
+  private static final int DEFAULT_SIZE = 3;
+  private static final int DEFAULT_PATTERN = MedianFilter.BOX;
 
   @Override
   public String getName() {
@@ -31,10 +35,10 @@ public class MedianFilterUI implements IFilterUI {
   public JPanel getOptionsPanel() {
     patternBoxRadioButton = new JRadioButton("box");
     patternCrossRadioButton = new JRadioButton("cross");
-    sizeTextField = new JTextField(Integer.toString(size), 20);
+    sizeTextField = new JTextField(Integer.toString(DEFAULT_SIZE), 20);
     //
-    patternBoxRadioButton.setSelected(pattern == BOX);
-    patternCrossRadioButton.setSelected(pattern == CROSS);
+    patternBoxRadioButton.setSelected(DEFAULT_PATTERN == BOX);
+    patternCrossRadioButton.setSelected(DEFAULT_PATTERN == CROSS);
     //
     JPanel panel = new JPanel(new GridBagLayout());
     panel.add(new JLabel("Pattern: "), GridBagHelper.pos(0, 0));
@@ -59,5 +63,22 @@ public class MedianFilterUI implements IFilterUI {
   @Override
   public IFilter getImplementation() {
     return new MedianFilter(pattern, size);
+  }
+
+  @Override
+  public void recordOptions() {
+    if (size != DEFAULT_SIZE) {
+      Recorder.recordOption("size", Integer.toString(size));
+    }
+    if (pattern != DEFAULT_PATTERN) {
+      Recorder.recordOption("pattern", pattern == BOX ? "box" : "cross");
+    }
+  }
+
+  @Override
+  public void readMacroOptions(String options) {
+    size = Integer.parseInt(Macro.getValue(options, "size", Integer.toString(DEFAULT_SIZE)));
+    String value = Macro.getValue(options, "pattern", DEFAULT_PATTERN == BOX ? "box" : "cross");
+    pattern = value.equals("box") ? BOX : CROSS;
   }
 }

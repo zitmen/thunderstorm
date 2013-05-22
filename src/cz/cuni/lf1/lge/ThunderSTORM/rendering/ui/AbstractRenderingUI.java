@@ -6,6 +6,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.Macro;
+import ij.plugin.frame.Recorder;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,6 +34,8 @@ public abstract class AbstractRenderingUI implements IRendererUI {
       }
     }
   };
+  private final static double DEFAULT_RESOLUTION = 0.2;
+  private final static int DEFAULT_REPAINT_FREQUENCY = 20;
 
   public AbstractRenderingUI() {
   }
@@ -50,8 +54,8 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   @Override
   public JPanel getOptionsPanel() {
     JPanel panel = new JPanel(new GridBagLayout());
-    resolutionTextField = new JTextField("0.2", 20);
-    repaintFrequencyTextField = new JTextField("20", 20);
+    resolutionTextField = new JTextField("" + DEFAULT_RESOLUTION, 20);
+    repaintFrequencyTextField = new JTextField("" + DEFAULT_REPAINT_FREQUENCY, 20);
     panel.add(new JLabel("Resolution: "), GridBagHelper.pos(0, 0));
     panel.add(resolutionTextField, GridBagHelper.pos(1, 0));
     panel.add(new JLabel("Repaint frequency: "), GridBagHelper.pos(0, 1));
@@ -64,6 +68,22 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   public void readParameters() {
     resolution = Double.parseDouble(resolutionTextField.getText());
     repaintFrequency = Integer.parseInt(repaintFrequencyTextField.getText());
+  }
+
+  @Override
+  public void recordOptions() {
+    if (resolution != DEFAULT_RESOLUTION) {
+      Recorder.recordOption("resolution", Double.toString(resolution));
+    }
+    if (repaintFrequency != DEFAULT_REPAINT_FREQUENCY) {
+      Recorder.recordOption("repaintFrequency", Integer.toString(repaintFrequency));
+    }
+  }
+
+  @Override
+  public void readMacroOptions(String options) {
+    resolution = Double.parseDouble(Macro.getValue(options, "resolution", "" + DEFAULT_RESOLUTION));
+    repaintFrequency = Integer.parseInt(Macro.getValue(options, "repaintFrequency", "" + DEFAULT_REPAINT_FREQUENCY));
   }
 
   @Override

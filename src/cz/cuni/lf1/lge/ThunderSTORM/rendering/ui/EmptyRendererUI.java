@@ -43,4 +43,12 @@ public class EmptyRendererUI implements IRendererUI {
       }
     };
   }
+
+  @Override
+  public void recordOptions() {
+  }
+
+  @Override
+  public void readMacroOptions(String options) {
+  }
 }

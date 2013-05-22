@@ -11,6 +11,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import ij.Macro;
+import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import java.util.Vector;
 import javax.swing.JLabel;
@@ -30,7 +32,8 @@ public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
     
     private int fitrad, fitrad2, fitrad_2;  // fitrad, fitrad^2, fitrad/2
     private JTextField fitregsizeTextField;
-    private int fitreg = 5;
+    
+    private static final int DEFAULT_FITRAD = 5;
     
     private void updateFittingRadius(int fitting_region_size) {
         this.fitrad = fitting_region_size;
@@ -41,7 +44,7 @@ public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
     private boolean checkDist2(Point fit, Point detection) {
         return ((sqr(fit.x.doubleValue() - detection.x.doubleValue()) + sqr(fit.y.doubleValue() - detection.y.doubleValue())) <= (double)fitrad2);
     }
-    
+
     /**
      * Definition od PSF function, the 2D symmetric Gaussian function.
      * 
@@ -73,7 +76,7 @@ public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
     }
 
   public LeastSquaresEstimator() {
-    this(11);
+    this(DEFAULT_FITRAD);
   }
     
     /**
@@ -150,7 +153,7 @@ public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
 
   @Override
   public JPanel getOptionsPanel() {
-    fitregsizeTextField = new JTextField(Integer.toString(fitreg), 20);
+    fitregsizeTextField = new JTextField(Integer.toString(DEFAULT_FITRAD), 20);
     //
     JPanel panel = new JPanel();
     panel.add(new JLabel("Fitting region size: "));
@@ -160,11 +163,24 @@ public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
 
   @Override
   public void readParameters() {
-    fitreg = Integer.parseInt(fitregsizeTextField.getText());
+    updateFittingRadius(Integer.parseInt(fitregsizeTextField.getText()));
   }
 
   @Override
   public IEstimator getImplementation() {
-    return new LeastSquaresEstimator(fitreg);
+    return new LeastSquaresEstimator(fitrad);
   }
+  
+    @Override
+  public void recordOptions() {
+    if(fitrad != DEFAULT_FITRAD){
+      Recorder.recordOption("fitrad", Integer.toString(fitrad));
+    }
+  }
+
+  @Override
+  public void readMacroOptions(String options) {
+    updateFittingRadius(Integer.parseInt(Macro.getValue(options, "fitrad", Integer.toString(DEFAULT_FITRAD))));
+  }
+  
 }

@@ -54,4 +54,12 @@ public final class EmptyFilter implements IFilter, IFilterUI {
   public IFilter getImplementation() {
     return new EmptyFilter();
   }
+
+  @Override
+  public void recordOptions() {
+  }
+
+  @Override
+  public void readMacroOptions(String options) {
+  }
 }

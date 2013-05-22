@@ -8,7 +8,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import ij.IJ;
+import ij.Macro;
+import ij.plugin.frame.Recorder;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -30,9 +31,12 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
     private String threshold;
     private JTextField thrTextField;
     private JCheckBox upCheckBox;
+    
+    private final static String DEFAULT_THRESHOLD = "std(I-Wave.V1)";
+    private final static boolean DEFAULT_UPSAMPLE = false;
 
   public CentroidOfConnectedComponentsDetector() throws ThresholdFormulaException {
-    this(false, "std(I-Wave.V1)");
+    this(DEFAULT_UPSAMPLE, DEFAULT_THRESHOLD);
   }
     
     /**
@@ -110,9 +114,9 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
 
   @Override
   public JPanel getOptionsPanel() {
-    thrTextField = new JTextField(threshold.toString(), 20);
+    thrTextField = new JTextField(DEFAULT_THRESHOLD, 20);
     upCheckBox = new JCheckBox("upsample");
-    upCheckBox.setSelected(upsample);
+    upCheckBox.setSelected(DEFAULT_UPSAMPLE);
     //
     JPanel panel = new JPanel(new GridBagLayout());
     panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
@@ -132,6 +136,21 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
   public IDetector getImplementation() {
     return this;
   }
-    
-    
+
+  @Override
+  public void recordOptions() {
+    if (!DEFAULT_THRESHOLD.equals(threshold)){
+      Recorder.recordOption("threshold", threshold);
+    }
+    if (DEFAULT_UPSAMPLE != upsample){
+      Recorder.recordOption("upsample", Boolean.toString(upsample));
+    }
+  }
+
+  @Override
+  public void readMacroOptions(String options) {
+    threshold = Macro.getValue(options, "threshold", DEFAULT_THRESHOLD);
+    upsample = Boolean.parseBoolean(Macro.getValue(options, "upsample", Boolean.toString(upsample)));
+    Thresholder.parseThreshold(threshold);
+  }
 }

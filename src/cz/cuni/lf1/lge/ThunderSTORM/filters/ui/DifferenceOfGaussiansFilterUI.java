@@ -3,20 +3,21 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.DifferenceOfGaussiansFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import ij.Macro;
+import ij.plugin.frame.Recorder;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-/**
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
- */
 public class DifferenceOfGaussiansFilterUI implements IFilterUI {
 
   private JTextField sigma1TextField, sigma2TextField, sizeTextField;
-  private double sigma_g1 = 1.6, sigma_g2 = 1;
-  private int size = 11;
+  private double sigma_g1, sigma_g2;
+  private int size;
+  private static final int DEFAULT_SIZE = 11;
+  private static final double DEFAULT_SIGMA_G1 = 1.6;
+  private static final double DEFAULT_SIGMA_G2 = 1;
 
   @Override
   public String getName() {
@@ -25,9 +26,9 @@ public class DifferenceOfGaussiansFilterUI implements IFilterUI {
 
   @Override
   public JPanel getOptionsPanel() {
-    sizeTextField = new JTextField(Integer.toString(size), 20);
-    sigma1TextField = new JTextField(Double.toString(sigma_g1), 20);
-    sigma2TextField = new JTextField(Double.toString(sigma_g2), 20);
+    sizeTextField = new JTextField(Integer.toString(DEFAULT_SIZE), 20);
+    sigma1TextField = new JTextField(Double.toString(DEFAULT_SIGMA_G1), 20);
+    sigma2TextField = new JTextField(Double.toString(DEFAULT_SIGMA_G2), 20);
     //
     JPanel panel = new JPanel(new GridBagLayout());
     panel.add(new JLabel("Size: "), GridBagHelper.pos(0, 0));
@@ -49,5 +50,25 @@ public class DifferenceOfGaussiansFilterUI implements IFilterUI {
   @Override
   public IFilter getImplementation() {
     return new DifferenceOfGaussiansFilter(size, sigma_g1, sigma_g2);
+  }
+
+  @Override
+  public void recordOptions() {
+    if (size != DEFAULT_SIZE) {
+      Recorder.recordOption("size", Integer.toString(size));
+    }
+    if (sigma_g1 != DEFAULT_SIGMA_G1) {
+      Recorder.recordOption("sigma_g1", Double.toString(sigma_g1));
+    }
+    if (sigma_g2 != DEFAULT_SIGMA_G2) {
+      Recorder.recordOption("sigma_g2", Double.toString(sigma_g2));
+    }
+  }
+
+  @Override
+  public void readMacroOptions(String options) {
+    size = Integer.parseInt(Macro.getValue(options, "size", Integer.toString(DEFAULT_SIZE)));
+    sigma_g1 = Double.parseDouble(Macro.getValue(options, "sigma_g1", Double.toString(DEFAULT_SIGMA_G1)));
+    sigma_g2 = Double.parseDouble(Macro.getValue(options, "sigma_g2", Double.toString(DEFAULT_SIGMA_G2)));
   }
 }

@@ -3,6 +3,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.rendering.ASHRendering;
 import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
+import ij.Macro;
+import ij.plugin.frame.Recorder;
 import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,6 +18,7 @@ public class ASHRenderingUI extends AbstractRenderingUI {
 
   JTextField shiftsTextField;
   int shifts;
+  private static final int DEFAULT_SHIFTS = 2;
 
   public ASHRenderingUI() {
   }
@@ -33,7 +36,7 @@ public class ASHRenderingUI extends AbstractRenderingUI {
   public JPanel getOptionsPanel() {
     JPanel panel = super.getOptionsPanel();
 
-    shiftsTextField = new JTextField("2", 20);
+    shiftsTextField = new JTextField(Integer.toString(DEFAULT_SHIFTS), 20);
     panel.add(new JLabel("Shifts:"), GridBagHelper.pos(0, GridBagConstraints.RELATIVE));
     panel.add(shiftsTextField, GridBagHelper.pos(1, GridBagConstraints.RELATIVE));
 
@@ -46,7 +49,20 @@ public class ASHRenderingUI extends AbstractRenderingUI {
     super.readParameters();
   }
 
-  
+  @Override
+  public void recordOptions() {
+    super.recordOptions();
+    if (shifts != DEFAULT_SHIFTS) {
+      Recorder.recordOption("shifts", Integer.toString(shifts));
+    }
+  }
+
+  @Override
+  public void readMacroOptions(String options) {
+    super.readMacroOptions(options);
+    shifts = Integer.parseInt(Macro.getValue(options, "shifts", Integer.toString(DEFAULT_SHIFTS)));
+  }
+
   @Override
   public IncrementalRenderingMethod getMethod() {
     return new ASHRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).shifts(shifts).build();

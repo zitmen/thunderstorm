@@ -6,6 +6,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import ij.Macro;
+import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Vector;
@@ -23,6 +25,9 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
     private String threshold;
     private JTextField thrTextField;
     private JRadioButton conn4RadioButton, conn8RadioButton;
+    private final static String DEFAULT_THRESHOLD = "10*std(F)";
+    private final static int DEFAULT_CONNECTIVITY = Graph.CONNECTIVITY_8;
+    
         
     private boolean isMax4Thr(FloatProcessor image, float thr, int x, int y, float local, boolean w, boolean e, boolean n, boolean s) {
         if(local < thr) return false;
@@ -128,7 +133,7 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
     }
 
   public LocalMaximaDetector() throws ThresholdFormulaException {
-    this(Graph.CONNECTIVITY_8, "10*std(F)");
+    this(DEFAULT_CONNECTIVITY, DEFAULT_THRESHOLD);
   }
     
     /**
@@ -182,12 +187,12 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
 
   @Override
   public JPanel getOptionsPanel() {
-    thrTextField = new JTextField(threshold.toString(), 20);
+    thrTextField = new JTextField(DEFAULT_THRESHOLD, 20);
     conn4RadioButton = new JRadioButton("4-neighbourhood");
     conn8RadioButton = new JRadioButton("8-neighbourhood");
     //
-    conn4RadioButton.setSelected(connectivity == Graph.CONNECTIVITY_4);
-    conn8RadioButton.setSelected(connectivity == Graph.CONNECTIVITY_8);
+    conn4RadioButton.setSelected(DEFAULT_CONNECTIVITY == Graph.CONNECTIVITY_4);
+    conn8RadioButton.setSelected(DEFAULT_CONNECTIVITY == Graph.CONNECTIVITY_8);
     //
     JPanel panel = new JPanel(new GridBagLayout());
     panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
@@ -213,5 +218,23 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
   @Override
   public IDetector getImplementation() {
     return this;
+  }
+
+  @Override
+  public void recordOptions() {
+    if (!DEFAULT_THRESHOLD.equals(threshold)){
+      Recorder.recordOption("threshold", threshold);
+    }
+    if (connectivity != DEFAULT_CONNECTIVITY){
+      Recorder.recordOption("connectivity", (connectivity == Graph.CONNECTIVITY_4)?"4":"8");
+    }
+  }
+
+  @Override
+  public void readMacroOptions(String options) {
+    threshold = Macro.getValue(options, "threshold", DEFAULT_THRESHOLD);
+    String value = Macro.getValue(options, "connectivity", (DEFAULT_CONNECTIVITY == Graph.CONNECTIVITY_4)?"4":"8");
+    connectivity = value.equals("4")?Graph.CONNECTIVITY_4:Graph.CONNECTIVITY_8;
+    Thresholder.parseThreshold(threshold);
   }
 }

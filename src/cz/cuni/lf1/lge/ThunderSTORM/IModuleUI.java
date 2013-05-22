@@ -33,6 +33,23 @@ public interface IModuleUI<T extends IModule> {
   public void readParameters();
 
   /**
+   * Record the module parameters to the imagej macro recorder. Use
+   * {@code Recorder.recordOption(name, value)}. The parameter should not
+   * conflict with other modules.
+   */
+  public void recordOptions();
+
+  /**
+   * Read the parameters from macro options string. Use
+   * {@code Macro.getValue(options, name, defaultValue)} to get individual
+   * parameter values.
+   *
+   * @param options String with options passed by
+   * {@code IJ.run(command, options)}.
+   */
+  public void readMacroOptions(String options);
+
+  /**
    * Returns the object that does the actual calculation. The object returned
    * <b>must be thread safe or a new Object must be returned</b> for each
    * invocation of this method.

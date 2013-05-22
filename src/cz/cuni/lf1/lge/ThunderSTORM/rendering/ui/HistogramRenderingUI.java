@@ -3,6 +3,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.rendering.HistogramRendering;
 import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
+import ij.Macro;
+import ij.plugin.frame.Recorder;
 import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,6 +18,7 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
 
   JTextField avgTextField;
   int avg;
+  private static final int DEFAULT_AVG = 0;
 
   public HistogramRenderingUI() {
   }
@@ -33,7 +36,7 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
   public JPanel getOptionsPanel() {
     JPanel panel = super.getOptionsPanel();
 
-    avgTextField = new JTextField("0", 20);
+    avgTextField = new JTextField(Integer.toString(DEFAULT_AVG), 20);
     panel.add(new JLabel("Averages:"), GridBagHelper.pos(0, GridBagConstraints.RELATIVE));
     panel.add(avgTextField, GridBagHelper.pos(1, GridBagConstraints.RELATIVE));
 
@@ -47,8 +50,21 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
   }
 
   @Override
+  public void recordOptions() {
+    super.recordOptions();
+    if (avg != DEFAULT_AVG) {
+      Recorder.recordOption("avg", Integer.toString(avg));
+    }
+  }
+
+  @Override
+  public void readMacroOptions(String options) {
+    super.readMacroOptions(options);
+    avg = Integer.parseInt(Macro.getValue(options, "avg", Integer.toString(DEFAULT_AVG)));
+  }
+
+  @Override
   public IncrementalRenderingMethod getMethod() {
     return new HistogramRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).average(avg).build();
   }
-
 }
