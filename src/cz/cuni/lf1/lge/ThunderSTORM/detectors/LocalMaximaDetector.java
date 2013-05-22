@@ -11,6 +11,7 @@ import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Vector;
+import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -188,8 +189,11 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
   @Override
   public JPanel getOptionsPanel() {
     thrTextField = new JTextField(DEFAULT_THRESHOLD, 20);
+    ButtonGroup btnGroup = new ButtonGroup();
     conn4RadioButton = new JRadioButton("4-neighbourhood");
     conn8RadioButton = new JRadioButton("8-neighbourhood");
+    btnGroup.add(conn4RadioButton);
+    btnGroup.add(conn8RadioButton);
     //
     conn4RadioButton.setSelected(DEFAULT_CONNECTIVITY == Graph.CONNECTIVITY_4);
     conn8RadioButton.setSelected(DEFAULT_CONNECTIVITY == Graph.CONNECTIVITY_8);

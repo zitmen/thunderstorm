@@ -8,6 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.Macro;
 import ij.plugin.frame.Recorder;
 import java.awt.GridBagLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -33,8 +34,11 @@ public class MedianFilterUI implements IFilterUI {
 
   @Override
   public JPanel getOptionsPanel() {
+    ButtonGroup btnGroup = new ButtonGroup();
     patternBoxRadioButton = new JRadioButton("box");
     patternCrossRadioButton = new JRadioButton("cross");
+    btnGroup.add(patternBoxRadioButton);
+    btnGroup.add(patternCrossRadioButton);
     sizeTextField = new JTextField(Integer.toString(DEFAULT_SIZE), 20);
     //
     patternBoxRadioButton.setSelected(DEFAULT_PATTERN == BOX);
