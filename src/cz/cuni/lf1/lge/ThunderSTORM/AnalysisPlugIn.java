@@ -16,7 +16,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.ExtendedPlugInFilter;
@@ -50,7 +49,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   private AtomicInteger nProcessed = new AtomicInteger(0);
   private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING;
   private Vector<PSF>[] results;
-  private FloatProcessor[] images;
   private ThreadLocalModule<IFilterUI, IFilter> threadLocalFilter;
   private ThreadLocalModule<IEstimatorUI, IEstimator> threadLocalEstimator;
   private ThreadLocalModule<IDetectorUI, IDetector> threadLocalDetector;
@@ -99,16 +97,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       rt.show("Results");
       //
       // Show detections in the image
-      ImageStack stack = new ImageStack(images[1].getWidth(), images[1].getHeight());
+      imp.setOverlay(null);
       for (int frame = 1; frame <= stackSize; frame++) {
-        stack.addSlice(images[frame]);
+        RenderingOverlay.showPointsInImageSlice(imp, extractX(results[frame]), extractY(results[frame]), frame, Color.red, RenderingOverlay.MARKER_CROSS);
       }
-      //
-      ImagePlus impPreview = new ImagePlus("ThunderSTORM results preview", stack);
-      for (int frame = 1; frame <= stackSize; frame++) {
-        RenderingOverlay.showPointsInImageSlice(impPreview, extractX(results[frame]), extractY(results[frame]), frame, Color.red, RenderingOverlay.MARKER_CROSS);
-      }
-      impPreview.show("Results preview");
       renderingQueue.repaintLater();
       //
       // Finished
@@ -220,7 +212,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     stackSize = nPasses;
     nProcessed.set(0);
     results = new Vector[stackSize + 1];  // indexing from 1 for simplicity
-    images = new FloatProcessor[stackSize + 1];
   }
 
   /**
@@ -250,7 +241,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     }
     //
     results[ip.getSliceNumber()] = fits;
-    images[ip.getSliceNumber()] = fp;
     nProcessed.incrementAndGet();
 
     renderingQueue.renderLater(extractX(fits), extractY(fits), 0.2);
