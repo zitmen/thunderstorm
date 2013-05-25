@@ -18,7 +18,9 @@ class FormulaLexer {
         FormulaToken token = new FormulaToken();
         if(scanner.hasNextFloat()) {
             token.type = FormulaToken.FLOAT;
-            token.token = Float.toString(scanner.nextFloat());
+            // note: don't know why scanner.nextFloat does not work??!! using regexp instead:
+            //http://stackoverflow.com/questions/2293780/how-to-detect-a-floating-point-number-using-a-regular-expression
+            token.token = scanner.findInLine("(([1-9][0-9]*\\.?[0-9]*)|(\\.[0-9]+))([Ee][+-]?[0-9]+)?");
         } else if(scanner.hasNext("[a-zA-Z]")) {
             token.type = FormulaToken.NAME;
             token.token = scanner.findInLine("[a-zA-Z0-9]+");
