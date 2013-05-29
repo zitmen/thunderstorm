@@ -36,6 +36,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
             gd.showDialog();
             
             if(!gd.wasCanceled()) {
+                active_ie = gd.getNextChoiceIndex();
                 if("export".equals(command)) {
                     exportToFile(gd.getNextString());
                 } else {
