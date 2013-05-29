@@ -8,6 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
@@ -20,6 +21,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -46,6 +50,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
   private IDetectorUI activeDetector;
   private IEstimatorUI activeEstimator;
   private IRendererUI activeRenderer;
+  ExecutorService previewThredRunner = Executors.newSingleThreadExecutor();
+  Future<?> previewFuture = null;
 
   /**
    * Initialize and show the analysis options dialog.
@@ -183,26 +189,57 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         activeFilter.readParameters();
         activeDetector.readParameters();
         activeEstimator.readParameters();
-        //
-        FloatProcessor fp = (FloatProcessor) imp.getProcessor().convertToFloat();
-        IFilter filter = Thresholder.getLoadedFilters().get(filters.getActiveComboBoxItemIndex()).get();
-        Vector<PSF> results = activeEstimator.getImplementation().estimateParameters(fp, activeDetector.getImplementation().detectMoleculeCandidates(filter.filterImage(fp)));
-        //
-        double[] xCoord = new double[results.size()];
-        double[] yCoord = new double[results.size()];
-        for (int i = 0; i < results.size(); i++) {
-          xCoord[i] = results.elementAt(i).xpos;
-          yCoord[i] = results.elementAt(i).ypos;
-        }
-        //
-        ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().duplicate());
-        RenderingOverlay.showPointsInImage(impPreview, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
-        impPreview.show();
       } catch (ThresholdFormulaException ex) {
-        IJ.error("Thresholding: " + ex.getMessage());
+        IJ.log("Thresholding: " + ex.getMessage());
       } catch (Exception ex) {
-        IJ.error("Error: " + ex.getMessage());
+        IJ.log(ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
       }
+      if (previewFuture != null) {
+        previewFuture.cancel(true);
+      }
+      previewFuture = previewThredRunner.submit(new Runnable() {
+        void checkForInterruption() throws InterruptedException {
+          if (Thread.interrupted()) {
+            throw new InterruptedException();
+          }
+          if (IJ.escapePressed()) {
+            IJ.resetEscape();
+            throw new InterruptedException();
+          }
+        }
+
+        @Override
+        public void run() {
+          try {
+            IJ.showStatus("Creating preview image.");
+            FloatProcessor fp = (FloatProcessor) imp.getProcessor().convertToFloat();
+            IFilter filter = Thresholder.getLoadedFilters().get(filters.getActiveComboBoxItemIndex()).get();
+            FloatProcessor filtered = filter.filterImage(fp);
+            checkForInterruption();
+            Vector<Point> detections = activeDetector.getImplementation().detectMoleculeCandidates(filtered);
+            checkForInterruption();
+            Vector<PSF> results = activeEstimator.getImplementation().estimateParameters(fp, detections);
+            checkForInterruption();
+            //
+            double[] xCoord = new double[results.size()];
+            double[] yCoord = new double[results.size()];
+            for (int i = 0; i < results.size(); i++) {
+              xCoord[i] = results.elementAt(i).xpos;
+              yCoord[i] = results.elementAt(i).ypos;
+            }
+            //
+            ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().duplicate());
+            RenderingOverlay.showPointsInImage(impPreview, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
+            impPreview.show();
+          } catch (InterruptedException ex) {
+            IJ.showStatus("Preview interrupted.");
+          } catch (Exception ex) {
+            IJ.log(ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+          }
+        }
+      });
+
+
 
     } else {
       throw new UnsupportedOperationException("Command '" + e.getActionCommand() + "' is not supported!");
@@ -219,6 +256,9 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
   public void dispose() {
     super.dispose();
     semaphore.release();
+    if (previewThredRunner != null) {
+      previewThredRunner.shutdownNow();
+    }
   }
 
   /**
