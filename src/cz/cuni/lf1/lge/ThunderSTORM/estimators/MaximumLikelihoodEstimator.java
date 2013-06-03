@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 import java.util.Vector;
@@ -38,7 +39,7 @@ public class MaximumLikelihoodEstimator implements IEstimator {
      * @param initial_guess
      * @return
      */
-    public Vector<Point<Double>> ExponentialGaussianEstimator(FloatProcessor fp, Vector<Point> detections, PSF initial_guess) {
+    public Vector<Point<Double>> ExponentialGaussianEstimator(FloatProcessor fp, Vector<Point> detections, PSFModel initial_guess) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         /*
         Vector<Point<Double>> fits = new Vector<Point<Double>>();
@@ -103,7 +104,7 @@ public class MaximumLikelihoodEstimator implements IEstimator {
      * @return
      */
     @Override
-    public Vector<PSF> estimateParameters(FloatProcessor image, Vector<Point> detections) {
+    public Vector<PSFInstance> estimateParameters(FloatProcessor image, Vector<Point> detections) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

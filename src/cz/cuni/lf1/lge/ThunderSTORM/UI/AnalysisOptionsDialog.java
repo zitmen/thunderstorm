@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
@@ -218,14 +218,14 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             checkForInterruption();
             Vector<Point> detections = activeDetector.getImplementation().detectMoleculeCandidates(filtered);
             checkForInterruption();
-            Vector<PSF> results = activeEstimator.getImplementation().estimateParameters(fp, detections);
+            Vector<PSFInstance> results = activeEstimator.getImplementation().estimateParameters(fp, detections);
             checkForInterruption();
             //
             double[] xCoord = new double[results.size()];
             double[] yCoord = new double[results.size()];
             for (int i = 0; i < results.size(); i++) {
-              xCoord[i] = results.elementAt(i).xpos;
-              yCoord[i] = results.elementAt(i).ypos;
+              xCoord[i] = results.elementAt(i).getX();
+              yCoord[i] = results.elementAt(i).getY();
             }
             //
             ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().duplicate());

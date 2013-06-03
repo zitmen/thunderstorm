@@ -6,8 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
@@ -30,6 +29,7 @@ import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import java.awt.Color;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.UIManager;
@@ -48,7 +48,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   private int stackSize;
   private AtomicInteger nProcessed = new AtomicInteger(0);
   private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING;
-  private Vector<PSF>[] results;
+  private Vector<PSFInstance>[] results;
   private ThreadLocalModule<IFilterUI, IFilter> threadLocalFilter;
   private ThreadLocalModule<IEstimatorUI, IEstimator> threadLocalEstimator;
   private ThreadLocalModule<IDetectorUI, IDetector> threadLocalDetector;
@@ -84,14 +84,11 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       }
       rt.reset();
       for (int frame = 1; frame <= stackSize; frame++) {
-        for (PSF psf : results[frame]) {
+        for (PSFInstance psf : results[frame]) {
           rt.incrementCounter();
-          rt.addValue("frame", frame);
-          rt.addValue("x", psf.xpos);
-          rt.addValue("y", psf.ypos);
-          rt.addValue("\u03C3", ((GaussianPSF) psf).sigma);
-          rt.addValue("Intensity", psf.intensity);
-          rt.addValue("background", psf.background);
+          for (Map.Entry<String, Double> parameter : psf) {
+            rt.addValue(parameter.getKey(), parameter.getValue());
+          }
         }
       }
       rt.show("Results");
@@ -183,7 +180,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         IRendererUI rendererPanel = dialog.getRenderer();
         rendererPanel.setSize(imp.getWidth(), imp.getHeight());
         renderingQueue = rendererPanel.getImplementation();
-        
+
         //if recording window is open, record parameters of all modules
         if (Recorder.record) {
           MacroParser.recordFilterUI(dialog.getFilter());
@@ -230,7 +227,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     assert (renderingQueue != null) : "Renderer was not selected!";
     //
     FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
-    Vector<PSF> fits = null;
+    Vector<PSFInstance> fits = null;
     try {
       fits = threadLocalEstimator.get().estimateParameters(
               fp,
@@ -250,18 +247,18 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
   }
 
-  private double[] extractX(Vector<PSF> fits) {
+  private double[] extractX(Vector<PSFInstance> fits) {
     double[] x = new double[fits.size()];
     for (int i = 0; i < fits.size(); i++) {
-      x[i] = fits.get(i).xpos;
+      x[i] = fits.get(i).getX();
     }
     return x;
   }
 
-  private double[] extractY(Vector<PSF> fits) {
+  private double[] extractY(Vector<PSFInstance> fits) {
     double[] y = new double[fits.size()];
     for (int i = 0; i < fits.size(); i++) {
-      y[i] = fits.get(i).ypos;
+      y[i] = fits.get(i).getY();
     }
     return y;
   }

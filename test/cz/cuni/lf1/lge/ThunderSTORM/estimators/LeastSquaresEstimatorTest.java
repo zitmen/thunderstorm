@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.CentroidOfConnectedComponentsDetector;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.CompoundWaveletFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.CSV;
@@ -18,17 +18,17 @@ public class LeastSquaresEstimatorTest {
 
     class Pair {
         Point detection;
-        PSF fit;
-        PSF ground_truth;
+        PSFInstance fit;
+        PSFInstance ground_truth;
         
-        public Pair(Point detection, PSF fit, PSF ground_truth) {
+        public Pair(Point detection, PSFInstance fit, PSFInstance ground_truth) {
             this.detection = detection;
             this.fit = fit;
             this.ground_truth = ground_truth;
         }
     }
     
-    private Vector<Pair> pairFitsAndDetections2GroundTruths(Vector<Point> detections, Vector<PSF> fits, Vector<PSF> ground_truth) {
+    private Vector<Pair> pairFitsAndDetections2GroundTruths(Vector<Point> detections, Vector<PSFInstance> fits, Vector<PSFInstance> ground_truth) {
         assertNotNull(fits);
         assertNotNull(detections);
         assertNotNull(ground_truth);
@@ -56,12 +56,12 @@ public class LeastSquaresEstimatorTest {
         return pairs;
     }
     
-    private double dist2(Point detection, PSF ground_truth) {
-        return sqr(detection.x.doubleValue() - ground_truth.xpos) + sqr(detection.y.doubleValue() - ground_truth.ypos);
+    private double dist2(Point detection, PSFInstance ground_truth) {
+        return sqr(detection.x.doubleValue() - ground_truth.getX()) + sqr(detection.y.doubleValue() - ground_truth.getY());
     }
     
-    private double dist2(PSF fit, PSF ground_truth) {
-        return sqr(fit.xpos - ground_truth.xpos) + sqr(fit.ypos - ground_truth.ypos);
+    private double dist2(PSFInstance fit, PSFInstance ground_truth) {
+        return sqr(fit.getX() - ground_truth.getY()) + sqr(fit.getX() - ground_truth.getY());
     }
     
     /**
@@ -75,11 +75,11 @@ public class LeastSquaresEstimatorTest {
             FloatProcessor image = (FloatProcessor) IJ.openImage("test/resources/tubulins1_00020.tif").getProcessor().convertToFloat();
             FloatProcessor filtered = (new CompoundWaveletFilter(false)).filterImage(image);
             Vector<Point> detections = (new CentroidOfConnectedComponentsDetector(false, "14.2835")).detectMoleculeCandidates(filtered);
-            Vector<PSF> fits = (new LeastSquaresEstimator(11)).estimateParameters(image, detections);
-            for(PSF fit : fits) {
+            Vector<PSFInstance> fits = (new LeastSquaresEstimator(11)).estimateParameters(image, detections);
+            for(PSFInstance fit : fits) {
                 fit.convertXYToNanoMeters(150.0);
             }
-            Vector<PSF> ground_truth = CSV.csv2psf("test/resources/tubulins1_00020.csv", 1, 2);
+            Vector<PSFInstance> ground_truth = CSV.csv2psf("test/resources/tubulins1_00020.csv", 1, 2);
             Vector<Pair> pairs = pairFitsAndDetections2GroundTruths(detections, fits, ground_truth);
             for(Pair pair : pairs) {
                 assertFalse("Result from the estimator should be better than guess from the detector.", dist2(pair.fit, pair.ground_truth) > dist2(pair.detection, pair.ground_truth));

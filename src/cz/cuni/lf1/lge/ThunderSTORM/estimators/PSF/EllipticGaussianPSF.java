@@ -13,15 +13,15 @@ import static org.apache.commons.math3.util.FastMath.sqrt;
  * <strong>Note that this class will be completely changed in a future
  * relase.</strong>
  */
-public class SymmetricGaussianPSF extends PSFModel {
+public class EllipticGaussianPSF extends PSFModel {
 
   /**
    *
    */
   public double defaultSigma;
-  private static final String[] parameterNames = {"x", "y", "intensity", "sigma", "background"};
+  private static final String[] parameterNames = {PSFInstance.X, PSFInstance.Y, "intensity", PSFInstance.SIGMA, PSFInstance.SIGMA2, "background"};
 
-  public SymmetricGaussianPSF(double defaultSigma) {
+  public EllipticGaussianPSF(double defaultSigma) {
     this.defaultSigma = defaultSigma;
   }
 
@@ -56,6 +56,7 @@ public class SymmetricGaussianPSF extends PSFModel {
     transformed[2] = parameters[2];
     transformed[3] = parameters[3] * parameters[3];
     transformed[4] = parameters[4] * parameters[4];
+    transformed[5] = parameters[5] * parameters[5];
     return transformed;
   }
 
@@ -67,6 +68,7 @@ public class SymmetricGaussianPSF extends PSFModel {
     transformed[2] = parameters[2];
     transformed[3] = sqrt(abs(parameters[3]));
     transformed[4] = sqrt(abs(parameters[4]));
+    transformed[5] = sqrt(abs(parameters[5]));
     return transformed;
   }
 
