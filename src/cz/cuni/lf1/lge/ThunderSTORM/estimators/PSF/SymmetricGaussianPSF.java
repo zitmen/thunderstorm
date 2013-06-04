@@ -51,9 +51,9 @@ public class SymmetricGaussianPSF extends PSFModel {
   @Override
   public double[] transformParameters(double[] parameters) {
     double[] transformed = new double[5];
-    transformed[0] = parameters[0] * parameters[0];
+    transformed[0] = parameters[0];
     transformed[1] = parameters[1];
-    transformed[2] = parameters[2];
+    transformed[2] = parameters[2] * parameters[2];
     transformed[3] = parameters[3] * parameters[3];
     transformed[4] = parameters[4] * parameters[4];
     return transformed;
@@ -62,9 +62,9 @@ public class SymmetricGaussianPSF extends PSFModel {
   @Override
   public double[] transformParametersInverse(double[] parameters) {
     double[] transformed = new double[5];
-    transformed[0] = sqrt(abs(parameters[0]));
+    transformed[0] = parameters[0];
     transformed[1] = parameters[1];
-    transformed[2] = parameters[2];
+    transformed[2] = sqrt(abs(parameters[2]));
     transformed[3] = sqrt(abs(parameters[3]));
     transformed[4] = sqrt(abs(parameters[4]));
     return transformed;

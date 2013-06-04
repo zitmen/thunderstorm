@@ -136,4 +136,20 @@ public class PSFInstance implements Iterable<Map.Entry<String, Double>> {
       }
     };
   }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    for (int i = 0; i < paramNames.length; i++) {
+      if (i != 0) {
+        sb.append(", ");
+      }
+      sb.append(paramNames[i]);
+      sb.append("=");
+      sb.append(params[i]);
+    }
+    sb.append("]");
+    return sb.toString();
+  }
 }

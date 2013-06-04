@@ -95,7 +95,7 @@ public abstract class PSFModel {
 
         double logLikelihood = 0;
         for (int i = 0; i < xgrid.length; i++) {
-          double expectedValue = getExpectedValue(newPoint, xgrid[i], ygrid[i]);
+          double expectedValue = getValue(newPoint, xgrid[i], ygrid[i]);
           double log = log(expectedValue);
           if (log < -1e6) {
             log = -1e6;

@@ -86,6 +86,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       for (int frame = 1; frame <= stackSize; frame++) {
         for (PSFInstance psf : results[frame]) {
           rt.incrementCounter();
+          rt.addValue("frame", frame);
           for (Map.Entry<String, Double> parameter : psf) {
             rt.addValue(parameter.getKey(), parameter.getValue());
           }
