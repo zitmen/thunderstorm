@@ -33,16 +33,6 @@ public abstract class PSFModel {
     return params;
   }
 
-  /**
-   * expected value for mle calculation
-   *
-   * @param params
-   * @param x
-   * @param y
-   * @return
-   */
-  abstract public double getExpectedValue(double[] params, int x, int y);
-
   abstract public double getValue(double[] params, double x, double y);
 
   public MultivariateVectorFunction getValueFunction(final int[] xgrid, final int[] ygrid) {
@@ -66,7 +56,7 @@ public abstract class PSFModel {
   public MultivariateMatrixFunction getJacobianFunction(final int[] xgrid, final int[] ygrid) {
     final MultivariateVectorFunction valueFunction = getValueFunction(xgrid, ygrid);
     return new MultivariateMatrixFunction() {
-      static final double step = 0.1;
+      static final double step = 0.01;
 
       @Override
       public double[][] value(double[] point) throws IllegalArgumentException {
@@ -109,6 +99,11 @@ public abstract class PSFModel {
     };
   }
 
+  /**
+   * first step of nelder-mead simplex algorithm. Used in mle estimator.
+   */
+  public abstract double[] getInitialSimplex();
+  
   public abstract double[] getInitialParams(OneLocationFitter.SubImage subImage);
 
   public PSFInstance newInstanceFromParams(double[] params) {

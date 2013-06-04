@@ -1,6 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
+import ij.IJ;
+import java.util.Arrays;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import static org.apache.commons.math3.util.FastMath.PI;
 import static org.apache.commons.math3.util.FastMath.abs;
@@ -32,13 +34,6 @@ public class SymmetricGaussianPSF extends PSFModel {
   @Override
   public String[] getParamNames() {
     return parameterNames;
-  }
-
-  @Override
-  public double getExpectedValue(double[] params, int x, int y) {
-    double twoSigmaSquared = params[3] * params[3] * 2;
-    return params[4] * params[4] + params[2] / (twoSigmaSquared * PI)
-            * exp(-((x - params[0]) * (x - params[0]) + (y - params[1]) * (y - params[1])) / twoSigmaSquared);
   }
 
   @Override
@@ -90,19 +85,26 @@ public class SymmetricGaussianPSF extends PSFModel {
           double expVal = exp(upper);
           double expValDivPISigmaSquared = expVal / (sigmaSquared * PI);
           double expValDivPISigmaPowEight = expValDivPISigmaSquared / sigmaSquared;
-          retVal[i][0] = point[2] * expValDivPISigmaSquared;
+          retVal[i][2] = point[2] * expValDivPISigmaSquared;
           //d()/dx
-          retVal[i][1] = transformedPoint[2] * xd * expValDivPISigmaPowEight * 0.5;
+          retVal[i][0] = transformedPoint[2] * xd * expValDivPISigmaPowEight * 0.5;
           //d()/dy
-          retVal[i][2] = transformedPoint[2] * yd * expValDivPISigmaPowEight * 0.5;
+          retVal[i][1] = transformedPoint[2] * yd * expValDivPISigmaPowEight * 0.5;
           //d()/dsigma
           retVal[i][3] = transformedPoint[2] * expValDivPISigmaPowEight / point[3] * (xd * xd + yd * yd - 2 * sigmaSquared);
           //d()/dbkg
           retVal[i][4] = 2 * point[4];
         }
+//        IJ.log("numeric jacobian: " + Arrays.deepToString(SymmetricGaussianPSF.super.getJacobianFunction(xgrid, ygrid).value(point)));
+//        IJ.log("analytic jacobian: " + Arrays.deepToString(retVal));
         return retVal;
       }
     };
+  }
+
+  @Override
+  public double[] getInitialSimplex() {
+    return new double[]{1, 1, 3000, 0.1, 10};
   }
 
   @Override

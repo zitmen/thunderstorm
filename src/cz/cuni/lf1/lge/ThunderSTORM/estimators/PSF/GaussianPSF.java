@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 
 /**
  * General representation of Gaussian PSFModel model.
@@ -88,11 +87,6 @@ public class GaussianPSF extends PSFModel {
     }
 
   @Override
-  public double getExpectedValue(double[] params, int x, int y) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-
-  @Override
   public double getValue(double[] params, double x, double y) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
@@ -104,6 +98,11 @@ public class GaussianPSF extends PSFModel {
 
   @Override
   public PSFInstance newInstanceFromParams(double[] params) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public double[] getInitialSimplex() {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
     

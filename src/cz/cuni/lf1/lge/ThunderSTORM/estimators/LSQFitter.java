@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import ij.IJ;
 import java.util.Arrays;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
@@ -50,7 +51,7 @@ public class LSQFitter implements OneLocationFitter {
             new InitialGuess(psfModel.transformParametersInverse(psfModel.getInitialParams(subimage))),
             new Weight(weights));
     double[] point = pv.getPointRef();
-    //point[0] = point[0] * Math.sqrt(2 * Math.PI) * point[3] * point[3];
+    //IJ.log("iterations:" + optimizer.getIterations());
     return psfModel.newInstanceFromParams(psfModel.transformParameters(point));
 
   }

@@ -34,7 +34,7 @@ public class MLEFitter implements OneLocationFitter {
             new ObjectiveFunction(psfModel.getLikelihoodFunction(subimage.xgrid, subimage.ygrid, subimage.values)),
             new InitialGuess(psfModel.transformParametersInverse(psfModel.getInitialParams(subimage))),
             GoalType.MINIMIZE,
-            new NelderMeadSimplex(new double[]{1, 1, 3000 , 0.1, 10}));
+            new NelderMeadSimplex(psfModel.getInitialSimplex()));
     double[] point = pv.getPointRef();
     //point[0] = point[0] * Math.sqrt(2 * Math.PI) * point[3] * point[3];
     return psfModel.newInstanceFromParams(psfModel.transformParameters(point));

@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import java.util.Arrays;
@@ -28,7 +29,7 @@ public class GaussFittingTest {
 
     
     LSQFitter fitter = new LSQFitter(new SymmetricGaussianPSF(1.2));
-    
+    LSQFitter fitter2 = new LSQFitter(new EllipticGaussianPSF(1.2, 0));
     int[] xgrid = new int[values.length];
     int[] ygrid = new int[values.length];
 
@@ -42,11 +43,14 @@ public class GaussFittingTest {
     }
     
     PSFInstance fit = fitter.fit(new OneLocationFitter.SubImage(xgrid, ygrid, values, 0.5, 0.5));
-    
+    PSFInstance fit2 = fitter2.fit(new OneLocationFitter.SubImage(xgrid, ygrid, values, 0.5, 0.5));
     System.out.println(fit.toString());
+    System.out.println(fit2.toString());
     
         
     double[] groundTruth = {1, 0, 1, 1.5, 0};
+    double[] groundTruth2 = {1, 0, 1, 1.5, 1.5, 0};
     assertArrayEquals("fittin results", groundTruth, fit.getParamArray(), 10e-3);
+    assertArrayEquals("fittin results", groundTruth2, fit2.getParamArray(), 10e-3);
   }
 }
