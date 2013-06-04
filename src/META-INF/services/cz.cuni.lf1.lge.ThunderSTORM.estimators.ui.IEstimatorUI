@@ -1,6 +1,4 @@
-cz.cuni.lf1.lge.ThunderSTORM.estimators.LeastSquaresEstimator
+cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI
+cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EllipticGaussianEstimatorUI
 cz.cuni.lf1.lge.ThunderSTORM.estimators.EmptyEstimator
-cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.LSQUI
-cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.MLEUI
-cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.MLEUIelliptic
-cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.LSQUIelliptic
+cz.cuni.lf1.lge.ThunderSTORM.estimators.LeastSquaresEstimator

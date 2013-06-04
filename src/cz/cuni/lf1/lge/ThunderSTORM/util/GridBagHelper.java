@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 /**
  * A very simple helper class for working with java.awt.GridBagLayout class.
@@ -65,6 +66,21 @@ public class GridBagHelper {
         pos(x, y);
         width(w, h);
         return gbc;
+    }
+    
+    public static GridBagConstraints leftCol(){
+      GridBagConstraints ret = new GridBagConstraints();
+      ret.gridx = 0;
+      ret.anchor = GridBagConstraints.LINE_END;
+      ret.insets = new Insets(0, 0, 0, 10);
+      return ret;
+    }
+    
+    public static GridBagConstraints rightCol(){
+      GridBagConstraints ret = new GridBagConstraints();
+      ret.gridx = 1;
+      ret.anchor = GridBagConstraints.LINE_START;
+      return ret;
     }
     
 }

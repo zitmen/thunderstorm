@@ -2,7 +2,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import ij.IJ;
 import java.util.Arrays;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
@@ -23,6 +22,7 @@ public class LSQFitter implements OneLocationFitter {
 
   private double[] weights;
   PSFModel psfModel;
+  final static int MAX_ITERATIONS = 3000;
 
   public LSQFitter(PSFModel psfModel) {
     this.psfModel = psfModel;
@@ -42,9 +42,10 @@ public class LSQFitter implements OneLocationFitter {
 
     LevenbergMarquardtOptimizer optimizer = new LevenbergMarquardtOptimizer(new SimplePointChecker(10e-10, 10e-10));
     PointVectorValuePair pv;
+
     pv = optimizer.optimize(
             MaxEval.unlimited(),
-            new MaxIter(10000),
+            new MaxIter(MAX_ITERATIONS),
             new ModelFunction(psfModel.getValueFunction(subimage.xgrid, subimage.ygrid)),
             new ModelFunctionJacobian(psfModel.getJacobianFunction(subimage.xgrid, subimage.ygrid)),
             new Target(subimage.values),
