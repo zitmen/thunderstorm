@@ -11,25 +11,37 @@ import javax.swing.JPanel;
 
 public class ThreadLocalWrapper {
 
-  public static List<IFilterUI> wrapAsThreadLocalFilters(List<IFilterUI> originalList) {
+  public static List<IFilterUI> wrapFilters(List<IFilterUI> originalList) {
     for (int i = 0; i < originalList.size(); i++) {
-      originalList.set(i, new ThreadLocalFilterUI(originalList.get(i)));
+      originalList.set(i, wrap(originalList.get(i)));
     }
     return originalList;
   }
 
-  public static List<IDetectorUI> wrapAsThreadLocalDetectors(List<IDetectorUI> originalList) {
+  public static List<IDetectorUI> wrapDetectors(List<IDetectorUI> originalList) {
     for (int i = 0; i < originalList.size(); i++) {
-      originalList.set(i, new ThreadLocalDetectorUI(originalList.get(i)));
+      originalList.set(i, wrap(originalList.get(i)));
     }
     return originalList;
   }
 
-  public static List<IEstimatorUI> wrapAsThreadLocalEstimators(List<IEstimatorUI> originalList) {
+  public static List<IEstimatorUI> wrapEstimators(List<IEstimatorUI> originalList) {
     for (int i = 0; i < originalList.size(); i++) {
-      originalList.set(i, new ThreadLocalEstimatorUI(originalList.get(i)));
+      originalList.set(i, wrap(originalList.get(i)));
     }
     return originalList;
+  }
+
+  public static IEstimatorUI wrap(IEstimatorUI est) {
+    return new ThreadLocalEstimatorUI(est);
+  }
+
+  public static IDetectorUI wrap(IDetectorUI det) {
+    return new ThreadLocalDetectorUI(det);
+  }
+
+  public static IFilterUI wrap(IFilterUI filter) {
+    return new ThreadLocalFilterUI(filter);
   }
 }
 

@@ -13,12 +13,12 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstima
  *
  * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
-public class AngleFittingEstimatorUI extends SymmetricGaussianEstimatorUI {
+public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
 
   private double angle;
   private boolean angleWasSet = false;
 
-  public AngleFittingEstimatorUI() {
+  public CalibrationEstimatorUI() {
   }
 
   @Override

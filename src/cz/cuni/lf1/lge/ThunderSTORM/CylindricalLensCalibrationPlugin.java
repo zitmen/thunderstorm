@@ -7,7 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PolynomialCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AngleFittingEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.CalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
@@ -46,8 +46,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
   CalibrationDialog dialog;
   IFilterUI selectedFilterUI;
   IDetectorUI selectedDetectorUI;
-  IEstimatorUI selectedEstimatorUI;
-  AngleFittingEstimatorUI estimatorUI;
+  CalibrationEstimatorUI calibrationEstimatorUI;
   ImagePlus imp;
 
   @Override
@@ -57,24 +56,22 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
       IJ.error("No image open");
       return;
     }
-    List<IFilterUI> filters = ThreadLocalWrapper.wrapAsThreadLocalFilters(ModuleLoader.getUIModules(IFilterUI.class));
-    List<IDetectorUI> detectors = ThreadLocalWrapper.wrapAsThreadLocalDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
-    List<IEstimatorUI> estimators = new Vector<IEstimatorUI>();
-    estimatorUI = new AngleFittingEstimatorUI();
-    estimators.add(estimatorUI);
-    estimators = ThreadLocalWrapper.wrapAsThreadLocalEstimators(estimators);
+    //load modules
+    calibrationEstimatorUI = new CalibrationEstimatorUI();
+    List<IFilterUI> filters = ThreadLocalWrapper.wrapFilters(ModuleLoader.getUIModules(IFilterUI.class));
+    List<IDetectorUI> detectors = ThreadLocalWrapper.wrapDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
+    List<IEstimatorUI> estimators = Arrays.asList(new IEstimatorUI[]{calibrationEstimatorUI}); // only one estimator can be used
     Thresholder.loadFilters(filters);
 
+    //show dialog
     dialog = new CalibrationDialog(filters, detectors, estimators);
     dialog.setVisible(true);
     if (dialog.waitForResult() != JOptionPane.OK_OPTION) {
       return;
     }
-
     selectedFilterUI = dialog.getActiveFilterUI();
     selectedDetectorUI = dialog.getActiveDetectorUI();
-    selectedEstimatorUI = dialog.getActiveEstimatorUI();
-
+    
     try {
       estimateAngle();
       IJ.log("angle = " + angle);
@@ -93,10 +90,11 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     final List<Double> angles = Collections.synchronizedList(new ArrayList());
     final ImageStack stack = IJ.getImage().getStack();
     final AtomicInteger framesProcessed = new AtomicInteger(0);
+    final IEstimatorUI threadLocalEstimatorUI = ThreadLocalWrapper.wrap(calibrationEstimatorUI);
     Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
       @Override
       public void run(int i) {
-        Vector<PSFInstance> fits = selectedEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
+        Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
                 selectedDetectorUI.getImplementation().detectMoleculeCandidates(
                 selectedFilterUI.getImplementation().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
         framesProcessed.incrementAndGet();
@@ -122,12 +120,10 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
   }
 
   private void fitQuadraticPolynomial() {
-    estimatorUI.setAngle(angle);
-    if (selectedEstimatorUI instanceof ThreadLocalEstimatorUI) {
-      ((ThreadLocalEstimatorUI) selectedEstimatorUI).discardCachedImplementations();
-    }
+    calibrationEstimatorUI.setAngle(angle);
+    final IEstimatorUI threadLocalEstimatorUI = ThreadLocalWrapper.wrap(calibrationEstimatorUI); //create new ThreadLocal wrapper because the underlying estimator was changed
     //fit stack again with fixed angle
-    final PSFSeparator separator = new PSFSeparator(estimatorUI.getFitradius() / 2);
+    final PSFSeparator separator = new PSFSeparator(calibrationEstimatorUI.getFitradius() / 2);
     final ImageStack stack = imp.getStack();
     final AtomicInteger framesProcessed = new AtomicInteger(0);
 
@@ -135,7 +131,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
       @Override
       public void run(int i) {
         //fit elliptic gaussians
-        Vector<PSFInstance> fits = selectedEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
+        Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
                 selectedDetectorUI.getImplementation().detectMoleculeCandidates(
                 selectedFilterUI.getImplementation().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
         framesProcessed.incrementAndGet();

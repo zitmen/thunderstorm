@@ -1,8 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
-import cz.cuni.lf1.lge.ThunderSTORM.ModuleLoader;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AngleFittingEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
@@ -150,14 +148,14 @@ public class CalibrationDialog extends JDialog implements ActionListener {
             FloatProcessor fp = (FloatProcessor) imp.getProcessor().convertToFloat();
             FloatProcessor filtered = getActiveFilterUI().getImplementation().filterImage(fp);
             checkForInterruption();
-            Vector<Point> detections = getActiveDetectorUI().getImplementation().detectMoleculeCandidates(filtered);
+            List<Point> detections = getActiveDetectorUI().getImplementation().detectMoleculeCandidates(filtered);
             checkForInterruption();
             //
             double[] xCoord = new double[detections.size()];
             double[] yCoord = new double[detections.size()];
             for (int i = 0; i < detections.size(); i++) {
-              xCoord[i] = detections.elementAt(i).getX().doubleValue();
-              yCoord[i] = detections.elementAt(i).getY().doubleValue();
+              xCoord[i] = detections.get(i).getX().doubleValue();
+              yCoord[i] = detections.get(i).getY().doubleValue();
             }
             //
             ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().duplicate());

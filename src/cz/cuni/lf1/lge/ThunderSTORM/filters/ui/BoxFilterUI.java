@@ -2,8 +2,10 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.Macro;
 import ij.plugin.frame.Recorder;
+import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -26,11 +28,11 @@ public class BoxFilterUI implements IFilterUI {
 
   @Override
   public JPanel getOptionsPanel() {
-    JPanel panel = new JPanel();
+    JPanel panel = new JPanel(new GridBagLayout());
     sizeTextField = new JTextField(Integer.toString(DEFAULT_SIZE), 20);
     //
-    panel.add(new JLabel("Size: "));
-    panel.add(sizeTextField);
+    panel.add(new JLabel("Size: "), GridBagHelper.leftCol());
+    panel.add(sizeTextField, GridBagHelper.rightCol());
     return panel;
   }
 

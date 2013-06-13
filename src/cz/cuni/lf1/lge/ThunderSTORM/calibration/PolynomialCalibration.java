@@ -32,7 +32,7 @@ public class PolynomialCalibration implements CylindricalLensCalibration {
 
   @Override
   public double getZ(double sigma1, double sigma2) {
-    return getZDiff(sigma1, sigma2);
+    return getZSeparate(sigma1, sigma2);
   }
 
   public double getZSeparate(double sigma1, double sigma2) {

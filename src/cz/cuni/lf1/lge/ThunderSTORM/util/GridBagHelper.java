@@ -71,6 +71,7 @@ public class GridBagHelper {
     public static GridBagConstraints leftCol(){
       GridBagConstraints ret = new GridBagConstraints();
       ret.gridx = 0;
+      ret.weightx = 0.5;
       ret.anchor = GridBagConstraints.LINE_END;
       ret.insets = new Insets(0, 0, 0, 10);
       return ret;
@@ -79,6 +80,8 @@ public class GridBagHelper {
     public static GridBagConstraints rightCol(){
       GridBagConstraints ret = new GridBagConstraints();
       ret.gridx = 1;
+      ret.weightx = 0;
+      ret.fill = GridBagConstraints.HORIZONTAL;
       ret.anchor = GridBagConstraints.LINE_START;
       return ret;
     }

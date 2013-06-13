@@ -34,7 +34,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
 
   @Override
   public String getName() {
-    return "Cylindrical lens estimator";
+    return "3D Cylindrical lens estimator";
   }
 
   @Override
