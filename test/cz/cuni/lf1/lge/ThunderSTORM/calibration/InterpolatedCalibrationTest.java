@@ -1,4 +1,4 @@
-package cz.cuni.lf1.lge.ThunderSTORM.estimators;
+package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -8,28 +8,28 @@ import org.yaml.snakeyaml.Yaml;
  *
  * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
-public class CylindricalLensCalibrationTest {
+public class InterpolatedCalibrationTest {
 
   @Test
   public void testSerialization() {
-    CylindricalLensCalibration calibration = new CylindricalLensCalibration(Math.PI, values);
+    InterpolatedCalibration calibration = new InterpolatedCalibration(Math.PI, values);
     Yaml yaml = new Yaml();
     String output = yaml.dump(calibration);
     System.out.println(output);
     
     Object loaded = yaml.load(output);
-    assertTrue(loaded instanceof CylindricalLensCalibration);
-    CylindricalLensCalibration loadedCalibration = (CylindricalLensCalibration) loaded;
+    assertTrue(loaded instanceof InterpolatedCalibration);
+    InterpolatedCalibration loadedCalibration = (InterpolatedCalibration) loaded;
     assertEquals(calibration.getAngle(), loadedCalibration.getAngle(), 0.0001);
     assertArrayEquals(calibration.getValues(), loadedCalibration.getValues());
   }
   
   @Test
   public void testInterpolation(){
-    CylindricalLensCalibration calibration = new CylindricalLensCalibration(Math.PI, values);
-    assertEquals("query point: same as first row", values[0][1], calibration.getZ(values[0][0]), 0.001);
-    assertEquals("query point: same as last row", values[values.length-1][1], calibration.getZ(values[values.length-1][0]), 0.001);
-    double interpolatedValue = calibration.getZ(center(values[0][0], values[1][0]));
+    InterpolatedCalibration calibration = new InterpolatedCalibration(Math.PI, values);
+    assertEquals("query point: same as first row", values[0][1], calibration.getZ(values[0][0],1), 0.001);
+    assertEquals("query point: same as last row", values[values.length-1][1], calibration.getZ(values[values.length-1][0],1), 0.001);
+    double interpolatedValue = calibration.getZ(center(values[0][0], values[1][0]),1);
     double expectedValue = center(values[0][1],values[1][1]);
     assertEquals("query point: center between two points",expectedValue, interpolatedValue, 0.0001);
   }

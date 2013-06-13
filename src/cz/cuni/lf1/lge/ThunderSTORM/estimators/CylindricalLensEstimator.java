@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.CylindricalLensCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
@@ -26,7 +27,7 @@ public class CylindricalLensEstimator implements IEstimator {
       PSFInstance psf = results.get(i);
       double sigma1 = psf.getParam(PSFInstance.SIGMA);
       double sigma2 = psf.getParam(PSFInstance.SIGMA2);
-      double calculatedZ = calibration.getZ(sigma1 / sigma2);
+      double calculatedZ = calibration.getZ(sigma1 , sigma2);
       results.set(i, appendZ(psf, calculatedZ));
     }
     return results;

@@ -3,9 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.*;
-import ij.IJ;
 import static java.lang.Math.abs;
-import java.util.Arrays;
 
 /**
  * Representation of 2D elliptic Gaussian PSFModel model.
