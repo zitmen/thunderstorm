@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.CalibrationDialog;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.IterativeQuadraticFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
@@ -15,7 +16,9 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.Macro;
 import ij.plugin.PlugIn;
+import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -43,17 +46,21 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
   double[] avgSigmaPolynom;
   double[] avgSigma2Polynom;
   double angle;
-  CalibrationDialog dialog;
   IFilterUI selectedFilterUI;
   IDetectorUI selectedDetectorUI;
   CalibrationEstimatorUI calibrationEstimatorUI;
+  String savePath;
   ImagePlus imp;
 
   @Override
   public void run(String arg) {
     imp = IJ.getImage();
     if (imp == null) {
-      IJ.error("No image open");
+      IJ.error("No image open.");
+      return;
+    }
+    if (imp.getImageStackSize() < 2) {
+      IJ.error("Requires a stack.");
       return;
     }
     //load modules
@@ -63,20 +70,35 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     List<IEstimatorUI> estimators = Arrays.asList(new IEstimatorUI[]{calibrationEstimatorUI}); // only one estimator can be used
     Thresholder.loadFilters(filters);
 
-    //show dialog
-    dialog = new CalibrationDialog(filters, detectors, estimators);
-    dialog.setVisible(true);
-    if (dialog.waitForResult() != JOptionPane.OK_OPTION) {
-      return;
+    if (MacroParser.isRanFromMacro()) {
+      MacroParser parser = new MacroParser(filters, estimators, detectors, null);
+      selectedFilterUI = parser.getFilterUI();
+      selectedDetectorUI = parser.getDetectorUI();
+      parser.getEstimatorUI();
+      savePath = Macro.getValue(Macro.getOptions(), "saveto", null);
+    } else {
+      //show dialog
+      CalibrationDialog dialog;
+      dialog = new CalibrationDialog(filters, detectors, estimators);
+      dialog.setVisible(true);
+      if (dialog.waitForResult() != JOptionPane.OK_OPTION) {
+        return;
+      }
+      selectedFilterUI = dialog.getActiveFilterUI();
+      selectedDetectorUI = dialog.getActiveDetectorUI();
+      savePath = dialog.getSavePath();
+      if (Recorder.record) {
+        MacroParser.recordFilterUI(selectedFilterUI);
+        MacroParser.recordDetectorUI(selectedDetectorUI);
+        MacroParser.recordEstimatorUI(calibrationEstimatorUI);
+        Recorder.recordOption("saveto", savePath.replace("\\", "\\\\"));
+      }
     }
-    selectedFilterUI = dialog.getActiveFilterUI();
-    selectedDetectorUI = dialog.getActiveDetectorUI();
-    
     try {
       estimateAngle();
       IJ.log("angle = " + angle);
       fitQuadraticPolynomial();
-      saveToFile(dialog.getSavePath());
+      saveToFile(savePath);
     } catch (IOException ex) {
       IJ.log("Could not write calibration file: " + ex.getMessage());
     } catch (Exception ex) {
@@ -187,6 +209,10 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     for (int i = 0; i < sigma2Quadratics.size(); i++) {
       IJ.log(Arrays.toString(sigmaQuadratics.get(i)) + " ; " + Arrays.toString(sigma2Quadratics.get(i)));
     }
+
+    if (sigmaQuadratics.size() < 1) {
+      throw new RuntimeException("Could not fit a parabola in any location.");
+    }
     //average the parameters of the fitted polynomials for each bead
     avgSigmaPolynom = bootstrapMeanEstimationArray(sigmaQuadratics, 100, sigmaQuadratics.size());
     avgSigma2Polynom = bootstrapMeanEstimationArray(sigma2Quadratics, 100, sigma2Quadratics.size());
@@ -277,5 +303,6 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     Yaml yaml = new Yaml();
     PolynomialCalibration calibration = new PolynomialCalibration(angle, avgSigmaPolynom, avgSigma2Polynom);
     yaml.dump(calibration, new FileWriter(path));
+    IJ.showStatus("Calibration file saved to " + path);
   }
 }

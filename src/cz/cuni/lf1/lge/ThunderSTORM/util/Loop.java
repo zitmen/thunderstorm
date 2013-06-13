@@ -24,7 +24,7 @@ public class Loop {
   }
   
   public static void withIndex(int start, int stop, final BodyWithIndex body) {
-    int chunksize = (stop - start + CPUs - 1) / CPUs;
+    int chunksize = Math.max((stop - start + CPUs - 1) / CPUs,1);
     int loops = (stop - start + chunksize - 1) / chunksize;
     final CountDownLatch latch = new CountDownLatch(loops);
     for (int i = start; i < stop;) {

@@ -177,6 +177,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
       }
     } else if ("OK".equals(e.getActionCommand())) {
       try {
+        Thresholder.setActiveFilter(filters.getActiveComboBoxItemIndex());
         filters.getActiveComboBoxItem().readParameters();
         detectors.getActiveComboBoxItem().readParameters();
         estimators.getActiveComboBoxItem().readParameters();
