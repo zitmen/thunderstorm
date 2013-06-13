@@ -162,6 +162,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
             //
             ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().duplicate());
             RenderingOverlay.showPointsInImage(impPreview, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
+            impPreview.show();
           } catch (InterruptedException ex) {
             IJ.showStatus("Preview interrupted.");
           } catch (Exception ex) {

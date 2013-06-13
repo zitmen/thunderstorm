@@ -10,12 +10,12 @@ import java.util.Vector;
 /**
  *
  */
-public class CylindricalLensEstimator implements IEstimator {
+public class CylindricalLensZEstimator implements IEstimator {
 
   CylindricalLensCalibration calibration;
   IEstimator estimator;
 
-  public CylindricalLensEstimator(CylindricalLensCalibration calibration, IEstimator estimator) {
+  public CylindricalLensZEstimator(CylindricalLensCalibration calibration, IEstimator estimator) {
     this.calibration = calibration;
     this.estimator = estimator;
   }

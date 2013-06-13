@@ -6,6 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.LSQ;
 
 /**
@@ -14,31 +15,39 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstima
  */
 public class AngleFittingEstimatorUI extends SymmetricGaussianEstimatorUI {
 
+  private double angle;
+  private boolean angleWasSet = false;
+
+  public AngleFittingEstimatorUI() {
+  }
+
   @Override
   public String getName() {
     return "Elliptic Gaussian w/ angle";
   }
 
-  @Override
-  public IEstimator getImplementation() {
-    if (LSQ.equals(method)) {
-      LSQFitter fitter = new LSQFitter(new EllipticGaussianWAnglePSF(sigma, 0));
-      return new MultipleLocationsImageFitting(fitradius / 2, fitter);
-    }
-    if (MLE.equals(method)) {
-      MLEFitter fitter = new MLEFitter(new EllipticGaussianWAnglePSF(sigma, 0));
-      return new MultipleLocationsImageFitting(fitradius / 2, fitter);
-    }
-    throw new IllegalArgumentException("Unknown fitting method: " + method);
+  public void setAngle(double fixedAngle) {
+    this.angle = fixedAngle;
+    angleWasSet = true;
   }
 
-  public IEstimator getFixedAngleImplementation() {
+  public void unsetAngle() {
+    angleWasSet = false;
+  }
+
+  public int getFitradius() {
+    return fitradius;
+  }
+
+  @Override
+  public IEstimator getImplementation() {
+    PSFModel psf = angleWasSet ? new EllipticGaussianPSF(sigma, angle) : new EllipticGaussianWAnglePSF(sigma, 0);
     if (LSQ.equals(method)) {
-      LSQFitter fitter = new LSQFitter(new EllipticGaussianPSF(sigma, 0));
+      LSQFitter fitter = new LSQFitter(psf);
       return new MultipleLocationsImageFitting(fitradius / 2, fitter);
     }
     if (MLE.equals(method)) {
-      MLEFitter fitter = new MLEFitter(new EllipticGaussianPSF(sigma, 0));
+      MLEFitter fitter = new MLEFitter(psf);
       return new MultipleLocationsImageFitting(fitradius / 2, fitter);
     }
     throw new IllegalArgumentException("Unknown fitting method: " + method);

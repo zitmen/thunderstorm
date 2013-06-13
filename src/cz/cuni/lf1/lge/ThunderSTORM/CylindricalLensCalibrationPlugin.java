@@ -13,6 +13,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
 import ij.IJ;
+import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.PlugIn;
 import ij.process.FloatProcessor;
@@ -43,13 +44,24 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
   double[] avgSigma2Polynom;
   double angle;
   CalibrationDialog dialog;
+  IFilterUI selectedFilterUI;
+  IDetectorUI selectedDetectorUI;
+  IEstimatorUI selectedEstimatorUI;
+  AngleFittingEstimatorUI estimatorUI;
+  ImagePlus imp;
 
   @Override
   public void run(String arg) {
+    imp = IJ.getImage();
+    if (imp == null) {
+      IJ.error("No image open");
+      return;
+    }
     List<IFilterUI> filters = ThreadLocalWrapper.wrapAsThreadLocalFilters(ModuleLoader.getUIModules(IFilterUI.class));
     List<IDetectorUI> detectors = ThreadLocalWrapper.wrapAsThreadLocalDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
     List<IEstimatorUI> estimators = new Vector<IEstimatorUI>();
-    estimators.add(new AngleFittingEstimatorUI());
+    estimatorUI = new AngleFittingEstimatorUI();
+    estimators.add(estimatorUI);
     estimators = ThreadLocalWrapper.wrapAsThreadLocalEstimators(estimators);
     Thresholder.loadFilters(filters);
 
@@ -59,11 +71,15 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
       return;
     }
 
+    selectedFilterUI = dialog.getActiveFilterUI();
+    selectedDetectorUI = dialog.getActiveDetectorUI();
+    selectedEstimatorUI = dialog.getActiveEstimatorUI();
+
     try {
       estimateAngle();
       IJ.log("angle = " + angle);
       fitQuadraticPolynomial();
-      saveToFile("d:\\calibration.yaml");
+      saveToFile(dialog.getSavePath());
     } catch (IOException ex) {
       IJ.log("Could not write calibration file: " + ex.getMessage());
     } catch (Exception ex) {
@@ -74,19 +90,15 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
   }
 
   private void estimateAngle() {
-    final IFilterUI threadLocalFilter = dialog.getActiveFilterUI();
-    final IDetectorUI threadLocalDetector = dialog.getActiveDetectorUI();
-    final IEstimatorUI threadLocalEstimator = dialog.getActiveEstimatorUI();
-
     final List<Double> angles = Collections.synchronizedList(new ArrayList());
     final ImageStack stack = IJ.getImage().getStack();
     final AtomicInteger framesProcessed = new AtomicInteger(0);
     Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
       @Override
       public void run(int i) {
-        Vector<PSFInstance> fits = threadLocalEstimator.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
-                threadLocalDetector.getImplementation().detectMoleculeCandidates(
-                threadLocalFilter.getImplementation().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
+        Vector<PSFInstance> fits = selectedEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
+                selectedDetectorUI.getImplementation().detectMoleculeCandidates(
+                selectedFilterUI.getImplementation().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
         framesProcessed.incrementAndGet();
 
         for (Iterator<PSFInstance> iterator = fits.iterator(); iterator.hasNext();) {
@@ -110,27 +122,29 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
   }
 
   private void fitQuadraticPolynomial() {
-    final IFilterUI threadLocalFilter = dialog.getActiveFilterUI();
-    final IDetectorUI threadLocalDetector = dialog.getActiveDetectorUI();
-    final IEstimatorUI threadLocalEstimator = dialog.getActiveEstimatorUI();
-
-    final PSFSeparator separator = new PSFSeparator(15);
-    final ImageStack stack = IJ.getImage().getStack();
+    estimatorUI.setAngle(angle);
+    if (selectedEstimatorUI instanceof ThreadLocalEstimatorUI) {
+      ((ThreadLocalEstimatorUI) selectedEstimatorUI).discardCachedImplementations();
+    }
+    //fit stack again with fixed angle
+    final PSFSeparator separator = new PSFSeparator(estimatorUI.getFitradius() / 2);
+    final ImageStack stack = imp.getStack();
     final AtomicInteger framesProcessed = new AtomicInteger(0);
+
     Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
       @Override
       public void run(int i) {
         //fit elliptic gaussians
-        Vector<PSFInstance> fits = threadLocalEstimator.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
-                threadLocalDetector.getImplementation().detectMoleculeCandidates(
-                threadLocalFilter.getImplementation().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
+        Vector<PSFInstance> fits = selectedEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
+                selectedDetectorUI.getImplementation().detectMoleculeCandidates(
+                selectedFilterUI.getImplementation().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
         framesProcessed.incrementAndGet();
 
         for (PSFInstance fit : fits) {
           separator.add(fit, i);
         }
         IJ.showProgress(0.45 + 0.45 * (double) framesProcessed.intValue() / (double) stack.getSize());
-        IJ.showStatus("Localizing molecules: frame " + framesProcessed + " of " + stack.getSize() + "...");
+        IJ.showStatus("Fitting " + PSFInstance.SIGMA + " and " + PSFInstance.SIGMA2 + ": frame " + framesProcessed + " of " + stack.getSize() + "...");
       }
     });
     //group fits from the same bead through z-stack
@@ -140,7 +154,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     IterativeQuadraticFitting quadraticFitter = new IterativeQuadraticFitting();
     List<double[]> sigmaQuadratics = new ArrayList<double[]>();
     List<double[]> sigma2Quadratics = new ArrayList<double[]>();
-    StringBuilder sb = new StringBuilder();
+//    StringBuilder sb = new StringBuilder();
     Locale.setDefault(Locale.ENGLISH);
     AtomicInteger moleculesProcessed = new AtomicInteger(0);
     for (Position p : beadPositions) {
@@ -155,16 +169,16 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
           sigmaQuadratics.add(sigmaParamArray);
           sigma2Quadratics.add(sigma2ParamArray);
 
-          sb.append(String.format("fits(%d).z = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(framesArray)));
-          sb.append(String.format("fits(%d).s1 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigmaAsArray())));
-          sb.append(String.format("fits(%d).s2 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigma2AsArray())));
-          sb.append(String.format("fits(%d).a1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[1]));
-          sb.append(String.format("fits(%d).a2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[1]));
-          sb.append(String.format("fits(%d).b1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[2]));
-          sb.append(String.format("fits(%d).b2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[2]));
-          sb.append(String.format("fits(%d).c1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[0]));
-          sb.append(String.format("fits(%d).c2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[0]));
-          sb.append(String.format("fits(%d).intersection = %f;\n", moleculesProcessed.intValue() + 1, intersection));
+//          sb.append(String.format("fits(%d).z = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(framesArray)));
+//          sb.append(String.format("fits(%d).s1 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigmaAsArray())));
+//          sb.append(String.format("fits(%d).s2 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigma2AsArray())));
+//          sb.append(String.format("fits(%d).a1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[1]));
+//          sb.append(String.format("fits(%d).a2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[1]));
+//          sb.append(String.format("fits(%d).b1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[2]));
+//          sb.append(String.format("fits(%d).b2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[2]));
+//          sb.append(String.format("fits(%d).c1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[0]));
+//          sb.append(String.format("fits(%d).c2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[0]));
+//          sb.append(String.format("fits(%d).intersection = %f;\n", moleculesProcessed.intValue() + 1, intersection));
         }
       } catch (TooManyEvaluationsException ex) {
         IJ.log(ex.getMessage());
@@ -181,20 +195,20 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     avgSigmaPolynom = bootstrapMeanEstimationArray(sigmaQuadratics, 100, sigmaQuadratics.size());
     avgSigma2Polynom = bootstrapMeanEstimationArray(sigma2Quadratics, 100, sigma2Quadratics.size());
 
-    sb.append(String.format("a1 = %f;\n", avgSigmaPolynom[1]));
-    sb.append(String.format("a2 = %f;\n", avgSigma2Polynom[1]));
-    sb.append(String.format("b1 = %f;\n", avgSigmaPolynom[2]));
-    sb.append(String.format("b2 = %f;\n", avgSigma2Polynom[2]));
-    sb.append(String.format("c1 = %f;\n", avgSigmaPolynom[0]));
-    sb.append(String.format("c2 = %f;\n", avgSigma2Polynom[0]));
-    sb.append("empty_elems = arrayfun(@(s) all(structfun(@isempty,s)), fits);\n"
-            + "fits(empty_elems) = [];");
-    try {
-      FileWriter fw = new FileWriter("d:\\dump.m");
-      fw.append(sb);
-      fw.close();
-    } catch (IOException ex) {
-    }
+//    sb.append(String.format("a1 = %f;\n", avgSigmaPolynom[1]));
+//    sb.append(String.format("a2 = %f;\n", avgSigma2Polynom[1]));
+//    sb.append(String.format("b1 = %f;\n", avgSigmaPolynom[2]));
+//    sb.append(String.format("b2 = %f;\n", avgSigma2Polynom[2]));
+//    sb.append(String.format("c1 = %f;\n", avgSigmaPolynom[0]));
+//    sb.append(String.format("c2 = %f;\n", avgSigma2Polynom[0]));
+//    sb.append("empty_elems = arrayfun(@(s) all(structfun(@isempty,s)), fits);\n"
+//            + "fits(empty_elems) = [];");
+//    try {
+//      FileWriter fw = new FileWriter("d:\\dump.m");
+//      fw.append(sb);
+//      fw.close();
+//    } catch (IOException ex) {
+//    }
     IJ.showProgress(1);
     IJ.log("s1: " + Arrays.toString(avgSigmaPolynom));
     IJ.log("s2: " + Arrays.toString(avgSigma2Polynom));

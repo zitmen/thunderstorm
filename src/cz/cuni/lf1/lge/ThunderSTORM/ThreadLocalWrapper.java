@@ -168,4 +168,8 @@ class ThreadLocalEstimatorUI implements IEstimatorUI {
   public IEstimator getImplementation() {
     return threadLocalImplementation.get();
   }
+
+  public void discardCachedImplementations() {
+    threadLocalImplementation = new ThreadLocalModule<IEstimatorUI, IEstimator>(estimator);
+  }
 }

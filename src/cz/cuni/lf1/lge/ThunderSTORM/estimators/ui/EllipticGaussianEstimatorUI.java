@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.CylindricalLensCalibration;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.CylindricalLensEstimator;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.CylindricalLensZEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
@@ -68,11 +68,11 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
       CylindricalLensCalibration calibration = (CylindricalLensCalibration) loaded;
       if (LSQ.equals(method)) {
         LSQFitter fitter = new LSQFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
-        return new CylindricalLensEstimator(calibration, new MultipleLocationsImageFitting(fitradius / 2, fitter));
+        return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius / 2, fitter));
       }
       if (MLE.equals(method)) {
         MLEFitter fitter = new MLEFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
-        return new CylindricalLensEstimator(calibration, new MultipleLocationsImageFitting(fitradius / 2, fitter));
+        return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius / 2, fitter));
       }
       throw new IllegalArgumentException("Unknown fitting method: " + method);
     } catch (FileNotFoundException ex) {
