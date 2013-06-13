@@ -7,7 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import ij.Macro;
 import ij.plugin.frame.Recorder;
-import java.util.Vector;
+import java.util.List;
 
 /**
  *
@@ -20,20 +20,20 @@ public class MacroParser {
   private static final String DETECTOR_KEY = "detector";
   private static final String ESTIMATOR_KEY = "estimator";
   private static final String RENDERER_KEY = "renderer";
-  Vector<IFilterUI> knowFilters;
-  Vector<IEstimatorUI> knowEstimators;
-  Vector<IDetectorUI> knowDetectors;
-  Vector<IRendererUI> knowRenderers;
+  List<IFilterUI> knowFilters;
+  List<IEstimatorUI> knowEstimators;
+  List<IDetectorUI> knowDetectors;
+  List<IRendererUI> knowRenderers;
 
   int selectedFilterIndex = -1;
   int selectedDetectorIndex = -1;
   int selectedEstimatorIndex = -1;
   int selectedRendererIndex = -1;
  
-  public MacroParser(Vector<IFilterUI> knowFilters,
-          Vector<IEstimatorUI> knowEstimators,
-          Vector<IDetectorUI> knowDetectors, 
-          Vector<IRendererUI> knowRenderers) {
+  public MacroParser(List<IFilterUI> knowFilters,
+          List<IEstimatorUI> knowEstimators,
+          List<IDetectorUI> knowDetectors, 
+          List<IRendererUI> knowRenderers) {
     this.knowFilters = knowFilters;
     this.knowEstimators = knowEstimators;
     this.knowDetectors = knowDetectors;
@@ -107,7 +107,7 @@ public class MacroParser {
     }
   }
 
-  private <T extends IModuleUI> int getModuleIndex(Vector<T> knownModules, String moduleKey) {
+  private <T extends IModuleUI> int getModuleIndex(List<T> knownModules, String moduleKey) {
     String moduleName = Macro.getValue(options, moduleKey, null);
     if (moduleName == null) {
       throw new MacroException("No module specified: " + moduleKey);

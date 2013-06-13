@@ -5,18 +5,10 @@ import cz.cuni.lf1.lge.ThunderSTORM.calibration.IterativeQuadraticFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PolynomialCalibration;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.CentroidOfConnectedComponentsDetector;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.LSQFitter;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AngleFittingEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.CompoundWaveletFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
@@ -54,7 +46,14 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
 
   @Override
   public void run(String arg) {
-    dialog = new CalibrationDialog();
+    List<IFilterUI> filters = ThreadLocalWrapper.wrapAsThreadLocalFilters(ModuleLoader.getUIModules(IFilterUI.class));
+    List<IDetectorUI> detectors = ThreadLocalWrapper.wrapAsThreadLocalDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
+    List<IEstimatorUI> estimators = new Vector<IEstimatorUI>();
+    estimators.add(new AngleFittingEstimatorUI());
+    estimators = ThreadLocalWrapper.wrapAsThreadLocalEstimators(estimators);
+    Thresholder.loadFilters(filters);
+
+    dialog = new CalibrationDialog(filters, detectors, estimators);
     dialog.setVisible(true);
     if (dialog.waitForResult() != JOptionPane.OK_OPTION) {
       return;
@@ -75,28 +74,9 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
   }
 
   private void estimateAngle() {
-    final ThreadLocalModule<IFilterUI, IFilter> threadLocalFilter = new ThreadLocalModule<IFilterUI, IFilter>(null) {
-      @Override
-      public IFilter initialValue() {
-        return new CompoundWaveletFilter(true);
-      }
-    };
-    Vector<ThreadLocalModule<IFilterUI, IFilter>> filters = new Vector<ThreadLocalModule<IFilterUI, IFilter>>();
-    filters.add(threadLocalFilter);
-    Thresholder.loadFilters(filters);
-    Thresholder.setActiveFilter(0);
-    final ThreadLocalModule<IDetectorUI, IDetector> threadLocalDetector = new ThreadLocalModule<IDetectorUI, IDetector>(null) {
-      @Override
-      public IDetector initialValue() {
-        return new CentroidOfConnectedComponentsDetector(false, "mean(I)*2");
-      }
-    };
-    final ThreadLocalModule<IEstimatorUI, IEstimator> threadLocalEstimator = new ThreadLocalModule<IEstimatorUI, IEstimator>(null) {
-      @Override
-      public IEstimator initialValue() {
-        return new MultipleLocationsImageFitting(30, new LSQFitter(new EllipticGaussianWAnglePSF(3, 60)));
-      }
-    };
+    final IFilterUI threadLocalFilter = dialog.getActiveFilterUI();
+    final IDetectorUI threadLocalDetector = dialog.getActiveDetectorUI();
+    final IEstimatorUI threadLocalEstimator = dialog.getActiveEstimatorUI();
 
     final List<Double> angles = Collections.synchronizedList(new ArrayList());
     final ImageStack stack = IJ.getImage().getStack();
@@ -104,9 +84,9 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
       @Override
       public void run(int i) {
-        Vector<PSFInstance> fits = threadLocalEstimator.get().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
-                threadLocalDetector.get().detectMoleculeCandidates(
-                threadLocalFilter.get().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
+        Vector<PSFInstance> fits = threadLocalEstimator.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
+                threadLocalDetector.getImplementation().detectMoleculeCandidates(
+                threadLocalFilter.getImplementation().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
         framesProcessed.incrementAndGet();
 
         for (Iterator<PSFInstance> iterator = fits.iterator(); iterator.hasNext();) {
@@ -130,28 +110,9 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
   }
 
   private void fitQuadraticPolynomial() {
-    final ThreadLocalModule<IFilterUI, IFilter> threadLocalFilter = new ThreadLocalModule<IFilterUI, IFilter>(null) {
-      @Override
-      public IFilter initialValue() {
-        return new CompoundWaveletFilter(true);
-      }
-    };
-    Vector<ThreadLocalModule<IFilterUI, IFilter>> filters = new Vector<ThreadLocalModule<IFilterUI, IFilter>>();
-    filters.add(threadLocalFilter);
-    Thresholder.loadFilters(filters);
-    Thresholder.setActiveFilter(0);
-    final ThreadLocalModule<IDetectorUI, IDetector> threadLocalDetector = new ThreadLocalModule<IDetectorUI, IDetector>(null) {
-      @Override
-      public IDetector initialValue() {
-        return new CentroidOfConnectedComponentsDetector(false, "mean(I)*2");
-      }
-    };
-    final ThreadLocalModule<IEstimatorUI, IEstimator> threadLocalEstimator = new ThreadLocalModule<IEstimatorUI, IEstimator>(null) {
-      @Override
-      public IEstimator initialValue() {
-        return new MultipleLocationsImageFitting(30, new LSQFitter(new EllipticGaussianPSF(2, angle)));
-      }
-    };
+    final IFilterUI threadLocalFilter = dialog.getActiveFilterUI();
+    final IDetectorUI threadLocalDetector = dialog.getActiveDetectorUI();
+    final IEstimatorUI threadLocalEstimator = dialog.getActiveEstimatorUI();
 
     final PSFSeparator separator = new PSFSeparator(15);
     final ImageStack stack = IJ.getImage().getStack();
@@ -160,9 +121,9 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
       @Override
       public void run(int i) {
         //fit elliptic gaussians
-        Vector<PSFInstance> fits = threadLocalEstimator.get().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
-                threadLocalDetector.get().detectMoleculeCandidates(
-                threadLocalFilter.get().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
+        Vector<PSFInstance> fits = threadLocalEstimator.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
+                threadLocalDetector.getImplementation().detectMoleculeCandidates(
+                threadLocalFilter.getImplementation().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
         framesProcessed.incrementAndGet();
 
         for (PSFInstance fit : fits) {

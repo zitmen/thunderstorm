@@ -20,6 +20,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -72,10 +73,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
    * initially selected in combo box
    */
   public AnalysisOptionsDialog(ImagePlus imp, String title,
-          Vector<IFilterUI> filters, int default_filter,
-          Vector<IDetectorUI> detectors, int default_detector,
-          Vector<IEstimatorUI> estimators, int default_estimator,
-          Vector<IRendererUI> renderers, int default_renderer) {
+          List<IFilterUI> filters, int default_filter,
+          List<IDetectorUI> detectors, int default_detector,
+          List<IEstimatorUI> estimators, int default_estimator,
+          List<IRendererUI> renderers, int default_renderer) {
     //
     super(IJ.getInstance(), title);
     //
@@ -213,8 +214,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
           try {
             IJ.showStatus("Creating preview image.");
             FloatProcessor fp = (FloatProcessor) imp.getProcessor().convertToFloat();
-            IFilter filter = Thresholder.getLoadedFilters().get(filters.getActiveComboBoxItemIndex()).get();
-            FloatProcessor filtered = filter.filterImage(fp);
+            FloatProcessor filtered = activeFilter.getImplementation().filterImage(fp);
             checkForInterruption();
             Vector<Point> detections = activeDetector.getImplementation().detectMoleculeCandidates(filtered);
             checkForInterruption();
@@ -303,10 +303,6 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
    */
   public IFilterUI getFilter() {
     return activeFilter;
-  }
-
-  public int getFilterIndex() {
-    return filters.getActiveComboBoxItemIndex();
   }
 
   /**

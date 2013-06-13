@@ -29,6 +29,7 @@ import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import java.awt.Color;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,12 +49,11 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   private int stackSize;
   private AtomicInteger nProcessed = new AtomicInteger(0);
   private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING;
-  private Vector<PSFInstance>[] results;
-  private ThreadLocalModule<IFilterUI, IFilter> threadLocalFilter;
-  private ThreadLocalModule<IEstimatorUI, IEstimator> threadLocalEstimator;
-  private ThreadLocalModule<IDetectorUI, IDetector> threadLocalDetector;
+  private List<PSFInstance>[] results;
+  private IFilterUI selectedFilter;
+  private IEstimatorUI selectedEstimator;
+  private IDetectorUI selectedDetector;
   private IRenderer renderingQueue;
-  Vector<ThreadLocalModule<IFilterUI, IFilter>> threadLocalAllFilters;
 
   /**
    * Returns flags specifying capabilities of the plugin.
@@ -139,29 +139,24 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
     // Create and set up the content pane.
     try {
-      Vector<IFilterUI> filters = ModuleLoader.getUIModules(IFilterUI.class);
-      Vector<IDetectorUI> detectors = ModuleLoader.getUIModules(IDetectorUI.class);
-      Vector<IEstimatorUI> estimators = ModuleLoader.getUIModules(IEstimatorUI.class);
-      Vector<IRendererUI> renderers = ModuleLoader.getUIModules(IRendererUI.class);
-
-      threadLocalAllFilters = new Vector<ThreadLocalModule<IFilterUI, IFilter>>();
-      for (IFilterUI f : filters) {
-        threadLocalAllFilters.add(new ThreadLocalModule<IFilterUI, IFilter>(f));
-      }
+      List<IFilterUI> filters = ThreadLocalWrapper.wrapAsThreadLocalFilters(ModuleLoader.getUIModules(IFilterUI.class));
+      List<IDetectorUI> detectors = ThreadLocalWrapper.wrapAsThreadLocalDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
+      List<IEstimatorUI> estimators = ThreadLocalWrapper.wrapAsThreadLocalEstimators(ModuleLoader.getUIModules(IEstimatorUI.class));
+      List<IRendererUI> renderers = ModuleLoader.getUIModules(IRendererUI.class);
 
       int default_filter = 0;
       int default_detector = 0;
       int default_estimator = 0;
 
-      Thresholder.loadFilters(threadLocalAllFilters);
+      Thresholder.loadFilters(filters);
       Thresholder.setActiveFilter(default_filter);
 
       if (MacroParser.isRanFromMacro()) {
         //parse the macro options
         MacroParser parser = new MacroParser(filters, estimators, detectors, renderers);
-        threadLocalFilter = threadLocalAllFilters.get(parser.getFilterIndex()); //use the same filter implementation object as the thresholder
-        threadLocalDetector = new ThreadLocalModule<IDetectorUI, IDetector>(parser.getDetectorUI());
-        threadLocalEstimator = new ThreadLocalModule<IEstimatorUI, IEstimator>(parser.getEstimatorUI());
+        selectedFilter = parser.getFilterUI();
+        selectedDetector = parser.getDetectorUI();
+        selectedEstimator = parser.getEstimatorUI();
 
         IRendererUI rendererPanel = parser.getRendererUI();
         rendererPanel.setSize(imp.getWidth(), imp.getHeight());
@@ -174,9 +169,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         if (dialog.wasCanceled()) {  // This is a blocking call!!
           return DONE;    // cancel
         }
-        threadLocalFilter = threadLocalAllFilters.get(dialog.getFilterIndex()); //use the same filter implementation object as the thresholder
-        threadLocalDetector = new ThreadLocalModule<IDetectorUI, IDetector>(dialog.getDetector());
-        threadLocalEstimator = new ThreadLocalModule<IEstimatorUI, IEstimator>(dialog.getEstimator());
+        selectedFilter = dialog.getFilter();
+        selectedDetector = dialog.getDetector();
+        selectedEstimator = dialog.getEstimator();
 
         IRendererUI rendererPanel = dialog.getRenderer();
         rendererPanel.setSize(imp.getWidth(), imp.getHeight());
@@ -222,18 +217,18 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
    */
   @Override
   public void run(ImageProcessor ip) {
-    assert (threadLocalFilter.get() != null) : "Filter was not selected!";
-    assert (threadLocalDetector.get() != null) : "Detector was not selected!";
-    assert (threadLocalEstimator.get() != null) : "Estimator was not selected!";
+    assert (selectedFilter != null) : "Filter was not selected!";
+    assert (selectedDetector != null) : "Detector was not selected!";
+    assert (selectedEstimator != null) : "Estimator was not selected!";
     assert (renderingQueue != null) : "Renderer was not selected!";
     //
     FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
     Vector<PSFInstance> fits = null;
     try {
-      fits = threadLocalEstimator.get().estimateParameters(
+      fits = selectedEstimator.getImplementation().estimateParameters(
               fp,
-              threadLocalDetector.get().detectMoleculeCandidates(
-              threadLocalFilter.get().filterImage(fp)));
+              selectedDetector.getImplementation().detectMoleculeCandidates(
+              selectedFilter.getImplementation().filterImage(fp)));
     } catch (Exception ex) {
       IJ.error("Thresholding: " + ex.getMessage());
     }
@@ -248,7 +243,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
   }
 
-  private double[] extractX(Vector<PSFInstance> fits) {
+  private double[] extractX(List<PSFInstance> fits) {
     double[] x = new double[fits.size()];
     for (int i = 0; i < fits.size(); i++) {
       x[i] = fits.get(i).getX();
@@ -256,7 +251,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     return x;
   }
 
-  private double[] extractY(Vector<PSFInstance> fits) {
+  private double[] extractY(List<PSFInstance> fits) {
     double[] y = new double[fits.size()];
     for (int i = 0; i < fits.size(); i++) {
       y[i] = fits.get(i).getY();

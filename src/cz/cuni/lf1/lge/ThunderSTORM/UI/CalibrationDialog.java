@@ -2,10 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ModuleLoader;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AngleFittingEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
@@ -23,6 +21,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,13 +53,11 @@ public class CalibrationDialog extends JDialog implements ActionListener {
   ExecutorService previewThredRunner = Executors.newSingleThreadExecutor();
   Future<?> previewFuture = null;
 
-  public CalibrationDialog() {
+  public CalibrationDialog(List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators) {
     super(IJ.getInstance(), "Calibration options");
-    filters = new CardsPanel<IFilterUI>(ModuleLoader.getUIModules(IFilterUI.class), 0);
-    detectors = new CardsPanel<IDetectorUI>(ModuleLoader.getUIModules(IDetectorUI.class), 0);
-    Vector<IEstimatorUI> est = new Vector<IEstimatorUI>();
-    est.add(new AngleFittingEstimatorUI());
-    estimators = new CardsPanel<IEstimatorUI>(est, 0);
+    this.filters = new CardsPanel<IFilterUI>(filters, 0);
+    this.detectors = new CardsPanel<IDetectorUI>(detectors, 0);
+    this.estimators = new CardsPanel<IEstimatorUI>(estimators, 0);
     semaphore = new Semaphore(0);
     addComponentsToPane();
   }
@@ -151,8 +148,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
           try {
             IJ.showStatus("Creating preview image.");
             FloatProcessor fp = (FloatProcessor) imp.getProcessor().convertToFloat();
-            IFilter filter = Thresholder.getLoadedFilters().get(filters.getActiveComboBoxItemIndex()).get();
-            FloatProcessor filtered = filter.filterImage(fp);
+            FloatProcessor filtered = getActiveFilterUI().getImplementation().filterImage(fp);
             checkForInterruption();
             Vector<Point> detections = getActiveDetectorUI().getImplementation().detectMoleculeCandidates(filtered);
             checkForInterruption();

@@ -40,6 +40,6 @@ public class PolynomialCalibrationTest {
     
     double z = calibration.getZ(3.5, 2.5);
     System.out.println("z: " + z);
-    assertEquals(z, 160, 1);
+    assertEquals(160, z, 1);
   }
 }

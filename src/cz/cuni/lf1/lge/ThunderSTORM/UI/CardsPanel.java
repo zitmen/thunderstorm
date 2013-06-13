@@ -7,7 +7,7 @@ import java.awt.CardLayout;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,7 +25,7 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
 
     private JPanel cardsPanel;
     private JComboBox cb;
-    private Vector<T> items;
+    private List<T> items;
     
     /**
      * Initialize the panel.
@@ -36,7 +36,7 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
      * @param items Vector of modules you want to insert into the combo box
      * @param index_default index of an item you want to be selected
      */
-    public CardsPanel(Vector<T> items, int index_default) {
+    public CardsPanel(List<T> items, int index_default) {
         this.items = items;
         cardsPanel = createCardsPanel();
         cb.setSelectedIndex(index_default);
@@ -48,7 +48,7 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
      * @return the module selected in the combo box
      */
     public T getActiveComboBoxItem() {
-        return items.elementAt(cb.getSelectedIndex());
+        return items.get(cb.getSelectedIndex());
     }
     
     /**
@@ -63,7 +63,7 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
     private JPanel createCardsPanel() {
         String comboBoxItems[] = new String[items.size()];
         for(int i = 0; i < items.size(); i++) {
-            comboBoxItems[i] = items.elementAt(i).getName();
+            comboBoxItems[i] = items.get(i).getName();
         }
         cb = new JComboBox(comboBoxItems);
         cb.setEditable(false);
@@ -72,7 +72,7 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
         // Create the cards
         JPanel[] cards = new JPanel[items.size()];
         for(int i = 0; i < items.size(); i++) {
-            cards[i] = items.elementAt(i).getOptionsPanel();
+            cards[i] = items.get(i).getOptionsPanel();
             if(cards[i] == null) {
                 cards[i] = new JPanel();
             }
