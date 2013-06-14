@@ -2,7 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 import java.util.Vector;
@@ -21,14 +22,14 @@ public interface IEstimator extends IModule{
      * @param detections list of detections returned by a detector
      * @return a Vector of instances of PSFs that contain parameters of every
      *         single molecule ({@mathjax x,y,\sigma,I,b}). <strong>Note: </strong>
-     *         in a future release the PSF will be more abstract to allow easily
-     *         work with any possible PSF out there, but right we use strictly
+     *         in a future release the PSFModel will be more abstract to allow easily
+     *         work with any possible PSFModel out there, but right we use strictly
      *         the symmetric 2D Gaussian model
      * 
-     * @see PSF
+     * @see PSFModel
      * @see Point
      * @see IDetector
      */
-    public Vector<PSF> estimateParameters(FloatProcessor image, Vector<Point> detections);
+    public Vector<PSFInstance> estimateParameters(FloatProcessor image, Vector<Point> detections);
     
 }

@@ -37,8 +37,8 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
     JPanel panel = super.getOptionsPanel();
 
     avgTextField = new JTextField(Integer.toString(DEFAULT_AVG), 20);
-    panel.add(new JLabel("Averages:"), GridBagHelper.pos(0, GridBagConstraints.RELATIVE));
-    panel.add(avgTextField, GridBagHelper.pos(1, GridBagConstraints.RELATIVE));
+    panel.add(new JLabel("Averages:"), GridBagHelper.leftCol());
+    panel.add(avgTextField, GridBagHelper.rightCol());
 
     return panel;
   }

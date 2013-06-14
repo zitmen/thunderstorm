@@ -81,10 +81,10 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
     radiusTextField = new JTextField(Integer.toString(DEFAULT_RADIUS), 20);
     //
     JPanel panel = new JPanel(new GridBagLayout());
-    panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
-    panel.add(thrTextField, GridBagHelper.pos(1, 0));
-    panel.add(new JLabel("Radius: "), GridBagHelper.pos(0, 1));
-    panel.add(radiusTextField, GridBagHelper.pos(1, 1));
+    panel.add(new JLabel("Threshold: "), GridBagHelper.leftCol());
+    panel.add(thrTextField, GridBagHelper.rightCol());
+    panel.add(new JLabel("Radius: "), GridBagHelper.leftCol());
+    panel.add(radiusTextField, GridBagHelper.rightCol());
     return panel;
   }
 

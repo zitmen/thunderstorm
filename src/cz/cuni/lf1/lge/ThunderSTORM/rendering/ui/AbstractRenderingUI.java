@@ -56,10 +56,10 @@ public abstract class AbstractRenderingUI implements IRendererUI {
     JPanel panel = new JPanel(new GridBagLayout());
     resolutionTextField = new JTextField("" + DEFAULT_RESOLUTION, 20);
     repaintFrequencyTextField = new JTextField("" + DEFAULT_REPAINT_FREQUENCY, 20);
-    panel.add(new JLabel("Resolution: "), GridBagHelper.pos(0, 0));
-    panel.add(resolutionTextField, GridBagHelper.pos(1, 0));
-    panel.add(new JLabel("Repaint frequency: "), GridBagHelper.pos(0, 1));
-    panel.add(repaintFrequencyTextField, GridBagHelper.pos(1, 1));
+    panel.add(new JLabel("Resolution: "), GridBagHelper.leftCol());
+    panel.add(resolutionTextField, GridBagHelper.rightCol());
+    panel.add(new JLabel("Repaint frequency: "), GridBagHelper.leftCol());
+    panel.add(repaintFrequencyTextField, GridBagHelper.rightCol());
 
     return panel;
   }

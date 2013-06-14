@@ -1,12 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
@@ -19,7 +17,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -72,10 +70,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
    * initially selected in combo box
    */
   public AnalysisOptionsDialog(ImagePlus imp, String title,
-          Vector<IFilterUI> filters, int default_filter,
-          Vector<IDetectorUI> detectors, int default_detector,
-          Vector<IEstimatorUI> estimators, int default_estimator,
-          Vector<IRendererUI> renderers, int default_renderer) {
+          List<IFilterUI> filters, int default_filter,
+          List<IDetectorUI> detectors, int default_detector,
+          List<IEstimatorUI> estimators, int default_estimator,
+          List<IRendererUI> renderers, int default_renderer) {
     //
     super(IJ.getInstance(), title);
     //
@@ -169,11 +167,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         activeDetector.readParameters();
         activeEstimator.readParameters();
         activeRenderer.readParameters();
-      } catch (ThresholdFormulaException ex) {
-        IJ.error("Thresholding: " + ex.getMessage());
-        return;
       } catch (Exception ex) {
-        IJ.error("Error: " + ex.getMessage());
+        IJ.error("Error parsing parameters: " + ex.toString());
         return;
       }
       //
@@ -189,10 +184,9 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         activeFilter.readParameters();
         activeDetector.readParameters();
         activeEstimator.readParameters();
-      } catch (ThresholdFormulaException ex) {
-        IJ.log("Thresholding: " + ex.getMessage());
       } catch (Exception ex) {
-        IJ.log(ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+        IJ.error("Error parsing parameters: " + ex.toString());
+        return;
       }
       if (previewFuture != null) {
         previewFuture.cancel(true);
@@ -213,19 +207,18 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
           try {
             IJ.showStatus("Creating preview image.");
             FloatProcessor fp = (FloatProcessor) imp.getProcessor().convertToFloat();
-            IFilter filter = Thresholder.getLoadedFilters().get(filters.getActiveComboBoxItemIndex()).get();
-            FloatProcessor filtered = filter.filterImage(fp);
+            FloatProcessor filtered = activeFilter.getImplementation().filterImage(fp);
             checkForInterruption();
             Vector<Point> detections = activeDetector.getImplementation().detectMoleculeCandidates(filtered);
             checkForInterruption();
-            Vector<PSF> results = activeEstimator.getImplementation().estimateParameters(fp, detections);
+            Vector<PSFInstance> results = activeEstimator.getImplementation().estimateParameters(fp, detections);
             checkForInterruption();
             //
             double[] xCoord = new double[results.size()];
             double[] yCoord = new double[results.size()];
             for (int i = 0; i < results.size(); i++) {
-              xCoord[i] = results.elementAt(i).xpos;
-              yCoord[i] = results.elementAt(i).ypos;
+              xCoord[i] = results.elementAt(i).getX();
+              yCoord[i] = results.elementAt(i).getY();
             }
             //
             ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().duplicate());
@@ -234,12 +227,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
           } catch (InterruptedException ex) {
             IJ.showStatus("Preview interrupted.");
           } catch (Exception ex) {
-            IJ.log(ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+            IJ.handleException(ex);
           }
         }
       });
-
-
 
     } else {
       throw new UnsupportedOperationException("Command '" + e.getActionCommand() + "' is not supported!");
@@ -291,7 +282,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     try {
       semaphore.acquire();
     } catch (InterruptedException ex) {
-      IJ.error(ex.getMessage());
+      IJ.handleException(ex);
     }
     return canceled;
   }
@@ -303,10 +294,6 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
    */
   public IFilterUI getFilter() {
     return activeFilter;
-  }
-
-  public int getFilterIndex() {
-    return filters.getActiveComboBoxItemIndex();
   }
 
   /**

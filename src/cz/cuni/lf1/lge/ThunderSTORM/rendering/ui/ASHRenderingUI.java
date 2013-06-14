@@ -37,8 +37,8 @@ public class ASHRenderingUI extends AbstractRenderingUI {
     JPanel panel = super.getOptionsPanel();
 
     shiftsTextField = new JTextField(Integer.toString(DEFAULT_SHIFTS), 20);
-    panel.add(new JLabel("Shifts:"), GridBagHelper.pos(0, GridBagConstraints.RELATIVE));
-    panel.add(shiftsTextField, GridBagHelper.pos(1, GridBagConstraints.RELATIVE));
+    panel.add(new JLabel("Shifts:"), GridBagHelper.leftCol());
+    panel.add(shiftsTextField, GridBagHelper.rightCol());
 
     return panel;
   }

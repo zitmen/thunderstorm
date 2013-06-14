@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.thresholding.SyntaxTree;
 
-import cz.cuni.lf1.lge.ThunderSTORM.ThreadLocalModule;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
@@ -10,9 +9,10 @@ import ij.process.FloatProcessor;
 public abstract class Node {
     
     public boolean isVariable(String filter, String var) {
-        for(ThreadLocalModule<IFilterUI,IFilter> f : Thresholder.getLoadedFilters()) {
-            if(f.get().getFilterVarName().equals(filter)) {
-                return f.get().exportVariables().containsKey(var);
+        for(IFilterUI f : Thresholder.getLoadedFilters()) {
+          IFilter impl = f.getImplementation();
+            if(impl.getFilterVarName().equals(filter)) {
+                return impl.exportVariables().containsKey(var);
             }
         }
         return false;
@@ -22,9 +22,10 @@ public abstract class Node {
         if(filter == null) {   // active filter
             return new RetVal(Thresholder.getActiveFilter().exportVariables().get(var));
         } else {    // the other ones
-            for(ThreadLocalModule<IFilterUI,IFilter> f : Thresholder.getLoadedFilters()) {
-                if(f.get().getFilterVarName().equals(filter)) {
-                    return new RetVal(f.get().exportVariables().get(var));
+            for(IFilterUI f : Thresholder.getLoadedFilters()) {
+              IFilter impl = f.getImplementation();
+                if(impl.getFilterVarName().equals(filter)) {
+                    return new RetVal(impl.exportVariables().get(var));
                 }
             }
         }

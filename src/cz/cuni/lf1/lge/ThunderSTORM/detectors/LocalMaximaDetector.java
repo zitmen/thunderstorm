@@ -199,11 +199,11 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
     conn8RadioButton.setSelected(DEFAULT_CONNECTIVITY == Graph.CONNECTIVITY_8);
     //
     JPanel panel = new JPanel(new GridBagLayout());
-    panel.add(new JLabel("Threshold: "), GridBagHelper.pos(0, 0));
-    panel.add(thrTextField, GridBagHelper.pos(1, 0));
-    panel.add(new JLabel("Connectivity: "), GridBagHelper.pos(0, 1));
-    panel.add(conn8RadioButton, GridBagHelper.pos(1, 1));
-    panel.add(conn4RadioButton, GridBagHelper.pos(1, 2));
+    panel.add(new JLabel("Threshold: "), GridBagHelper.leftCol());
+    panel.add(thrTextField, GridBagHelper.rightCol());
+    panel.add(new JLabel("Connectivity: "), GridBagHelper.leftCol());
+    panel.add(conn8RadioButton, GridBagHelper.rightCol());
+    panel.add(conn4RadioButton, GridBagHelper.rightCol());
     return panel;
   }
 

@@ -8,7 +8,9 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.pow;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.Macro;
@@ -20,10 +22,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- * Estimator of shape of pre-defined PSF based on least square error.
+ * Estimator of shape of pre-defined PSFModel based on least square error.
  * 
  * Note that in this version of ThunderSTORM, the fitting is performed using
- * Levenberg-Marquardt algorithm and there is only one possible PSF,
+ * Levenberg-Marquardt algorithm and there is only one possible PSFModel,
  * namely 2D symmetric Gaussian function.
  * 
  * This will be changed in a future version of ThunderSTORM.
@@ -46,7 +48,7 @@ public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
     }
 
     /**
-     * Definition od PSF function, the 2D symmetric Gaussian function.
+     * Definition od PSFModel function, the 2D symmetric Gaussian function.
      * 
      * This will be changed in a future version of ThunderSTORM.
      */
@@ -89,8 +91,8 @@ public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
     }
     
     @Override
-    public Vector<PSF> estimateParameters(FloatProcessor image, Vector<Point> detections) {
-        Vector<PSF> fits = new Vector<PSF>();
+    public Vector<PSFInstance> estimateParameters(FloatProcessor image, Vector<Point> detections) {
+        Vector<PSFInstance> fits = new Vector<PSFInstance>();
         Point p_fit = new Point();
         int img_w = image.getWidth();
         int img_h = image.getHeight();
@@ -125,7 +127,7 @@ public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
                 init_guess[i] = sqrt(init_guess[i]);
             
             // fitting by L-M algorithm
-            LMA lma = new LMA(new Gaussian(), init_guess, y, x);    // Gaussian! LMA has to be adapted to work with PSF!!
+            LMA lma = new LMA(new Gaussian(), init_guess, y, x);    // Gaussian! LMA has to be adapted to work with PSFModel!!
             lma.fit();
             
             // transform the parameters back
@@ -139,7 +141,7 @@ public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
             // TODO: generalize!! this should not be just GaussianPSF!!
             if(GaussianPSF.checkRange(lma.parameters))
                 if(checkDist2(p_fit.setLocation(lma.parameters[0], lma.parameters[1]), p))
-                    fits.add(new GaussianPSF(lma.parameters[0], lma.parameters[1], lma.parameters[2], lma.parameters[3], lma.parameters[4]));
+                    fits.add(new PSFInstance(new String[]{"x", "y", "intensity","sigma",  "background"}, lma.parameters));
         }
         
         return fits;
