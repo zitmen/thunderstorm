@@ -25,9 +25,9 @@ public class Thresholder {
     }
     
     public static float getThreshold(String formula) throws ThresholdFormulaException {
-        assert(filters != null);
-        assert(!filters.isEmpty());
-        assert(active_filter >= 0);
+//        assert(filters != null);
+//        assert(!filters.isEmpty());
+//        assert(active_filter >= 0);
         
         if(!thresholds.containsKey(formula)) parseThreshold(formula);
         return thresholds.get(formula).evaluate();
