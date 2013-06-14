@@ -1,8 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
-import ij.IJ;
-import java.util.Arrays;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import static org.apache.commons.math3.util.FastMath.PI;
 import static org.apache.commons.math3.util.FastMath.abs;
@@ -21,7 +19,7 @@ public class SymmetricGaussianPSF extends PSFModel {
    *
    */
   public double defaultSigma;
-  private static final String[] parameterNames = {"x", "y", "intensity", "sigma", "background"};
+  private static final String[] parameterNames = {PSFInstance.X, PSFInstance.Y, PSFInstance.INTENSITY, PSFInstance.SIGMA, PSFInstance.BACKGROUND};
 
   public SymmetricGaussianPSF(double defaultSigma) {
     this.defaultSigma = defaultSigma;

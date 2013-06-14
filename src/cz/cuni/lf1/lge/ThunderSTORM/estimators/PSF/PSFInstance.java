@@ -16,6 +16,8 @@ public class PSFInstance implements Iterable<Map.Entry<String, Double>> {
   public static final String Z = "z";
   public static final String SIGMA = "\u03C3";
   public static final String SIGMA2 = "\u03C32";
+  public static final String INTENSITY = "intensity";
+  public static final String BACKGROUND = "background";
 
   public PSFInstance(String[] paramNames, double[] params) {
     assert paramNames.length == params.length : "names and values array lengths must be the same";

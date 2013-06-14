@@ -18,7 +18,7 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 public class MLEFitter implements OneLocationFitter {
 
   PSFModel psfModel;
-  final static int MAX_ITERATIONS = 10000;
+  final static int MAX_ITERATIONS = 50000;
 
   public MLEFitter(PSFModel psfModel) {
     this.psfModel = psfModel;
@@ -27,7 +27,7 @@ public class MLEFitter implements OneLocationFitter {
   @Override
   public PSFInstance fit(SubImage subimage) {
 
-    SimplexOptimizer optimizer = new SimplexOptimizer(10e-10, 10e-10);
+    SimplexOptimizer optimizer = new SimplexOptimizer(1e-10, 1e-10);
     PointValuePair pv;
 
     pv = optimizer.optimize(
