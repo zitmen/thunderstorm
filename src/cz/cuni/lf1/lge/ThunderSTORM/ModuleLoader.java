@@ -45,11 +45,11 @@ public class ModuleLoader {
         try {
           retval.add(it.next());
         } catch (ServiceConfigurationError e) {
-          IJ.log(e.getMessage());
+          IJ.handleException(e);
         }
       }
     } catch (Throwable e) {
-      IJ.log(e.getMessage());
+      IJ.handleException(e);
     }
     if (retval.isEmpty()) {
       //throw exception only when no modules are succesfully loaded
@@ -68,11 +68,11 @@ public class ModuleLoader {
         try {
           retval.add(it.next());
         } catch (ServiceConfigurationError e) {
-          IJ.log(e.getMessage());
+          IJ.handleException(e);
         }
       }
     } catch (Throwable e) {
-      IJ.log(e.getMessage());
+      IJ.handleException(e);
     }
     if (retval.isEmpty()) {
       //throw exception only when no modules are succesfully loaded

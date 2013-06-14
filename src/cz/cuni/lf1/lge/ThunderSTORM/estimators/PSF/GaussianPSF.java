@@ -1,14 +1,14 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 
 /**
- * General representation of Gaussian PSF model.
+ * General representation of Gaussian PSFModel model.
  * 
  * <strong>Note that this class will be completely changed in a future relase.</strong>
  * Now the class represents only 2D symmetric Gaussian model.
  */
-public class GaussianPSF extends PSF {
+public class GaussianPSF extends PSFModel {
 
     /**
      *
@@ -28,6 +28,11 @@ public class GaussianPSF extends PSF {
      *
      */
     public double sigma;
+    
+    double xpos;
+    double ypos;
+    double intensity;
+    double background;
     //public double sigma_x;
     //public double sigma_y;
     //public double angle;    // [radians]
@@ -53,8 +58,7 @@ public class GaussianPSF extends PSF {
      * @param y
      */
     public GaussianPSF(double x, double y) {
-        super.xpos = x;
-        super.ypos = y;
+        this(x, y, 0, 0, 0);
     }
     
     /**
@@ -66,39 +70,11 @@ public class GaussianPSF extends PSF {
      * @param b
      */
     public GaussianPSF(double x, double y, double I, double s, double b) {
-        super.xpos = x;
-        super.ypos = y;
-        super.intensity = I;
+        this.xpos = x;
+        this.ypos = y;
+        this.intensity = I;
         this.sigma = s;
-        super.background = b;
-    }
-
-    // TODO: rozlisovat sigma_x, sigma_y a pridat rotaci o uhel (staci rotacni matice? mela by!)!!
-    /**
-     *
-     * @param where
-     * @return
-     */
-    @Override
-    public double getValueAt(PSF where) {
-        return intensity/2.0/Math.PI/sqr(sigma) * Math.exp(-(sqr(xpos-where.xpos) + sqr(ypos-where.ypos)) / 2.0 / sqr(sigma)) + background;
-    }
-
-    // TODO: rozlisovat sigma_x, sigma_y a pridat rotaci o uhel (staci rotacni matice? mela by!)!!
-    /**
-     *
-     * @param where
-     * @return
-     */
-    @Override
-    public double[] getGradient(PSF where) {
-        double arg = sqr(xpos - where.xpos) + sqr(ypos - where.ypos);
-        gradient[0] = intensity/2.0/Math.PI/Math.pow(sigma,4) * (xpos-where.xpos) * Math.exp(-arg/2.0/sqr(sigma)); // x0
-        gradient[1] = intensity/2.0/Math.PI/Math.pow(sigma,4) * (ypos-where.ypos) * Math.exp(-arg/2.0/sqr(sigma)); // y0
-        gradient[2] = Math.exp(-arg/2.0/sqr(sigma)) / 2.0 / Math.PI / sqr(sigma); // Intensity
-        gradient[3] = intensity/2.0/Math.PI/Math.pow(sigma,5) * (arg - 2.0 * sqr(sigma)) * Math.exp(-arg/2.0/sqr(sigma));
-        gradient[4] = 1.0; // background
-        return gradient;
+        this.background = b;
     }
 
     /**
@@ -106,22 +82,28 @@ public class GaussianPSF extends PSF {
      * @return
      */
     @Override
-    public double[] getParams() {
-        params[0] = xpos;
-        params[1] = ypos;
-        params[2] = intensity;
-        params[3] = sigma;
-        params[4] = background;
-        return params;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String[] getTitles() {
+    public String[] getParamNames() {
         return titles;
     }
+
+  @Override
+  public double getValue(double[] params, double x, double y) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public double[] getInitialParams(OneLocationFitter.SubImage subImage) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public PSFInstance newInstanceFromParams(double[] params) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public double[] getInitialSimplex() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
     
 }

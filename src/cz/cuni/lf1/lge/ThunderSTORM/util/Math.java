@@ -204,4 +204,24 @@ public class Math {
         else    // even length
             return (sorted[sorted.length/2] + sorted[1+sorted.length/2]) / 2.0f;
     }
+    
+    public static double max(double[] array) {
+    double max = array[0];
+    for (int i = 0; i < array.length; i++) {
+      if (array[i] > max) {
+        max = array[i];
+      }
+    }
+    return max;
+  }
+
+  public static double min(double[] array) {
+    double min = array[0];
+    for (int i = 0; i < array.length; i++) {
+      if (array[i] < min) {
+        min = array[i];
+      }
+    }
+    return min;
+  }
 }

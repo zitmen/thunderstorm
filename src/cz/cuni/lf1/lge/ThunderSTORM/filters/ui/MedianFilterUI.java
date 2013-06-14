@@ -45,11 +45,12 @@ public class MedianFilterUI implements IFilterUI {
     patternCrossRadioButton.setSelected(DEFAULT_PATTERN == CROSS);
     //
     JPanel panel = new JPanel(new GridBagLayout());
-    panel.add(new JLabel("Pattern: "), GridBagHelper.pos(0, 0));
-    panel.add(patternBoxRadioButton, GridBagHelper.pos(1, 0));
-    panel.add(patternCrossRadioButton, GridBagHelper.pos(1, 1));
-    panel.add(new JLabel("Size: "), GridBagHelper.pos(0, 2));
-    panel.add(sizeTextField, GridBagHelper.pos(1, 2));
+    panel.add(new JLabel("Size: "), GridBagHelper.leftCol());
+    panel.add(sizeTextField, GridBagHelper.rightCol());
+    panel.add(new JLabel("Pattern: "), GridBagHelper.leftCol());
+    panel.add(patternBoxRadioButton, GridBagHelper.rightCol());
+    panel.add(patternCrossRadioButton, GridBagHelper.rightCol());
+    
     return panel;
   }
 

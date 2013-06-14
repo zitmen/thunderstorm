@@ -2,7 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import au.com.bytecode.opencsv.CSVReader;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import ij.process.FloatProcessor;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * Importing CSV files and translating them into internal plugin objects (FloatProcessor, PSF, Point).
+ * Importing CSV files and translating them into internal plugin objects (FloatProcessor, PSFModel, Point).
  */
 public class CSV {
     
@@ -57,9 +58,9 @@ public class CSV {
      * @throws IOException if the input file specified by {@fname was not found or cannot be opened for reading}
      * @throws InvalidObjectException if the input file does not contain any data
      * 
-     * @see PSF
+     * @see PSFModel
      */
-    public static Vector<PSF> csv2psf(String fname, int start_row, int start_col) throws IOException, InvalidObjectException {
+    public static Vector<PSFInstance> csv2psf(String fname, int start_row, int start_col) throws IOException, InvalidObjectException {
         CSVReader csvReader = new CSVReader(new FileReader(fname));
         List<String[]> lines = csvReader.readAll();
         csvReader.close();
@@ -67,14 +68,15 @@ public class CSV {
         if(lines.size() < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
         if(lines.get(0).length < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
         
-        Vector<PSF> loc = new Vector<PSF>();
+        Vector<PSFInstance> loc = new Vector<PSFInstance>();
+        String[] names = new String[]{PSFInstance.X, PSFInstance.Y, "Intensity", PSFInstance.SIGMA, "Background"};
         for(int r = start_row, rm = lines.size(); r < rm; r++) {
-            loc.add(new GaussianPSF(
+            loc.add(new PSFInstance(names, new double[]{
                 Float.parseFloat(lines.get(r)[start_col+0]),    // x
                 Float.parseFloat(lines.get(r)[start_col+1]),    // y
                 Float.parseFloat(lines.get(r)[start_col+3]),    // I
                 Float.parseFloat(lines.get(r)[start_col+2]),    // s
-                0.0                                             // b
+                0.0}                                             // b
             ));
         }
         return loc;
@@ -84,7 +86,7 @@ public class CSV {
      * Read an input CSV file and interpret the data as a set of Points.
      * 
      * This method actually calls the {@code csv2psf} method first and then
-     * converts all {@code PSF}s to {@code Point}s, i.e., fills the
+     * converts all {@code PSFModel}s to {@code Point}s, i.e., fills the
      * {@code x,y} coordinates.
      *
      * @param fname path to an input CSV file
@@ -98,10 +100,10 @@ public class CSV {
      * @see Point
      */
     public static Vector<Point> csv2point(String fname, int start_row, int start_col) throws IOException {
-        Vector<PSF> list = csv2psf(fname, start_row, start_col);
+        Vector<PSFInstance> list = csv2psf(fname, start_row, start_col);
         Vector<Point> points = new Vector<Point>();
-        for(PSF psf : list) {
-            points.add(new Point(psf.xpos, psf.ypos));
+        for(PSFInstance psf : list) {
+            points.add(new Point(psf.getX(), psf.getY()));
         }
         return points;
     }

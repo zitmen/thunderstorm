@@ -31,12 +31,12 @@ public class DifferenceOfGaussiansFilterUI implements IFilterUI {
     sigma2TextField = new JTextField(Double.toString(DEFAULT_SIGMA_G2), 20);
     //
     JPanel panel = new JPanel(new GridBagLayout());
-    panel.add(new JLabel("Size: "), GridBagHelper.pos(0, 0));
-    panel.add(sizeTextField, GridBagHelper.pos(1, 0));
-    panel.add(new JLabel("Sigma1: "), GridBagHelper.pos(0, 1));
-    panel.add(sigma1TextField, GridBagHelper.pos(1, 1));
-    panel.add(new JLabel("Sigma2: "), GridBagHelper.pos(0, 2));
-    panel.add(sigma2TextField, GridBagHelper.pos(1, 2));
+    panel.add(new JLabel("Size: "), GridBagHelper.leftCol());
+    panel.add(sizeTextField, GridBagHelper.rightCol());
+    panel.add(new JLabel("Sigma1: "), GridBagHelper.leftCol());
+    panel.add(sigma1TextField, GridBagHelper.rightCol());
+    panel.add(new JLabel("Sigma2: "), GridBagHelper.leftCol());
+    panel.add(sigma2TextField, GridBagHelper.rightCol());
     return panel;
   }
 
