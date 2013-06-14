@@ -34,6 +34,7 @@ import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.yaml.snakeyaml.Yaml;
 
@@ -63,48 +64,57 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
       IJ.error("Requires a stack.");
       return;
     }
-    //load modules
-    calibrationEstimatorUI = new CalibrationEstimatorUI();
-    List<IFilterUI> filters = ThreadLocalWrapper.wrapFilters(ModuleLoader.getUIModules(IFilterUI.class));
-    List<IDetectorUI> detectors = ThreadLocalWrapper.wrapDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
-    List<IEstimatorUI> estimators = Arrays.asList(new IEstimatorUI[]{calibrationEstimatorUI}); // only one estimator can be used
-    Thresholder.loadFilters(filters);
-
-    if (MacroParser.isRanFromMacro()) {
-      MacroParser parser = new MacroParser(filters, estimators, detectors, null);
-      selectedFilterUI = parser.getFilterUI();
-      selectedDetectorUI = parser.getDetectorUI();
-      parser.getEstimatorUI();
-      savePath = Macro.getValue(Macro.getOptions(), "saveto", null);
-    } else {
-      //show dialog
-      CalibrationDialog dialog;
-      dialog = new CalibrationDialog(filters, detectors, estimators);
-      dialog.setVisible(true);
-      if (dialog.waitForResult() != JOptionPane.OK_OPTION) {
-        return;
-      }
-      selectedFilterUI = dialog.getActiveFilterUI();
-      selectedDetectorUI = dialog.getActiveDetectorUI();
-      savePath = dialog.getSavePath();
-      if (Recorder.record) {
-        MacroParser.recordFilterUI(selectedFilterUI);
-        MacroParser.recordDetectorUI(selectedDetectorUI);
-        MacroParser.recordEstimatorUI(calibrationEstimatorUI);
-        Recorder.recordOption("saveto", savePath.replace("\\", "\\\\"));
-      }
-    }
     try {
+      //load modules
+      calibrationEstimatorUI = new CalibrationEstimatorUI();
+      List<IFilterUI> filters = ThreadLocalWrapper.wrapFilters(ModuleLoader.getUIModules(IFilterUI.class));
+      List<IDetectorUI> detectors = ThreadLocalWrapper.wrapDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
+      List<IEstimatorUI> estimators = Arrays.asList(new IEstimatorUI[]{calibrationEstimatorUI}); // only one estimator can be used
+      Thresholder.loadFilters(filters);
+
+      // get user options
+      if (MacroParser.isRanFromMacro()) {
+        //parse macro parameters
+        MacroParser parser = new MacroParser(filters, estimators, detectors, null);
+        selectedFilterUI = parser.getFilterUI();
+        selectedDetectorUI = parser.getDetectorUI();
+        parser.getEstimatorUI();
+        savePath = Macro.getValue(Macro.getOptions(), "saveto", null);
+      } else {
+        //show dialog
+        try {
+          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+          IJ.handleException(e);
+        }
+        CalibrationDialog dialog;
+        dialog = new CalibrationDialog(filters, detectors, estimators);
+        dialog.setVisible(true);
+        if (dialog.waitForResult() != JOptionPane.OK_OPTION) {
+          return;
+        }
+        selectedFilterUI = dialog.getActiveFilterUI();
+        selectedDetectorUI = dialog.getActiveDetectorUI();
+        savePath = dialog.getSavePath();
+        
+        //if recording window is open, record parameters
+        if (Recorder.record) {
+          MacroParser.recordFilterUI(selectedFilterUI);
+          MacroParser.recordDetectorUI(selectedDetectorUI);
+          MacroParser.recordEstimatorUI(calibrationEstimatorUI);
+          Recorder.recordOption("saveto", savePath.replace("\\", "\\\\"));
+        }
+      }
+      
       estimateAngle();
       IJ.log("angle = " + angle);
       fitQuadraticPolynomial();
       saveToFile(savePath);
+      
     } catch (IOException ex) {
-      IJ.log("Could not write calibration file: " + ex.getMessage());
+      IJ.error("Could not write calibration file: " + ex.getMessage());
     } catch (Exception ex) {
-      StringWriter sw = new StringWriter();
-      ex.printStackTrace(new PrintWriter(sw));
-      IJ.log(sw.toString());
+      IJ.handleException(ex);
     }
   }
 
@@ -173,7 +183,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     List<double[]> sigmaQuadratics = new ArrayList<double[]>();
     List<double[]> sigma2Quadratics = new ArrayList<double[]>();
 //    StringBuilder sb = new StringBuilder();
-    Locale.setDefault(Locale.ENGLISH);
+    //Locale.setDefault(Locale.ENGLISH);
     AtomicInteger moleculesProcessed = new AtomicInteger(0);
     for (Position p : beadPositions) {
       double[] framesArray = p.getFramesAsArray();
@@ -206,9 +216,9 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
       IJ.showStatus("Fitting polynoms: molecule " + moleculesProcessed + " of " + beadPositions.size() + "...");
     }
 
-    for (int i = 0; i < sigma2Quadratics.size(); i++) {
-      IJ.log(Arrays.toString(sigmaQuadratics.get(i)) + " ; " + Arrays.toString(sigma2Quadratics.get(i)));
-    }
+//    for (int i = 0; i < sigma2Quadratics.size(); i++) {
+//      IJ.log(Arrays.toString(sigmaQuadratics.get(i)) + " ; " + Arrays.toString(sigma2Quadratics.get(i)));
+//    }
 
     if (sigmaQuadratics.size() < 1) {
       throw new RuntimeException("Could not fit a parabola in any location.");
@@ -232,8 +242,8 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
 //    } catch (IOException ex) {
 //    }
     IJ.showProgress(1);
-    IJ.log("s1: " + Arrays.toString(avgSigmaPolynom));
-    IJ.log("s2: " + Arrays.toString(avgSigma2Polynom));
+    IJ.log(String.format(Locale.ENGLISH, "s1 =  %f*(z%+f)^2 %+f", avgSigmaPolynom[1], -avgSigmaPolynom[0], avgSigmaPolynom[2]));
+    IJ.log(String.format(Locale.ENGLISH, "s2 =  %f*(z%+f)^2 %+f", avgSigma2Polynom[1], -avgSigma2Polynom[0], avgSigma2Polynom[2]));
   }
 
   private boolean hasEnoughData(double[] framesArray, double[] sigmaParamArray, double[] sigma2ParamArray) {

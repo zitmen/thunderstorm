@@ -44,7 +44,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
                 }
             }
         } catch (Exception ex) {
-            IJ.log(ex.getMessage());
+            IJ.handleException(ex);
         }
     }
     

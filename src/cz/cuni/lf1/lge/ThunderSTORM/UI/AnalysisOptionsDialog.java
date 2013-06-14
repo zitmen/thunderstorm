@@ -3,10 +3,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.UI;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
@@ -19,7 +17,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -170,11 +167,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         activeDetector.readParameters();
         activeEstimator.readParameters();
         activeRenderer.readParameters();
-      } catch (ThresholdFormulaException ex) {
-        IJ.error("Thresholding: " + ex.getMessage());
-        return;
       } catch (Exception ex) {
-        IJ.error("Error: " + ex.getMessage());
+        IJ.error("Error parsing parameters: " + ex.toString());
         return;
       }
       //
@@ -190,10 +184,9 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         activeFilter.readParameters();
         activeDetector.readParameters();
         activeEstimator.readParameters();
-      } catch (ThresholdFormulaException ex) {
-        IJ.log("Thresholding: " + ex.getMessage());
       } catch (Exception ex) {
-        IJ.log(ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+        IJ.error("Error parsing parameters: " + ex.toString());
+        return;
       }
       if (previewFuture != null) {
         previewFuture.cancel(true);
@@ -234,12 +227,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
           } catch (InterruptedException ex) {
             IJ.showStatus("Preview interrupted.");
           } catch (Exception ex) {
-            IJ.log(ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+            IJ.handleException(ex);
           }
         }
       });
-
-
 
     } else {
       throw new UnsupportedOperationException("Command '" + e.getActionCommand() + "' is not supported!");
@@ -291,7 +282,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     try {
       semaphore.acquire();
     } catch (InterruptedException ex) {
-      IJ.error(ex.getMessage());
+      IJ.handleException(ex);
     }
     return canceled;
   }

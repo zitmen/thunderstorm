@@ -3,7 +3,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.UI;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -20,7 +19,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -39,7 +37,7 @@ import javax.swing.JTextField;
  *
  */
 public class CalibrationDialog extends JDialog implements ActionListener {
-
+  
   private CardsPanel<IFilterUI> filters;
   private CardsPanel<IDetectorUI> detectors;
   private CardsPanel<IEstimatorUI> estimators;
@@ -50,7 +48,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
   private int dialogResult = JOptionPane.CLOSED_OPTION;
   ExecutorService previewThredRunner = Executors.newSingleThreadExecutor();
   Future<?> previewFuture = null;
-
+  
   public CalibrationDialog(List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators) {
     super(IJ.getInstance(), "Calibration options");
     this.filters = new CardsPanel<IFilterUI>(filters, 0);
@@ -59,7 +57,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
     semaphore = new Semaphore(0);
     addComponentsToPane();
   }
-
+  
   private void addComponentsToPane() {
     Container pane = getContentPane();
     //
@@ -71,14 +69,14 @@ public class CalibrationDialog extends JDialog implements ActionListener {
     componentConstraints.weightx = 1;
     GridBagConstraints lineConstraints = (GridBagConstraints) componentConstraints.clone();
     lineConstraints.insets = new Insets(0, 0, 0, 0);
-
+    
     pane.add(filters.getPanel("Filters: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
     pane.add(detectors.getPanel("Detectors: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
     pane.add(estimators.getPanel("Estimator: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-
+    
     JPanel aditionalOptions = new JPanel(new GridBagLayout());
     aditionalOptions.add(new JLabel("Save to: "), GridBagHelper.leftCol());
     JPanel calibrationPanel = new JPanel(new BorderLayout());
@@ -90,9 +88,9 @@ public class CalibrationDialog extends JDialog implements ActionListener {
     gbc.fill = GridBagConstraints.HORIZONTAL;
     aditionalOptions.add(calibrationPanel, gbc);
     pane.add(aditionalOptions, componentConstraints);
-
+    
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-
+    
     preview = new JButton("Preview");
     ok = new JButton("OK");
     cancel = new JButton("Cancel");
@@ -110,26 +108,26 @@ public class CalibrationDialog extends JDialog implements ActionListener {
     getRootPane().setDefaultButton(ok);
     pack();
   }
-
+  
   @Override
   public void actionPerformed(ActionEvent e) {
     if ("Preview".equals(e.getActionCommand())) {
       final ImagePlus imp = IJ.getImage();
       Thresholder.setActiveFilter(filters.getActiveComboBoxItemIndex());
-      //
+      // parse parameters
       try {
         filters.getActiveComboBoxItem().readParameters();
         detectors.getActiveComboBoxItem().readParameters();
         estimators.getActiveComboBoxItem().readParameters();
-
-      } catch (ThresholdFormulaException ex) {
-        IJ.log("Thresholding: " + ex.getMessage());
       } catch (Exception ex) {
-        IJ.log(ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+        IJ.error("Error parsing parameters: " + ex.toString());
+        return;
       }
+      //if another preview task is still running, cancel it
       if (previewFuture != null) {
         previewFuture.cancel(true);
       }
+      //do the preview task
       previewFuture = previewThredRunner.submit(new Runnable() {
         void checkForInterruption() throws InterruptedException {
           if (Thread.interrupted()) {
@@ -140,7 +138,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
             throw new InterruptedException();
           }
         }
-
+        
         @Override
         public void run() {
           try {
@@ -164,11 +162,11 @@ public class CalibrationDialog extends JDialog implements ActionListener {
           } catch (InterruptedException ex) {
             IJ.showStatus("Preview interrupted.");
           } catch (Exception ex) {
-            IJ.log(ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+            IJ.handleException(ex);
           }
         }
       });
-
+      
     } else if ("Find".equals(e.getActionCommand())) {
       JFileChooser fileChooser = new JFileChooser(IJ.getDirectory("image"));
       int userAction = fileChooser.showSaveDialog(null);
@@ -185,34 +183,37 @@ public class CalibrationDialog extends JDialog implements ActionListener {
         dialogResult = JOptionPane.OK_OPTION;
         dispose();
       } catch (Exception ex) {
-        IJ.error(ex.toString());
+        IJ.error("Error parsing parameters: " + ex.toString());
       }
     } else if ("Cancel".equals(e.getActionCommand())) {
       dialogResult = JOptionPane.CANCEL_OPTION;
       dispose();
     }
   }
-
+  
   public IFilterUI getActiveFilterUI() {
     return filters.getActiveComboBoxItem();
   }
-
+  
   public IDetectorUI getActiveDetectorUI() {
     return detectors.getActiveComboBoxItem();
   }
-
+  
   public IEstimatorUI getActiveEstimatorUI() {
     return estimators.getActiveComboBoxItem();
   }
-
+  
   public String getSavePath() {
     return calibrationFileTextField.getText();
   }
-
+  
   @Override
   public void dispose() {
     semaphore.release();
     super.dispose();
+    if (previewThredRunner != null) {
+      previewThredRunner.shutdownNow();
+    }
   }
 
   /**
@@ -226,7 +227,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
     try {
       semaphore.acquire();
     } catch (InterruptedException ex) {
-      IJ.error(ex.getMessage());
+      IJ.handleException(ex);
     }
     return dialogResult;
   }

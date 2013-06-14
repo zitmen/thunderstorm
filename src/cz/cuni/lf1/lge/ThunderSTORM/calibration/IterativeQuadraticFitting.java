@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
@@ -8,7 +7,6 @@ import org.apache.commons.math3.fitting.CurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.*;
-import ij.IJ;
 
 /**
  *
@@ -26,7 +24,7 @@ public class IterativeQuadraticFitting {
       intersection = (Math.abs(intersection1 - quadratic1[0]) < Math.abs(intersection2 - quadratic1[0])) ? intersection1 : intersection2;
     }
 
-    IJ.log("intersection: " + intersection);
+    //IJ.log("intersection: " + intersection);
     quadratic1[0] -= intersection;
     quadratic2[0] -= intersection;
     return intersection;
@@ -122,7 +120,7 @@ class QuadraticFunction implements ParametricUnivariateFunction {
   public double[] gradient(double x, double... parameters) {
     double xsubx0 = x - parameters[0];
     double[] gradients = new double[3];
-    gradients[0] = -2*parameters[1] * xsubx0;
+    gradients[0] = -2 * parameters[1] * xsubx0;
     gradients[1] = xsubx0 * xsubx0;
     gradients[2] = 1;
     return gradients;

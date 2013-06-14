@@ -3,12 +3,9 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
@@ -34,7 +31,6 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * ThunderSTORM Analysis plugin.
@@ -124,21 +120,15 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
     // Use an appropriate Look and Feel
     try {
-      UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
       //UIManager.put("swing.boldMetal", Boolean.FALSE);
-    } catch (UnsupportedLookAndFeelException ex) {
-      IJ.error(ex.getMessage());
-    } catch (IllegalAccessException ex) {
-      IJ.error(ex.getMessage());
-    } catch (InstantiationException ex) {
-      IJ.error(ex.getMessage());
-    } catch (ClassNotFoundException ex) {
-      IJ.error(ex.getMessage());
+    } catch (Exception ex) {
+      IJ.handleException(ex);
     }
 
-    // Create and set up the content pane.
     try {
+      // load modules
       List<IFilterUI> filters = ThreadLocalWrapper.wrapFilters(ModuleLoader.getUIModules(IFilterUI.class));
       List<IDetectorUI> detectors = ThreadLocalWrapper.wrapDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
       List<IEstimatorUI> estimators = ThreadLocalWrapper.wrapEstimators(ModuleLoader.getUIModules(IEstimatorUI.class));
@@ -187,7 +177,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         return pluginFlags; // ok
       }
     } catch (Exception ex) {
-      IJ.error(ex.getMessage());
+      IJ.handleException(ex);
       return DONE;
     }
   }
@@ -230,7 +220,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
               selectedDetector.getImplementation().detectMoleculeCandidates(
               selectedFilter.getImplementation().filterImage(fp)));
     } catch (Exception ex) {
-      IJ.error("Thresholding: " + ex.getMessage());
+      IJ.handleException(ex);
     }
     //
     results[ip.getSliceNumber()] = fits;
