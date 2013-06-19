@@ -126,9 +126,9 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
       @Override
       public void run(int i) {
+        FloatProcessor fp = (FloatProcessor) stack.getProcessor(i).crop().convertToFloat();
         Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
-                selectedDetectorUI.getImplementation().detectMoleculeCandidates(
-                selectedFilterUI.getImplementation().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
+                selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp)));
         framesProcessed.incrementAndGet();
 
         for (Iterator<PSFInstance> iterator = fits.iterator(); iterator.hasNext();) {
@@ -163,9 +163,9 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
       @Override
       public void run(int i) {
         //fit elliptic gaussians
+        FloatProcessor fp = (FloatProcessor) stack.getProcessor(i).crop().convertToFloat();
         Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
-                selectedDetectorUI.getImplementation().detectMoleculeCandidates(
-                selectedFilterUI.getImplementation().filterImage((FloatProcessor) stack.getProcessor(i).convertToFloat())));
+                selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp)));
         framesProcessed.incrementAndGet();
 
         for (PSFInstance fit : fits) {

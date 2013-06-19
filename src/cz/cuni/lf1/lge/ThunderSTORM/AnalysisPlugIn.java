@@ -44,7 +44,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
   private int stackSize;
   private AtomicInteger nProcessed = new AtomicInteger(0);
-  private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING;
+  private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING | SUPPORTS_MASKING;
   private List<PSFInstance>[] results;
   private IFilterUI selectedFilter;
   private IEstimatorUI selectedEstimator;
@@ -93,7 +93,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       // Show detections in the image
       imp.setOverlay(null);
       for (int frame = 1; frame <= stackSize; frame++) {
-        RenderingOverlay.showPointsInImageSlice(imp, extractX(results[frame]), extractY(results[frame]), frame, Color.red, RenderingOverlay.MARKER_CROSS);
+        RenderingOverlay.showPointsInImageSlice(imp, offset(imp.getRoi().getBounds().x, extractX(results[frame])), offset(imp.getRoi().getBounds().y, extractY(results[frame])), frame, Color.red, RenderingOverlay.MARKER_CROSS);
       }
       renderingQueue.repaintLater();
       //
@@ -149,7 +149,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         selectedEstimator = parser.getEstimatorUI();
 
         IRendererUI rendererPanel = parser.getRendererUI();
-        rendererPanel.setSize(imp.getWidth(), imp.getHeight());
+        rendererPanel.setSize(imp.getRoi().getBounds().width, imp.getRoi().getBounds().height);
         renderingQueue = rendererPanel.getImplementation();
         return pluginFlags;
       } else {
@@ -164,7 +164,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         selectedEstimator = dialog.getEstimator();
 
         IRendererUI rendererPanel = dialog.getRenderer();
-        rendererPanel.setSize(imp.getWidth(), imp.getHeight());
+        rendererPanel.setSize(imp.getRoi().getBounds().width, imp.getRoi().getBounds().height);
         renderingQueue = rendererPanel.getImplementation();
 
         //if recording window is open, record parameters of all modules
@@ -212,7 +212,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     assert (selectedEstimator != null) : "Estimator was not selected!";
     assert (renderingQueue != null) : "Renderer was not selected!";
     //
-    FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
+    FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
     Vector<PSFInstance> fits = null;
     try {
       fits = selectedEstimator.getImplementation().estimateParameters(
@@ -231,6 +231,13 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
     IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
 
+  }
+  
+  private double[] offset(double offset, double [] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      arr[i] = arr[i] + offset;
+    }
+    return arr;
   }
 
   private double[] extractX(List<PSFInstance> fits) {

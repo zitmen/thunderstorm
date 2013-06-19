@@ -12,10 +12,11 @@ import java.util.Vector;
 public interface IDetector extends IModule{
     /**
      * Detect molecules in {@code image} and return list of their X,Y positions.
+     * All detectors should support detection in ROI (Region Of Interest).
+     * If the ROI is non-rectangle shape, then mask is not null and contains
+     * an input image masked by the ROI.
      *
      * @param image an input (filtered) image
-     * @return a Vector of instances of Points with their X,Y coordinates set to
-     *         the positions where possible modelules were found
      * 
      * @see Point
      */

@@ -206,7 +206,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         public void run() {
           try {
             IJ.showStatus("Creating preview image.");
-            FloatProcessor fp = (FloatProcessor) imp.getProcessor().convertToFloat();
+            FloatProcessor fp = (FloatProcessor) imp.getProcessor().crop().convertToFloat();
             FloatProcessor filtered = activeFilter.getImplementation().filterImage(fp);
             checkForInterruption();
             Vector<Point> detections = activeDetector.getImplementation().detectMoleculeCandidates(filtered);
@@ -221,7 +221,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
               yCoord[i] = results.elementAt(i).getY();
             }
             //
-            ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().duplicate());
+            ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
             RenderingOverlay.showPointsInImage(impPreview, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
             impPreview.show();
           } catch (InterruptedException ex) {

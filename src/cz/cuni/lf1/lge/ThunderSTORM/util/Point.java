@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.round;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.ceil;
+import java.awt.Rectangle;
 import java.util.Comparator;
 
 /**
