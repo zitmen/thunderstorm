@@ -10,6 +10,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.ResultsTable;
@@ -50,6 +51,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   private IEstimatorUI selectedEstimator;
   private IDetectorUI selectedDetector;
   private IRenderer renderingQueue;
+  private ImagePlus imgPlus;
 
   /**
    * Returns flags specifying capabilities of the plugin.
@@ -102,6 +104,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       IJ.showStatus("ThunderSTORM finished.");
       return DONE;
     } else {
+      imgPlus = imp;
       return pluginFlags; // Grayscale only, no changes to the image and therefore no undo
     }
   }
@@ -217,8 +220,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     try {
       fits = selectedEstimator.getImplementation().estimateParameters(
               fp,
-              selectedDetector.getImplementation().detectMoleculeCandidates(
-              selectedFilter.getImplementation().filterImage(fp)));
+              Point.applyRoiMask(imgPlus.getRoi(),
+                selectedDetector.getImplementation().detectMoleculeCandidates(
+                  selectedFilter.getImplementation().filterImage(fp))));
     } catch (Exception ex) {
       IJ.handleException(ex);
     }

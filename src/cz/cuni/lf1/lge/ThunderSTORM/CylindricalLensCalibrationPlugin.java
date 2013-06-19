@@ -13,6 +13,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -128,7 +129,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
       public void run(int i) {
         FloatProcessor fp = (FloatProcessor) stack.getProcessor(i).crop().convertToFloat();
         Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
-                selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp)));
+                Point.applyRoiMask(imp.getRoi(), selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp))));
         framesProcessed.incrementAndGet();
 
         for (Iterator<PSFInstance> iterator = fits.iterator(); iterator.hasNext();) {
@@ -165,7 +166,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         //fit elliptic gaussians
         FloatProcessor fp = (FloatProcessor) stack.getProcessor(i).crop().convertToFloat();
         Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
-                selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp)));
+                Point.applyRoiMask(imp.getRoi(), selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp))));
         framesProcessed.incrementAndGet();
 
         for (PSFInstance fit : fits) {

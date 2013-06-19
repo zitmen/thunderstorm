@@ -145,7 +145,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
             FloatProcessor fp = (FloatProcessor) imp.getProcessor().crop().convertToFloat();
             FloatProcessor filtered = getActiveFilterUI().getImplementation().filterImage(fp);
             checkForInterruption();
-            List<Point> detections = getActiveDetectorUI().getImplementation().detectMoleculeCandidates(filtered);
+            List<Point> detections = Point.applyRoiMask(imp.getRoi(), getActiveDetectorUI().getImplementation().detectMoleculeCandidates(filtered));
             checkForInterruption();
             //
             double[] xCoord = new double[detections.size()];

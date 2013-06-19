@@ -2,8 +2,10 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.round;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.ceil;
+import ij.gui.Roi;
 import java.awt.Rectangle;
 import java.util.Comparator;
+import java.util.Vector;
 
 /**
  * The class encapsulates X,Y representation of a single point and its
@@ -367,5 +369,17 @@ public class Point<T extends Number> {
             if(px1 == px2) return (int) ceil(py1 - py2);
             return (int) ceil(px1 - px2);
         }
+    }
+    
+    public static Vector<Point> applyRoiMask(Roi roi, Vector<Point> detections) {
+      for(int i = 0; i < detections.size(); ) {
+        Point pt = detections.elementAt(i);
+        if(!roi.contains(pt.x.intValue() + roi.getBounds().x, pt.y.intValue() + roi.getBounds().y)) {
+          detections.removeElementAt(i);
+        } else {
+          i++;
+        }
+      }
+      return detections;
     }
 }

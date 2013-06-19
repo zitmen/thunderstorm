@@ -209,7 +209,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             FloatProcessor fp = (FloatProcessor) imp.getProcessor().crop().convertToFloat();
             FloatProcessor filtered = activeFilter.getImplementation().filterImage(fp);
             checkForInterruption();
-            Vector<Point> detections = activeDetector.getImplementation().detectMoleculeCandidates(filtered);
+            Vector<Point> detections = Point.applyRoiMask(imp.getRoi(), activeDetector.getImplementation().detectMoleculeCandidates(filtered));
             checkForInterruption();
             Vector<PSFInstance> results = activeEstimator.getImplementation().estimateParameters(fp, detections);
             checkForInterruption();
