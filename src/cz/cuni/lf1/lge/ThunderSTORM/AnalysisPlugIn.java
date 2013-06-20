@@ -11,6 +11,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.ResultsTable;
@@ -45,7 +46,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
   private int stackSize;
   private AtomicInteger nProcessed = new AtomicInteger(0);
-  private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING;
+  private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING | SUPPORTS_MASKING;
   private List<PSFInstance>[] results;
   private IFilterUI selectedFilter;
   private IEstimatorUI selectedEstimator;
@@ -105,8 +106,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       imp.setOverlay(null);
       for (int frame = 1; frame <= stackSize; frame++) {
         RenderingOverlay.showPointsInImageSlice(imp,
-                PSFInstance.extractParamToArray(results[frame], PSFInstance.X),
-                PSFInstance.extractParamToArray(results[frame], PSFInstance.Y),
+                offset(imp.getRoi().getBounds().x,PSFInstance.extractParamToArray(results[frame], PSFInstance.X)),
+                offset(imp.getRoi().getBounds().y,PSFInstance.extractParamToArray(results[frame], PSFInstance.Y)),
                 frame, Color.red, RenderingOverlay.MARKER_CROSS);
       }
       renderingQueue.repaintLater();
@@ -116,6 +117,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       IJ.showStatus("ThunderSTORM finished.");
       return DONE;
     } else {
+      imgPlus = imp;
       return pluginFlags; // Grayscale only, no changes to the image and therefore no undo
     }
   }
@@ -163,7 +165,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         selectedEstimator = parser.getEstimatorUI();
 
         IRendererUI rendererPanel = parser.getRendererUI();
-        rendererPanel.setSize(imp.getWidth(), imp.getHeight());
+        rendererPanel.setSize(imp.getRoi().getBounds().width, imp.getRoi().getBounds().height);
         IncrementalRenderingMethod method = rendererPanel.getImplementation();
         renderedImage = method.getRenderedImage();
         renderingQueue = new RenderingQueue(method, repaintTask, rendererPanel.getRepaintFrequency());
@@ -180,7 +182,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         selectedEstimator = dialog.getEstimator();
 
         IRendererUI selectedRenderer = dialog.getRenderer();
-        selectedRenderer.setSize(imp.getWidth(), imp.getHeight());
+        selectedRenderer.setSize(imp.getRoi().getBounds().width, imp.getRoi().getBounds().height);
         IncrementalRenderingMethod method = selectedRenderer.getImplementation();
         renderedImage = method.getRenderedImage();
         renderingQueue = new RenderingQueue(method, repaintTask, selectedRenderer.getRepaintFrequency());
@@ -230,13 +232,14 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     assert (selectedEstimator != null) : "Estimator was not selected!";
     assert (renderingQueue != null) : "Renderer was not selected!";
     //
-    FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
+    FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
     Vector<PSFInstance> fits;
     try {
       fits = selectedEstimator.getImplementation().estimateParameters(
               fp,
+              Point.applyRoiMask(imgPlus.getRoi(),
               selectedDetector.getImplementation().detectMoleculeCandidates(
-              selectedFilter.getImplementation().filterImage(fp)));
+              selectedFilter.getImplementation().filterImage(fp))));
 
       //
       results[ip.getSliceNumber()] = fits;
@@ -255,5 +258,11 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     } catch (Exception ex) {
       IJ.handleException(ex);
     }
+  }
+ private double[] offset(double offset, double [] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      arr[i] = arr[i] + offset;
+    }
+    return arr;
   }
 }

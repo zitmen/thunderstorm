@@ -17,7 +17,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -143,10 +142,10 @@ public class CalibrationDialog extends JDialog implements ActionListener {
         public void run() {
           try {
             IJ.showStatus("Creating preview image.");
-            FloatProcessor fp = (FloatProcessor) imp.getProcessor().convertToFloat();
+            FloatProcessor fp = (FloatProcessor) imp.getProcessor().crop().convertToFloat();
             FloatProcessor filtered = getActiveFilterUI().getImplementation().filterImage(fp);
             checkForInterruption();
-            List<Point> detections = getActiveDetectorUI().getImplementation().detectMoleculeCandidates(filtered);
+            List<Point> detections = Point.applyRoiMask(imp.getRoi(), getActiveDetectorUI().getImplementation().detectMoleculeCandidates(filtered));
             checkForInterruption();
             //
             double[] xCoord = new double[detections.size()];
@@ -156,7 +155,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
               yCoord[i] = detections.get(i).getY().doubleValue();
             }
             //
-            ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().duplicate());
+            ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
             RenderingOverlay.showPointsInImage(impPreview, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
             impPreview.show();
           } catch (InterruptedException ex) {
