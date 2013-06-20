@@ -51,6 +51,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   private IFilterUI selectedFilter;
   private IEstimatorUI selectedEstimator;
   private IDetectorUI selectedDetector;
+  ImagePlus imgPlus;
   private RenderingQueue renderingQueue;
   private ImagePlus renderedImage;
   private Runnable repaintTask = new Runnable() {
@@ -104,10 +105,12 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       //
       // Show detections in the image
       imp.setOverlay(null);
+      int xOffset = imp.getRoi() != null ? imp.getRoi().getBounds().x : 0;
+      int yOffset = imp.getRoi() != null ? imp.getRoi().getBounds().y : 0;
       for (int frame = 1; frame <= stackSize; frame++) {
         RenderingOverlay.showPointsInImageSlice(imp,
-                offset(imp.getRoi().getBounds().x,PSFInstance.extractParamToArray(results[frame], PSFInstance.X)),
-                offset(imp.getRoi().getBounds().y,PSFInstance.extractParamToArray(results[frame], PSFInstance.Y)),
+                offset(xOffset, PSFInstance.extractParamToArray(results[frame], PSFInstance.X)),
+                offset(yOffset, PSFInstance.extractParamToArray(results[frame], PSFInstance.Y)),
                 frame, Color.red, RenderingOverlay.MARKER_CROSS);
       }
       renderingQueue.repaintLater();
@@ -182,7 +185,11 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         selectedEstimator = dialog.getEstimator();
 
         IRendererUI selectedRenderer = dialog.getRenderer();
-        selectedRenderer.setSize(imp.getRoi().getBounds().width, imp.getRoi().getBounds().height);
+        if (imp.getRoi() != null) {
+          selectedRenderer.setSize(imp.getRoi().getBounds().width, imp.getRoi().getBounds().height);
+        } else {
+          selectedRenderer.setSize(imp.getWidth(), imp.getHeight());
+        }
         IncrementalRenderingMethod method = selectedRenderer.getImplementation();
         renderedImage = method.getRenderedImage();
         renderingQueue = new RenderingQueue(method, repaintTask, selectedRenderer.getRepaintFrequency());
@@ -259,9 +266,12 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       IJ.handleException(ex);
     }
   }
- private double[] offset(double offset, double [] arr) {
-    for (int i = 0; i < arr.length; i++) {
-      arr[i] = arr[i] + offset;
+
+  private double[] offset(double offset, double[] arr) {
+    if (offset != 0) {
+      for (int i = 0; i < arr.length; i++) {
+        arr[i] = arr[i] + offset;
+      }
     }
     return arr;
   }
