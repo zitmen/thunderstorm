@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
-import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -14,16 +13,16 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
-public class RenderingQueue implements IRenderer {
+public class RenderingQueue {
 
-  BlockingQueue<RenderTask> queue = new LinkedBlockingQueue<RenderTask>();
+  BlockingQueue<RenderTask> queue = null;
   RenderingThread thread;
   Runnable repaintTask;
 
   /**
    * Example: new RenderingQueue(method, new Runnable(){public void
-   * run(){image.repaint();}},10) will call image.repaint() after executing
-   * every 10 tasks (either renderLater,invokeLater or repaintLater)
+   * run(){image.repaint();}},10) will call image.repaint() every 10 tasks
+   * executed (either renderLater,invokeLater or repaintLater)
    *
    * @param method rendering method
    * @param repaintTask Runnable, which will be called after executing every
@@ -31,28 +30,30 @@ public class RenderingQueue implements IRenderer {
    * @param repaintFrequency specifies how often to call repaintTask.run().
    */
   public RenderingQueue(IncrementalRenderingMethod method, Runnable repaintTask, int repaintFrequency) {
-    this.repaintTask = repaintTask;
-    thread = new RenderingThread(this, repaintTask, repaintFrequency, queue, method);
-    thread.start();
+    if (method != null && repaintFrequency > 0) {
+      queue = new LinkedBlockingQueue<RenderTask>();
+      this.repaintTask = repaintTask;
+      thread = new RenderingThread(this, repaintTask, repaintFrequency, queue, method);
+      thread.start();
+    }
   }
 
-  @Override
-  public void renderLater(double[] x, double[] y, double dx) {
-    queue.add(new FixedDXTask(x, y, dx));
+  public void renderLater(double[] x, double[] y, double[] z, double[] dx) {
+    if (queue != null) {
+      queue.add(new VariableDXTask(x, y, z, dx));
+    }
   }
 
-  @Override
-  public void renderLater(double[] x, double[] y, double[] dx) {
-    queue.add(new VariableDXTask(x, y, dx));
-  }
-
-  @Override
   public void repaintLater() {
-    queue.add(new InvokeTask(repaintTask));
+    if (queue != null) {
+      queue.add(new InvokeTask(repaintTask));
+    }
   }
 
   public void invokeLater(Runnable r) {
-    queue.add(new InvokeTask(r));
+    if (queue != null) {
+      queue.add(new InvokeTask(r));
+    }
   }
 }
 
@@ -102,36 +103,20 @@ interface RenderTask {
   public void doTask(IncrementalRenderingMethod method);
 }
 
-class FixedDXTask implements RenderTask {
-
-  double[] x, y;
-  double dx;
-
-  public FixedDXTask(double[] x, double[] y, double dx) {
-    this.x = x;
-    this.y = y;
-    this.dx = dx;
-  }
-
-  @Override
-  public void doTask(IncrementalRenderingMethod method) {
-    method.addToImage(x, y, dx);
-  }
-}
-
 class VariableDXTask implements RenderTask {
 
-  double[] x, y, dx;
+  double[] x, y, z, dx;
 
-  public VariableDXTask(double[] x, double[] y, double[] dx) {
+  public VariableDXTask(double[] x, double[] y, double[] z, double[] dx) {
     this.x = x;
     this.y = y;
+    this.z = z;
     this.dx = dx;
   }
 
   @Override
   public void doTask(IncrementalRenderingMethod method) {
-    method.addToImage(x, y, dx);
+    method.addToImage(x, y, z, dx);
   }
 }
 

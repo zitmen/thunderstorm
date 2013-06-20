@@ -214,15 +214,11 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             Vector<PSFInstance> results = activeEstimator.getImplementation().estimateParameters(fp, detections);
             checkForInterruption();
             //
-            double[] xCoord = new double[results.size()];
-            double[] yCoord = new double[results.size()];
-            for (int i = 0; i < results.size(); i++) {
-              xCoord[i] = results.elementAt(i).getX();
-              yCoord[i] = results.elementAt(i).getY();
-            }
-            //
             ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().duplicate());
-            RenderingOverlay.showPointsInImage(impPreview, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
+            RenderingOverlay.showPointsInImage(impPreview, 
+                    PSFInstance.extractParamToArray(results, PSFInstance.X),
+                    PSFInstance.extractParamToArray(results, PSFInstance.Y),
+                    Color.red, RenderingOverlay.MARKER_CROSS);
             impPreview.show();
           } catch (InterruptedException ex) {
             IJ.showStatus("Preview interrupted.");

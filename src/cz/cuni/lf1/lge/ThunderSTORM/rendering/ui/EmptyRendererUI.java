@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import javax.swing.JPanel;
 
 /**
@@ -28,27 +28,20 @@ public class EmptyRendererUI implements IRendererUI {
   }
 
   @Override
-  public IRenderer getImplementation() {
-    return new IRenderer() {
-      @Override
-      public void renderLater(double[] x, double[] y, double dx) {
-      }
-
-      @Override
-      public void renderLater(double[] x, double[] y, double[] dx) {
-      }
-
-      @Override
-      public void repaintLater() {
-      }
-    };
-  }
-
-  @Override
   public void recordOptions() {
   }
 
   @Override
   public void readMacroOptions(String options) {
+  }
+
+  @Override
+  public int getRepaintFrequency() {
+    return 0;
+  }
+
+  @Override
+  public IncrementalRenderingMethod getImplementation() {
+    return null;
   }
 }

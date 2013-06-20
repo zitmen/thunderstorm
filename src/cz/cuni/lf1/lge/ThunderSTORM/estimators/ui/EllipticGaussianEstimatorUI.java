@@ -10,6 +10,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.LSQ;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.IJ;
+import ij.Macro;
+import ij.plugin.frame.Recorder;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
@@ -31,6 +33,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
 
   JTextField calibrationFileTextField;
   JButton findCalibrationButton;
+  CylindricalLensCalibration calibration;
 
   @Override
   public String getName() {
@@ -58,38 +61,33 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
   @Override
   public void readParameters() {
     super.readParameters();
+    calibration = loadCalibration(calibrationFileTextField.getText());
   }
 
   @Override
   public IEstimator getImplementation() {
-    Yaml yaml = new Yaml();
-    try {
-      Object loaded = yaml.load(new FileReader(calibrationFileTextField.getText()));
-      CylindricalLensCalibration calibration = (CylindricalLensCalibration) loaded;
-      if (LSQ.equals(method)) {
-        LSQFitter fitter = new LSQFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
-        return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius / 2, fitter));
-      }
-      if (MLE.equals(method)) {
-        MLEFitter fitter = new MLEFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
-        return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius / 2, fitter));
-      }
-      throw new IllegalArgumentException("Unknown fitting method: " + method);
-    } catch (FileNotFoundException ex) {
-      throw new RuntimeException("Could not read calibration file.", ex);
-    } catch (ClassCastException ex) {
-      throw new RuntimeException("Could not parse calibration file.", ex);
+    if (LSQ.equals(method)) {
+      LSQFitter fitter = new LSQFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
+      return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius / 2, fitter));
     }
+    if (MLE.equals(method)) {
+      MLEFitter fitter = new MLEFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
+      return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius / 2, fitter));
+    }
+    throw new IllegalArgumentException("Unknown fitting method: " + method);
+
   }
 
   @Override
   public void recordOptions() {
     super.recordOptions();
+    Recorder.recordOption("calibrationfile", calibrationFileTextField.getText().replace("\\", "\\\\"));
   }
 
   @Override
   public void readMacroOptions(String options) {
     super.readMacroOptions(options);
+    calibration = loadCalibration(Macro.getValue(options, "calibrationfile", ""));
   }
 
   @Override
@@ -98,6 +96,18 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
     int userAction = fileChooser.showOpenDialog(null);
     if (userAction == JFileChooser.APPROVE_OPTION) {
       calibrationFileTextField.setText(fileChooser.getSelectedFile().getPath());
+    }
+  }
+
+  private CylindricalLensCalibration loadCalibration(String calibrationFilePath) {
+    try {
+      Yaml yaml = new Yaml();
+      Object loaded = yaml.load(new FileReader(calibrationFilePath));
+      return (CylindricalLensCalibration) loaded;
+    } catch (FileNotFoundException ex) {
+      throw new RuntimeException("Could not read calibration file.", ex);
+    } catch (ClassCastException ex) {
+      throw new RuntimeException("Could not parse calibration file.", ex);
     }
   }
 }

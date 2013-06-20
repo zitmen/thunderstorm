@@ -1,11 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.rendering.ASHRendering;
-import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
 import ij.Macro;
 import ij.plugin.frame.Recorder;
-import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;

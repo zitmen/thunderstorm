@@ -85,5 +85,13 @@ public class GridBagHelper {
       ret.anchor = GridBagConstraints.LINE_START;
       return ret;
     }
+    public static GridBagConstraints twoCols(){
+      GridBagConstraints ret = new GridBagConstraints();
+      ret.gridwidth = 2;
+      ret.gridx = 0;
+      ret.fill = GridBagConstraints.HORIZONTAL;
+      ret.anchor = GridBagConstraints.LINE_START;
+      return ret;
+    }
     
 }

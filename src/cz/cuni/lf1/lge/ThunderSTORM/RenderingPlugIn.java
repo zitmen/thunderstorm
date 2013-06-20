@@ -1,12 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import cz.cuni.lf1.rendering.ASHRendering;
-import cz.cuni.lf1.rendering.DensityRendering;
-import cz.cuni.lf1.rendering.HistogramRendering;
-import cz.cuni.lf1.rendering.RenderingMethod;
-import cz.cuni.lf1.rendering.ScatterRendering;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.DensityRendering;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRendering;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ScatterRendering;
 import ij.IJ;
-import ij.ImagePlus;
 import ij.gui.GenericDialog;
 import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
@@ -80,8 +79,6 @@ public class RenderingPlugIn implements PlugIn {
       }
     });
 
-
-
     gd.showDialog();
     if (gd.wasCanceled()) {
       return;
@@ -96,18 +93,18 @@ public class RenderingPlugIn implements PlugIn {
 
     RenderingMethod renderer;
     if ("Density".equals(selectedMethod)) {
-      renderer = new DensityRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).build();
+      renderer = new DensityRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).defaultDX(dx).build();
     } else if ("ASH".equals(selectedMethod)) {
-      renderer = new ASHRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).shifts(shifts).build();
+      renderer = new ASHRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).defaultDX(dx).shifts(shifts).build();
     } else if ("Histogram".equals(selectedMethod)) {
-      renderer = new HistogramRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).average(avg).build();
+      renderer = new HistogramRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).average(avg).defaultDX(dx).build();
     } else if ("Scatter".equals(selectedMethod)) {
-      renderer = new ScatterRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).build();
+      renderer = new ScatterRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).defaultDX(dx).build();
     } else {
       IJ.error("Unknown rendering method. " + selectedMethod);
       return;
     }
-    new ImagePlus(renderer.getClass().getSimpleName(), renderer.getRenderedImage(xpos, ypos, dx)).show();
+    renderer.getRenderedImage(xpos, ypos, null, null).show();
 
   }
 

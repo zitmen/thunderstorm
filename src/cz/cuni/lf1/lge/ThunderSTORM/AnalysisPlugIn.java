@@ -7,7 +7,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import ij.IJ;
@@ -49,7 +50,17 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   private IFilterUI selectedFilter;
   private IEstimatorUI selectedEstimator;
   private IDetectorUI selectedDetector;
-  private IRenderer renderingQueue;
+  private RenderingQueue renderingQueue;
+  private ImagePlus renderedImage;
+  private Runnable repaintTask = new Runnable() {
+    @Override
+    public void run() {
+      renderedImage.show();
+      if (renderedImage.isVisible()) {
+        IJ.run(renderedImage, "Enhance Contrast", "saturated=0.05");
+      }
+    }
+  };
 
   /**
    * Returns flags specifying capabilities of the plugin.
@@ -93,7 +104,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       // Show detections in the image
       imp.setOverlay(null);
       for (int frame = 1; frame <= stackSize; frame++) {
-        RenderingOverlay.showPointsInImageSlice(imp, extractX(results[frame]), extractY(results[frame]), frame, Color.red, RenderingOverlay.MARKER_CROSS);
+        RenderingOverlay.showPointsInImageSlice(imp,
+                PSFInstance.extractParamToArray(results[frame], PSFInstance.X),
+                PSFInstance.extractParamToArray(results[frame], PSFInstance.Y),
+                frame, Color.red, RenderingOverlay.MARKER_CROSS);
       }
       renderingQueue.repaintLater();
       //
@@ -150,7 +164,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
         IRendererUI rendererPanel = parser.getRendererUI();
         rendererPanel.setSize(imp.getWidth(), imp.getHeight());
-        renderingQueue = rendererPanel.getImplementation();
+        IncrementalRenderingMethod method = rendererPanel.getImplementation();
+        renderedImage = method.getRenderedImage();
+        renderingQueue = new RenderingQueue(method, repaintTask, rendererPanel.getRepaintFrequency());
         return pluginFlags;
       } else {
         // Create and show the dialog
@@ -163,16 +179,18 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         selectedDetector = dialog.getDetector();
         selectedEstimator = dialog.getEstimator();
 
-        IRendererUI rendererPanel = dialog.getRenderer();
-        rendererPanel.setSize(imp.getWidth(), imp.getHeight());
-        renderingQueue = rendererPanel.getImplementation();
+        IRendererUI selectedRenderer = dialog.getRenderer();
+        selectedRenderer.setSize(imp.getWidth(), imp.getHeight());
+        IncrementalRenderingMethod method = selectedRenderer.getImplementation();
+        renderedImage = method.getRenderedImage();
+        renderingQueue = new RenderingQueue(method, repaintTask, selectedRenderer.getRepaintFrequency());
 
         //if recording window is open, record parameters of all modules
         if (Recorder.record) {
           MacroParser.recordFilterUI(dialog.getFilter());
           MacroParser.recordDetectorUI(dialog.getDetector());
           MacroParser.recordEstimatorUI(dialog.getEstimator());
-          MacroParser.recordRendererUI(rendererPanel);
+          MacroParser.recordRendererUI(selectedRenderer);
         }
         return pluginFlags; // ok
       }
@@ -213,39 +231,29 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     assert (renderingQueue != null) : "Renderer was not selected!";
     //
     FloatProcessor fp = (FloatProcessor) ip.convertToFloat();
-    Vector<PSFInstance> fits = null;
+    Vector<PSFInstance> fits;
     try {
       fits = selectedEstimator.getImplementation().estimateParameters(
               fp,
               selectedDetector.getImplementation().detectMoleculeCandidates(
               selectedFilter.getImplementation().filterImage(fp)));
+
+      //
+      results[ip.getSliceNumber()] = fits;
+      nProcessed.incrementAndGet();
+
+      if (fits.size() > 0) {
+        renderingQueue.renderLater(
+                PSFInstance.extractParamToArray(fits, PSFInstance.X),
+                PSFInstance.extractParamToArray(fits, PSFInstance.Y),
+                fits.get(0).hasParam(PSFInstance.Z) ? PSFInstance.extractParamToArray(fits, PSFInstance.Z) : null,
+                null);
+      }
+      //
+      IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
+      IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
     } catch (Exception ex) {
       IJ.handleException(ex);
     }
-    //
-    results[ip.getSliceNumber()] = fits;
-    nProcessed.incrementAndGet();
-
-    renderingQueue.renderLater(extractX(fits), extractY(fits), 0.2);
-    //
-    IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
-    IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
-
-  }
-
-  private double[] extractX(List<PSFInstance> fits) {
-    double[] x = new double[fits.size()];
-    for (int i = 0; i < fits.size(); i++) {
-      x[i] = fits.get(i).getX();
-    }
-    return x;
-  }
-
-  private double[] extractY(List<PSFInstance> fits) {
-    double[] y = new double[fits.size()];
-    for (int i = 0; i < fits.size(); i++) {
-      y[i] = fits.get(i).getY();
-    }
-    return y;
   }
 }

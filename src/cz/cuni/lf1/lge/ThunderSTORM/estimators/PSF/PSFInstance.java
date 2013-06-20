@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import java.util.AbstractMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -153,5 +154,13 @@ public class PSFInstance implements Iterable<Map.Entry<String, Double>> {
     }
     sb.append("]");
     return sb.toString();
+  }
+  
+  public static double[] extractParamToArray(List<PSFInstance> fits, String param) {
+    double[] array = new double[fits.size()];
+    for (int i = 0; i < fits.size(); i++) {
+      array[i] = fits.get(i).getParam(param);
+    }
+    return array;
   }
 }

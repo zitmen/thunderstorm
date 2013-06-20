@@ -1,9 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.IRenderer;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Macro;
@@ -19,13 +17,13 @@ import javax.swing.JTextField;
  */
 public abstract class AbstractRenderingUI implements IRendererUI {
 
-  protected double resolution;
-  protected int sizeX;
-  protected int sizeY;
-  protected int repaintFrequency;
-  protected JTextField resolutionTextField, repaintFrequencyTextField;
-  protected ImagePlus image;            //must be set in subclass
-  protected Runnable repaint = new Runnable() {
+  double resolution;
+  int sizeX;
+  int sizeY;
+  int repaintFrequency;
+  JTextField resolutionTextField, repaintFrequencyTextField;
+  ImagePlus image;            //must be set in subclass
+  Runnable repaint = new Runnable() {
     @Override
     public void run() {
       image.show();
@@ -49,6 +47,11 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   public void setSize(int sizeX, int sizeY) {
     this.sizeX = sizeX;
     this.sizeY = sizeY;
+  }
+
+  @Override
+  public int getRepaintFrequency() {
+    return repaintFrequency;
   }
 
   @Override
@@ -87,10 +90,8 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   }
 
   @Override
-  public IRenderer getImplementation() {
-    IncrementalRenderingMethod method = getMethod();
-    image = new ImagePlus(method.getClass().getSimpleName(), method.getRenderedImage());
-    return new RenderingQueue(method, repaint, repaintFrequency);
+  public IncrementalRenderingMethod getImplementation() {
+    return getMethod();
   }
 
   protected abstract IncrementalRenderingMethod getMethod();

@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
-import cz.cuni.lf1.rendering.IncrementalRenderingMethod;
-import cz.cuni.lf1.rendering.ScatterRendering;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ScatterRendering;
 
 /**
  *
