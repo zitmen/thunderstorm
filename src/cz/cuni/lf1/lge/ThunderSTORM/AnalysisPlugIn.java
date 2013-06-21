@@ -14,6 +14,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Roi;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.ExtendedPlugInFilter;
@@ -51,7 +52,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   private IFilterUI selectedFilter;
   private IEstimatorUI selectedEstimator;
   private IDetectorUI selectedDetector;
-  ImagePlus imgPlus;
+  Roi roi;
   private RenderingQueue renderingQueue;
   private ImagePlus renderedImage;
   private Runnable repaintTask = new Runnable() {
@@ -105,12 +106,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       //
       // Show detections in the image
       imp.setOverlay(null);
-      int xOffset = imp.getRoi() != null ? imp.getRoi().getBounds().x : 0;
-      int yOffset = imp.getRoi() != null ? imp.getRoi().getBounds().y : 0;
       for (int frame = 1; frame <= stackSize; frame++) {
         RenderingOverlay.showPointsInImageSlice(imp,
-                offset(xOffset, PSFInstance.extractParamToArray(results[frame], PSFInstance.X)),
-                offset(yOffset, PSFInstance.extractParamToArray(results[frame], PSFInstance.Y)),
+                offset(roi.getBounds().x, PSFInstance.extractParamToArray(results[frame], PSFInstance.X)),
+                offset(roi.getBounds().y, PSFInstance.extractParamToArray(results[frame], PSFInstance.Y)),
                 frame, Color.red, RenderingOverlay.MARKER_CROSS);
       }
       renderingQueue.repaintLater();
@@ -120,7 +119,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       IJ.showStatus("ThunderSTORM finished.");
       return DONE;
     } else {
-      imgPlus = imp;
       return pluginFlags; // Grayscale only, no changes to the image and therefore no undo
     }
   }
@@ -167,8 +165,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         selectedDetector = parser.getDetectorUI();
         selectedEstimator = parser.getEstimatorUI();
 
+        roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0,0,imp.getWidth(), imp.getHeight());
         IRendererUI rendererPanel = parser.getRendererUI();
-        rendererPanel.setSize(imp.getRoi().getBounds().width, imp.getRoi().getBounds().height);
+        rendererPanel.setSize(roi.getBounds().width, roi.getBounds().height);
         IncrementalRenderingMethod method = rendererPanel.getImplementation();
         renderedImage = method.getRenderedImage();
         renderingQueue = new RenderingQueue(method, repaintTask, rendererPanel.getRepaintFrequency());
@@ -184,12 +183,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         selectedDetector = dialog.getDetector();
         selectedEstimator = dialog.getEstimator();
 
+        roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0,0,imp.getWidth(), imp.getHeight());
         IRendererUI selectedRenderer = dialog.getRenderer();
-        if (imp.getRoi() != null) {
-          selectedRenderer.setSize(imp.getRoi().getBounds().width, imp.getRoi().getBounds().height);
-        } else {
-          selectedRenderer.setSize(imp.getWidth(), imp.getHeight());
-        }
+        selectedRenderer.setSize(roi.getBounds().width, roi.getBounds().height);
         IncrementalRenderingMethod method = selectedRenderer.getImplementation();
         renderedImage = method.getRenderedImage();
         renderingQueue = new RenderingQueue(method, repaintTask, selectedRenderer.getRepaintFrequency());
@@ -239,12 +235,13 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     assert (selectedEstimator != null) : "Estimator was not selected!";
     assert (renderingQueue != null) : "Renderer was not selected!";
     //
+    ip.setRoi(roi);
     FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
     Vector<PSFInstance> fits;
     try {
       fits = selectedEstimator.getImplementation().estimateParameters(
               fp,
-              Point.applyRoiMask(imgPlus.getRoi(),
+              Point.applyRoiMask(roi,
               selectedDetector.getImplementation().detectMoleculeCandidates(
               selectedFilter.getImplementation().filterImage(fp))));
 
