@@ -1,6 +1,5 @@
 package fiji.util.gui;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 
@@ -40,7 +39,6 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 /**
  * The GenericDialogPlus class enhances the GenericDialog by

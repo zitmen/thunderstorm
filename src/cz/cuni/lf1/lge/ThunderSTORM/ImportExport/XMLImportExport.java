@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
-import ij.measure.ResultsTable;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class XMLImportExport implements IImportExport {
     static final String ITEM = "molecule";
     
     @Override
-    public void importFromFile(String fp, ResultsTable rt) throws IOException {
+    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -52,7 +52,7 @@ public class XMLImportExport implements IImportExport {
                     
                     // an item element?
                     if (startElement.getName().getLocalPart().equals(ITEM)) {
-                        rt.incrementCounter();
+                        rt.addRow();
                         continue;
                     }
 
@@ -71,7 +71,7 @@ public class XMLImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, ResultsTable rt) throws IOException {
+    public void exportToFile(String fp, IJResultsTable rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -97,7 +97,7 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(resultsStartElement);
             eventWriter.add(end);
             
-            int ncols = rt.getLastColumn()+1, nrows = rt.getCounter();
+            int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
             String [] headers = new String[ncols];
             for(int c = 0; c < ncols; c++)
                 headers[c] = rt.getColumnHeading(c);

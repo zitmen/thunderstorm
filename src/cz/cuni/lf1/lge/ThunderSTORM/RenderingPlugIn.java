@@ -5,11 +5,11 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.DensityRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ScatterRendering;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.UI;
 import ij.IJ;
 import ij.gui.GenericDialog;
-import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
-import ij.plugin.filter.Analyzer;
 import java.awt.Choice;
 import java.awt.TextField;
 import java.awt.event.ItemEvent;
@@ -28,12 +28,14 @@ public class RenderingPlugIn implements PlugIn {
 
   @Override
   public void run(String string) {
-    ResultsTable rt = Analyzer.getResultsTable();
-    if (rt == null || !IJ.isResultsWindow()) {
+    UI.setLookAndFeel();
+    //
+    IJResultsTable rt = IJResultsTable.getResultsTable();
+    if (rt == null || !IJResultsTable.isResultsWindow()) {
       IJ.error("Requires Results window open");
       return;
     }
-    if (rt.getColumnIndex(LABEL_X_POS) == ResultsTable.COLUMN_NOT_FOUND || rt.getColumnIndex(LABEL_Y_POS) == ResultsTable.COLUMN_NOT_FOUND) {
+    if (!rt.columnExists(LABEL_X_POS) || !rt.columnExists(LABEL_Y_POS)) {
       IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, rt.getColumnHeadings()));
       return;
     }

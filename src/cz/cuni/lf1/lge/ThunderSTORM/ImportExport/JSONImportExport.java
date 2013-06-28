@@ -4,8 +4,8 @@ import com.json.generators.JSONGenerator;
 import com.json.generators.JsonGeneratorFactory;
 import com.json.parsers.JSONParser;
 import com.json.parsers.JsonParserFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
-import ij.measure.ResultsTable;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class JSONImportExport implements IImportExport {
     static final String ROOT = "results";
     
     @Override
-    public void importFromFile(String fp, ResultsTable rt) throws IOException {
+    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -39,7 +39,7 @@ public class JSONImportExport implements IImportExport {
         
         int r = 0, nrows = al.size();
         for(Object item : al) {
-            rt.incrementCounter();
+            rt.addRow();
             Iterator it = ((Map)item).entrySet().iterator();
             while(it.hasNext()) {
                 Map.Entry pairs = (Map.Entry)it.next();
@@ -51,8 +51,8 @@ public class JSONImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, ResultsTable rt) throws IOException {
-        int ncols = rt.getLastColumn()+1, nrows = rt.getCounter();
+    public void exportToFile(String fp, IJResultsTable rt) throws IOException {
+        int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
         String [] headers = new String[ncols];
         for(int c = 0; c < ncols; c++)
             headers[c] = rt.getColumnHeading(c);

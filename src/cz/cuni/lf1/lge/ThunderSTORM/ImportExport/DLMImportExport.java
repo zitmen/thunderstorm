@@ -2,8 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
-import ij.measure.ResultsTable;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,7 +19,7 @@ abstract public class DLMImportExport implements IImportExport {
     }
 
     @Override
-    public void importFromFile(String fp, ResultsTable rt) throws IOException {
+    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -38,7 +38,7 @@ abstract public class DLMImportExport implements IImportExport {
         }
         
         for(int r = 1, rm = lines.size(); r < rm; r++) {
-            rt.incrementCounter();
+            rt.addRow();
             for(int c = 0, cm = lines.get(r).length; c < cm; c++) {
                 rt.addValue(headers[c], Double.parseDouble(lines.get(r)[c]));
             }
@@ -47,12 +47,12 @@ abstract public class DLMImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, ResultsTable rt) throws IOException {
+    public void exportToFile(String fp, IJResultsTable rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        int ncols = rt.getLastColumn()+1, nrows = rt.getCounter();
+        int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
         LinkedList<String[]> lines = new LinkedList<String[]>();
         
         String [] headers = new String[ncols];

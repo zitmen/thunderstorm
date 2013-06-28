@@ -1,11 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.UI;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
-import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
-import ij.plugin.filter.Analyzer;
 import java.awt.Choice;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -20,6 +20,8 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
     
     @Override
     public void run(String command) {
+        UI.setLookAndFeel();
+        //
         try {
             ie = ModuleLoader.getModules(IImportExport.class);
             
@@ -60,8 +62,8 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
     }
 
     private void exportToFile(String fpath) throws IOException {
-        ResultsTable rt = Analyzer.getResultsTable();
-        if (rt == null || !IJ.isResultsWindow()) {
+        IJResultsTable rt = IJResultsTable.getResultsTable();
+        if (rt == null || !IJResultsTable.isResultsWindow()) {
             IJ.error("Requires Results window open!");
             return;
         }
@@ -75,10 +77,10 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
     }
     
     private void importFromFile(String fpath) throws IOException {
-        ResultsTable rt = Analyzer.getResultsTable();
-        if (rt == null || !IJ.isResultsWindow()) {
-            rt = new ResultsTable();
-            Analyzer.setResultsTable(rt);
+        IJResultsTable rt = IJResultsTable.getResultsTable();
+        if (rt == null || !IJResultsTable.isResultsWindow()) {
+            rt = new IJResultsTable();
+            IJResultsTable.setResultsTable(rt);
         }
         
         IJ.showStatus("ThunderSTORM is importing your file...");

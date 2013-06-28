@@ -10,13 +10,13 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.lge.ThunderSTORM.util.UI;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
-import ij.measure.ResultsTable;
-import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.ExtendedPlugInFilter;
 import static ij.plugin.filter.PlugInFilter.DOES_16;
 import static ij.plugin.filter.PlugInFilter.DOES_32;
@@ -83,26 +83,28 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
    */
   @Override
   public int setup(String command, ImagePlus imp) {
+    UI.setLookAndFeel();
+    //
     if (command.equals("final")) {
       IJ.showStatus("ThunderSTORM is generating the results...");
       //
       // Show table with results
-      ResultsTable rt = Analyzer.getResultsTable();
+      IJResultsTable rt = IJResultsTable.getResultsTable();
       if (rt == null) {
-        rt = new ResultsTable();
-        Analyzer.setResultsTable(rt);
+        rt = new IJResultsTable();
+        IJResultsTable.setResultsTable(rt);
       }
       rt.reset();
       for (int frame = 1; frame <= stackSize; frame++) {
         for (PSFInstance psf : results[frame]) {
-          rt.incrementCounter();
+          rt.addRow();
           rt.addValue("frame", frame);
           for (Map.Entry<String, Double> parameter : psf) {
             rt.addValue(parameter.getKey(), parameter.getValue());
           }
         }
       }
-      rt.show("Results");
+      rt.show();
       //
       // Show detections in the image
       imp.setOverlay(null);
@@ -117,6 +119,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       // Finished
       IJ.showProgress(1.0);
       IJ.showStatus("ThunderSTORM finished.");
+      return DONE;
+    } else if("showResultsTable".equals(command)) {
+      IJResultsTable.getResultsTable().show();
       return DONE;
     } else {
       return pluginFlags; // Grayscale only, no changes to the image and therefore no undo
@@ -135,15 +140,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
    */
   @Override
   public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
-    // Use an appropriate Look and Feel
-    try {
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-      //UIManager.put("swing.boldMetal", Boolean.FALSE);
-    } catch (Exception ex) {
-      IJ.handleException(ex);
-    }
-
     try {
       // load modules
       List<IFilterUI> filters = ThreadLocalWrapper.wrapFilters(ModuleLoader.getUIModules(IFilterUI.class));
