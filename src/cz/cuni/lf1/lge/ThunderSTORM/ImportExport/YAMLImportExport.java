@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
-import ij.measure.ResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import org.yaml.snakeyaml.Yaml;
 public class YAMLImportExport implements IImportExport {
 
     @Override
-    public void importFromFile(String fp, ResultsTable rt) throws IOException {
+    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -20,7 +20,7 @@ public class YAMLImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, ResultsTable rt) throws IOException {
+    public void exportToFile(String fp, IJResultsTable rt) throws IOException {
         // TODO
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("name", "Silenthand Olleander");
