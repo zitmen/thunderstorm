@@ -17,6 +17,7 @@ class ResultsFilter extends RowFilter {
     //
     try {
       // TODO: build the tree and run the filtering for all items at once in advance and store the results in the array of true/false values
+      // .!.
     } catch(Exception ex) {
       throw new IllegalArgumentException("Integer required!");
     }
