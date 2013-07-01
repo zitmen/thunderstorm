@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.gauss;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
@@ -74,8 +75,12 @@ public final class GaussianFilter extends ConvolutionFilter implements IFilter {
     }
 
     @Override
-    public HashMap<String, FloatProcessor> exportVariables() {
+    public HashMap<String, FloatProcessor> exportVariables(boolean reevaluate) {
         if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
+        //
+        if(reevaluate) {
+          filterImage(Thresholder.getCurrentImage());
+        }
         //
         export_variables.put("I", input);
         export_variables.put("F", result);

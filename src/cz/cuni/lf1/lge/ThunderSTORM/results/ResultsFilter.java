@@ -4,24 +4,27 @@ import javax.swing.RowFilter;
 
 class ResultsFilter extends RowFilter {
 
+  String filter;
+  ResultsTableModel table;
+  boolean [] results;
+  
   int limit;
   
-  public ResultsFilter(String text) throws IllegalArgumentException {
+  public ResultsFilter(ResultsTableModel model, String text) throws IllegalArgumentException {
+    table = model;
+    filter = text;
+    results = new boolean[table.getRowCount()];
+    //
     try {
-      limit = Integer.parseInt(text);
-    } catch(NumberFormatException ex) {
+      // TODO: build the tree and run the filtering for all items at once in advance and store the results in the array of true/false values
+    } catch(Exception ex) {
       throw new IllegalArgumentException("Integer required!");
     }
   }
 
   @Override
   public boolean include(Entry entry) {
-    ResultsTableModel model = (ResultsTableModel)entry.getModel();
-    int row = ((Integer)entry.getIdentifier()).intValue();
-    //for(int col = 0, colm = entry.getValueCount(); col < colm; col++) {
-      //
-    //}
-    return (((Double)model.getValueAt(row, 0)).intValue() <= limit);
+    return results[((Integer)entry.getIdentifier()).intValue()];
   }
 
 }

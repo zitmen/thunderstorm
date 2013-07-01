@@ -95,11 +95,13 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       }
       rt.reset();
       for (int frame = 1; frame <= stackSize; frame++) {
-        for (PSFInstance psf : results[frame]) {
-          rt.addRow();
-          rt.addValue("frame", frame);
-          for (Map.Entry<String, Double> parameter : psf) {
-            rt.addValue(parameter.getKey(), parameter.getValue());
+        if(results[frame] != null) {
+          for (PSFInstance psf : results[frame]) {
+            rt.addRow();
+            rt.addValue("frame", frame);
+            for (Map.Entry<String, Double> parameter : psf) {
+              rt.addValue(parameter.getKey(), parameter.getValue());
+            }
           }
         }
       }
@@ -234,6 +236,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
     Vector<PSFInstance> fits;
     try {
+      Thresholder.setCurrentImage(fp);
       fits = selectedEstimator.getImplementation().estimateParameters(
               fp,
               Point.applyRoiMask(roi,

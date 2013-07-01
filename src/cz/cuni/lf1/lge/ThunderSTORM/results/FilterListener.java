@@ -11,9 +11,11 @@ import javax.swing.table.TableRowSorter;
 class FilterListener implements ActionListener, KeyListener {
 
   private JTextField filter;
+  private ResultsTableModel model;
   private TableRowSorter<ResultsTableModel> sorter;
   
-  public FilterListener(TableRowSorter<ResultsTableModel> sorter, JTextField filter) {
+  public FilterListener(ResultsTableModel model, TableRowSorter<ResultsTableModel> sorter, JTextField filter) {
+    this.model = model;
     this.sorter = sorter;
     this.filter = filter;
   }
@@ -46,7 +48,7 @@ class FilterListener implements ActionListener, KeyListener {
   
   protected void runFilter() {
     try {
-      sorter.setRowFilter(new ResultsFilter(filter.getText()));
+      sorter.setRowFilter(new ResultsFilter(model, filter.getText()));
     } catch(IllegalArgumentException ex) {
       filter.setBackground(new Color(255, 200, 200));
       filter.setToolTipText("Wrong syntax! " + ex.getMessage());

@@ -25,7 +25,6 @@ class JavaTableWindow {
   private JTable table;
   private JFrame frame;
   private JLabel filterLabel;
-  private JTextField statusText;
   private JTextField filterText;
   private TableRowSorter<ResultsTableModel> sorter;
   private JButton export;
@@ -41,14 +40,15 @@ class JavaTableWindow {
     frame.addWindowListener(windowListener);
     frame.addWindowStateListener(windowListener);
     //
-    table = new JTable(new ResultsTableModel());
-    sorter = new TableRowSorter<ResultsTableModel>((ResultsTableModel)table.getModel());
+    ResultsTableModel model = new ResultsTableModel();
+    table = new JTable(model);
+    sorter = new TableRowSorter<ResultsTableModel>(model);
     table.setRowSorter(sorter);
     //
     JPanel filter = new JPanel();
     filter.setLayout(new BoxLayout(filter, BoxLayout.X_AXIS));
     filterText = new JTextField();
-    FilterListener filterListener = new FilterListener(sorter, filterText);
+    FilterListener filterListener = new FilterListener(model, sorter, filterText);
     filterText.addKeyListener(filterListener);
     filterLabel = new JLabel("Filter: ", SwingConstants.TRAILING);
     filterLabel.setLabelFor(filterText);

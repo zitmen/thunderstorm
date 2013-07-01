@@ -39,9 +39,11 @@ public interface IFilter extends IModule {
      * if the threshold formula uses a variable of different filter than in the filtering step.
      * Caller must ensure this case to be covered!</p>
      * 
+     * @param reevaluate if true, then the filterImage is evaluated before exporting the variables
+     * 
      * @return a hash map with a key that represents name of a variable and with
      *         a value that represents a processed image
      */
-    public HashMap<String,FloatProcessor> exportVariables();
+    public HashMap<String,FloatProcessor> exportVariables(boolean reevaluate);
     
 }
