@@ -83,7 +83,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
             results.add(psf);
           }
         } catch (MaxCountExceededException ex) {
-          IJ.log(ex.getMessage());
+          //IJ.log(ex.getMessage());
         }
       }
     }
