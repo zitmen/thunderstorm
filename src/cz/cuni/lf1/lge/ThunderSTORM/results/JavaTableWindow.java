@@ -1,18 +1,37 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
 import ij.IJ;
 import ij.WindowManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.table.TableRowSorter;
 
 class JavaTableWindow {
   
   private JTable table;
   private JFrame frame;
-
+  private JLabel filterLabel;
+  private JTextField statusText;
+  private JTextField filterText;
+  private TableRowSorter<ResultsTableModel> sorter;
+  private JButton export;
+  private JButton render;
+  private JButton filterButton;
+  
   public JavaTableWindow() {
     frame = new JFrame("ThunderSTORM: Results");
     frame.setIconImage(IJ.getInstance().getIconImage());
@@ -23,14 +42,50 @@ class JavaTableWindow {
     frame.addWindowStateListener(windowListener);
     //
     table = new JTable(new ResultsTableModel());
-    table.setAutoCreateRowSorter(true);
+    sorter = new TableRowSorter<ResultsTableModel>((ResultsTableModel)table.getModel());
+    table.setRowSorter(sorter);
     //
-    frame.setContentPane(new JScrollPane(table));
+    JPanel filter = new JPanel();
+    filter.setLayout(new BoxLayout(filter, BoxLayout.X_AXIS));
+    filterText = new JTextField();
+    FilterListener filterListener = new FilterListener(sorter, filterText);
+    filterText.addKeyListener(filterListener);
+    filterLabel = new JLabel("Filter: ", SwingConstants.TRAILING);
+    filterLabel.setLabelFor(filterText);
+    filterButton = new JButton("Apply");
+    filterButton.addActionListener(filterListener);
+    filter.add(filterLabel);
+    filter.add(filterText);
+    //
+    JPanel buttons = new JPanel();
+    buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+    export = new JButton("Export...");
+    render = new JButton("Render...");
+    export.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        new ImportExportPlugIn().run("export");
+      }
+    });
+    render.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        new RenderingPlugIn().run("");
+      }
+    });
+    buttons.add(Box.createHorizontalGlue());
+    buttons.add(render);
+    buttons.add(Box.createHorizontalStrut(10));
+    buttons.add(export);
+    //
+    JPanel pane = new JPanel();
+    pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
+    pane.add(new JScrollPane(table));
+    pane.add(filter);
+    pane.add(buttons);
+    //
+    frame.setContentPane(pane);
     frame.pack();
-    //
-    // TODO#1: razeni (kliknutim na hlavicku, jak je zvykem + zakazat prepisovani cisel ve sloupci "#")
-    // TODO#2: doplnit dalsi ovladaci prvky - filtrovani, renderovani, import/export
-    // TODO#3: @Override: public void tableChanged(TableModelEvent e); --> moznost aktualizovat napriklad renderer po vyfiltrovani vysledku
   }
   
   public ResultsTableModel getModel() {

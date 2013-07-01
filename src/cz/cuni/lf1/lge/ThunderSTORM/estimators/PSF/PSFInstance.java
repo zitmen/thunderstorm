@@ -15,8 +15,8 @@ public class PSFInstance implements Iterable<Map.Entry<String, Double>> {
   public static final String X = "x";
   public static final String Y = "y";
   public static final String Z = "z";
-  public static final String SIGMA = "\u03C3";
-  public static final String SIGMA2 = "\u03C32";
+  public static final String SIGMA = "sigma";
+  public static final String SIGMA2 = "sigma2";
   public static final String INTENSITY = "intensity";
   public static final String BACKGROUND = "background";
 

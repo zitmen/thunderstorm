@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.swing.UIManager;
 
 /**
  * ThunderSTORM Analysis plugin.
