@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import java.util.Arrays;
 
 /**
@@ -205,7 +206,7 @@ public class Math {
             return (sorted[sorted.length/2] + sorted[1+sorted.length/2]) / 2.0f;
     }
     
-    public static double max(double[] array) {
+  public static double max(double[] array) {
     double max = array[0];
     for (int i = 0; i < array.length; i++) {
       if (array[i] > max) {
@@ -223,5 +224,186 @@ public class Math {
       }
     }
     return min;
+  }
+  
+  public static Number max(Number[] array) {
+    Number max = array[0];
+    for (int i = 0; i < array.length; i++) {
+      if (array[i].doubleValue() > max.doubleValue()) {
+        max = array[i];
+      }
+    }
+    return max;
+  }
+
+  public static Number min(Number[] array) {
+    Number min = array[0];
+    for (int i = 0; i < array.length; i++) {
+      if (array[i].doubleValue() < min.doubleValue()) {
+        min = array[i];
+      }
+    }
+    return min;
+  }
+  
+  public static Double sum(Number [] arr) {
+    double sum = 0.0;
+    for (int i = 0; i < arr.length; i++)
+      sum += arr[i].doubleValue();
+    return new Double(sum);
+  }
+
+  public static Double mean(Number [] arr) {
+    return new Double(sum(arr).doubleValue() / (double)arr.length);
+  }
+
+  public static Double stddev(Number [] arr) {
+    double sumdev = 0.0, mean = mean(arr);
+    for (int i = 0; i < arr.length; i++)
+      sumdev += sqr(arr[i].doubleValue() - mean);
+    return new Double(sqrt(sumdev / (double)arr.length));
+  }
+  
+  public static Number median(Number [] arr) {
+    Number [] sorted = Arrays.copyOf(arr, arr.length);
+    Arrays.sort(sorted);
+    if((sorted.length % 2 )== 1) {    // odd length
+      return sorted[sorted.length/2];
+    } else {    // even length
+      return new Double((sorted[sorted.length/2].doubleValue() + sorted[1+sorted.length/2].doubleValue()) / 2.0);
+    }
+  }
+  
+  public static Double[] add(Number val, Number[] arr) {
+    Double [] res = new Double[arr.length];
+    double v = val.doubleValue();
+    for(int i = 0; i < arr.length; i++) {
+      res[i] = new Double(arr[i].doubleValue() + v);
+    }
+    return res;
+  }
+  
+  public static Double[] add(Number[] arr, Number val) {
+    return add(arr, val);
+  }
+  
+  public static Double[] add(Number[] arr1, Number[] arr2) {
+    if(arr1.length != arr2.length)
+      throw new FormulaParserException("When adding two vectors, both must be of the same size!");
+    //
+    Double [] res = new Double[arr1.length];
+    for(int i = 0; i < arr1.length; i++) {
+      res[i] = new Double(arr1[i].doubleValue() + arr2[i].doubleValue());
+    }
+    return res;
+  }
+  
+  public static Double[] sub(Number val, Number[] arr) {
+    Double [] res = new Double[arr.length];
+    double v = val.doubleValue();
+    for(int i = 0; i < arr.length; i++) {
+      res[i] = new Double(v - arr[i].doubleValue());
+    }
+    return res;
+  }
+  
+  public static Double[] sub(Number[] arr, Number val) {
+    return sub(new Double(-val.doubleValue()), arr);
+  }
+  
+  public static Double[] sub(Number[] arr1, Number[] arr2) {
+    if(arr1.length != arr2.length)
+      throw new FormulaParserException("When subtracting two vectors, both must be of the same size!");
+    //
+    Double [] res = new Double[arr1.length];
+    for(int i = 0; i < arr1.length; i++) {
+      res[i] = new Double(arr1[i].doubleValue() - arr2[i].doubleValue());
+    }
+    return res;
+  }
+  
+  public static Double[] mul(Number val, Number[] arr) {
+    Double [] res = new Double[arr.length];
+    double v = val.doubleValue();
+    for(int i = 0; i < arr.length; i++) {
+      res[i] = new Double(v * arr[i].doubleValue());
+    }
+    return res;
+  }
+  
+  public static Double[] mul(Number[] arr, Number val) {
+    return mul(val, arr);
+  }
+  
+  public static Double[] mul(Number[] arr1, Number[] arr2) {
+    if(arr1.length != arr2.length)
+      throw new FormulaParserException("When multiplying two vectors, both must be of the same size!");
+    //
+    Double [] res = new Double[arr1.length];
+    for(int i = 0; i < arr1.length; i++) {
+      res[i] = new Double(arr1[i].doubleValue() * arr2[i].doubleValue());
+    }
+    return res;
+  }
+  
+  public static Double[] div(Number val, Number[] arr) {
+    Double [] res = new Double[arr.length];
+    double v = val.doubleValue();
+    for(int i = 0; i < arr.length; i++) {
+      res[i] = new Double(v / arr[i].doubleValue());
+    }
+    return res;
+  }
+  
+  public static Double[] div(Number[] arr, Number val) {
+    return mul(new Double(1.0/val.doubleValue()), arr);
+  }
+  
+  public static Double[] div(Number[] arr1, Number[] arr2) {
+    if(arr1.length != arr2.length)
+      throw new FormulaParserException("When dividing two vectors (item-by-item), both must be of the same size!");
+    //
+    Double [] res = new Double[arr1.length];
+    for(int i = 0; i < arr1.length; i++) {
+      res[i] = new Double(arr1[i].doubleValue() / arr2[i].doubleValue());
+    }
+    return res;
+  }
+  
+  public static Double[] pow(Number[] arr, Number val) {
+    Double [] res = new Double[arr.length];
+    double v = val.doubleValue();
+    for(int i = 0; i < arr.length; i++) {
+      res[i] = new Double(pow(arr[i].doubleValue(), v));
+    }
+    return res;
+  }
+
+  // TODO: change these methods to return Boolean[] !!!
+  public static boolean relEq(Double[] a, Double[] b) {
+    if(a.length < b.length) return false;
+    if(a.length > b.length) return false;
+    for(int i = 0; i < a.length; i++) {
+      if(a[i].doubleValue() != b[i].doubleValue()) return false;
+    }
+    return true;
+  }
+
+  public static boolean relGt(Double[] a, Double[] b) {
+    if(a.length < b.length) return false;
+    if(a.length > b.length) return true;
+    for(int i = 0; i < a.length; i++) {
+      if(a[i].doubleValue() <= b[i].doubleValue()) return false;
+    }
+    return true;
+  }
+
+  public static boolean relLt(Double[] a, Double[] b) {
+    if(a.length < b.length) return true;
+    if(a.length > b.length) return false;
+    for(int i = 0; i < a.length; i++) {
+      if(a[i].doubleValue() >= b[i].doubleValue()) return false;
+    }
+    return true;
   }
 }

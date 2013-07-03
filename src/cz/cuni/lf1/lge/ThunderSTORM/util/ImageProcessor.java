@@ -305,4 +305,39 @@ public class ImageProcessor {
         
         return result;
     }
+    
+    // TODO: change these methods to return Matrix<Boolean> !!!
+    public static boolean relEq(FloatProcessor a, FloatProcessor b) {
+        float [] aa = (float[])a.getPixels();
+        float [] bb = (float[])b.getPixels();
+        if(aa.length > bb.length) return false;
+        if(aa.length < bb.length) return false;
+        for(int i = 0; i < aa.length; i++) {
+            if(aa[i] != bb[i]) return false;
+        }
+        return true;
+    }
+
+    public static boolean relGt(FloatProcessor a, FloatProcessor b) {
+        float [] aa = (float[])a.getPixels();
+        float [] bb = (float[])b.getPixels();
+        if(aa.length > bb.length) return true;
+        if(aa.length < bb.length) return false;
+        for(int i = 0; i < aa.length; i++) {
+            if(aa[i] <= bb[i]) return false;
+        }
+        return true;
+    }
+
+    public static boolean relLt(FloatProcessor a, FloatProcessor b) {
+        float [] aa = (float[])a.getPixels();
+        float [] bb = (float[])b.getPixels();
+        if(aa.length < bb.length) return true;
+        if(aa.length > bb.length) return false;
+        for(int i = 0; i < aa.length; i++) {
+            if(aa[i] >= bb[i]) return false;
+        }
+        return true;
+    }
+
 }

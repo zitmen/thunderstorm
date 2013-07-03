@@ -1,6 +1,6 @@
-package cz.cuni.lf1.lge.ThunderSTORM.thresholding.SyntaxTree;
+package cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree;
 
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 
 public class Variable extends Node {
@@ -9,17 +9,17 @@ public class Variable extends Node {
     private String var = null;
     
     @Override
-    public void semanticScan() throws ThresholdFormulaException {
+    public void semanticScan() throws FormulaParserException {
         if(obj == null) {   // active filter
             if(!isVariable(Thresholder.getActiveFilter().getFilterVarName(), var)) {
-                throw new ThresholdFormulaException("Variable '" + var + "' does not exist!");
+                throw new FormulaParserException("Variable '" + var + "' does not exist!");
             }
         } else {    // the other ones
             if(!isVariable(obj, var)) {
                 if(obj != null)
-                    throw new ThresholdFormulaException("Variable '" + obj + "." + var + "' does not exist!");
+                    throw new FormulaParserException("Variable '" + obj + "." + var + "' does not exist!");
                 else
-                    throw new ThresholdFormulaException("Variable '" + var + "' does not exist!");
+                    throw new FormulaParserException("Variable '" + var + "' does not exist!");
             }
         }
     }

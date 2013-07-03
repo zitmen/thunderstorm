@@ -1,25 +1,34 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParser;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Node;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.RetVal;
 import javax.swing.RowFilter;
 
 class ResultsFilter extends RowFilter {
 
-  String filter;
-  ResultsTableModel table;
-  boolean [] results;
+  private Node tree;
+  private String filter;
+  private ResultsTableModel table;
+  private boolean [] results;
   
   int limit;
   
-  public ResultsFilter(ResultsTableModel model, String text) throws IllegalArgumentException {
+  public ResultsFilter(ResultsTableModel model, String text) {
     table = model;
     filter = text;
     results = new boolean[table.getRowCount()];
     //
-    try {
-      // TODO: build the tree and run the filtering for all items at once in advance and store the results in the array of true/false values
-      // .!.
-    } catch(Exception ex) {
-      throw new IllegalArgumentException("Integer required!");
+    tree = new FormulaParser(filter, FormulaParser.FORMULA_RESULTS_FILTER).parse();
+    tree.semanticScan();
+    RetVal retval = tree.eval();
+    if(!retval.isVector()) {
+        throw new FormulaParserException("Semantic error: result of filtering formula must be a vector of boolean values!");
+    }
+    Double [] res = (Double[])retval.get();
+    for(int i = 0; i < res.length; i++) {
+      results[i] = (res[i].doubleValue() != 0.0);
     }
   }
 

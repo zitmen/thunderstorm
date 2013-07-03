@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
@@ -20,5 +20,5 @@ public interface IDetector extends IModule{
      * 
      * @see Point
      */
-    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws ThresholdFormulaException;
+    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException;
 }

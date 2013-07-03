@@ -1,4 +1,4 @@
-package cz.cuni.lf1.lge.ThunderSTORM.thresholding;
+package cz.cuni.lf1.lge.ThunderSTORM.FormulaParser;
 
 class FormulaToken {
     
@@ -9,11 +9,16 @@ class FormulaToken {
     public static final int OP_MUL = 3;
     public static final int OP_DIV = 4;
     public static final int OP_POW = 5;
-    public static final int LPAR = 6;
-    public static final int RPAR = 7;
-    public static final int DOT = 8;
-    public static final int NAME = 9;
-    public static final int FLOAT = 10;
+    public static final int OP_AND = 6;
+    public static final int OP_OR = 7;
+    public static final int OP_LT = 8;
+    public static final int OP_GT = 9;
+    public static final int OP_EQ = 10;
+    public static final int LPAR = 11;
+    public static final int RPAR = 12;
+    public static final int DOT = 13;
+    public static final int NAME = 14;
+    public static final int FLOAT = 15;
     
     public int type;
     public String token;

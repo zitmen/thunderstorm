@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Morphology;
@@ -28,7 +28,7 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
     private final static String DEFAULT_THRESHOLD = "6*std(F)";
     private final static int DEFAULT_RADIUS = 3;
     
-    public NonMaxSuppressionDetector() throws ThresholdFormulaException {
+    public NonMaxSuppressionDetector() throws FormulaParserException {
       this(DEFAULT_RADIUS, DEFAULT_THRESHOLD);
     }
     
@@ -38,7 +38,7 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
      * @param radius a radius of morphological dilation
      * @param threshold a threshold value
      */
-    public NonMaxSuppressionDetector(int radius, String threshold) throws ThresholdFormulaException {
+    public NonMaxSuppressionDetector(int radius, String threshold) throws FormulaParserException {
         this.radius = radius;
         this.threshold = threshold;
     }
@@ -52,7 +52,7 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
      * @return  a {@code Vector} of {@code Points} containing positions of detected molecules
      */
     @Override
-    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws ThresholdFormulaException {
+    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException {
         Vector<Point> detections = new Vector<Point>();
         FloatProcessor mx = Morphology.dilateBox(image, radius);
         

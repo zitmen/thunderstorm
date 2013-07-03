@@ -1,4 +1,4 @@
-package cz.cuni.lf1.lge.ThunderSTORM.thresholding;
+package cz.cuni.lf1.lge.ThunderSTORM.FormulaParser;
 
 import java.util.Scanner;
 
@@ -6,12 +6,12 @@ class FormulaLexer {
     
     Scanner scanner;
 
-    FormulaLexer(String formula) {
+    public FormulaLexer(String formula) {
         scanner = new Scanner(formula.trim());
         scanner.useDelimiter("");
     }
 
-    FormulaToken nextToken() {
+    public FormulaToken nextToken() {
         if(!scanner.hasNext()) return new FormulaToken(FormulaToken.EOI);
         scanner.skip("[ ]*");
         
@@ -32,6 +32,11 @@ class FormulaLexer {
                 case '*': token.type = FormulaToken.OP_MUL; break;
                 case '/': token.type = FormulaToken.OP_DIV; break;
                 case '^': token.type = FormulaToken.OP_POW; break;
+                case '&': token.type = FormulaToken.OP_AND; break;
+                case '|': token.type = FormulaToken.OP_OR; break;
+                case '<': token.type = FormulaToken.OP_LT; break;
+                case '>': token.type = FormulaToken.OP_GT; break;
+                case '=': token.type = FormulaToken.OP_EQ; break;
                 case '(': token.type = FormulaToken.LPAR; break;
                 case ')': token.type = FormulaToken.RPAR; break;
                 case '.': token.type = FormulaToken.DOT; break;

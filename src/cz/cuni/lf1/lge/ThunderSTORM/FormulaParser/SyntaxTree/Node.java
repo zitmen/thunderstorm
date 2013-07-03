@@ -1,12 +1,33 @@
-package cz.cuni.lf1.lge.ThunderSTORM.thresholding.SyntaxTree;
+package cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree;
 
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import ij.process.FloatProcessor;
 
 public abstract class Node {
+  
+    public static final int THRESHOLDING = 1;
+    public static final int RESULTS_FILTERING = 2;
+    
+    private int nodeType;
+    
+    public void setNodeType(int action) {
+      this.nodeType = action;
+    }
+    
+    public int getNodeType() {
+      return nodeType;
+    }
+    
+    public boolean isThresholding() {
+      return (nodeType == THRESHOLDING);
+    }
+    
+    public boolean isResultsFiltering() {
+      return (nodeType == RESULTS_FILTERING);
+    }
     
     public boolean isVariable(String filter, String var) {
         for(IFilterUI f : Thresholder.getLoadedFilters()) {
@@ -35,6 +56,6 @@ public abstract class Node {
     }
     
     public abstract RetVal eval();
-    public abstract void semanticScan() throws ThresholdFormulaException;
+    public abstract void semanticScan() throws FormulaParserException;
 
 }

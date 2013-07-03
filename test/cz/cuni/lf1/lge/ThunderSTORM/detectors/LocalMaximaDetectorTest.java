@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
@@ -15,7 +15,7 @@ public class LocalMaximaDetectorTest {
      * Test of detectMoleculeCandidates method, of class LocalMaximaDetector.
      */
     @Test
-    public void testDetectMoleculeCandidates() throws ThresholdFormulaException {
+    public void testDetectMoleculeCandidates() throws FormulaParserException {
         System.out.println("LocalMaximadetector::detectMoleculeCandidates");
         
         Vector<Point> result, expResult;

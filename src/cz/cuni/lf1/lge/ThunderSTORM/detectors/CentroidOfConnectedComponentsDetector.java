@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.applyMask;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.threshold;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
@@ -36,7 +36,7 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
     private final static String DEFAULT_THRESHOLD = "std(I-Wave.V1)";
     private final static boolean DEFAULT_UPSAMPLE = false;
 
-  public CentroidOfConnectedComponentsDetector() throws ThresholdFormulaException {
+  public CentroidOfConnectedComponentsDetector() throws FormulaParserException {
     this(DEFAULT_UPSAMPLE, DEFAULT_THRESHOLD);
   }
     
@@ -48,7 +48,7 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
      *                 are connected together
      * @param threshold a threshold value of intensity
      */
-    public CentroidOfConnectedComponentsDetector(boolean upsample, String threshold) throws ThresholdFormulaException {
+    public CentroidOfConnectedComponentsDetector(boolean upsample, String threshold) throws FormulaParserException {
         this.upsample = upsample;
         this.threshold = threshold;
     }
@@ -84,7 +84,7 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
      * @return a {@code Vector} of {@code Points} containing positions of detected molecules
      */
     @Override
-    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws ThresholdFormulaException {
+    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException {
         // thresholding first to make the image binary
         threshold(image, Thresholder.getThreshold(threshold), 0.0f, 255.0f);
         // watershed transform with[out] upscaling
