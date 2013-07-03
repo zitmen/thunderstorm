@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.UI;
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -74,9 +75,10 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
     // Create the cards
     JPanel[] cards = new JPanel[items.size()];
     for (int i = 0; i < items.size(); i++) {
-      cards[i] = items.get(i).getOptionsPanel();
-      if (cards[i] == null) {
-        cards[i] = new JPanel();
+      cards[i] = new JPanel(new BorderLayout());
+      JPanel modulePanel = items.get(i).getOptionsPanel();
+      if (modulePanel != null) {
+        cards[i].add(modulePanel, BorderLayout.NORTH);
       }
     }
 
