@@ -40,7 +40,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     private double defaultDZ = 5;
     private double zFrom = Double.NEGATIVE_INFINITY, zTo = Double.POSITIVE_INFINITY, zStep = Double.POSITIVE_INFINITY;
     private int zSlices = 1;
-    private boolean threeDimensions = true;
+    private boolean threeDimensions = false;
 
     /**
      * Sets the desired resolution of the final image. In localization units per
@@ -217,7 +217,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
 
   @Override
   public void reset() {
-    for(int i = 0; i <= slices.length; i++){
+    for(int i = 0; i < slices.length; i++){
       float[] px = (float[]) slices[i].getPixels();
       Arrays.fill(px, 0);
     }

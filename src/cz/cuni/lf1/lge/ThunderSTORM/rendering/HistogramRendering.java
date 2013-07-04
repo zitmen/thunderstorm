@@ -55,7 +55,7 @@ public class HistogramRendering extends AbstractRendering implements Incremental
           int u = (int) ((newX - xmin) / resolution);
           int v = (int) ((newY - ymin) / resolution);
           int w = threeDimensions ? ((int)((newZ - zFrom) / zStep)) : 0;
-          if (w > 0 && w <= zSlices) {
+          if (w >= 0 && w < zSlices) {
             FloatProcessor image = (FloatProcessor) slices[w];
             image.setf(u, v, image.getf(u, v) + 1.0f / avg);
           }
@@ -66,7 +66,7 @@ public class HistogramRendering extends AbstractRendering implements Incremental
         int u = (int) ((x - xmin) / resolution);
         int v = (int) ((y - ymin) / resolution);
         int w = threeDimensions ? ((int) ((z - zFrom) / zStep)) : 0;
-        if (w > 0 && w <= zSlices) {
+        if (w >= 0 && w < zSlices) {
           FloatProcessor image = (FloatProcessor) slices[w];
           image.setf(u, v, image.getf(u, v) + 1);
         }

@@ -207,6 +207,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
           try {
             IJ.showStatus("Creating preview image.");
             FloatProcessor fp = (FloatProcessor) imp.getProcessor().crop().convertToFloat();
+            Thresholder.setCurrentImage(fp);
             FloatProcessor filtered = activeFilter.getImplementation().filterImage(fp);
             checkForInterruption();
             Vector<Point> detections = Point.applyRoiMask(imp.getRoi(), activeDetector.getImplementation().detectMoleculeCandidates(filtered));

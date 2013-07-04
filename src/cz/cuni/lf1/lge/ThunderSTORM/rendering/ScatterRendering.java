@@ -28,7 +28,7 @@ public class ScatterRendering extends AbstractRendering implements IncrementalRe
       int u = (int) ((x - xmin) / resolution);
       int v = (int) ((y - ymin) / resolution);
       int w = (int) ((z - zFrom) / zStep);
-      if (w > 0 && w <= zSlices) {
+      if (w >= 0 && w < zSlices) {
         FloatProcessor image = (FloatProcessor) slices[w];
         image.setf(u, v, Float.MAX_VALUE);
       }

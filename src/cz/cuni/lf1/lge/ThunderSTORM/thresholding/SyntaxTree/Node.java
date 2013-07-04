@@ -12,7 +12,7 @@ public abstract class Node {
         for(IFilterUI f : Thresholder.getLoadedFilters()) {
           IFilter impl = f.getImplementation();
             if(impl.getFilterVarName().equals(filter)) {
-                return impl.exportVariables().containsKey(var);
+                return impl.exportVariables(false).containsKey(var);
             }
         }
         return false;
@@ -20,12 +20,14 @@ public abstract class Node {
     
     public RetVal getVariable(String filter, String var) {
         if(filter == null) {   // active filter
-            return new RetVal(Thresholder.getActiveFilter().exportVariables().get(var));
+            // this filter is already active, hence there is no need to redo the filtering step,
+            // since it has been already done
+            return new RetVal(Thresholder.getActiveFilter().exportVariables(false).get(var));
         } else {    // the other ones
             for(IFilterUI f : Thresholder.getLoadedFilters()) {
               IFilter impl = f.getImplementation();
                 if(impl.getFilterVarName().equals(filter)) {
-                    return new RetVal(impl.exportVariables().get(var));
+                    return new RetVal(impl.exportVariables(true).get(var));
                 }
             }
         }

@@ -53,32 +53,49 @@ public class DensityRendering extends AbstractRendering implements IncrementalRe
       dx = dx / resolution;
       int u = (int) x;
       int v = (int) y;
-      int w = threeDimensions ? ((int) ((z - zFrom) / zStep)) : 0;
       int actualRadius = (this.radius < 0) ? (int) ceil(dx * 3) : this.radius;
+      
+      if (threeDimensions) {
+        int w = threeDimensions ? ((int) ((z - zFrom) / zStep)) : 0;
+        int affectedImages = (int) (3 * defaultDZ / zStep);
+        for (int idz = w - affectedImages; idz < w + affectedImages; idz++) {
+          if (idz >= 0 && idz < zSlices) {
 
+            for (int idx = u - actualRadius; idx < u + actualRadius; idx++) {
+              if (idx >= 0 && idx < imSizeX) {
 
-      int affectedImages = (int) (3 * defaultDZ / zStep);
+                for (int idy = v - actualRadius; idy < v + actualRadius; idy++) {
+                  if (idy >= 0 && idy < imSizeY) {
 
-      for (int idz = w - affectedImages; idz <= w + affectedImages; idz++) {
-        if (idz >= 0 && idz < zSlices) {
-
-          for (int idx = u - actualRadius; idx < u + actualRadius; idx++) {
-            if (idx >= 0 && idx < imSizeX) {
-
-              for (int idy = v - actualRadius; idy < v + actualRadius; idy++) {
-                if (idy >= 0 && idy < imSizeY) {
-
-                  double squareDist = squareDist(idx, idy, x, y);
-                  if (squareDist <= (actualRadius * actualRadius)) {
-                    //3D gaussian blob integrated in z 
-                    //mathematica function for definite integral:
-                    //Integrate[(1/Sqrt[(2 Pi)^3 *s1^2* s2^2* s3^2]) * E^(-1/2*((x - x0)^2/(s1^2) + (y - y0)^2/(s2^2) + (z - z0)^2/(s3^2))), {z, a, b}]
-                    double aerf = (z - zFrom) - (idz - 1) * zStep;
-                    double berf = (z - zFrom) - idz * zStep;
-                    double val = 1 / (2 * PI * dx * dx * defaultDZ) * exp(-0.5 * squareDist / (dx * dx)) * defaultDZ * Erf.erf(berf / (Math.sqrt(2) * defaultDZ), aerf / (Math.sqrt(2) * defaultDZ));
-                    ImageProcessor image = slices[idz];
-                    image.setf(idx, idy, (float) val + image.getf(idx, idy));
+                    double squareDist = squareDist(idx, idy, x, y);
+                    if (squareDist <= (actualRadius * actualRadius)) {
+                      //3D gaussian blob integrated in z 
+                      //mathematica function for definite integral:
+                      //Integrate[(1/Sqrt[(2 Pi)^3 *s1^2* s2^2* s3^2]) * E^(-1/2*((x - x0)^2/(s1^2) + (y - y0)^2/(s2^2) + (z - z0)^2/(s3^2))), {z, a, b}]
+                      double aerf = (z - zFrom) - (idz - 1) * zStep;
+                      double berf = (z - zFrom) - idz * zStep;
+                      double val = 1 / (2 * PI * dx * dx * defaultDZ) * exp(-0.5 * squareDist / (dx * dx)) * defaultDZ * Erf.erf(berf / (Math.sqrt(2) * defaultDZ), aerf / (Math.sqrt(2) * defaultDZ));
+                      ImageProcessor image = slices[idz];
+                      image.setf(idx, idy, (float) val + image.getf(idx, idy));
+                    }
                   }
+                }
+              }
+            }
+          }
+        }
+      } else {
+        for (int idx = u - actualRadius; idx < u + actualRadius; idx++) {
+          if (idx >= 0 && idx < imSizeX) {
+
+            for (int idy = v - actualRadius; idy < v + actualRadius; idy++) {
+              if (idy >= 0 && idy < imSizeY) {
+
+                double squareDist = squareDist(idx, idy, x, y);
+                if (squareDist <= (actualRadius * actualRadius)) {
+                  double val = 1 / (2 * PI * dx * dx) * exp(-0.5 * squareDist / (dx * dx));
+                  ImageProcessor image = slices[0];
+                  image.setf(idx, idy, (float) val + image.getf(idx, idy));
                 }
               }
             }
