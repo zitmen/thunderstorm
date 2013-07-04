@@ -1,22 +1,26 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
+import ij.process.ImageProcessor;
+
 /**
  * Rendering using Averaged shifted histogram.
  *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
 public class ASHRendering extends AbstractRendering implements IncrementalRenderingMethod {
 
   protected int shifts;
+  protected int zShifts;
 
   protected ASHRendering(Builder builder) {
     super(builder);
     this.shifts = builder.shifts;
+    this.zShifts = threeDimensions ? builder.zShifts : 1;
   }
 
   public static class Builder extends AbstractBuilder<Builder, ASHRendering> {
 
     protected int shifts = 2;
+    protected int zShifts = 1;
 
     /**
      * Number of shifts in one dimension. When one shift is set, the result is
@@ -32,21 +36,40 @@ public class ASHRendering extends AbstractRendering implements IncrementalRender
       return this;
     }
 
+    public Builder zShifts(int zShifts) {
+      if (zShifts <= 0) {
+        throw new IllegalArgumentException("\"zShifts\" argument must be positive integer. Passed value: " + shifts);
+      }
+      this.zShifts = zShifts;
+      return this;
+    }
+
+    @Override
     public ASHRendering build() {
       super.validate();
       return new ASHRendering(this);
     }
   }
 
+  @Override
   protected void drawPoint(double x, double y, double z, double dx) {
     if (isInBounds(x, y)) {
-      int u = (int) Math.round(x / resolution);
-      int v = (int) Math.round(y / resolution);
+      int u = (int) ((x - xmin) / resolution);
+      int v = (int) ((y - ymin) / resolution);
+      int w = threeDimensions ? ((int) ((z - zFrom) / zStep)) : 0;
 
-      for (int i = -shifts + 1; i < shifts; i++) {
-        for (int j = -shifts + 1; j < shifts; j++) {
-          if (u + i < imSizeX && u + i >= 0 && v + j < imSizeY && v + j >= 0) {
-            image.setf(u + i, v + j, image.getf(u + i, v + j) + (shifts - Math.abs(i)) * (shifts - Math.abs(j)));
+      for (int k = -zShifts + 1; k < zShifts; k++) {
+        if (w + k < zSlices && w + k >= 0) {
+
+          ImageProcessor image = slices[w + k];
+          for (int i = -shifts + 1; i < shifts; i++) {
+
+            for (int j = -shifts + 1; j < shifts; j++) {
+              if (u + i < imSizeX && u + i >= 0
+                      && v + j < imSizeY && v + j >= 0) {
+                image.setf(u + i, v + j, image.getf(u + i, v + j) + (shifts - Math.abs(i)) * (shifts - Math.abs(j)) * (zShifts - Math.abs(k)));
+              }
+            }
           }
         }
       }

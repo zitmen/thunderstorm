@@ -3,10 +3,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ScatterRendering;
 
-/**
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
- */
 public class ScatterRenderingUI extends AbstractRenderingUI {
 
   public ScatterRenderingUI() {
@@ -23,6 +19,10 @@ public class ScatterRenderingUI extends AbstractRenderingUI {
 
   @Override
   public IncrementalRenderingMethod getMethod() {
-    return new ScatterRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).build();
+    if (threeD) {
+      return new ScatterRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).zRange(zFrom, zTo, zStep).build();
+    } else {
+      return new ScatterRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).build();
+    }
   }
 }

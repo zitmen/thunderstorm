@@ -1,8 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
-import java.lang.ref.WeakReference;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -10,14 +9,14 @@ import java.util.concurrent.TimeUnit;
  * thread that takes tasks out of the queue and processes them. The lifetime of
  * the rendering thread is tied to the lifetime of this object. Can perform a
  * user defined task after every [frequency] invocations.
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
 public class RenderingQueue {
 
-  BlockingQueue<RenderTask> queue = null;
-  RenderingThread thread;
+  private ThreadPoolExecutor executor = null;
   Runnable repaintTask;
+  IncrementalRenderingMethod method;
+  int taskCounter = 0;
+  int repaintFrequency;
 
   /**
    * Example: new RenderingQueue(method, new Runnable(){public void
@@ -31,107 +30,58 @@ public class RenderingQueue {
    */
   public RenderingQueue(IncrementalRenderingMethod method, Runnable repaintTask, int repaintFrequency) {
     if (method != null && repaintFrequency > 0) {
-      queue = new LinkedBlockingQueue<RenderTask>();
       this.repaintTask = repaintTask;
-      thread = new RenderingThread(this, repaintTask, repaintFrequency, queue, method);
-      thread.start();
+      this.method = method;
+      this.repaintFrequency = repaintFrequency;
+
+      //executor with one thread, that will die after not being used for 30 seconds      
+      executor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+      executor.allowCoreThreadTimeOut(true);
     }
   }
 
   public void renderLater(double[] x, double[] y, double[] z, double[] dx) {
-    if (queue != null) {
-      queue.add(new VariableDXTask(x, y, z, dx));
+    if (executor != null) {
+      executor.execute(new RenTask(x, y, z, dx));
     }
   }
 
   public void repaintLater() {
-    if (queue != null) {
-      queue.add(new InvokeTask(repaintTask));
+    if (executor != null) {
+      executor.execute(repaintTask);
     }
   }
 
   public void invokeLater(Runnable r) {
-    if (queue != null) {
-      queue.add(new InvokeTask(r));
+    if (executor != null) {
+      executor.execute(r);
     }
   }
-}
-
-class RenderingThread extends Thread {
-
-  WeakReference<Object> tiedToObject;
-  Runnable repaintTask;
-  int repaintFrequency;
-  int invocations = 0;
-  IncrementalRenderingMethod renderingMethod;
-  BlockingQueue<RenderTask> queue;
-
-  RenderingThread(Object tiedToObject, Runnable repaintTask, int repaintFrequency, BlockingQueue<RenderTask> queue, IncrementalRenderingMethod renderingMethod) {
-    if (tiedToObject == null) {
-      throw new IllegalArgumentException("The thread must be tied to some object. Reference was null.");
+  
+  public void shutdown(){
+    if(executor != null){
+      executor.shutdown();
     }
-    this.tiedToObject = new WeakReference<Object>(tiedToObject);
-    setDaemon(true);
-
-    this.repaintTask = repaintTask;
-    this.repaintFrequency = repaintFrequency;
-    this.queue = queue;
-    this.renderingMethod = renderingMethod;
-    this.setName("ThunderSTORM repaint thread");
   }
 
-  @Override
-  public void run() {
-    while (tiedToObject.get() != null || !queue.isEmpty()) {
-      try {
-        RenderTask task = queue.poll(5, TimeUnit.SECONDS);
-        if (task != null) {
-          task.doTask(renderingMethod);
-          invocations++;
-          if (invocations % repaintFrequency == 0 && repaintTask != null) {
-            repaintTask.run();
-          }
-        }
-      } catch (InterruptedException ex) {
+  class RenTask implements Runnable {
+
+    double[] x, y, z, dx;
+
+    public RenTask(double[] x, double[] y, double[] z, double[] dx) {
+      this.x = x;
+      this.y = y;
+      this.z = z;
+      this.dx = dx;
+    }
+
+    @Override
+    public void run() {
+      method.addToImage(x, y, z, dx);
+      taskCounter++;                // no need to use atomic counter because this method will be run only from single threaded executor
+      if (taskCounter % repaintFrequency == 0) {
+        repaintTask.run();
       }
-    }
-  }
-}
-
-interface RenderTask {
-
-  public void doTask(IncrementalRenderingMethod method);
-}
-
-class VariableDXTask implements RenderTask {
-
-  double[] x, y, z, dx;
-
-  public VariableDXTask(double[] x, double[] y, double[] z, double[] dx) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.dx = dx;
-  }
-
-  @Override
-  public void doTask(IncrementalRenderingMethod method) {
-    method.addToImage(x, y, z, dx);
-  }
-}
-
-class InvokeTask implements RenderTask {
-
-  Runnable task;
-
-  public InvokeTask(Runnable task) {
-    this.task = task;
-  }
-
-  @Override
-  public void doTask(IncrementalRenderingMethod method) {
-    if (task != null) {
-      task.run();
     }
   }
 }

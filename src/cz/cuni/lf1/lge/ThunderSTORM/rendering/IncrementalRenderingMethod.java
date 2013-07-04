@@ -6,8 +6,6 @@ import ij.ImagePlus;
 /**
  * Incremental SMLM rendering. Image can be slowly built as new molecule
  * locations are supplied.
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
 public interface IncrementalRenderingMethod extends IModule{
 
@@ -16,9 +14,9 @@ public interface IncrementalRenderingMethod extends IModule{
    *
    * @param x x coordinates of localized molecules
    * @param y y coordinates of localized molecules
-   * @param z z coordinates of localized molecules
+   * @param z z coordinates of localized molecules. When null, 0 is used instead.
    * @param dx localization uncertainty - for each molecule (not used in all
-   * implementations)
+   * implementations). When null default value is used instead.
    */
   public void addToImage(double[] x, double[] y, double[] z, double[] dx);
 

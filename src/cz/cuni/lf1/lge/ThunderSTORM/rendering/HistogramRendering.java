@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
+import ij.process.FloatProcessor;
 import java.util.Random;
 
 /**
@@ -7,8 +8,6 @@ import java.util.Random;
  * > 0, the result is the average of multiple histograms, each made from
  * molecule locations jittered according to the uncertainty of localization
  * (dx).
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
 public class HistogramRendering extends AbstractRendering implements IncrementalRenderingMethod {
 
@@ -37,28 +36,40 @@ public class HistogramRendering extends AbstractRendering implements Incremental
       return this;
     }
 
+    @Override
     public HistogramRendering build() {
       super.validate();
       return new HistogramRendering(this);
     }
   }
 
+  @Override
   protected void drawPoint(double x, double y, double z, double dx) {
+
     if (avg >= 1) {
       for (int i = 0; i < avg; i++) {
         double newX = x + rnd.nextGaussian() * dx;
         double newY = y + rnd.nextGaussian() * dx;
+        double newZ = z + rnd.nextGaussian() * defaultDZ;
         if (isInBounds(newX, newY)) {
           int u = (int) ((newX - xmin) / resolution);
           int v = (int) ((newY - ymin) / resolution);
-          image.setf(u, v, image.getf(u, v) + 1.0f / avg);
+          int w = threeDimensions ? ((int)((newZ - zFrom) / zStep)) : 0;
+          if (w > 0 && w <= zSlices) {
+            FloatProcessor image = (FloatProcessor) slices[w];
+            image.setf(u, v, image.getf(u, v) + 1.0f / avg);
+          }
         }
       }
     } else {
       if (isInBounds(x, y)) {
         int u = (int) ((x - xmin) / resolution);
         int v = (int) ((y - ymin) / resolution);
-        image.setf(u, v, image.getf(u, v) + 1);
+        int w = threeDimensions ? ((int) ((z - zFrom) / zStep)) : 0;
+        if (w > 0 && w <= zSlices) {
+          FloatProcessor image = (FloatProcessor) slices[w];
+          image.setf(u, v, image.getf(u, v) + 1);
+        }
       }
     }
   }

@@ -1,7 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
 import static java.lang.Math.ceil;
 import java.util.Arrays;
 
@@ -9,16 +11,21 @@ import java.util.Arrays;
  * A common abstract superclass implementing RenderingMethod and
  * IncrementalRenderingMethod. You can override the single abstract method
  * drawPoint to quickly add another Rendering Method.
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
 public abstract class AbstractRendering implements RenderingMethod, IncrementalRenderingMethod {
 
   protected double xmin, xmax, ymin, ymax;
   protected double resolution;
   protected int imSizeX, imSizeY;
-  protected FloatProcessor image;
+ // protected FloatProcessor image;
   protected double defaultDX;
+  protected double defaultDZ = 5;
+  protected double zFrom, zTo, zStep;
+  protected int zSlices;
+  protected boolean threeDimensions;
+  //@Deprecated
+  //protected ImageStack stack;
+  protected ImageProcessor[] slices;
 
   /**
    * A class for creating objects of sublasses of AbstractRendering.
@@ -30,6 +37,10 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     protected boolean resolutionWasSet = false, roiWasSet = false, sizeWasSet = false;
     protected final static double defaultResolution = 20;
     private double defaultDX = 0.2;
+    private double defaultDZ = 5;
+    private double zFrom = Double.NEGATIVE_INFINITY, zTo = Double.POSITIVE_INFINITY, zStep = Double.POSITIVE_INFINITY;
+    private int zSlices = 1;
+    private boolean threeDimensions = true;
 
     /**
      * Sets the desired resolution of the final image. In localization units per
@@ -88,6 +99,32 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
       return (BuilderType) this;
     }
 
+    public BuilderType defaultDZ(double defaultDZ) {
+      if (defaultDZ <= 0) {
+        throw new IllegalArgumentException("Default dz must be positive. Passed value = " + defaultDZ);
+      }
+      this.defaultDZ = defaultDZ;
+      return (BuilderType) this;
+    }
+
+    public BuilderType zRange(double from, double to, double step) {
+      if (to <= from) {
+        throw new IllegalArgumentException("Z range \"from\" value (" + from + ") must be smaller than \"to\" value (" + to + ").");
+      }
+      if (step <= 0) {
+        throw new IllegalArgumentException("Z range \"step\" value must be positive. Passed value = " + step);
+      }
+      this.zFrom = from;
+      this.zStep = step;
+      this.zSlices = (int) ((to - from) / step);
+      if (zSlices < 1) {
+        throw new RuntimeException("Invalid z range: Must have at least one slice.");
+      }
+      this.zTo = zSlices * step + from;
+      threeDimensions = true;
+      return (BuilderType) this;
+    }
+
     protected void validate() {
       if (!roiWasSet && !sizeWasSet) {
         throw new IllegalArgumentException("Image size must be resolved while building. Set at least image size or roi.");
@@ -137,9 +174,21 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     this.imSizeX = builder.imSizeX;
     this.imSizeY = builder.imSizeY;
     this.defaultDX = builder.defaultDX;
-    image = new FloatProcessor(imSizeX, imSizeY);
+    this.defaultDZ = builder.defaultDZ;
+    this.zFrom = builder.zFrom;
+    this.zSlices = builder.zSlices;
+    this.zStep = builder.zStep;
+    this.zTo = builder.zTo;
+    this.threeDimensions = builder.threeDimensions;
+  //  stack = new ImageStack(imSizeX, imSizeY);
+    slices = new ImageProcessor[zSlices];
+    for (int i = 0; i < zSlices; i++) {
+      slices[i] = new FloatProcessor(imSizeX, imSizeY);
+//      stack.addSlice((i * zStep + zFrom) + " to " + ((i + 1) * zStep + zFrom), new FloatProcessor(imSizeX, imSizeY));
+    }
   }
 
+  @Override
   public void addToImage(double[] x, double[] y, double[] z, double[] dx) {
     for (int i = 0; i < x.length; i++) {
       double zVal = z != null ? z[i] : 0;
@@ -148,10 +197,16 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     }
   }
 
+  @Override
   public ImagePlus getRenderedImage() {
-    return new ImagePlus(this.getClass().getSimpleName(),image);
+    ImageStack stack = new ImageStack(imSizeX, imSizeY);
+    for(int i = 0; i < slices.length; i++){
+      stack.addSlice((i * zStep + zFrom) + " to " + ((i + 1) * zStep + zFrom), slices[i]);
+    }
+    return new ImagePlus(this.getClass().getSimpleName(), stack);
   }
 
+  @Override
   public ImagePlus getRenderedImage(double[] x, double[] y, double[] z, double[] dx) {
     reset();
     addToImage(x, y, z, dx);
@@ -160,9 +215,12 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
 
   protected abstract void drawPoint(double x, double y, double z, double dx);
 
+  @Override
   public void reset() {
-    float[] px = (float[]) image.getPixels();
-    Arrays.fill(px, 0);
+    for(int i = 0; i <= slices.length; i++){
+      float[] px = (float[]) slices[i].getPixels();
+      Arrays.fill(px, 0);
+    }
   }
 
   protected boolean isInBounds(double x, double y) {

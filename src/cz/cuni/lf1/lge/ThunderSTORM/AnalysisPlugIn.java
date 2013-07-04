@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.swing.UIManager;
 
 /**
  * ThunderSTORM Analysis plugin.
@@ -60,8 +59,27 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     public void run() {
       renderedImage.show();
       if (renderedImage.isVisible()) {
-        IJ.run(renderedImage, "Enhance Contrast", "saturated=0.05");
+        renderedImage.setDisplayRange(0, findMaxStackValue(renderedImage));
+        renderedImage.updateAndDraw();
       }
+    }
+    
+    private double findMaxStackValue(ImagePlus imp) {
+      Object[] stack = imp.getStack().getImageArray();
+      double max = 0;
+      for (int i = 0; i < stack.length; i++) {
+        //TODO: accept other than float image
+        float[] pixels = (float[]) stack[i];
+        if (pixels != null) {
+          for (int j = 0; j < pixels.length; j++) {
+            double val = pixels[j];
+            if (val > max) {
+              max = val;
+            }
+          }
+        }
+      }
+      return max;
     }
   };
 
@@ -115,12 +133,13 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 frame, Color.red, RenderingOverlay.MARKER_CROSS);
       }
       renderingQueue.repaintLater();
+      renderingQueue.shutdown();
       //
       // Finished
       IJ.showProgress(1.0);
       IJ.showStatus("ThunderSTORM finished.");
       return DONE;
-    } else if("showResultsTable".equals(command)) {
+    } else if ("showResultsTable".equals(command)) {
       IJResultsTable.getResultsTable().show();
       return DONE;
     } else {
@@ -161,7 +180,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         selectedDetector = parser.getDetectorUI();
         selectedEstimator = parser.getEstimatorUI();
 
-        roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0,0,imp.getWidth(), imp.getHeight());
+        roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
         IRendererUI rendererPanel = parser.getRendererUI();
         rendererPanel.setSize(roi.getBounds().width, roi.getBounds().height);
         IncrementalRenderingMethod method = rendererPanel.getImplementation();
@@ -179,7 +198,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         selectedDetector = dialog.getDetector();
         selectedEstimator = dialog.getEstimator();
 
-        roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0,0,imp.getWidth(), imp.getHeight());
+        roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
         IRendererUI selectedRenderer = dialog.getRenderer();
         selectedRenderer.setSize(roi.getBounds().width, roi.getBounds().height);
         IncrementalRenderingMethod method = selectedRenderer.getImplementation();
