@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
@@ -133,7 +133,7 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
         return detections;
     }
 
-  public LocalMaximaDetector() throws ThresholdFormulaException {
+  public LocalMaximaDetector() throws FormulaParserException {
     this(DEFAULT_CONNECTIVITY, DEFAULT_THRESHOLD);
   }
     
@@ -143,7 +143,7 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
      * @param connectivity determines in whar neighbourhood will be maxima looked for
      * @param threshold points with their intensities lower than the threshold will not be included in a list of molecule candidates
      */
-    public LocalMaximaDetector(int connectivity, String threshold) throws ThresholdFormulaException {
+    public LocalMaximaDetector(int connectivity, String threshold) throws FormulaParserException {
         assert((connectivity == Graph.CONNECTIVITY_4) || (connectivity == Graph.CONNECTIVITY_8));
         
         this.connectivity = connectivity;
@@ -174,7 +174,7 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
      * @return {@code Vector} of detected {@code Points} {x,y,I}
      */
     @Override
-    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws ThresholdFormulaException {
+    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException {
         float thr = Thresholder.getThreshold(threshold);
         return ((connectivity == Graph.CONNECTIVITY_4) ? getMax4Candidates(image, thr) : getMax8Candidates(image, thr));
     }

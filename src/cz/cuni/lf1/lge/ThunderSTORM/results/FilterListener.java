@@ -5,19 +5,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.table.TableRowSorter;
+import net.java.balloontip.BalloonTip;
 
 class FilterListener implements ActionListener, KeyListener {
 
+  private JLabel status;
   private JTextField filter;
+  private JavaTableWindow table;
   private ResultsTableModel model;
   private TableRowSorter<ResultsTableModel> sorter;
   
-  public FilterListener(ResultsTableModel model, TableRowSorter<ResultsTableModel> sorter, JTextField filter) {
+  public FilterListener(JavaTableWindow table, ResultsTableModel model, TableRowSorter<ResultsTableModel> sorter, JTextField filter, JLabel status) {
+    this.table = table;
     this.model = model;
     this.sorter = sorter;
     this.filter = filter;
+    this.status = status;
   }
   
   @Override
@@ -48,10 +54,17 @@ class FilterListener implements ActionListener, KeyListener {
   
   protected void runFilter() {
     try {
-      sorter.setRowFilter(new ResultsFilter(model, filter.getText()));
-    } catch(IllegalArgumentException ex) {
+      ResultsFilter rf = new ResultsFilter(model, filter.getText());
+      sorter.setRowFilter(rf);
+      int filtered = rf.getFilteredItemsCount(), all = rf.getAllItemsCount();
+      String be = ((filtered > 1) ? "were" : "was");
+      String item = ((all > 1) ? "items" : "item");
+      status.setText(filtered + " out of " + all + " " + item + " " + be + " filtered out");
+      filter.setBackground(Color.WHITE);
+      table.showPreview();
+    } catch(Exception ex) {
       filter.setBackground(new Color(255, 200, 200));
-      filter.setToolTipText("Wrong syntax! " + ex.getMessage());
+      new BalloonTip(filter, ex.getMessage());
     }
   }
 

@@ -97,10 +97,10 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(resultsStartElement);
             eventWriter.add(end);
             
-            int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
+            int ncols = rt.view.getColumnCount(), nrows = rt.view.getRowCount();
             String [] headers = new String[ncols];
             for(int c = 0; c < ncols; c++)
-                headers[c] = rt.getColumnHeading(c);
+                headers[c] = rt.view.getColumnHeading(c);
             
             for(int r = 0; r < nrows; r++) {
                 StartElement moleculeStartElement = eventFactory.createStartElement("", "", ITEM);
@@ -109,7 +109,7 @@ public class XMLImportExport implements IImportExport {
                 eventWriter.add(end);
 
                 for(int c = 0; c < ncols; c++) {
-                    createNode(eventWriter, headers[c], Double.toString(rt.getValueAsDouble(c,r)));
+                    createNode(eventWriter, headers[c], Double.toString(rt.view.getValueAsDouble(c,r)));
                 }
                 
                 eventWriter.add(tab);

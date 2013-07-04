@@ -66,6 +66,15 @@ final class ResultsTableModel extends AbstractTableModel {
   public Vector<Double> getColumnAsVector(int columnIndex) {
     return columns.elementAt(columnIndex).data;
   }
+  
+  public Vector<Double> getColumnAsVector(int columnIndex, int [] indices) {
+    Vector<Double> column = columns.elementAt(columnIndex).data;
+    Vector<Double> res = new Vector<Double>();
+    for(int i = 0; i < indices.length; i++) {
+        res.add(column.elementAt(indices[i]));
+    }
+    return res;
+  }
 
   public Vector<Double> getColumnAsVector(String columnLabel) {
     int index = findColumn(columnLabel);
@@ -77,11 +86,15 @@ final class ResultsTableModel extends AbstractTableModel {
   }
 
   public Double[] getColumnAsArray(int columnIndex) {
-    return (Double [])getColumnAsVector(columnIndex).toArray();
+    Vector<Double> vec = getColumnAsVector(columnIndex);
+    Double [] arr = new Double[vec.size()];
+    return vec.toArray(arr);
   }
 
   public Double[] getColumnAsArray(String columnLabel) {
-    return (Double [])getColumnAsVector(columnLabel).toArray();
+    Vector<Double> vec = getColumnAsVector(columnLabel);
+    Double [] arr = new Double[vec.size()];
+    return vec.toArray(arr);
   }
   // -----------------------------------------------------
   public ResultsTableModel() {

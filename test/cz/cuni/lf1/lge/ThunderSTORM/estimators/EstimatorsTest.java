@@ -6,7 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.CompoundWaveletFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.ThresholdFormulaException;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.CSV;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -23,7 +23,7 @@ public class EstimatorsTest {
    * Test of estimateParameters method, of class LeastSquaresEstimator.
    */
   @Test
-  public void testLeastSquaresEstimator() throws ThresholdFormulaException {
+  public void testLeastSquaresEstimator() throws FormulaParserException {
     System.out.println("LeastSquaresEstimator::estimateParameters");
     testEstimator(new LeastSquaresEstimator(11));
   }
@@ -58,7 +58,7 @@ public class EstimatorsTest {
     testEstimator(new MultipleLocationsImageFitting(5, new MLEFitter(new EllipticGaussianPSF(1, 45))));
   }
   
-  private void testEstimator(IEstimator estimator) throws ThresholdFormulaException {
+  private void testEstimator(IEstimator estimator) throws FormulaParserException {
 
     try {
       FloatProcessor image = (FloatProcessor) IJ.openImage("test/resources/tubulins1_00020.tif").getProcessor().convertToFloat();

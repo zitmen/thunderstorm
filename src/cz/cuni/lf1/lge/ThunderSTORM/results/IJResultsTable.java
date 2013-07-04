@@ -21,10 +21,10 @@ public class IJResultsTable {
   public static final int COLUMN_IN_USE = -2;
   
   private static IJResultsTable resultsTable = null;
-	
-	/** Returns the ResultsTable used by the Measure command. This
-		table must be displayed in the "Results" window. */
-	public static IJResultsTable getResultsTable() {
+  
+  /** Returns the ResultsTable used by the Measure command. This
+      table must be displayed in the "Results" window. */
+  public static IJResultsTable getResultsTable() {
     if(resultsTable == null) {
       setResultsTable(new IJResultsTable());
     }
@@ -42,40 +42,42 @@ public class IJResultsTable {
   
   private JavaTableWindow table;
   private ResultsTableModel results;
+  public View view;
   
   /** Constructs an empty ResultsTable with the counter=0 and no columns. */
-	public IJResultsTable() {
+  public IJResultsTable() {
     table = new JavaTableWindow();
     results = table.getModel();
-	}
+    view = new View();
+  }
   
   /** Displays the contents of this ResultsTable in a window with 
-		the default title "ThunderSTORM: Results", or updates an
-    * existing results window. Opens a new window if there is
-    * no open results window. */
-	public void show() {
-		table.show();
-	}
+      the default title "ThunderSTORM: Results", or updates an
+      existing results window. Opens a new window if there is
+      no open results window. */
+  public void show() {
+    table.show();
+  }
   
   /** Displays the contents of this ResultsTable in a window with 
-		the specified title, or updates an existing results window. Opens
-		a new window if there is no open results window. */
-	public void show(String windowTitle) {
-		table.show(windowTitle);
-	}
+      the specified title, or updates an existing results window. Opens
+      a new window if there is no open results window. */
+  public void show(String windowTitle) {
+    table.show(windowTitle);
+  }
   
   /** Increments the measurement counter by one. */
-	public synchronized void addRow() {
+  public synchronized void addRow() {
     results.addRow();
   }
   
   /** Adds a value to the end of the given column. */
-	public void addValue(int column, double value) {
+  public void addValue(int column, double value) {
     results.addValue(new Double(value), column);
   }
 	
 	/** Adds a value to the end of the given column. If the column does not exist, it is created. */
-	public void addValue(String column, double value) {
+  public void addValue(String column, double value) {
     results.addValue(new Double(value), column);
   }
   
@@ -242,6 +244,149 @@ public class IJResultsTable {
 	/** Returns the index of the last used column, or -1 if no columns are used. */
 	public int getLastColumn() {
     return results.getColumnCount()-1;
+  }
+  
+  /**
+   * The following API dows not access directly to the underlying ResultsModel,
+   * but recieves indices from the JTable view first and then goes works with the model.
+   */
+  public class View {
+
+    /** Returns a copy of the given column as an array of Double,
+          or null if the column is empty. */
+    public Double[] getColumnAsDoubleObjects(int column) {
+      int c = resultsTable.table.getView().convertColumnIndexToModel(column);
+      int rows = getRowCount();
+      int [] indices = new int[rows];
+      for(int i = 0; i < rows; i++) {
+          indices[i] = resultsTable.table.getView().convertRowIndexToModel(i);
+      }
+      Vector<Double> vec = results.getColumnAsVector(c, indices);
+      if(vec == null) {
+        return null;
+      }
+      Double [] arr = new Double[vec.size()];
+      return vec.toArray(arr);
+    }
+
+    /** Returns a copy of the given column as a float array,
+          or null if the column is empty. */
+    public float[] getColumn(int column) {
+      Double [] col = getColumnAsDoubleObjects(column);
+      if(col == null) return null;
+      float [] res = new float[col.length];
+      for(int i = 0; i < col.length; i++) {
+          res[i] = col[i].floatValue();
+      }
+      return res;
+    }
+
+    /** Returns a copy of the given column as a double array,
+          or null if the column is empty. */
+    public double[] getColumnAsDoubles(int column) {
+      Double [] col = getColumnAsDoubleObjects(column);
+      if(col == null) return null;
+      double [] res = new double[col.length];
+      for(int i = 0; i < col.length; i++) {
+          res[i] = col[i].doubleValue();
+      }
+      return res;
+    }
+
+    /** Returns true if the specified column exists and is not empty. */
+    public boolean columnExists(int column) {
+      return ((column >= 0) && (column < results.getColumnCount()));
+    }
+
+    public boolean columnExists(String column) {
+      return (results.findColumn(column) != ResultsTableModel.COLUMN_NOT_FOUND);
+    }
+
+    /** Returns the index of the first column with the given heading.
+        heading. If not found, returns COLUMN_NOT_FOUND. */
+    public int getColumnIndex(String heading) {
+      int col = results.findColumn(heading);
+      return resultsTable.table.getView().convertColumnIndexToModel(col);
+    }
+
+    /** Sets the heading of the the first available column and
+        returns that column's index. Returns COLUMN_IN_USE
+        if this is a duplicate heading. */
+    public int getFreeColumn(String heading) {
+      if(columnExists(heading)) {
+        return COLUMN_IN_USE;
+      }
+      int col = results.getColumnCount();
+      results.addColumn(heading, Double.class);
+      return col;
+    }
+
+    /** Returns the Double value of the given column and row, where
+        column must be less than or equal the value returned by
+        getLastColumn() and row must be greater than or equal
+        zero and less than the value returned by getRowCount(). */
+    public Double getValueAsDoubleObject(int column, int row) {
+      int c = resultsTable.table.getView().convertColumnIndexToModel(column);
+      int r = resultsTable.table.getView().convertRowIndexToModel(row);
+      return (Double)results.getValueAt(r, c);
+    }
+
+    /** Returns the double value of the given column and row, where
+        column must be less than or equal the value returned by
+        getLastColumn() and row must be greater than or equal
+        zero and less than the value returned by getRowCount(). */
+    public double getValueAsDouble(int column, int row) {
+      return getValueAsDoubleObject(column, row).doubleValue();
+    }
+
+    /** Returns the value of the specified column and row, where
+        column is the column heading and row is a number greater
+        than or equal zero and less than value returned by getRowCount(). 
+        Throws an IllegalArgumentException if this ResultsTable
+        does not have a column with the specified heading. */
+    public double getValue(String column, int row) {
+      if(!columnExists(column)) {
+        throw new IllegalArgumentException("Column `" + column + "` does not exist!");
+      }
+      return getValueAsDouble(row, results.findColumn(column));
+    }
+
+    public int getRowCount() {
+      return resultsTable.table.getView().getRowCount();
+    }
+
+    public int getColumnCount() {
+      return results.getColumnCount();
+    }
+
+    /** Returns the heading of the specified column or null if the column is empty. */
+    public String getColumnHeading(int column) {
+      int col = resultsTable.table.getView().convertColumnIndexToModel(column);
+      if((col >= 0) && (col < results.getColumnCount())) {
+        return results.getColumnName(col);
+      }
+      return null;
+    }
+
+    /** Returns a tab or comma delimited string containing the column headings. */
+    public String getColumnHeadings() {
+      StringBuilder builder = new StringBuilder();
+      String [] headings = new String[results.getColumnCount()];
+      results.getColumnNames().toArray(headings);
+      for(int i = 0, col; i < headings.length; i++) {
+        col = resultsTable.table.getView().convertColumnIndexToModel(i);
+        builder.append(headings[col]);
+        builder.append(',');
+      }
+      builder.deleteCharAt(builder.length()-1);
+      return builder.toString();
+    }
+
+    /** Returns the index of the last used column, or -1 if no columns are used. */
+    public int getLastColumn() {
+      return results.getColumnCount()-1;
+    }
+
   }
 
 }

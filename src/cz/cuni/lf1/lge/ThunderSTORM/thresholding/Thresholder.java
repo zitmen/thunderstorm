@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.thresholding;
 
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import ij.process.FloatProcessor;
@@ -17,7 +18,7 @@ public class Thresholder {
     active_filter = index;
   }
 
-  public static void parseThreshold(String formula) throws ThresholdFormulaException {
+  public static void parseThreshold(String formula) throws FormulaParserException {
     thresholds.put(formula, new ThresholdInterpreter(formula));
   }
 
@@ -25,7 +26,7 @@ public class Thresholder {
     Thresholder.filters = filters;
   }
 
-  public static float getThreshold(String formula) throws ThresholdFormulaException {
+  public static float getThreshold(String formula) throws FormulaParserException {
     //assert(filters != null);
     //assert(!filters.isEmpty());
     //assert(active_filter >= 0);

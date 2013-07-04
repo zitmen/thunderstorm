@@ -1,11 +1,11 @@
-package cz.cuni.lf1.lge.ThunderSTORM.thresholding.SyntaxTree;
+package cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree;
 
 public class Constant extends Node {
 
     RetVal val;
 
     public Constant(String str) {
-        val = new RetVal(Float.parseFloat(str));
+        val = new RetVal(Double.parseDouble(str));
     }
     
     @Override

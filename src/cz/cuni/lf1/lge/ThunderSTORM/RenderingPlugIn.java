@@ -22,26 +22,26 @@ import java.util.Vector;
  */
 public class RenderingPlugIn implements PlugIn {
 
-  private static final String[] METHODS = new String[]{"Density", "ASH", "Histogram", "Scatter"};
-  private static final String LABEL_X_POS = "x";
-  private static final String LABEL_Y_POS = "y";
+  public static final String[] METHODS = new String[]{"Density", "ASH", "Histogram", "Scatter"};
+  public static final String LABEL_X_POS = "x";
+  public static final String LABEL_Y_POS = "y";
 
   @Override
   public void run(String string) {
     UI.setLookAndFeel();
     //
     IJResultsTable rt = IJResultsTable.getResultsTable();
-    if (rt == null || !IJResultsTable.isResultsWindow()) {
+    if (!IJResultsTable.isResultsWindow()) {
       IJ.error("Requires Results window open");
       return;
     }
-    if (!rt.columnExists(LABEL_X_POS) || !rt.columnExists(LABEL_Y_POS)) {
+    if (!rt.view.columnExists(LABEL_X_POS) || !rt.view.columnExists(LABEL_Y_POS)) {
       IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, rt.getColumnHeadings()));
       return;
     }
 
-    double[] xpos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_X_POS));
-    double[] ypos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_Y_POS));
+    double[] xpos = rt.view.getColumnAsDoubles(rt.view.getColumnIndex(LABEL_X_POS));
+    double[] ypos = rt.view.getColumnAsDoubles(rt.view.getColumnIndex(LABEL_Y_POS));
     if (xpos == null || ypos == null) {
       IJ.error("results were null");
       return;
