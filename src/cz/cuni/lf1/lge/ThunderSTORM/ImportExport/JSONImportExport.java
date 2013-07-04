@@ -55,13 +55,13 @@ public class JSONImportExport implements IImportExport {
         int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
         String [] headers = new String[ncols];
         for(int c = 0; c < ncols; c++)
-            headers[c] = rt.getColumnHeading(c);
+            headers[c] = rt.view.getColumnHeading(c);
         
         Object [] results = new Object[nrows];
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(headers[c], rt.getValueAsDouble(c,r));
+                molecule.put(headers[c], rt.view.getValueAsDouble(c,r));
             results[r] = molecule;
             IJ.showProgress((double)r / (double)nrows);
         }

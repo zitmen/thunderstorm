@@ -114,6 +114,10 @@ class JavaTableWindow {
     return (ResultsTableModel)table.getModel();
   }
   
+  public JTable getView() {
+      return table;
+  }
+  
   public void show(String title) {
     frame.setTitle(title);
     show();

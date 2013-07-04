@@ -24,6 +24,8 @@ abstract public class DLMImportExport implements IImportExport {
         assert(fp != null);
         assert(!fp.isEmpty());
         
+        rt.reset();
+        
         CSVReader csvReader = new CSVReader(new FileReader(fp), separator);
         List<String[]> lines;
         lines = csvReader.readAll();
@@ -52,18 +54,18 @@ abstract public class DLMImportExport implements IImportExport {
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
+        int ncols = rt.view.getColumnCount(), nrows = rt.view.getRowCount();
         LinkedList<String[]> lines = new LinkedList<String[]>();
         
         String [] headers = new String[ncols];
         for(int c = 0; c < ncols; c++)
-            headers[c] = rt.getColumnHeading(c);
+            headers[c] = rt.view.getColumnHeading(c);
         lines.add(headers);
         
         String [][] values = new String[nrows][ncols];
         for(int r = 0; r < nrows; r++) {
             for(int c = 0; c < ncols; c++)
-                values[r][c] = Double.toString(rt.getValueAsDouble(c,r));
+                values[r][c] = Double.toString(rt.view.getValueAsDouble(c,r));
             lines.add(values[r]);
             IJ.showProgress((double)r / (double)nrows);
         }

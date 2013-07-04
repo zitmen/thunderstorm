@@ -63,11 +63,6 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
 
     private void exportToFile(String fpath) throws IOException {
         IJResultsTable rt = IJResultsTable.getResultsTable();
-        if (rt == null || !IJResultsTable.isResultsWindow()) {
-            IJ.error("Requires Results window open!");
-            return;
-        }
-        
         IJ.showStatus("ThunderSTORM is exporting your results...");
         IJ.showProgress(0.0);            
         IImportExport exporter = ie.elementAt(active_ie);
@@ -78,11 +73,6 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
     
     private void importFromFile(String fpath) throws IOException {
         IJResultsTable rt = IJResultsTable.getResultsTable();
-        if (rt == null || !IJResultsTable.isResultsWindow()) {
-            rt = new IJResultsTable();
-            IJResultsTable.setResultsTable(rt);
-        }
-        
         IJ.showStatus("ThunderSTORM is importing your file...");
         IJ.showProgress(0.0);
         rt.reset();
