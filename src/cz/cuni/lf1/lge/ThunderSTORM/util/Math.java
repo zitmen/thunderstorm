@@ -379,31 +379,150 @@ public class Math {
     return res;
   }
 
-  // TODO: change these methods to return Boolean[] !!!
-  public static boolean relEq(Double[] a, Double[] b) {
-    if(a.length < b.length) return false;
-    if(a.length > b.length) return false;
-    for(int i = 0; i < a.length; i++) {
-      if(a[i].doubleValue() != b[i].doubleValue()) return false;
+  public static Double [] relEq(Double[] a, Double[] b) {
+    int len1, len2;
+    if(a.length < b.length) {
+      len1 = a.length;
+      len2 = b.length;
+    } else {
+      len1 = b.length;
+      len2 = a.length;
     }
-    return true;
+    Double [] res = new Double[len2];
+    for(int i = 0; i < len1; i++) {
+      res[i] = ((a[i].doubleValue() == b[i].doubleValue()) ? 1.0 : 0.0);
+    }
+    for(int i = len1; i < len2; i++) {
+      res[i] = 0.0;
+    }
+    return res;
   }
 
-  public static boolean relGt(Double[] a, Double[] b) {
-    if(a.length < b.length) return false;
-    if(a.length > b.length) return true;
-    for(int i = 0; i < a.length; i++) {
-      if(a[i].doubleValue() <= b[i].doubleValue()) return false;
+  public static Double [] relGt(Double[] a, Double[] b) {
+    int len1, len2;
+    if(a.length < b.length) {
+      len1 = a.length;
+      len2 = b.length;
+    } else {
+      len1 = b.length;
+      len2 = a.length;
     }
-    return true;
+    Double [] res = new Double[len2];
+    for(int i = 0; i < len1; i++) {
+      res[i] = ((a[i].doubleValue() > b[i].doubleValue()) ? 1.0 : 0.0);
+    }
+    for(int i = len1; i < len2; i++) {
+      res[i] = 0.0;
+    }
+    return res;
   }
 
-  public static boolean relLt(Double[] a, Double[] b) {
-    if(a.length < b.length) return true;
-    if(a.length > b.length) return false;
-    for(int i = 0; i < a.length; i++) {
-      if(a[i].doubleValue() >= b[i].doubleValue()) return false;
+  public static Double [] relLt(Double[] a, Double[] b) {
+    int len1, len2;
+    if(a.length < b.length) {
+      len1 = a.length;
+      len2 = b.length;
+    } else {
+      len1 = b.length;
+      len2 = a.length;
     }
-    return true;
+    Double [] res = new Double[len2];
+    for(int i = 0; i < len1; i++) {
+      res[i] = ((a[i].doubleValue() < b[i].doubleValue()) ? 1.0 : 0.0);
+    }
+    for(int i = len1; i < len2; i++) {
+      res[i] = 0.0;
+    }
+    return res;
   }
+
+  public static Double [] relLt(Double val, Double[] vec) {
+    Double [] res = new Double[vec.length];
+    double v = val.doubleValue();
+    for(int i = 0; i < vec.length; i++) {
+      res[i] = ((v < vec[i].doubleValue()) ? 1.0 : 0.0);
+    }
+    return res;
+  }
+  
+  public static Double [] relLt(Double[] vec, Double val) {
+    Double [] res = new Double[vec.length];
+    double v = val.doubleValue();
+    for(int i = 0; i < vec.length; i++) {
+      res[i] = ((vec[i].doubleValue() < v) ? 1.0 : 0.0);
+    }
+    return res;
+  }
+
+  public static Double [] relGt(Double val, Double[] vec) {
+    Double [] res = new Double[vec.length];
+    double v = val.doubleValue();
+    for(int i = 0; i < vec.length; i++) {
+      res[i] = ((v > vec[i].doubleValue()) ? 1.0 : 0.0);
+    }
+    return res;
+  }
+  
+  public static Double [] relGt(Double[] vec, Double val) {
+    Double [] res = new Double[vec.length];
+    double v = val.doubleValue();
+    for(int i = 0; i < vec.length; i++) {
+      res[i] = ((vec[i].doubleValue() > v) ? 1.0 : 0.0);
+    }
+    return res;
+  }
+
+  public static Double [] logAnd(Double[] a, Double[] b) {
+    int len1, len2;
+    if(a.length < b.length) {
+      len1 = a.length;
+      len2 = b.length;
+    } else {
+      len1 = b.length;
+      len2 = a.length;
+    }
+    Double [] res = new Double[len2];
+    for(int i = 0; i < len1; i++) {
+      res[i] = (((a[i].doubleValue() != 0.0) && (b[i].doubleValue() != 0.0)) ? 1.0 : 0.0);
+    }
+    for(int i = len1; i < len2; i++) {
+      res[i] = 0.0;
+    }
+    return res;
+  }
+
+  public static Double [] logOr(Double[] a, Double[] b) {
+    int len1, len2;
+    Double [] larger;
+    if(a.length < b.length) {
+      len1 = a.length;
+      len2 = b.length;
+      larger = b;
+    } else {
+      len1 = b.length;
+      len2 = a.length;
+      larger = a;
+    }
+    Double [] res = new Double[len2];
+    for(int i = 0; i < len1; i++) {
+      res[i] = (((a[i].doubleValue() != 0.0) || (b[i].doubleValue() != 0.0)) ? 1.0 : 0.0);
+    }
+    for(int i = len1; i < len2; i++) {
+      res[i] = larger[i];
+    }
+    return res;
+  }
+
+    public static Double [] relEq(Double val, Double[] vec) {
+        Double [] res = new Double[vec.length];
+        double v = val.doubleValue();
+        for(int i = 0; i < vec.length; i++) {
+            res[i] = ((v == vec[i].doubleValue()) ? 1.0 : 0.0);
+        }
+        return res;
+    }
+    
+    public static Double [] relEq(Double[] vec, Double val) {
+        return relEq(val, vec);
+    }
 }

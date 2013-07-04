@@ -77,11 +77,15 @@ final class ResultsTableModel extends AbstractTableModel {
   }
 
   public Double[] getColumnAsArray(int columnIndex) {
-    return (Double [])getColumnAsVector(columnIndex).toArray();
+    Vector<Double> vec = getColumnAsVector(columnIndex);
+    Double [] arr = new Double[vec.size()];
+    return vec.toArray(arr);
   }
 
   public Double[] getColumnAsArray(String columnLabel) {
-    return (Double [])getColumnAsVector(columnLabel).toArray();
+    Vector<Double> vec = getColumnAsVector(columnLabel);
+    Double [] arr = new Double[vec.size()];
+    return vec.toArray(arr);
   }
   // -----------------------------------------------------
   public ResultsTableModel() {

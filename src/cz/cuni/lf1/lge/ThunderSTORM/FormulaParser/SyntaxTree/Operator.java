@@ -44,7 +44,7 @@ public class Operator extends Node {
 
     @Override
     public void semanticScan() throws FormulaParserException {
-        if(op > 5) {
+        if(isThresholding() && (op > 5)) {
             throw new FormulaParserException("Illegal operator used! The only allowed operators in thresholding formula are: +, -, *, /, and ^.");
         }
         if(left != null) left.semanticScan();

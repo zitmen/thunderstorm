@@ -306,38 +306,128 @@ public class ImageProcessor {
         return result;
     }
     
-    // TODO: change these methods to return Matrix<Boolean> !!!
-    public static boolean relEq(FloatProcessor a, FloatProcessor b) {
-        float [] aa = (float[])a.getPixels();
-        float [] bb = (float[])b.getPixels();
-        if(aa.length > bb.length) return false;
-        if(aa.length < bb.length) return false;
-        for(int i = 0; i < aa.length; i++) {
-            if(aa[i] != bb[i]) return false;
+    public static FloatProcessor relEq(FloatProcessor a, FloatProcessor b) {
+        if((a.getWidth() != b.getWidth()) || (a.getHeight()!= b.getHeight())) {
+            throw new IllegalArgumentException("Error during evaluation of `a<b` expression! Both operands must be of the same size!");
         }
-        return true;
+        FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        for(int x = 0; x < a.getWidth(); x++) {
+            for(int y = 0; y < a.getHeight(); y++) {
+                res.setf(x, y, ((a.getf(x, y) == b.getf(x, y)) ? 1.0f : 0.0f));
+            }
+        }
+        return res;
     }
 
-    public static boolean relGt(FloatProcessor a, FloatProcessor b) {
-        float [] aa = (float[])a.getPixels();
-        float [] bb = (float[])b.getPixels();
-        if(aa.length > bb.length) return true;
-        if(aa.length < bb.length) return false;
-        for(int i = 0; i < aa.length; i++) {
-            if(aa[i] <= bb[i]) return false;
+    public static FloatProcessor relGt(FloatProcessor a, FloatProcessor b) {
+        if((a.getWidth() != b.getWidth()) || (a.getHeight()!= b.getHeight())) {
+            throw new IllegalArgumentException("Error during evaluation of `a<b` expression! Both operands must be of the same size!");
         }
-        return true;
+        FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        for(int x = 0; x < a.getWidth(); x++) {
+            for(int y = 0; y < a.getHeight(); y++) {
+                res.setf(x, y, ((a.getf(x, y) > b.getf(x, y)) ? 1.0f : 0.0f));
+            }
+        }
+        return res;
     }
 
-    public static boolean relLt(FloatProcessor a, FloatProcessor b) {
-        float [] aa = (float[])a.getPixels();
-        float [] bb = (float[])b.getPixels();
-        if(aa.length < bb.length) return true;
-        if(aa.length > bb.length) return false;
-        for(int i = 0; i < aa.length; i++) {
-            if(aa[i] >= bb[i]) return false;
+    public static FloatProcessor relLt(FloatProcessor a, FloatProcessor b) {
+        if((a.getWidth() != b.getWidth()) || (a.getHeight()!= b.getHeight())) {
+            throw new IllegalArgumentException("Error during evaluation of `a<b` expression! Both operands must be of the same size!");
         }
-        return true;
+        FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        for(int x = 0; x < a.getWidth(); x++) {
+            for(int y = 0; y < a.getHeight(); y++) {
+                res.setf(x, y, ((a.getf(x, y) < b.getf(x, y)) ? 1.0f : 0.0f));
+            }
+        }
+        return res;
+    }
+
+    public static FloatProcessor relLt(Double val, FloatProcessor mat) {
+        float v = val.floatValue();
+        FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        for(int x = 0; x < mat.getWidth(); x++) {
+            for(int y = 0; y < mat.getHeight(); y++) {
+                res.setf(x, y, ((v < mat.getf(x, y)) ? 1.0f : 0.0f));
+            }
+        }
+        return res;
+    }
+    
+    public static FloatProcessor relLt(FloatProcessor mat, Double val) {
+        float v = val.floatValue();
+        FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        for(int x = 0; x < mat.getWidth(); x++) {
+            for(int y = 0; y < mat.getHeight(); y++) {
+                res.setf(x, y, ((mat.getf(x, y) < v) ? 1.0f : 0.0f));
+            }
+        }
+        return res;
+    }
+
+    public static FloatProcessor relGt(Double val, FloatProcessor mat) {
+        float v = val.floatValue();
+        FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        for(int x = 0; x < mat.getWidth(); x++) {
+            for(int y = 0; y < mat.getHeight(); y++) {
+                res.setf(x, y, ((v > mat.getf(x, y)) ? 1.0f : 0.0f));
+            }
+        }
+        return res;
+    }
+    
+    public static FloatProcessor relGt(FloatProcessor mat, Double val) {
+        float v = val.floatValue();
+        FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        for(int x = 0; x < mat.getWidth(); x++) {
+            for(int y = 0; y < mat.getHeight(); y++) {
+                res.setf(x, y, ((mat.getf(x, y) > v) ? 1.0f : 0.0f));
+            }
+        }
+        return res;
+    }
+
+    public static FloatProcessor logAnd(FloatProcessor a, FloatProcessor b) {
+        if((a.getWidth() != b.getWidth()) || (a.getHeight()!= b.getHeight())) {
+            throw new IllegalArgumentException("Error during evaluation of `a&b` expression! Both operands must be of the same size!");
+        }
+        FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        for(int x = 0; x < a.getWidth(); x++) {
+            for(int y = 0; y < a.getHeight(); y++) {
+                res.setf(x, y, (((a.getf(x, y) != 0.0f) && (b.getf(x, y) != 0.0f)) ? 1.0f : 0.0f));
+            }
+        }
+        return res;
+    }
+
+    public static FloatProcessor logOr(FloatProcessor a, FloatProcessor b) {
+        if((a.getWidth() != b.getWidth()) || (a.getHeight()!= b.getHeight())) {
+            throw new IllegalArgumentException("Error during evaluation of `a|b` expression! Both operands must be of the same size!");
+        }
+        FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        for(int x = 0; x < a.getWidth(); x++) {
+            for(int y = 0; y < a.getHeight(); y++) {
+                res.setf(x, y, (((a.getf(x, y) != 0.0f) || (b.getf(x, y) != 0.0f)) ? 1.0f : 0.0f));
+            }
+        }
+        return res;
+    }
+
+    public static FloatProcessor relEq(Double val, FloatProcessor mat) {
+        float v = val.floatValue();
+        FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        for(int x = 0; x < mat.getWidth(); x++) {
+            for(int y = 0; y < mat.getHeight(); y++) {
+                res.setf(x, y, ((mat.getf(x, y) == v) ? 1.0f : 0.0f));
+            }
+        }
+        return res;
+    }
+    
+    public static FloatProcessor relEq(FloatProcessor mat, Double val) {
+        return relEq(val, mat);
     }
 
 }

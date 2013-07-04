@@ -11,10 +11,12 @@ import java.awt.event.WindowEvent;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -30,6 +32,8 @@ class JavaTableWindow {
   private JButton export;
   private JButton render;
   private JButton filterButton;
+  private JCheckBox preview;
+  private JLabel status;
   
   public JavaTableWindow() {
     frame = new JFrame("ThunderSTORM: Results");
@@ -45,10 +49,18 @@ class JavaTableWindow {
     sorter = new TableRowSorter<ResultsTableModel>(model);
     table.setRowSorter(sorter);
     //
+    // TODO: why is there a margin on the left ??!!
+    status = new JLabel(" ", JLabel.CENTER);
+    JPanel statusBar = new JPanel();
+    statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.Y_AXIS));
+    statusBar.add(Box.createVerticalStrut(10));
+    statusBar.add(new JSeparator(JSeparator.HORIZONTAL));
+    statusBar.add(status);
+    //
     JPanel filter = new JPanel();
     filter.setLayout(new BoxLayout(filter, BoxLayout.X_AXIS));
     filterText = new JTextField();
-    FilterListener filterListener = new FilterListener(model, sorter, filterText);
+    FilterListener filterListener = new FilterListener(model, sorter, filterText, status);
     filterText.addKeyListener(filterListener);
     filterLabel = new JLabel("Filter: ", SwingConstants.TRAILING);
     filterLabel.setLabelFor(filterText);
@@ -56,6 +68,7 @@ class JavaTableWindow {
     filterButton.addActionListener(filterListener);
     filter.add(filterLabel);
     filter.add(filterText);
+    filter.add(filterButton);
     //
     JPanel buttons = new JPanel();
     buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
@@ -73,6 +86,14 @@ class JavaTableWindow {
         new RenderingPlugIn().run("");
       }
     });
+    preview = new JCheckBox("Preview");
+    render.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        // TODO: activate preview
+      }
+    });
+    buttons.add(preview);
     buttons.add(Box.createHorizontalGlue());
     buttons.add(render);
     buttons.add(Box.createHorizontalStrut(10));
@@ -83,6 +104,7 @@ class JavaTableWindow {
     pane.add(new JScrollPane(table));
     pane.add(filter);
     pane.add(buttons);
+    pane.add(statusBar);
     //
     frame.setContentPane(pane);
     frame.pack();
