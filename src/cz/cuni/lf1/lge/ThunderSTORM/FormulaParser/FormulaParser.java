@@ -87,11 +87,12 @@ public class FormulaParser {
         return l;
     }
     
-    private Node mulDivExpr() throws FormulaParserException {    // l*r, l/r
+    private Node mulDivExpr() throws FormulaParserException {    // l*r, l/r, l%r
         Node l = powExpr();
         switch(peek()) {
             case OP_MUL: match(OP_MUL); return getNewOperator(Operator.MUL, l, powExpr());
             case OP_DIV: match(OP_DIV); return getNewOperator(Operator.DIV, l, powExpr());
+            case OP_MOD: match(OP_MOD); return getNewOperator(Operator.MOD, l, powExpr());
         }
         return l;
     }

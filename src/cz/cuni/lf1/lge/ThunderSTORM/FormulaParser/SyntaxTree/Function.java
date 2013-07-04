@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree;
 
 import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
+import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
 import ij.process.FloatProcessor;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,7 +13,7 @@ public class Function extends Node {
     private Node arg = null;
     
     private static final HashSet<String> builtInFunctions = new HashSet<String>(
-            Arrays.asList(new String[] {"var", "std", "mean", "median", "max", "min", "sum"}));
+            Arrays.asList(new String[] {"var", "std", "mean", "median", "max", "min", "sum", "abs"}));
 
     @Override
     public void semanticScan() throws FormulaParserException {
@@ -35,6 +36,7 @@ public class Function extends Node {
         if(name.equals("max")) return new RetVal(max());
         if(name.equals("min")) return new RetVal(min());
         if(name.equals("sum")) return new RetVal(sum());
+        if(name.equals("abs")) return abs();
         // the following will never happen due to the semanticCheck in the constructor
         throw new FormulaParserException("Semantic error! Function '" + name + "' does not exist!");
     }
@@ -111,6 +113,18 @@ public class Function extends Node {
             return Math.median((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
             return ((Double)val.get()).doubleValue();
+        }
+        throw new FormulaParserException("Variables can be only scalars, vectors, or matrices!");
+    }
+    
+    protected RetVal abs() {
+        RetVal val = arg.eval();
+        if(val.isMatrix()) {    // FloatProcessor
+            return new RetVal(ImageProcessor.abs((FloatProcessor)val.get()));
+        } else if(val.isVector()) { // Double []
+            return new RetVal(Math.abs((Double[])val.get()));
+        } else if(val.isValue()) {    // Double
+            return new RetVal(Math.abs(((Double)val.get()).doubleValue()));
         }
         throw new FormulaParserException("Variables can be only scalars, vectors, or matrices!");
     }

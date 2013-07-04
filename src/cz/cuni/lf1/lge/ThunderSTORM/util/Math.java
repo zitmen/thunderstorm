@@ -370,6 +370,39 @@ public class Math {
     return res;
   }
   
+  public static Double[] mod(Number val, Number[] arr) {
+    Double [] res = new Double[arr.length];
+    double tmp, v = val.doubleValue();
+    for(int i = 0; i < arr.length; i++) {
+        tmp = v / arr[i].doubleValue();
+        res[i] = v - (((double)((int)tmp)) * arr[i].doubleValue());
+    }
+    return res;
+  }
+  
+  public static Double[] mod(Number[] arr, Number val) {
+    Double [] res = new Double[arr.length];
+    double tmp, v = val.doubleValue();
+    for(int i = 0; i < arr.length; i++) {
+        tmp = arr[i].doubleValue() / v;
+        res[i] = arr[i].doubleValue() - (((double)((int)tmp)) * v);
+    }
+    return res;
+  }
+  
+  public static Double[] mod(Number[] arr1, Number[] arr2) {
+    if(arr1.length != arr2.length)
+      throw new FormulaParserException("When performing modulo operation of two vectors (item-by-item), both must be of the same size!");
+    //
+    Double [] res = new Double[arr1.length];
+    double tmp;
+    for(int i = 0; i < arr1.length; i++) {
+      tmp = arr1[i].doubleValue() / arr2[i].doubleValue();
+      res[i] = arr1[i].doubleValue() - (((double)((int)tmp)) * arr2[i].doubleValue());
+    }
+    return res;
+  }
+  
   public static Double[] pow(Number[] arr, Number val) {
     Double [] res = new Double[arr.length];
     double v = val.doubleValue();
@@ -524,5 +557,17 @@ public class Math {
     
     public static Double [] relEq(Double[] vec, Double val) {
         return relEq(val, vec);
+    }
+
+    public static Double abs(Double val) {
+        return new Double(java.lang.Math.abs(val.doubleValue()));
+    }
+    
+    public static Double [] abs(Double [] vec) {
+        Double [] res = new Double[vec.length];
+        for(int i = 0; i < vec.length; i++) {
+            res[i] = abs(vec[i]);
+        }
+        return res;
     }
 }

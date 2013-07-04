@@ -430,4 +430,49 @@ public class ImageProcessor {
         return relEq(val, mat);
     }
 
+    public static FloatProcessor abs(FloatProcessor mat) {
+        FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight(), (float [])mat.getPixelsCopy());
+        res.abs();
+        return res;
+    }
+
+    public static FloatProcessor modulo(float val, FloatProcessor mat) {
+        FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        float tmp;
+        for (int i = 0, im = mat.getWidth(); i < im; i++) {
+            for (int j = 0, jm = mat.getHeight(); j < jm; j++) {
+                tmp = val / mat.getf(i, j);
+                res.setf(i, j, val - (((float)((int)tmp)) * mat.getf(i, j)));
+            }
+        }
+        return res;
+    }
+
+    public static FloatProcessor modulo(FloatProcessor mat, float val) {
+        FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        float tmp;
+        for (int i = 0, im = mat.getWidth(); i < im; i++) {
+            for (int j = 0, jm = mat.getHeight(); j < jm; j++) {
+                tmp = mat.getf(i, j) / val;
+                res.setf(i, j, mat.getf(i, j) - (((float)((int)tmp)) * val));
+            }
+        }
+        return res;
+    }
+    
+    public static FloatProcessor modulo(FloatProcessor a, FloatProcessor b) {
+        if((a.getWidth() != b.getWidth()) || (a.getHeight()!= b.getHeight())) {
+            throw new IllegalArgumentException("Error during evaluation of `a%b` expression! Both operands must be of the same size!");
+        }
+        FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        float tmp;
+        for (int i = 0, im = a.getWidth(); i < im; i++) {
+            for (int j = 0, jm = a.getHeight(); j < jm; j++) {
+                tmp = a.getf(i, j) / b.getf(i, j);
+                res.setf(i, j, a.getf(i, j) - (((float)((int)tmp)) * b.getf(i, j)));
+            }
+        }
+        return res;
+    }
+
 }

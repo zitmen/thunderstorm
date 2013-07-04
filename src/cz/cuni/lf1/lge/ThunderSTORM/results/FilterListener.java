@@ -8,6 +8,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.table.TableRowSorter;
+import net.java.balloontip.BalloonTip;
 
 class FilterListener implements ActionListener, KeyListener {
 
@@ -57,10 +58,10 @@ class FilterListener implements ActionListener, KeyListener {
       String be = ((filtered > 1) ? "were" : "was");
       String item = ((all > 1) ? "items" : "item");
       status.setText(filtered + " out of " + all + " " + item + " " + be + " filtered out");
+      filter.setBackground(Color.WHITE);
     } catch(Exception ex) {
-      ex.printStackTrace();
       filter.setBackground(new Color(255, 200, 200));
-      filter.setToolTipText(ex.getMessage());
+      new BalloonTip(filter, ex.getMessage());
     }
   }
 
