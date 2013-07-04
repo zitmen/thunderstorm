@@ -22,9 +22,9 @@ import java.util.Vector;
  */
 public class RenderingPlugIn implements PlugIn {
 
-  private static final String[] METHODS = new String[]{"Density", "ASH", "Histogram", "Scatter"};
-  private static final String LABEL_X_POS = "x";
-  private static final String LABEL_Y_POS = "y";
+  public static final String[] METHODS = new String[]{"Density", "ASH", "Histogram", "Scatter"};
+  public static final String LABEL_X_POS = "x";
+  public static final String LABEL_Y_POS = "y";
 
   @Override
   public void run(String string) {

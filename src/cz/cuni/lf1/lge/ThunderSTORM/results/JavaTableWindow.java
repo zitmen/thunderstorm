@@ -1,11 +1,16 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
 import ij.IJ;
 import ij.WindowManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.Box;
@@ -35,6 +40,8 @@ class JavaTableWindow {
   private JCheckBox preview;
   private JLabel status;
   
+  private boolean livePreview;
+  
   public JavaTableWindow() {
     frame = new JFrame("ThunderSTORM: Results");
     frame.setIconImage(IJ.getInstance().getIconImage());
@@ -60,7 +67,7 @@ class JavaTableWindow {
     JPanel filter = new JPanel();
     filter.setLayout(new BoxLayout(filter, BoxLayout.X_AXIS));
     filterText = new JTextField();
-    FilterListener filterListener = new FilterListener(model, sorter, filterText, status);
+    FilterListener filterListener = new FilterListener(this, model, sorter, filterText, status);
     filterText.addKeyListener(filterListener);
     filterLabel = new JLabel("Filter: ", SwingConstants.TRAILING);
     filterLabel.setLabelFor(filterText);
@@ -86,11 +93,13 @@ class JavaTableWindow {
         new RenderingPlugIn().run("");
       }
     });
-    preview = new JCheckBox("Preview");
-    render.addActionListener(new ActionListener() {
+    livePreview = true;
+    preview = new JCheckBox("Preview", livePreview);
+    preview.addItemListener(new ItemListener() {
       @Override
-      public void actionPerformed(ActionEvent e) {
-        // TODO: activate preview
+      public void itemStateChanged(ItemEvent e) {
+        livePreview = (e.getStateChange() == ItemEvent.SELECTED);
+        showPreview();
       }
     });
     buttons.add(preview);
@@ -108,6 +117,26 @@ class JavaTableWindow {
     //
     frame.setContentPane(pane);
     frame.pack();
+  }
+  
+  public void showPreview() {
+    if(livePreview == false) return;
+    //
+    IJResultsTable.View rt = IJResultsTable.getResultsTable().view;
+    if (!rt.columnExists(RenderingPlugIn.LABEL_X_POS) || !rt.columnExists(RenderingPlugIn.LABEL_Y_POS)) {
+      IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", RenderingPlugIn.LABEL_X_POS, RenderingPlugIn.LABEL_Y_POS, rt.getColumnHeadings()));
+      return;
+    }
+    double[] xpos = rt.getColumnAsDoubles(rt.getColumnIndex(RenderingPlugIn.LABEL_X_POS));
+    double[] ypos = rt.getColumnAsDoubles(rt.getColumnIndex(RenderingPlugIn.LABEL_Y_POS));
+    if (xpos == null || ypos == null) {
+      IJ.error("results were empty");
+      return;
+    }
+    int imSizeX = (int)(Math.ceil(max(xpos))+2), imSizeY = (int)(Math.ceil(max(ypos))+2), shifts = 2;
+    double resolution = 0.2, dx = 0.2;
+    RenderingMethod renderer = new ASHRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).defaultDX(dx).shifts(shifts).build();
+    renderer.getRenderedImage(xpos, ypos, null, null).show();
   }
   
   public ResultsTableModel getModel() {

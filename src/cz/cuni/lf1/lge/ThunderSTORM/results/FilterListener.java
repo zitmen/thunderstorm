@@ -14,10 +14,12 @@ class FilterListener implements ActionListener, KeyListener {
 
   private JLabel status;
   private JTextField filter;
+  private JavaTableWindow table;
   private ResultsTableModel model;
   private TableRowSorter<ResultsTableModel> sorter;
   
-  public FilterListener(ResultsTableModel model, TableRowSorter<ResultsTableModel> sorter, JTextField filter, JLabel status) {
+  public FilterListener(JavaTableWindow table, ResultsTableModel model, TableRowSorter<ResultsTableModel> sorter, JTextField filter, JLabel status) {
+    this.table = table;
     this.model = model;
     this.sorter = sorter;
     this.filter = filter;
@@ -59,6 +61,7 @@ class FilterListener implements ActionListener, KeyListener {
       String item = ((all > 1) ? "items" : "item");
       status.setText(filtered + " out of " + all + " " + item + " " + be + " filtered out");
       filter.setBackground(Color.WHITE);
+      table.showPreview();
     } catch(Exception ex) {
       filter.setBackground(new Color(255, 200, 200));
       new BalloonTip(filter, ex.getMessage());
