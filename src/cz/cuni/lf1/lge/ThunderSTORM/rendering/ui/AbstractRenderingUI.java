@@ -2,7 +2,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import ij.IJ;
 import ij.ImagePlus;
 import ij.Macro;
 import ij.plugin.frame.Recorder;
@@ -28,15 +27,6 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   JLabel zRangeLabel;
   JCheckBox threeDCheckBox;
   ImagePlus image;            //must be set in subclass
-  Runnable repaint = new Runnable() {
-    @Override
-    public void run() {
-      image.show();
-      if (image.isVisible()) {
-        IJ.run(image, "Enhance Contrast", "saturated=0.05");
-      }
-    }
-  };
   private final static double DEFAULT_RESOLUTION = 0.2;
   private final static int DEFAULT_REPAINT_FREQUENCY = 20;
 

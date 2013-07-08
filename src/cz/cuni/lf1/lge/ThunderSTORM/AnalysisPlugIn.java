@@ -54,34 +54,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   Roi roi;
   private RenderingQueue renderingQueue;
   private ImagePlus renderedImage;
-  private Runnable repaintTask = new Runnable() {
-    @Override
-    public void run() {
-      renderedImage.show();
-      if (renderedImage.isVisible()) {
-        renderedImage.setDisplayRange(0, findMaxStackValue(renderedImage));
-        renderedImage.updateAndDraw();
-      }
-    }
-    
-    private double findMaxStackValue(ImagePlus imp) {
-      Object[] stack = imp.getStack().getImageArray();
-      double max = 0;
-      for (int i = 0; i < stack.length; i++) {
-        //TODO: accept other than float image
-        float[] pixels = (float[]) stack[i];
-        if (pixels != null) {
-          for (int j = 0; j < pixels.length; j++) {
-            double val = pixels[j];
-            if (val > max) {
-              max = val;
-            }
-          }
-        }
-      }
-      return max;
-    }
-  };
 
   /**
    * Returns flags specifying capabilities of the plugin.
@@ -124,6 +96,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
           }
         }
       }
+      rt.setPreviewRenderer(renderingQueue);
       rt.show();
       //
       // Show detections in the image
@@ -135,7 +108,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 frame, Color.red, RenderingOverlay.MARKER_CROSS);
       }
       renderingQueue.repaintLater();
-      renderingQueue.shutdown();
       //
       // Finished
       IJ.showProgress(1.0);
@@ -187,7 +159,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         rendererPanel.setSize(roi.getBounds().width, roi.getBounds().height);
         IncrementalRenderingMethod method = rendererPanel.getImplementation();
         renderedImage = method.getRenderedImage();
-        renderingQueue = new RenderingQueue(method, repaintTask, rendererPanel.getRepaintFrequency());
+        renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), rendererPanel.getRepaintFrequency());
         return pluginFlags;
       } else {
         // Create and show the dialog
@@ -205,7 +177,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         selectedRenderer.setSize(roi.getBounds().width, roi.getBounds().height);
         IncrementalRenderingMethod method = selectedRenderer.getImplementation();
         renderedImage = method.getRenderedImage();
-        renderingQueue = new RenderingQueue(method, repaintTask, selectedRenderer.getRepaintFrequency());
+        renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), selectedRenderer.getRepaintFrequency());
 
         //if recording window is open, record parameters of all modules
         if (Recorder.record) {

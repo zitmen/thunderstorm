@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import java.util.Vector;
 
 /**
@@ -64,6 +65,10 @@ public class IJResultsTable {
       a new window if there is no open results window. */
   public void show(String windowTitle) {
     table.show(windowTitle);
+  }
+  
+  public void setPreviewRenderer(RenderingQueue renderer){
+    table.setPreviewRenderer(renderer);
   }
   
   /** Increments the measurement counter by one. */

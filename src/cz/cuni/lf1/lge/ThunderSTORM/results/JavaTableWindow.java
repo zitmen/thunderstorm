@@ -3,8 +3,10 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import ij.IJ;
 import ij.WindowManager;
 import java.awt.event.ActionEvent;
@@ -39,6 +41,7 @@ class JavaTableWindow {
   private JButton filterButton;
   private JCheckBox preview;
   private JLabel status;
+  private RenderingQueue previewRenderer;
   
   private boolean livePreview;
   
@@ -120,7 +123,7 @@ class JavaTableWindow {
   }
   
   public void showPreview() {
-    if(livePreview == false) return;
+    if(livePreview == false || previewRenderer == null) return;
     //
     IJResultsTable.View rt = IJResultsTable.getResultsTable().view;
     if (!rt.columnExists(RenderingPlugIn.LABEL_X_POS) || !rt.columnExists(RenderingPlugIn.LABEL_Y_POS)) {
@@ -129,14 +132,14 @@ class JavaTableWindow {
     }
     double[] xpos = rt.getColumnAsDoubles(rt.getColumnIndex(RenderingPlugIn.LABEL_X_POS));
     double[] ypos = rt.getColumnAsDoubles(rt.getColumnIndex(RenderingPlugIn.LABEL_Y_POS));
+    double[] zpos = rt.columnExists(PSFInstance.Z)? rt.getColumnAsDoubles(rt.getColumnIndex(PSFInstance.Z)) : null;
     if (xpos == null || ypos == null) {
       IJ.error("results were empty");
       return;
     }
-    int imSizeX = (int)(Math.ceil(max(xpos))+2), imSizeY = (int)(Math.ceil(max(ypos))+2), shifts = 2;
-    double resolution = 0.2, dx = 0.2;
-    RenderingMethod renderer = new ASHRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).defaultDX(dx).shifts(shifts).build();
-    renderer.getRenderedImage(xpos, ypos, null, null).show();
+    previewRenderer.resetLater();
+    previewRenderer.renderLater(xpos, ypos, zpos, null);
+    previewRenderer.repaintLater();
   }
   
   public ResultsTableModel getModel() {
@@ -165,6 +168,10 @@ class JavaTableWindow {
   
   public boolean isVisible() {
     return frame.isVisible();
+  }
+  
+  public void setPreviewRenderer(RenderingQueue renderer){
+    previewRenderer = renderer;
   }
 
   private class JavaTableWindowListener extends WindowAdapter {
