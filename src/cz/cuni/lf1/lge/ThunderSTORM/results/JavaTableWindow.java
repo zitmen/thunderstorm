@@ -9,6 +9,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import ij.IJ;
 import ij.WindowManager;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -59,13 +60,13 @@ class JavaTableWindow {
     sorter = new TableRowSorter<ResultsTableModel>(model);
     table.setRowSorter(sorter);
     //
-    // TODO: why is there a margin on the left ??!!
     status = new JLabel(" ", JLabel.CENTER);
     JPanel statusBar = new JPanel();
     statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.Y_AXIS));
     statusBar.add(Box.createVerticalStrut(10));
     statusBar.add(new JSeparator(JSeparator.HORIZONTAL));
     statusBar.add(status);
+    statusBar.setAlignmentX(Component.CENTER_ALIGNMENT);
     //
     JPanel filter = new JPanel();
     filter.setLayout(new BoxLayout(filter, BoxLayout.X_AXIS));
