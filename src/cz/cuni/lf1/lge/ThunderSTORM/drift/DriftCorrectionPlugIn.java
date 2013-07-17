@@ -21,8 +21,6 @@ public class DriftCorrectionPlugIn implements PlugIn {
   @Override
   public void run(String arg) {
     try {
-
-
       //load results window
       if (!IJResultsTable.isResultsWindow()) {
         IJ.showMessage("Requires ThunderSTORM results window open.");
@@ -51,7 +49,7 @@ public class DriftCorrectionPlugIn implements PlugIn {
       CrossCorrelationDriftCorrection driftCorrection = new CrossCorrelationDriftCorrection(x, y, frame, bins, magnification, -1, -1, showCorrelationImages);
       //show plot
       if (showPlot) {
-        showPlot(driftCorrection);
+        showDriftPlot(driftCorrection);
       }
       if (showCorrelationImages) {
         new ImagePlus("Cross correlations", driftCorrection.getCorrelationImages()).show();
@@ -77,9 +75,9 @@ public class DriftCorrectionPlugIn implements PlugIn {
     frame = rt.getColumnAsDoubles(rt.getColumnIndex("frame"));
   }
 
-  private static void showPlot(CrossCorrelationDriftCorrection driftCorrection) {
+  static void showDriftPlot(CrossCorrelationDriftCorrection driftCorrection) {
     int minFrame = driftCorrection.getMinFrame();
-    int frameCount = driftCorrection.getMaxFrame() - minFrame;
+    int frameCount = driftCorrection.getMaxFrame() - minFrame + 1;
     double[] grid = new double[frameCount];
     double[] driftX = new double[frameCount];
     double[] driftY = new double[frameCount];

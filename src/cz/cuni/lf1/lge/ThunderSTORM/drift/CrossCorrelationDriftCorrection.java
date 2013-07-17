@@ -54,12 +54,9 @@ public class CrossCorrelationDriftCorrection {
     this.binCount = steps;
     this.magnification = renderingMagnification;
     this.saveCorrelationImages = saveCorrelationImages;
-    if (roiWidth < 1) {
-      this.imageWidth = (int) Math.ceil(Math.max(x));
-    }
-    if (roiHeight < 1) {
-      this.imageHeight = (int) Math.ceil(Math.max(y));
-    }
+    this.imageWidth = (roiWidth < 1) ? (int) Math.ceil(Math.max(x)) : roiWidth;
+    this.imageHeight = (roiHeight < 1) ? (int) Math.ceil(Math.max(y)) : roiHeight;
+
     run();
   }
 
@@ -76,11 +73,11 @@ public class CrossCorrelationDriftCorrection {
   }
 
   public int getMinFrame() {
-    return (int)minFrame;
+    return (int) minFrame;
   }
 
   public int getMaxFrame() {
-    return (int)maxFrame;
+    return (int) maxFrame;
   }
 
   public double getMagnification() {
@@ -105,10 +102,10 @@ public class CrossCorrelationDriftCorrection {
 
     binResultByFrame();
 
-    if(saveCorrelationImages) {
+    if (saveCorrelationImages) {
       correlationImages = new ImageStack(paddedSize, paddedSize);
     }
-    
+
     binDriftX = new double[binCount];
     binDriftY = new double[binCount];
     binDriftX[0] = 0;   //first image has no drift
@@ -131,7 +128,7 @@ public class CrossCorrelationDriftCorrection {
       crossCorrelationImage.inverseTransform();
       crossCorrelationImage.swapQuadrants();
 
-      if(saveCorrelationImages){
+      if (saveCorrelationImages) {
         correlationImages.addSlice(crossCorrelationImage);
       }
       //new ImagePlus("crossCorrelation " + i, crossCorrelationImage.duplicate()).show();
@@ -157,7 +154,7 @@ public class CrossCorrelationDriftCorrection {
     yBinnedByFrame = null;
   }
 
-  void binResultByFrame() {
+  private void binResultByFrame() {
     //find min and max frame
     minFrame = frame[0];
     maxFrame = frame[0];
@@ -172,7 +169,7 @@ public class CrossCorrelationDriftCorrection {
 
     //alloc space for binned results
     //  count results in each bin
-    int stepFrame = (int) Math.ceil((maxFrame - minFrame) / binCount);
+    double stepFrame = ((maxFrame - minFrame) / binCount);
     xBinnedByFrame = new double[binCount][];
     yBinnedByFrame = new double[binCount][];
     int[] binCounts = new int[binCount];
@@ -244,7 +241,6 @@ public class CrossCorrelationDriftCorrection {
     }
   }
 
-
   public Point2D.Double getInterpolatedDrift(double frameNumber) {
     return new Point2D.Double(xFunction.value(frameNumber), yFunction.value(frameNumber));
   }
@@ -253,23 +249,42 @@ public class CrossCorrelationDriftCorrection {
   private PolynomialSplineFunction addLinearExtrapolationToBorders(PolynomialSplineFunction spline) {
     PolynomialFunction[] polynomials = spline.getPolynomials();
     double[] knots = spline.getKnots();
-    double derivativeAtFirstKnot = polynomials[0].derivative().value(knots[0]);
-    double derivativeAtLastKnot = polynomials[polynomials.length - 1].polynomialDerivative().value(knots[knots.length - 1] - knots[knots.length - 2]);
-    double valueAtFirstKnot = spline.value(knots[0]);
-    double valueAtLastKnot = spline.value(knots[knots.length - 1]);
-    PolynomialFunction beginningFunction = new PolynomialFunction(new double[]{valueAtFirstKnot - derivativeAtFirstKnot*knots[0], derivativeAtFirstKnot});
-    PolynomialFunction endFunction = new PolynomialFunction(new double[]{valueAtLastKnot, derivativeAtLastKnot});
 
-    //construct new knot array
-    double[] newKnots = new double[knots.length + 2];
-    newKnots[0] = minFrame;
-    System.arraycopy(knots, 0, newKnots, 1, knots.length);
-    newKnots[newKnots.length - 1] = maxFrame;
-    //construct new polynomial array
-    PolynomialFunction[] newPolynomials = new PolynomialFunction[polynomials.length + 2];
-    newPolynomials[0] = beginningFunction;
-    System.arraycopy(polynomials, 0, newPolynomials, 1, polynomials.length);
-    newPolynomials[newPolynomials.length - 1] = endFunction;
+    boolean addToBeginning = knots[0] != minFrame;
+    boolean addToEnd = knots[knots.length - 1] != maxFrame;
+    int sizeIncrease = 0 + (addToBeginning ? 1 : 0) + (addToEnd ? 1 : 0);
+    if (!addToBeginning && !addToEnd) {
+      return spline; //do nothing
+    }
+
+    //construct new knots and polynomial arrays
+    double[] newKnots = new double[knots.length + sizeIncrease];
+    PolynomialFunction[] newPolynomials = new PolynomialFunction[polynomials.length + sizeIncrease];
+    //add to beginning
+    if (addToBeginning) {
+      //add knot
+      newKnots[0] = minFrame;
+      System.arraycopy(knots, 0, newKnots, 1, knots.length);
+      //add function
+      double derivativeAtFirstKnot = polynomials[0].derivative().value(knots[0]);
+      double valueAtFirstKnot = spline.value(knots[0]);
+      PolynomialFunction beginningFunction = new PolynomialFunction(new double[]{valueAtFirstKnot - derivativeAtFirstKnot * (knots[0]-minFrame), derivativeAtFirstKnot});
+      newPolynomials[0] = beginningFunction;
+      System.arraycopy(polynomials, 0, newPolynomials, 1, polynomials.length);
+    } else {
+      System.arraycopy(knots, 0, newKnots, 0, knots.length);
+      System.arraycopy(polynomials, 0, newPolynomials, 0, polynomials.length);
+    }
+    //add to end
+    if (addToEnd) {
+      //add knot
+      newKnots[newKnots.length - 1] = maxFrame;
+      //add function
+      double derivativeAtLastKnot = polynomials[polynomials.length - 1].polynomialDerivative().value(knots[knots.length - 1] - knots[knots.length - 2]);
+      double valueAtLastKnot = spline.value(knots[knots.length - 1]);
+      PolynomialFunction endFunction = new PolynomialFunction(new double[]{valueAtLastKnot, derivativeAtLastKnot});
+      newPolynomials[newPolynomials.length - 1] = endFunction;
+    }
 
     return new PolynomialSplineFunction(newKnots, newPolynomials);
 
