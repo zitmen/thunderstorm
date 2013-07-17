@@ -5,7 +5,6 @@ import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_Y_POS;
 import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_Z_POS;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import ij.IJ;
 import ij.WindowManager;
@@ -47,6 +46,7 @@ class JavaTableWindow {
   private JTextField groupThrText;
   private JLabel groupThrLabel;
   private JButton groupButton;
+  private JButton showHist;
   
   public JavaTableWindow() {
     frame = new JFrame("ThunderSTORM: Results");
@@ -99,8 +99,15 @@ class JavaTableWindow {
     //
     JPanel buttons = new JPanel();
     buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+    showHist = new JButton("Plot histogram...");
     export = new JButton("Export...");
     render = new JButton("Render...");
+    showHist.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        new IJDistribution().run(null);
+      }
+    });
     export.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -124,6 +131,8 @@ class JavaTableWindow {
     });
     buttons.add(preview);
     buttons.add(Box.createHorizontalGlue());
+    buttons.add(showHist);
+    buttons.add(Box.createHorizontalStrut(10));
     buttons.add(render);
     buttons.add(Box.createHorizontalStrut(10));
     buttons.add(export);
