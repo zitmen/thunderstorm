@@ -14,7 +14,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import cz.cuni.lf1.lge.ThunderSTORM.util.UI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -55,7 +55,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
 
   @Override
   public void run(String arg) {
-    UI.setLookAndFeel();
+    GUI.setLookAndFeel();
     //
     imp = IJ.getImage();
     if (imp == null) {

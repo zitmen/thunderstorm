@@ -1,12 +1,14 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_X_POS;
+import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_Y_POS;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.DensityRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ScatterRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
-import cz.cuni.lf1.lge.ThunderSTORM.util.UI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import ij.IJ;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
@@ -23,25 +25,23 @@ import java.util.Vector;
 public class RenderingPlugIn implements PlugIn {
 
   public static final String[] METHODS = new String[]{"Density", "ASH", "Histogram", "Scatter"};
-  public static final String LABEL_X_POS = "x";
-  public static final String LABEL_Y_POS = "y";
 
   @Override
   public void run(String string) {
-    UI.setLookAndFeel();
+    GUI.setLookAndFeel();
     //
-    IJResultsTable rt = IJResultsTable.getResultsTable();
+    IJResultsTable.View rt = IJResultsTable.getResultsTable().view;
     if (!IJResultsTable.isResultsWindow()) {
       IJ.error("Requires Results window open");
       return;
     }
-    if (!rt.view.columnExists(LABEL_X_POS) || !rt.view.columnExists(LABEL_Y_POS)) {
+    if (!rt.columnExists(LABEL_X_POS) || !rt.columnExists(LABEL_Y_POS)) {
       IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, rt.getColumnHeadings()));
       return;
     }
 
-    double[] xpos = rt.view.getColumnAsDoubles(rt.view.getColumnIndex(LABEL_X_POS));
-    double[] ypos = rt.view.getColumnAsDoubles(rt.view.getColumnIndex(LABEL_Y_POS));
+    double[] xpos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_X_POS));
+    double[] ypos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_Y_POS));
     if (xpos == null || ypos == null) {
       IJ.error("results were null");
       return;

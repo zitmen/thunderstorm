@@ -2,7 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
-import cz.cuni.lf1.lge.ThunderSTORM.util.UI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.plugin.PlugIn;
@@ -20,7 +20,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
     
     @Override
     public void run(String command) {
-        UI.setLookAndFeel();
+        GUI.setLookAndFeel();
         //
         try {
             ie = ModuleLoader.getModules(IImportExport.class);

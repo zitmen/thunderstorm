@@ -1,5 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_X_POS;
+import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_Y_POS;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
@@ -7,6 +9,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
 import ij.IJ;
 import ij.WindowManager;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -39,8 +42,10 @@ class JavaTableWindow {
   private JButton filterButton;
   private JCheckBox preview;
   private JLabel status;
-  
   private boolean livePreview;
+  private JTextField groupThrText;
+  private JLabel groupThrLabel;
+  private JButton groupButton;
   
   public JavaTableWindow() {
     frame = new JFrame("ThunderSTORM: Results");
@@ -48,6 +53,7 @@ class JavaTableWindow {
     //
     JavaTableWindowListener windowListener = new JavaTableWindowListener(this);
     frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    frame.setPreferredSize(new Dimension(550, 550));
     frame.addWindowListener(windowListener);
     frame.addWindowStateListener(windowListener);
     //
@@ -63,6 +69,19 @@ class JavaTableWindow {
     statusBar.add(Box.createVerticalStrut(10));
     statusBar.add(new JSeparator(JSeparator.HORIZONTAL));
     statusBar.add(status);
+    //
+    JPanel grouping = new JPanel();
+    grouping.setLayout(new BoxLayout(grouping, BoxLayout.X_AXIS));
+    groupThrText = new JTextField();
+    GroupingListener groupingListener = new GroupingListener(this, status, groupThrText);
+    groupThrText.addKeyListener(groupingListener);
+    groupThrLabel = new JLabel("Merge molecules in subsequent frames with mutual lateral distance equal or less than: ", SwingConstants.TRAILING);
+    groupThrLabel.setLabelFor(groupThrText);
+    groupButton = new JButton("Merge");
+    groupButton.addActionListener(groupingListener);
+    grouping.add(groupThrLabel);
+    grouping.add(groupThrText);
+    grouping.add(groupButton);
     //
     JPanel filter = new JPanel();
     filter.setLayout(new BoxLayout(filter, BoxLayout.X_AXIS));
@@ -111,6 +130,7 @@ class JavaTableWindow {
     JPanel pane = new JPanel();
     pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
     pane.add(new JScrollPane(table));
+    pane.add(grouping);
     pane.add(filter);
     pane.add(buttons);
     pane.add(statusBar);
@@ -123,12 +143,12 @@ class JavaTableWindow {
     if(livePreview == false) return;
     //
     IJResultsTable.View rt = IJResultsTable.getResultsTable().view;
-    if (!rt.columnExists(RenderingPlugIn.LABEL_X_POS) || !rt.columnExists(RenderingPlugIn.LABEL_Y_POS)) {
-      IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", RenderingPlugIn.LABEL_X_POS, RenderingPlugIn.LABEL_Y_POS, rt.getColumnHeadings()));
+    if (!rt.columnExists(LABEL_X_POS) || !rt.columnExists(LABEL_Y_POS)) {
+      IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, rt.getColumnHeadings()));
       return;
     }
-    double[] xpos = rt.getColumnAsDoubles(rt.getColumnIndex(RenderingPlugIn.LABEL_X_POS));
-    double[] ypos = rt.getColumnAsDoubles(rt.getColumnIndex(RenderingPlugIn.LABEL_Y_POS));
+    double[] xpos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_X_POS));
+    double[] ypos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_Y_POS));
     if (xpos == null || ypos == null) {
       IJ.error("results were empty");
       return;

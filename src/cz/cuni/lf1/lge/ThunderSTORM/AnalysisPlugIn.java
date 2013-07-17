@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
@@ -13,7 +14,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import cz.cuni.lf1.lge.ThunderSTORM.util.UI;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -43,6 +43,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * {@code Overlay} of each slice of the stack.
  */
 public final class AnalysisPlugIn implements ExtendedPlugInFilter {
+    
+  public static final String LABEL_X_POS = "x";
+  public static final String LABEL_Y_POS = "y";
+  public static final String LABEL_Z_POS = "z";
 
   private int stackSize;
   private AtomicInteger nProcessed = new AtomicInteger(0);
@@ -101,7 +105,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
    */
   @Override
   public int setup(String command, ImagePlus imp) {
-    UI.setLookAndFeel();
+    GUI.setLookAndFeel();
     //
     if (command.equals("final")) {
       IJ.showStatus("ThunderSTORM is generating the results...");
