@@ -17,15 +17,14 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
   protected double xmin, xmax, ymin, ymax;
   protected double resolution;
   protected int imSizeX, imSizeY;
- // protected FloatProcessor image;
   protected double defaultDX;
   protected double defaultDZ = 5;
   protected double zFrom, zTo, zStep;
   protected int zSlices;
   protected boolean threeDimensions;
-  //@Deprecated
-  //protected ImageStack stack;
   protected ImageProcessor[] slices;
+  protected ImagePlus image;
+  private ImageStack stack;
 
   /**
    * A class for creating objects of sublasses of AbstractRendering.
@@ -180,12 +179,13 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     this.zStep = builder.zStep;
     this.zTo = builder.zTo;
     this.threeDimensions = builder.threeDimensions;
-  //  stack = new ImageStack(imSizeX, imSizeY);
     slices = new ImageProcessor[zSlices];
+    stack = new ImageStack(imSizeX, imSizeY);
     for (int i = 0; i < zSlices; i++) {
       slices[i] = new FloatProcessor(imSizeX, imSizeY);
-//      stack.addSlice((i * zStep + zFrom) + " to " + ((i + 1) * zStep + zFrom), new FloatProcessor(imSizeX, imSizeY));
+      stack.addSlice((i * zStep + zFrom) + " to " + ((i + 1) * zStep + zFrom), slices[i]);
     }
+    image = new ImagePlus(this.getClass().getSimpleName(), stack);
   }
 
   @Override
@@ -199,11 +199,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
 
   @Override
   public ImagePlus getRenderedImage() {
-    ImageStack stack = new ImageStack(imSizeX, imSizeY);
-    for(int i = 0; i < slices.length; i++){
-      stack.addSlice((i * zStep + zFrom) + " to " + ((i + 1) * zStep + zFrom), slices[i]);
-    }
-    return new ImagePlus(this.getClass().getSimpleName(), stack);
+    return image;
   }
 
   @Override
@@ -217,10 +213,15 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
 
   @Override
   public void reset() {
-    for(int i = 0; i < slices.length; i++){
+    for (int i = 0; i < slices.length; i++) {
       float[] px = (float[]) slices[i].getPixels();
       Arrays.fill(px, 0);
     }
+    stack = new ImageStack(imSizeX, imSizeY);
+    for (int i = 0; i < zSlices; i++) {
+      stack.addSlice((i * zStep + zFrom) + " to " + ((i + 1) * zStep + zFrom), slices[i]);
+    }
+    image.setStack(stack);
   }
 
   protected boolean isInBounds(double x, double y) {

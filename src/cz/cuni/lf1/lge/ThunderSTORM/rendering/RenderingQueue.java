@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
+import ij.ImagePlus;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +22,7 @@ public class RenderingQueue {
   /**
    * Example: new RenderingQueue(method, new Runnable(){public void
    * run(){image.repaint();}},10) will call image.repaint() every 10 tasks
-   * executed (either renderLater,invokeLater or repaintLater)
+   * executed
    *
    * @param method rendering method
    * @param repaintTask Runnable, which will be called after executing every
@@ -57,9 +58,20 @@ public class RenderingQueue {
       executor.execute(r);
     }
   }
-  
-  public void shutdown(){
-    if(executor != null){
+
+  public void resetLater() {
+    if (executor != null) {
+      executor.execute(new Runnable() {
+        @Override
+        public void run() {
+          method.reset();
+        }
+      });
+    }
+  }
+
+  public void shutdown() {
+    if (executor != null) {
       executor.shutdown();
     }
   }
@@ -82,6 +94,42 @@ public class RenderingQueue {
       if (taskCounter % repaintFrequency == 0) {
         repaintTask.run();
       }
+    }
+  }
+
+  public static class DefaultRepaintTask implements Runnable {
+
+    ImagePlus renderedImage;
+
+    public DefaultRepaintTask(ImagePlus renderedImage) {
+      this.renderedImage = renderedImage;
+    }
+
+    @Override
+    public void run() {
+      renderedImage.show();
+      if (renderedImage.isVisible()) {
+        renderedImage.setDisplayRange(0, findMaxStackValue(renderedImage));
+        renderedImage.updateAndDraw();
+      }
+    }
+
+    private double findMaxStackValue(ImagePlus imp) {
+      Object[] stack = imp.getStack().getImageArray();
+      double max = 0;
+      for (int i = 0; i < stack.length; i++) {
+        //TODO: accept other than float image
+        float[] pixels = (float[]) stack[i];
+        if (pixels != null) {
+          for (int j = 0; j < pixels.length; j++) {
+            double val = pixels[j];
+            if (val > max) {
+              max = val;
+            }
+          }
+        }
+      }
+      return max;
     }
   }
 }
