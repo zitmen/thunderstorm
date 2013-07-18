@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.min;
 
@@ -18,11 +17,13 @@ public interface OneLocationFitter {
     public double[] values;
     public double detectorX;
     public double detectorY;
+    public int size;
 
     public SubImage() {
     }
 
-    public SubImage(int[] xgrid, int[] ygrid, double[] values, double detectorX, double detectorY) {
+    public SubImage(int size, int[] xgrid, int[] ygrid, double[] values, double detectorX, double detectorY) {
+      this.size = size;
       this.xgrid = xgrid;
       this.ygrid = ygrid;
       this.values = values;

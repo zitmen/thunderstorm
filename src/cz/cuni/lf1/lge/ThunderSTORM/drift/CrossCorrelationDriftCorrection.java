@@ -1,5 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.drift;
 
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.RadialSymmetryFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRendering;
 import ij.process.FHT;
 import ij.process.FloatProcessor;
@@ -7,9 +10,8 @@ import java.awt.geom.Point2D;
 import java.util.Arrays;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
 import ij.IJ;
+import ij.ImagePlus;
 import ij.ImageStack;
-import ij.gui.Plot;
-import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
@@ -134,6 +136,7 @@ public class CrossCorrelationDriftCorrection {
       //new ImagePlus("crossCorrelation " + i, crossCorrelationImage.duplicate()).show();
       //find maxima
       Point2D.Double maximumCoords = findMaxima(crossCorrelationImage);
+      maximumCoords = findMaximaWithSubpixelPrecision(maximumCoords, 1 + 2 * (int) (5 * magnification), crossCorrelationImage);
       binDriftX[i] = (crossCorrelationImage.getWidth() / 2 - maximumCoords.x) / magnification;
       binDriftY[i] = (crossCorrelationImage.getHeight() / 2 - maximumCoords.y) / magnification;
     }
@@ -228,17 +231,27 @@ public class CrossCorrelationDriftCorrection {
       }
     }
     return new Point2D.Double(maxIndex % crossCorrelationImage.getWidth(), maxIndex / crossCorrelationImage.getWidth());
-
   }
 
-  private static void cumulativeSum(double[] binDrift) {
-    if (binDrift.length > 0) {
-      double sum = binDrift[0];
-      for (int i = 1; i < binDrift.length; i++) {
-        binDrift[i] += sum;
-        sum = binDrift[i];
+  private Point2D.Double findMaximaWithSubpixelPrecision(Point2D.Double maximumCoords, int roiSize, FHT crossCorrelationImage) {
+    double[] subImageData = new double[roiSize * roiSize];
+    float[] pixels = (float[]) crossCorrelationImage.getPixels();
+    int roiX = (int) maximumCoords.x - (roiSize - 1) / 2;
+    int roiY = (int) maximumCoords.y - (roiSize - 1) / 2;
+
+    for (int ys = roiY; ys < roiY + roiSize; ys++) {
+      int offset1 = (ys - roiY) * roiSize;
+      int offset2 = ys * crossCorrelationImage.getWidth() + roiX;
+      for (int xs = 0; xs < roiSize; xs++) {
+        subImageData[offset1++] = pixels[offset2++];
       }
     }
+
+    OneLocationFitter.SubImage subImage = new OneLocationFitter.SubImage(roiSize, null, null, subImageData, 0, 0);
+    RadialSymmetryFitter radialSymmetryFitter = new RadialSymmetryFitter();
+    PSFInstance psf = radialSymmetryFitter.fit(subImage);
+
+    return new Point2D.Double((int) maximumCoords.x + psf.getX(), (int) maximumCoords.y + psf.getY());
   }
 
   public Point2D.Double getInterpolatedDrift(double frameNumber) {
@@ -268,7 +281,7 @@ public class CrossCorrelationDriftCorrection {
       //add function
       double derivativeAtFirstKnot = polynomials[0].derivative().value(knots[0]);
       double valueAtFirstKnot = spline.value(knots[0]);
-      PolynomialFunction beginningFunction = new PolynomialFunction(new double[]{valueAtFirstKnot - derivativeAtFirstKnot * (knots[0]-minFrame), derivativeAtFirstKnot});
+      PolynomialFunction beginningFunction = new PolynomialFunction(new double[]{valueAtFirstKnot - derivativeAtFirstKnot * (knots[0] - minFrame), derivativeAtFirstKnot});
       newPolynomials[0] = beginningFunction;
       System.arraycopy(polynomials, 0, newPolynomials, 1, polynomials.length);
     } else {
@@ -288,16 +301,5 @@ public class CrossCorrelationDriftCorrection {
 
     return new PolynomialSplineFunction(newKnots, newPolynomials);
 
-  }
-
-  static void plotFunction(String caption, UnivariateFunction function, double from, double to, double step) {
-    double[] x = new double[(int) java.lang.Math.floor((to - from) / step)];
-    double[] y = new double[x.length];
-    for (int i = 0; i < x.length; i++) {
-      x[i] = from + i * step;
-      y[i] = function.value(x[i]);
-    }
-    Plot plot = new Plot(caption, "x", "y", x, y);
-    plot.show();
   }
 }
