@@ -4,7 +4,14 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import ij.plugin.filter.Convolver;
 import ij.process.FloatProcessor;
 
+/**
+ * Rewritten to java from the matlab implementation in supplement of the article
+ * "Rapid, accurate particle tracking by calculation of radial symmetry centers"
+ * by Raghuveer Parthasarathy
+ *
+ */
 public class RadialSymmetryFitter implements OneLocationFitter {
+
   public static final String[] paramNames = {PSFInstance.X, PSFInstance.Y};
 
   @Override
@@ -22,9 +29,9 @@ public class RadialSymmetryFitter implements OneLocationFitter {
     float[] yInterceptB = calculateYIntercept(xMesh, yMesh, m);
 
     float[] weights = calculateWeights(dIdu, dIdv, xMesh, yMesh);
-    
+
     double[] coordinates = lsRadialCenterFit(m, yInterceptB, weights);
-    
+
     return new PSFInstance(paramNames, coordinates);
   }
 
@@ -55,10 +62,10 @@ public class RadialSymmetryFitter implements OneLocationFitter {
   }
 
   private void smooth(float[] dIdu, int size) {
-    float[] kernel = {1f / 3f, 1f / 3f, 1f/ 3f};
+    float[] kernel = {1f / 3f, 1f / 3f, 1f / 3f};
 
     Convolver convolver = new Convolver();
-    FloatProcessor imp = new FloatProcessor(size-1, size-1, dIdu);
+    FloatProcessor imp = new FloatProcessor(size - 1, size - 1, dIdu);
     convolver.convolve(imp, kernel, kernel.length, 1);
     convolver.convolve(imp, kernel, 1, kernel.length);
   }
@@ -69,7 +76,7 @@ public class RadialSymmetryFitter implements OneLocationFitter {
     for (int i = 0; i < m.length; i++) {
       float val = -(dIdu[i] + dIdv[i]) / (dIdu[i] - dIdv[i]);
       val = Float.isNaN(val) ? 0 : val;
-      val = Float.isInfinite(val) ? Float.MAX_VALUE/1e5f : val; //replace inf by some big value - Not max_value because it could overflow to infinity in next step
+      val = Float.isInfinite(val) ? Float.MAX_VALUE / 1e5f : val; //replace inf by some big value - Not max_value because it could overflow to infinity in next step
       m[i] = val;
     }
     return m;
