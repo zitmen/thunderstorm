@@ -25,8 +25,8 @@ public class SymmetricGaussianEstimatorUI implements IEstimatorUI {
   protected JTextField fitregsizeTextField;
   protected JComboBox<String> methodComboBox;
   protected JTextField sigmaTextField;
-  private static final int DEFAULT_FITRAD = 5;
-  private static final double DEFAULT_SIGMA = 1.6;
+  protected int DEFAULT_FITRAD = 5;
+  protected double DEFAULT_SIGMA = 1.6;
   protected static final String MLE = "Maximum likelihood";
   protected static final String LSQ = "Least squares";
 

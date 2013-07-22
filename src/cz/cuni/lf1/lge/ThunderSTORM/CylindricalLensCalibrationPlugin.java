@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.CalibrationDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.IterativeQuadraticFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
@@ -19,9 +20,11 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.Macro;
+import ij.gui.Plot;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
+import java.awt.Color;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.yaml.snakeyaml.Yaml;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.*;
 
 /**
  *
@@ -98,7 +102,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         selectedFilterUI = dialog.getActiveFilterUI();
         selectedDetectorUI = dialog.getActiveDetectorUI();
         savePath = dialog.getSavePath();
-        
+
         //if recording window is open, record parameters
         if (Recorder.record) {
           MacroParser.recordFilterUI(selectedFilterUI);
@@ -107,12 +111,12 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
           Recorder.recordOption("saveto", savePath.replace("\\", "\\\\"));
         }
       }
-      
+
       estimateAngle();
       IJ.log("angle = " + angle);
       fitQuadraticPolynomial();
       saveToFile(savePath);
-      
+
     } catch (IOException ex) {
       IJ.error("Could not write calibration file: " + ex.getMessage());
     } catch (Exception ex) {
@@ -179,6 +183,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     });
     //group fits from the same bead through z-stack
     List<Position> beadPositions = separator.getPositions();
+    drawOverlay(beadPositions);
 
     //fit a quadratic polynomial to sigma1 = f(zpos) and sigma1 = f(zpos) for each bead
     IterativeQuadraticFitting quadraticFitter = new IterativeQuadraticFitting();
@@ -199,16 +204,19 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
           sigmaQuadratics.add(sigmaParamArray);
           sigma2Quadratics.add(sigma2ParamArray);
 
-//          sb.append(String.format("fits(%d).z = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(framesArray)));
-//          sb.append(String.format("fits(%d).s1 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigmaAsArray())));
-//          sb.append(String.format("fits(%d).s2 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigma2AsArray())));
-//          sb.append(String.format("fits(%d).a1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[1]));
-//          sb.append(String.format("fits(%d).a2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[1]));
-//          sb.append(String.format("fits(%d).b1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[2]));
-//          sb.append(String.format("fits(%d).b2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[2]));
-//          sb.append(String.format("fits(%d).c1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[0]));
-//          sb.append(String.format("fits(%d).c2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[0]));
-//          sb.append(String.format("fits(%d).intersection = %f;\n", moleculesProcessed.intValue() + 1, intersection));
+          //          sb.append(String.format("fits(%d).z = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(framesArray)));
+          //          sb.append(String.format("fits(%d).s1 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigmaAsArray())));
+          //          sb.append(String.format("fits(%d).s2 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigma2AsArray())));
+          //          sb.append(String.format("fits(%d).a1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[1]));
+          //          sb.append(String.format("fits(%d).a2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[1]));
+          //          sb.append(String.format("fits(%d).b1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[2]));
+          //          sb.append(String.format("fits(%d).b2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[2]));
+          //          sb.append(String.format("fits(%d).c1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[0]));
+          //          sb.append(String.format("fits(%d).c2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[0]));
+          //          sb.append(String.format("fits(%d).intersection = %f;\n", moleculesProcessed.intValue() + 1, intersection));
+
+          //showXYplot(add(framesArray, -intersection), add(p.getXAsArray(), -p.getFitsByFrame().get((int) intersection).getX()), add(p.getYAsArray(), -p.getFitsByFrame().get((int) intersection).getY()));
+
         }
       } catch (TooManyEvaluationsException ex) {
         IJ.log(ex.getMessage());
@@ -316,5 +324,31 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     PolynomialCalibration calibration = new PolynomialCalibration(angle, avgSigmaPolynom, avgSigma2Polynom);
     yaml.dump(calibration, new FileWriter(path));
     IJ.showStatus("Calibration file saved to " + path);
+  }
+
+  private void showXYplot(double[] framesArray, double[] x, double[] y) {
+    Plot plot = new Plot("X", "frame", "offset");
+    plot.setLimits(-50, 50, -2, 2);
+    plot.setColor(Color.blue);
+    plot.addPoints(framesArray, x, Plot.CROSS);
+    plot.addLabel(0.05, 0.8, "x drift");
+    plot.draw();
+    plot.setColor(Color.red);
+    plot.addPoints(framesArray, y, Plot.CROSS);
+    plot.addLabel(0.05, 0.9, "y drift");
+    plot.show();
+  }
+
+  private void drawOverlay(List<Position> list) {
+    imp.setOverlay(null);
+    for (Position p : list) {
+      double[] frame = p.getFramesAsArray();
+      double[] x = p.getXAsArray();
+      double[] y = p.getYAsArray();
+      for (int i = 0; i < frame.length; i++) {
+        RenderingOverlay.showPointsInImageSlice(imp, new double[]{x[i]}, new double[]{y[i]}, (int) frame[i], Color.BLUE, RenderingOverlay.MARKER_CROSS);
+      }
+    }
+
   }
 }

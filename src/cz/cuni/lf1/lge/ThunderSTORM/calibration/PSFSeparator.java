@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * Organizes localizations by position (close molecules are grouped together)
+ * and by frame.
  *
  * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
@@ -66,6 +68,7 @@ public class PSFSeparator {
       }
       return array;
     }
+
     public double[] getSigma2AsArray() {
       double[] array = new double[fitsByFrame.size()];
       int i = 0;
@@ -75,14 +78,42 @@ public class PSFSeparator {
       }
       return array;
     }
-    public double[] getFramesAsArray(){
+
+    public double[] getXAsArray() {
       double[] array = new double[fitsByFrame.size()];
       int i = 0;
-      for (Integer val : fitsByFrame.keySet()) {
-        array[i] = val;
+      for (Map.Entry<Integer, PSFInstance> entry : fitsByFrame.entrySet()) {
+        array[i] = entry.getValue().getX();
         i++;
       }
       return array;
     }
+    
+    public double[] getYAsArray() {
+      double[] array = new double[fitsByFrame.size()];
+      int i = 0;
+      for (Map.Entry<Integer, PSFInstance> entry : fitsByFrame.entrySet()) {
+        array[i] = entry.getValue().getY();
+        i++;
+      }
+      return array;
+    }
+
+    public double[] getFramesAsArray() {
+      double[] array = new double[fitsByFrame.size()];
+      int i = 0;
+      for (Map.Entry<Integer, PSFInstance> entry : fitsByFrame.entrySet()) {
+        array[i] = entry.getKey();
+        i++;
+      }
+      return array;
+    }
+
+    public Map<Integer, PSFInstance> getFitsByFrame() {
+      return fitsByFrame;
+    }
+    
   }
+  
+  
 }
