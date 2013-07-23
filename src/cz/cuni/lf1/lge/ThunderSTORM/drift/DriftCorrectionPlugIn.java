@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.drift;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
@@ -52,9 +53,8 @@ public class DriftCorrectionPlugIn implements PlugIn {
         showDriftPlot(driftCorrection);
       }
       if (showCorrelationImages) {
-        new ImagePlus("Cross correlations", driftCorrection.getCorrelationImages()).show();
+        showCorrelations(driftCorrection);
       }
-      //TODO: update results window
 
 
     } catch (Exception e) {
@@ -97,5 +97,16 @@ public class DriftCorrectionPlugIn implements PlugIn {
     plot.addPoints(driftCorrection.getBinCenters(), driftCorrection.getBinDriftY(), Plot.CROSS);
     plot.addLabel(0.05, 0.9, "y drift");
     plot.show();
+  }
+
+  private void showCorrelations(CrossCorrelationDriftCorrection driftCorrection) {
+    ImagePlus imp = new ImagePlus("Cross correlations", driftCorrection.getCorrelationImages());
+    //add center markers
+    double[] binDriftsX = driftCorrection.getBinDriftX();
+    double[] binDriftsY = driftCorrection.getBinDriftY();
+    for (int i = 1; i < binDriftsX.length; i++) {
+      RenderingOverlay.showPointsInImageSlice(imp, new double[]{-binDriftsX[i] * driftCorrection.getMagnification() + imp.getWidth() / 2 + 0.5}, new double[]{-binDriftsY[i] + imp.getHeight() / 2 + 0.5}, i, Color.red, RenderingOverlay.MARKER_CROSS);
+    }
+    imp.show();
   }
 }
