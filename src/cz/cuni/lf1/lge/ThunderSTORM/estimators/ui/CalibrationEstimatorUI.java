@@ -19,6 +19,8 @@ public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
   private boolean angleWasSet = false;
 
   public CalibrationEstimatorUI() {
+    super();
+    this.DEFAULT_FITRAD = 30;
   }
 
   @Override

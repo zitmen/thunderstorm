@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
  * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
 public class OneLocationFittersTest {
-
+  
   @Test
   public void testFitters() {
     testFitter(new LSQFitter(new SymmetricGaussianPSF(1.2)));
@@ -22,8 +22,31 @@ public class OneLocationFittersTest {
     testFitter(new MLEFitter(new EllipticGaussianPSF(1.2, 0)));
     testFitter(new MLEFitter(new EllipticGaussianWAnglePSF(1.2, 0)));
   }
-
+  
+  @Test
+  public void testRadialSymmetry() {
+    PSFInstance psf = fitTestData(new RadialSymmetryFitter());
+    System.out.println(psf.toString());
+    
+    assertEquals(1, psf.getX(), 1e-3);
+    assertEquals(0, psf.getY(), 1e-3);
+  }
+  
   public void testFitter(OneLocationFitter fitter) {
+    
+    PSFInstance fit = fitTestData(fitter);
+    System.out.println(fit.toString());
+    
+    
+    double[] groundTruth = {1, 0, 1, 1.5, 0};
+    assertEquals(groundTruth[0], fit.getX(), 10e-3);
+    assertEquals(groundTruth[1], fit.getY(), 10e-3);
+    assertEquals(groundTruth[2], fit.getParam(PSFInstance.INTENSITY), 10e-3);
+    assertEquals(groundTruth[3], fit.getParam(PSFInstance.SIGMA), 10e-3);
+    assertEquals(groundTruth[4], fit.getParam(PSFInstance.BACKGROUND), 10e-3);
+  }
+
+  private PSFInstance fitTestData(OneLocationFitter fitter) {
     double[] values = {0.0000, 0.0000, 0.0000, 0.0000, 0.0001, 0.0002, 0.0003, 0.0002, 0.0001, 0.0000, 0.0000,
       0.0000, 0.0000, 0.0001, 0.0003, 0.0008, 0.0016, 0.0020, 0.0016, 0.0008, 0.0003, 0.0001,
       0.0000, 0.0000, 0.0003, 0.0013, 0.0039, 0.0077, 0.0096, 0.0077, 0.0039, 0.0013, 0.0003,
@@ -35,11 +58,8 @@ public class OneLocationFittersTest {
       0.0000, 0.0000, 0.0003, 0.0013, 0.0039, 0.0077, 0.0096, 0.0077, 0.0039, 0.0013, 0.0003,
       0.0000, 0.0000, 0.0001, 0.0003, 0.0008, 0.0016, 0.0020, 0.0016, 0.0008, 0.0003, 0.0001,
       0.0000, 0.0000, 0.0000, 0.0000, 0.0001, 0.0002, 0.0003, 0.0002, 0.0001, 0.0000, 0.0000};
-
-
     int[] xgrid = new int[values.length];
     int[] ygrid = new int[values.length];
-
     int idx = 0;
     for (int i = -5; i <= 5; i++) {
       for (int j = -5; j <= 5; j++) {
@@ -48,16 +68,7 @@ public class OneLocationFittersTest {
         idx++;
       }
     }
-
-    PSFInstance fit = fitter.fit(new OneLocationFitter.SubImage(xgrid, ygrid, values, 0.5, 0.5));
-    System.out.println(fit.toString());
-
-
-    double[] groundTruth = {1, 0, 1, 1.5, 0};
-    assertEquals(groundTruth[0], fit.getX(), 10e-3);
-    assertEquals(groundTruth[1], fit.getY(), 10e-3);
-    assertEquals(groundTruth[2], fit.getParam(PSFInstance.INTENSITY), 10e-3);
-    assertEquals(groundTruth[3], fit.getParam(PSFInstance.SIGMA), 10e-3);
-    assertEquals(groundTruth[4], fit.getParam(PSFInstance.BACKGROUND), 10e-3);
+    PSFInstance fit = fitter.fit(new OneLocationFitter.SubImage(11, xgrid, ygrid, values, 0.5, 0.5));
+    return fit;
   }
 }

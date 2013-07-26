@@ -29,6 +29,11 @@ public class EstimatorsTest {
   }
 
   @Test
+  public void testRadialSymmetry(){
+    testEstimator(new MultipleLocationsImageFitting(5, new RadialSymmetryFitter()));
+  }
+  
+  @Test
   public void testLSQSym() {
     testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new SymmetricGaussianPSF(1))));
   }

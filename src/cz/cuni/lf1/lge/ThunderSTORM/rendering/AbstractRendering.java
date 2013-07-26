@@ -150,8 +150,8 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             throw new IllegalArgumentException("Invalid combination of image size, roi and resolution. Set only two of them.");
           }
         } else {
-          resolution = xmax / imSizeX;
-          if (Math.abs(resolution - ymax / imSizeY) > 0.0001) {
+          resolution = (xmax-xmin) / imSizeX;
+          if (Math.abs(resolution - (ymax-ymin) / imSizeY) > 0.0001) {
             throw new IllegalArgumentException("Resolution in x and y appears to be different.");
           }
         }
