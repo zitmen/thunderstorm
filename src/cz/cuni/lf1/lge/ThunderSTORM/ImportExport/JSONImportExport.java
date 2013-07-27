@@ -46,16 +46,15 @@ public class JSONImportExport implements IImportExport {
         assert(!fp.isEmpty());
         assert(columns != null);
         
-        int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
+        int ncols = columns.size(), nrows = rt.getRowCount();
         String [] headers = new String[ncols];
-        for(int c = 0; c < ncols; c++)
-            headers[c] = rt.getColumnHeading(c);
+        columns.toArray(headers);
         
         Vector<HashMap<String, Double>> results = new Vector<HashMap<String,Double>>();
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(headers[c], rt.getValueAsDouble(c,r));
+                molecule.put(headers[c], rt.getValue(headers[c],r));
             results.add(molecule);
             IJ.showProgress((double)r / (double)nrows);
         }

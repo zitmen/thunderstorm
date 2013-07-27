@@ -2,7 +2,6 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
@@ -15,7 +14,6 @@ import ij.measure.Calibration;
 import ij.plugin.PlugIn;
 import ij.process.FloatProcessor;
 import ij.process.ShortProcessor;
-import java.util.Map;
 import java.util.Vector;
 import javax.swing.JSeparator;
 
