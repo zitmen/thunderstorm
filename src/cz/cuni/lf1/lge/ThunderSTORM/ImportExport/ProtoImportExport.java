@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import java.util.Vector;
 
 public class ProtoImportExport implements IImportExport {
 
@@ -16,7 +17,7 @@ public class ProtoImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable rt) {
+    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

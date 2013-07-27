@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Vector;
 
 public class JSONImportExport implements IImportExport {
 
@@ -51,17 +52,17 @@ public class JSONImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable rt) throws IOException {
+    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws IOException {    // TODO: COLUMNS!!
         int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
         String [] headers = new String[ncols];
         for(int c = 0; c < ncols; c++)
-            headers[c] = rt.view.getColumnHeading(c);
+            headers[c] = rt.getColumnHeading(c);
         
         Object [] results = new Object[nrows];
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(headers[c], rt.view.getValueAsDouble(c,r));
+                molecule.put(headers[c], rt.getValueAsDouble(c,r));
             results[r] = molecule;
             IJ.showProgress((double)r / (double)nrows);
         }

@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
@@ -164,7 +165,11 @@ final class ResultsTableModel extends AbstractTableModel {
     counter--;
   }
   
-  public Set<String> getColumnNames() {
-    return colnames.keySet();
+  public String [] getColumnNames() {
+    String [] names = new String[colnames.size()];
+    for(Entry<String,Integer> entry : colnames.entrySet()) {
+        names[entry.getValue().intValue()] = entry.getKey();
+    }
+    return names;
   }
 }

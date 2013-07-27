@@ -353,7 +353,7 @@ public class IJResultsTable {
       if(!columnExists(column)) {
         throw new IllegalArgumentException("Column `" + column + "` does not exist!");
       }
-      return getValueAsDouble(row, results.findColumn(column));
+      return getValueAsDouble(results.findColumn(column), row);
     }
 
     public int getRowCount() {
@@ -373,11 +373,10 @@ public class IJResultsTable {
       return null;
     }
 
-    /** Returns a tab or comma delimited string containing the column headings. */
+    /** Returns a comma delimited string containing the column headings. */
     public String getColumnHeadings() {
       StringBuilder builder = new StringBuilder();
-      String [] headings = new String[results.getColumnCount()];
-      results.getColumnNames().toArray(headings);
+      String [] headings = results.getColumnNames();
       for(int i = 0, col; i < headings.length; i++) {
         col = resultsTable.table.getView().convertColumnIndexToModel(i);
         builder.append(headings[col]);

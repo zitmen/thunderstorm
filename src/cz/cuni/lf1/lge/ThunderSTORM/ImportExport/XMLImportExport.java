@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Vector;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
@@ -71,7 +72,7 @@ public class XMLImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable rt) throws IOException {
+    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws IOException {    // TODO: COLUMNS!!!
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -97,10 +98,10 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(resultsStartElement);
             eventWriter.add(end);
             
-            int ncols = rt.view.getColumnCount(), nrows = rt.view.getRowCount();
+            int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
             String [] headers = new String[ncols];
             for(int c = 0; c < ncols; c++)
-                headers[c] = rt.view.getColumnHeading(c);
+                headers[c] = rt.getColumnHeading(c);
             
             for(int r = 0; r < nrows; r++) {
                 StartElement moleculeStartElement = eventFactory.createStartElement("", "", ITEM);
@@ -109,7 +110,7 @@ public class XMLImportExport implements IImportExport {
                 eventWriter.add(end);
 
                 for(int c = 0; c < ncols; c++) {
-                    createNode(eventWriter, headers[c], Double.toString(rt.view.getValueAsDouble(c,r)));
+                    createNode(eventWriter, headers[c], Double.toString(rt.getValueAsDouble(c,r)));
                 }
                 
                 eventWriter.add(tab);

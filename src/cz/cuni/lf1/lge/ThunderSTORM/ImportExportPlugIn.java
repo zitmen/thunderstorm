@@ -6,13 +6,12 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.plugin.PlugIn;
-import java.awt.Choice;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Vector;
+import javax.swing.JSeparator;
 
-public class ImportExportPlugIn implements PlugIn, ItemListener {
+public class ImportExportPlugIn implements PlugIn {
 
     private String [] modules = null;
     private Vector<IImportExport> ie = null;
@@ -33,16 +32,32 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
                 modules[i] = ie.elementAt(i).getName();
             }
             gd.addChoice("File type", modules, modules[active_ie]);
-            ((Choice)gd.getChoices().get(0)).addItemListener(this);
-            gd.addFileField("Choose a file", System.getProperty("user.home") + "\\results.txt");
+            gd.addFileField("Choose a file", IJ.getDirectory("current") + "\\results.txt");
+            gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
+            //
+            String [] col_headers = null;
+            if("export".equals(command)) {
+                gd.addMessage("Columns to export:");
+                col_headers = IJResultsTable.getResultsTable().view.getColumnHeadings().split(",");
+                boolean [] active_columns = new boolean[col_headers.length];
+                Arrays.fill(active_columns, true);
+                gd.addCheckboxGroup(col_headers.length, 1, col_headers, active_columns);
+            }
             gd.showDialog();
             
             if(!gd.wasCanceled()) {
                 active_ie = gd.getNextChoiceIndex();
+                String filePath = gd.getNextString();
                 if("export".equals(command)) {
-                    exportToFile(gd.getNextString());
+                    Vector<String> columns = new Vector<String>();
+                    for(int i = 0; i < col_headers.length; i++) {
+                        if(gd.getNextBoolean() == true) {
+                            columns.add(col_headers[i]);
+                        }
+                    }
+                    exportToFile(filePath, columns);
                 } else {
-                    importFromFile(gd.getNextString());
+                    importFromFile(filePath);
                 }
             }
         } catch (Exception ex) {
@@ -50,23 +65,11 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
         }
     }
     
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        String selected = (String) e.getItem();
-        for(int i = 0; i < modules.length; i++) {
-            if(selected.equals(modules[i])) {
-                active_ie = i;
-                break;
-            }
-        }
-    }
-
-    private void exportToFile(String fpath) throws IOException {
-        IJResultsTable rt = IJResultsTable.getResultsTable();
+    private void exportToFile(String fpath, Vector<String> columns) throws IOException {
         IJ.showStatus("ThunderSTORM is exporting your results...");
-        IJ.showProgress(0.0);            
+        IJ.showProgress(0.0);
         IImportExport exporter = ie.elementAt(active_ie);
-        exporter.exportToFile(fpath, rt);
+        exporter.exportToFile(fpath, IJResultsTable.getResultsTable().view, columns);
         IJ.showProgress(1.0);
         IJ.showStatus("ThunderSTORM has exported your results.");
     }

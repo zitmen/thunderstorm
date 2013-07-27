@@ -4,6 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 import org.yaml.snakeyaml.Yaml;
 
 public class YAMLImportExport implements IImportExport {
@@ -20,7 +21,7 @@ public class YAMLImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable rt) throws IOException {
+    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws IOException {
         // TODO
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("name", "Silenthand Olleander");
