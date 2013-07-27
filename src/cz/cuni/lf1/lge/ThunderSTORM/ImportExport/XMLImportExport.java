@@ -72,7 +72,7 @@ public class XMLImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws IOException {    // TODO: COLUMNS!!!
+    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -98,10 +98,9 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(resultsStartElement);
             eventWriter.add(end);
             
-            int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
+            int ncols = columns.size(), nrows = rt.getRowCount();
             String [] headers = new String[ncols];
-            for(int c = 0; c < ncols; c++)
-                headers[c] = rt.getColumnHeading(c);
+            columns.toArray(headers);
             
             for(int r = 0; r < nrows; r++) {
                 StartElement moleculeStartElement = eventFactory.createStartElement("", "", ITEM);
@@ -110,7 +109,7 @@ public class XMLImportExport implements IImportExport {
                 eventWriter.add(end);
 
                 for(int c = 0; c < ncols; c++) {
-                    createNode(eventWriter, headers[c], Double.toString(rt.getValueAsDouble(c,r)));
+                    createNode(eventWriter, headers[c], Double.toString(rt.getValue(headers[c],r)));
                 }
                 
                 eventWriter.add(tab);
