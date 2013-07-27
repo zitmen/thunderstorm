@@ -26,4 +26,9 @@ public class ProtoImportExport implements IImportExport {
         return "Google Protocol Buffer";
     }
 
+    @Override
+    public String getSuffix() {
+        return "proto";
+    }
+
 }

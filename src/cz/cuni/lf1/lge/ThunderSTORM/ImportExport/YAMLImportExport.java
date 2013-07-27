@@ -70,4 +70,9 @@ public class YAMLImportExport implements IImportExport {
         return "YAML";
     }
 
+    @Override
+    public String getSuffix() {
+        return "yaml";
+    }
+
 }

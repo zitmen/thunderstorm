@@ -153,4 +153,9 @@ public class XMLImportExport implements IImportExport {
         return "XML";
     }
 
+    @Override
+    public String getSuffix() {
+        return "xml";
+    }
+
 }

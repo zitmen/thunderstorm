@@ -6,16 +6,27 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.plugin.PlugIn;
+import java.awt.Choice;
+import java.awt.TextComponent;
+import java.awt.TextField;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Vector;
 import javax.swing.JSeparator;
 
-public class ImportExportPlugIn implements PlugIn {
+public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
 
     private String [] modules = null;
+    private String [] suffix = null;
     private Vector<IImportExport> ie = null;
     private int active_ie = 0;
+    private Choice ftype;
+    private TextField fpath;
     
     @Override
     public void run(String command) {
@@ -28,11 +39,17 @@ public class ImportExportPlugIn implements PlugIn {
             GenericDialogPlus gd = new GenericDialogPlus(command);
             
             modules = new String[ie.size()];
+            suffix = new String[ie.size()];
             for(int i = 0; i < modules.length; i++) {
                 modules[i] = ie.elementAt(i).getName();
+                suffix[i] = ie.elementAt(i).getSuffix();
             }
             gd.addChoice("File type", modules, modules[active_ie]);
-            gd.addFileField("Choose a file", IJ.getDirectory("current") + "\\results.txt");
+            ftype = (Choice)gd.getChoices().get(0);
+            ftype.addItemListener(this);
+            gd.addFileField("Choose a file", IJ.getDirectory("current") + "results." + suffix[active_ie]);
+            fpath = (TextField)gd.getStringFields().get(0);
+            fpath.addTextListener(this);
             gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
             //
             String [] col_headers = null;
@@ -85,6 +102,36 @@ public class ImportExportPlugIn implements PlugIn {
         rt.show("Results");
         IJ.showProgress(1.0);
         IJ.showStatus("ThunderSTORM has imported your file.");
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        String fp = fpath.getText();
+        if(fp.endsWith("\\") || fp.endsWith("/")) {
+            fpath.setText(fp + "results." + suffix[ftype.getSelectedIndex()]);
+        } else {
+            int dotpos = fp.lastIndexOf('.');
+            if(dotpos < 0) {
+                fpath.setText(fp + '.' + suffix[ftype.getSelectedIndex()]);
+            } else {
+                fpath.setText(fp.substring(0, dotpos + 1) + suffix[ftype.getSelectedIndex()]);
+            }
+        }
+    }
+
+    @Override
+    public void textValueChanged(TextEvent e) {
+        String fname = new File(fpath.getText()).getName().trim();
+        if(fname.isEmpty()) return;
+        int dotpos = fname.lastIndexOf('.');
+        if(dotpos < 0) return;
+        String type = fname.substring(dotpos + 1).trim();
+        for(int i = 0; i < suffix.length; i++) {
+            if(type.equals(suffix[i])) {
+                ftype.select(i);
+                break;
+            }
+        }
     }
 
 }

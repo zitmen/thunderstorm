@@ -71,4 +71,9 @@ public class JSONImportExport implements IImportExport {
         return "JSON";
     }
 
+    @Override
+    public String getSuffix() {
+        return "json";
+    }
+
 }
