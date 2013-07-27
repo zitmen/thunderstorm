@@ -2,7 +2,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
@@ -41,7 +40,7 @@ final class ResultsTableModel extends AbstractTableModel {
     columns.clear();
     colnames.clear();
 
-    addColumn("#", Double.class);
+    addColumn(IJResultsTable.COLUMN_ID, Double.class);
     
     fireTableStructureChanged();
   }

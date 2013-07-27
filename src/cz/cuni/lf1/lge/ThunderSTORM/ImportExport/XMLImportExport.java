@@ -61,7 +61,9 @@ public class XMLImportExport implements IImportExport {
                     if (event.isStartElement()) {
                         String name = event.asStartElement().getName().getLocalPart();
                         String value = eventReader.nextEvent().asCharacters().getData();
-                        rt.addValue(name, Double.parseDouble(value));
+                        if(!IJResultsTable.COLUMN_ID.equals(name)) {
+                            rt.addValue(name, Double.parseDouble(value));
+                        }
                         continue;
                     }
                 }

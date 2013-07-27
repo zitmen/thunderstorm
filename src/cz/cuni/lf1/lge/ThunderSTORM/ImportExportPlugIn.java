@@ -38,9 +38,10 @@ public class ImportExportPlugIn implements PlugIn {
             String [] col_headers = null;
             if("export".equals(command)) {
                 gd.addMessage("Columns to export:");
-                col_headers = IJResultsTable.getResultsTable().view.getColumnHeadings().split(",");
+                IJResultsTable.View rt = IJResultsTable.getResultsTable().view;
+                col_headers = rt.getColumnHeadings().split(",");
                 boolean [] active_columns = new boolean[col_headers.length];
-                Arrays.fill(active_columns, true);
+                Arrays.fill(active_columns, true); active_columns[rt.getColumnIndex("#")] = false;
                 gd.addCheckboxGroup(col_headers.length, 1, col_headers, active_columns);
             }
             gd.showDialog();

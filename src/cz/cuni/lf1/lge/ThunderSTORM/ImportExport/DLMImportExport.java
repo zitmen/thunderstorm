@@ -1,14 +1,12 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -44,6 +42,7 @@ abstract public class DLMImportExport implements IImportExport {
         for(int r = 1, rm = lines.size(); r < rm; r++) {
             rt.addRow();
             for(int c = 0, cm = lines.get(r).length; c < cm; c++) {
+                if(IJResultsTable.COLUMN_ID.equals(headers[c])) continue;
                 rt.addValue(headers[c], Double.parseDouble(lines.get(r)[c]));
             }
             IJ.showProgress((double)r / (double)rm);

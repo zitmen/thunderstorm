@@ -1,19 +1,15 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
-import com.json.generators.JSONGenerator;
-import com.json.generators.JsonGeneratorFactory;
-import com.json.parsers.JSONParser;
-import com.json.parsers.JsonParserFactory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
-import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 public class JSONImportExport implements IImportExport {
@@ -29,53 +25,46 @@ public class JSONImportExport implements IImportExport {
         
         rt.reset();
         
-        String inputJsonString = new Scanner(fp).useDelimiter("\\Z").next();  
-        
-        JsonParserFactory factory = JsonParserFactory.getInstance();
-        JSONParser parser = factory.newJsonParser();
-        Map jsonData = parser.parseJson(inputJsonString);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Vector<HashMap<String,Double>> molecules = gson.fromJson(new FileReader(fp), new TypeToken<Vector<HashMap<String,Double>>>(){}.getType());
 
-        Map rootJson = (Map)jsonData.get(JSON_ROOT);
-        List al = (List)rootJson.get(ROOT);
-        
-        int r = 0, nrows = al.size();
-        for(Object item : al) {
+        int r = 0, nrows = molecules.size();
+        for(HashMap<String,Double> mol : molecules) {
             rt.addRow();
-            Iterator it = ((Map)item).entrySet().iterator();
-            while(it.hasNext()) {
-                Map.Entry pairs = (Map.Entry)it.next();
-                rt.addValue((String)pairs.getKey(), Double.parseDouble((String)pairs.getValue()));
+            for(Entry<String,Double> entry : mol.entrySet()) {
+                if(IJResultsTable.COLUMN_ID.equals(entry.getKey())) continue;
+                rt.addValue(entry.getKey(), entry.getValue().doubleValue());
                 IJ.showProgress((double)(r++) / (double)nrows);
-                it.remove(); // avoids a ConcurrentModificationException
             }
         }
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws IOException {    // TODO: COLUMNS!!
+    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws IOException {
+        assert(rt != null);
+        assert(fp != null);
+        assert(!fp.isEmpty());
+        assert(columns != null);
+        
         int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
         String [] headers = new String[ncols];
         for(int c = 0; c < ncols; c++)
             headers[c] = rt.getColumnHeading(c);
         
-        Object [] results = new Object[nrows];
+        Vector<HashMap<String, Double>> results = new Vector<HashMap<String,Double>>();
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
                 molecule.put(headers[c], rt.getValueAsDouble(c,r));
-            results[r] = molecule;
+            results.add(molecule);
             IJ.showProgress((double)r / (double)nrows);
         }
 
-        HashMap data = new HashMap();
-        data.put(ROOT, results);
-
-        JsonGeneratorFactory factory = JsonGeneratorFactory.getInstance();
-        JSONGenerator generator = factory.newJsonGenerator();
-        
-        BufferedWriter writer = new BufferedWriter(new FileWriter(fp));
-        writer.write(generator.generateJson(data));
-        writer.close();
+        FileWriter fw = new FileWriter(fp);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        gson.toJson(results, new TypeToken<Vector<HashMap<String,Double>>>(){}.getType(), fw);
+        fw.flush();
+        fw.close();
     }
 
     @Override
