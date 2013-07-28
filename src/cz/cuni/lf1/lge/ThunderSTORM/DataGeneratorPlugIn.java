@@ -2,6 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
+import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
+import cz.cuni.lf1.lge.ThunderSTORM.datagen.IntegratedGaussian;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
@@ -19,9 +21,9 @@ import javax.swing.JSeparator;
 
 public class DataGeneratorPlugIn implements PlugIn {
     
-    private int width, height, frames;
+    private int width, height, frames, processing_frame;
     private double pixelsize, density;
-    private DataGenerator.Drift drift;
+    private Drift drift;
     private Range fwhm_range, energy_range, bkg_range;
     private double add_poisson_var, mul_gauss_var, mul_gauss_mean;
     private FloatProcessor mask;
@@ -76,28 +78,45 @@ public class DataGeneratorPlugIn implements PlugIn {
         add_poisson_var = gd.getNextNumber();
         mul_gauss_var = gd.getNextNumber();
         mul_gauss_mean = gd.getNextNumber();
-        drift = new DataGenerator.Drift(gd.getNextNumber(), gd.getNextNumber(), false, frames);
+        drift = new Drift(gd.getNextNumber(), gd.getNextNumber(), false, frames);
         mask = readMask(gd.getNextString());
     }
     
-    private void runGenerator() {   // TODO: run in parallel! + allow stop! <ESC>
+    private void runGenerator() throws InterruptedException {
         IJ.showStatus("ThunderSTORM is generating your image sequence...");
         IJ.showProgress(0.0);            
         //
         IJResultsTable rt = IJResultsTable.getResultsTable();
         rt.reset();
         ImageStack stack = new ImageStack(width, height);
-        FloatProcessor bkg = DataGenerator.generateBackground(width, height, drift, bkg_range);
-        for(int f = 0; f < frames; f++) {
-            IJ.showStatus("ThunderSTORM is generating frame " + (f+1) + " out of " + frames + "...");
-            IJ.showProgress((double)(f+1) / (double)frames);
-            //
-            FloatProcessor add_noise = DataGenerator.generatePoissonNoise(width, height, add_poisson_var);
-            FloatProcessor mul_noise = DataGenerator.generateGaussianNoise(width, height, mul_gauss_mean, mul_gauss_var);
-            Vector<DataGenerator.IntegratedGaussian> molecules = DataGenerator.generateMolecules(width, height, mask, pixelsize, density, energy_range, fwhm_range);
-            ShortProcessor slice = DataGenerator.renderFrame(width, height, f, drift, molecules, bkg, add_noise, mul_noise);
-            stack.addSlice(slice);
-            addMoleculesToTable(rt, f+1, molecules);
+        FloatProcessor bkg = new DataGenerator().generateBackground(width, height, drift, bkg_range);
+        //
+        int cores = Runtime.getRuntime().availableProcessors();
+        GeneratorWorker [] generators = new GeneratorWorker[cores];
+        Thread [] threads = new Thread[cores];
+        processing_frame = 0;
+        // prepare the workers and allocate resources for all the threads
+        for(int c = 0, f_start = 0, f_end, f_inc = frames / cores; c < cores; c++) {
+            if((c+1) < cores) {
+                f_end = f_start + f_inc;
+            } else {
+                f_end = frames - 1;
+            }
+            generators[c] = new GeneratorWorker(f_start, f_end, bkg);
+            threads[c] = new Thread(generators[c]);
+            f_start = f_end + 1;
+        }
+        // start all the workers
+        for(int c = 0; c < cores; c++) {
+            threads[c].start();
+        }
+        // wait for all the workers to finish
+        for(int c = 0; c < cores; c++) {
+            threads[c].join();
+        }
+        processing_frame = 0;
+        for(int c = 0; c < cores; c++) {
+            generators[c].fillResults(stack, rt);   // and generate stack and table of ground-truth data
         }
         //
         ImagePlus imp = IJ.createImage("ThunderSTORM: artificial dataset", "16-bit", width, height, frames);
@@ -111,6 +130,60 @@ public class DataGeneratorPlugIn implements PlugIn {
         //
         IJ.showProgress(1.0);
         IJ.showStatus("ThunderSTORM has finished generating your image sequence.");
+    }
+    
+    private synchronized void processingNewFrame(String message) {
+        IJ.showStatus(String.format(message, processing_frame, frames));
+        IJ.showProgress((double)(processing_frame) / (double)frames);
+        processing_frame++;
+    }
+    
+    private class GeneratorWorker implements Runnable {
+        
+        private int frame_start, frame_end;
+        private FloatProcessor bkg;
+        private DataGenerator datagen;
+        private Vector<ShortProcessor> local_stack;
+        private Vector<Vector<IntegratedGaussian>> local_table;
+        
+        public GeneratorWorker(int frame_start, int frame_end, FloatProcessor bkg) {
+            this.frame_start = frame_start;
+            this.frame_end = frame_end;
+            this.bkg = bkg;
+            
+            datagen = new DataGenerator();
+            local_stack = new Vector<ShortProcessor>();
+            local_table = new Vector<Vector<IntegratedGaussian>>();
+        }
+        
+        @Override
+        public void run() {
+            for(int f = frame_start; f <= frame_end; f++) {
+                processingNewFrame("ThunderSTORM is generating frame %d out of %d...");
+                FloatProcessor add_noise = datagen.generatePoissonNoise(width, height, add_poisson_var);
+                FloatProcessor mul_noise = datagen.generateGaussianNoise(width, height, mul_gauss_mean, mul_gauss_var);
+                Vector<IntegratedGaussian> molecules = datagen.generateMolecules(width, height, mask, pixelsize, density, energy_range, fwhm_range);
+                ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, bkg, add_noise, mul_noise);
+                local_stack.add(slice);
+                local_table.add(molecules);
+            }
+        }
+
+        private void fillResults(ImageStack stack, IJResultsTable rt) {
+            for(int f = frame_start, i = 0; f <= frame_end; f++, i++) {
+                processingNewFrame("ThunderSTORM is building the image stack - frame %d out of %d...");
+                stack.addSlice(local_stack.elementAt(i));
+                for(IntegratedGaussian mol : local_table.elementAt(i)) {
+                    rt.addRow();
+                    rt.addValue("frame", f+1);
+                    rt.addValue(PSFInstance.X, mol.x0);
+                    rt.addValue(PSFInstance.Y, mol.y0);
+                    rt.addValue(PSFInstance.INTENSITY, mol.I0);
+                    rt.addValue(PSFInstance.SIGMA, mol.sig0);
+                }
+            }
+        }
+        
     }
 
     private FloatProcessor readMask(String imagePath) {
@@ -132,17 +205,6 @@ public class DataGeneratorPlugIn implements PlugIn {
             }
         }
         return ImageProcessor.ones(width, height);
-    }
-
-    private void addMoleculesToTable(IJResultsTable rt, int frame, Vector<DataGenerator.IntegratedGaussian> molecules) {
-        for(DataGenerator.IntegratedGaussian mol : molecules) {
-            rt.addRow();
-            rt.addValue("frame", frame);
-            rt.addValue(PSFInstance.X, mol.x0);
-            rt.addValue(PSFInstance.Y, mol.y0);
-            rt.addValue(PSFInstance.INTENSITY, mol.I0);
-            rt.addValue(PSFInstance.SIGMA, mol.sig0);
-        }
     }
 
 }
