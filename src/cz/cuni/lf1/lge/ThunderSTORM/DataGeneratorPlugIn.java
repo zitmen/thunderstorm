@@ -111,8 +111,23 @@ public class DataGeneratorPlugIn implements PlugIn {
             threads[c].start();
         }
         // wait for all the workers to finish
+        int wait = 1000 / cores;    // max 1s
         for(int c = 0; c < cores; c++) {
-            threads[c].join();
+            if(IJ.escapePressed()) {    // abort?
+                // stop the workers
+                for(int ci = 0; ci < cores; ci++) {
+                    threads[ci].interrupt();
+                }
+                // wait so the message below is not overwritten by any of the threads
+                for(int ci = 0; ci < cores; ci++) {
+                    threads[ci].join();
+                }
+                // show info and exit the plugin
+                IJ.showProgress(1.0);
+                IJ.showStatus("Operation has been aborted by user!");
+                return;
+            }
+            threads[c].join(wait);
         }
         processing_frame = 0;
         for(int c = 0; c < cores; c++) {
@@ -159,6 +174,11 @@ public class DataGeneratorPlugIn implements PlugIn {
         @Override
         public void run() {
             for(int f = frame_start; f <= frame_end; f++) {
+                if(Thread.interrupted()) {
+                    local_stack.clear();
+                    local_table.clear();
+                    return;
+                }
                 processingNewFrame("ThunderSTORM is generating frame %d out of %d...");
                 FloatProcessor add_noise = datagen.generatePoissonNoise(width, height, add_poisson_var);
                 FloatProcessor mul_noise = datagen.generateGaussianNoise(width, height, mul_gauss_mean, mul_gauss_var);
