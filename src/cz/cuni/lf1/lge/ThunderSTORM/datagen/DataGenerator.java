@@ -16,10 +16,12 @@ import java.util.Vector;
 public class DataGenerator {
     
     private RandomDataGenerator rand;
+    private Vector<IntegratedGaussian> deleteLater;
     
     public DataGenerator() {
         rand = new RandomDataGenerator();
         rand.reSeed();
+        deleteLater = new Vector<IntegratedGaussian>();
     }
     
     public FloatProcessor generatePoissonNoise(int width, int height, double variance) {
@@ -77,8 +79,17 @@ public class DataGenerator {
         frame = (FloatProcessor)frame.crop();
         for(IntegratedGaussian mol : molecules) {
             mol.moveXY(dx, dy);
-            mol.generate(frame);
+            if(mol.isOutOfRoi(frame.getRoi())) {    // does the molecule get out of ROI due to the drift?
+                deleteLater.add(mol);
+            } else {
+                mol.generate(frame);
+            }
         }
+        // remote the out-of-roi molecules
+        for(IntegratedGaussian mol : deleteLater) {
+            molecules.remove(mol);
+        }
+        deleteLater.clear();
         // 2. read-out
         frame = ImageProcessor.add(frame, add_noise);
         // 3. gain

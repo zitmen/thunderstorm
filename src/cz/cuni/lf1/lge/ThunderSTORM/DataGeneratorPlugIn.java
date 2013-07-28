@@ -112,7 +112,13 @@ public class DataGeneratorPlugIn implements PlugIn {
         }
         // wait for all the workers to finish
         int wait = 1000 / cores;    // max 1s
-        for(int c = 0; c < cores; c++) {
+        boolean finished = false;
+        while(!finished) {
+            finished = true;
+            for(int c = 0; c < cores; c++) {
+                threads[c].join(wait);
+                finished &= !threads[c].isAlive();   // all threads must not be alive to finish!
+            }
             if(IJ.escapePressed()) {    // abort?
                 // stop the workers
                 for(int ci = 0; ci < cores; ci++) {
@@ -127,7 +133,6 @@ public class DataGeneratorPlugIn implements PlugIn {
                 IJ.showStatus("Operation has been aborted by user!");
                 return;
             }
-            threads[c].join(wait);
         }
         processing_frame = 0;
         for(int c = 0; c < cores; c++) {
