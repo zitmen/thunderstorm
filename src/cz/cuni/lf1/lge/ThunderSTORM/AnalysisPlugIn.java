@@ -12,7 +12,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
-import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
@@ -90,7 +89,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         IJResultsTable.setResultsTable(rt);
       }
       rt.reset();
-      TripleStateTableModel tableModel = IJResultsTable.getModel();
+      IJResultsTable tableModel = IJResultsTable.getResultsTable();
       tableModel.setOriginalState();
       for (int frame = 1; frame <= stackSize; frame++) {
         if(results[frame] != null) {

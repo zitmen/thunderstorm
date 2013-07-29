@@ -9,7 +9,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ScatterRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
-import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import ij.IJ;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
@@ -31,7 +30,7 @@ public class RenderingPlugIn implements PlugIn {
   public void run(String string) {
     GUI.setLookAndFeel();
     //
-    TripleStateTableModel rt = IJResultsTable.getResultsTable().getModel();
+    IJResultsTable rt = IJResultsTable.getResultsTable();
     if (!IJResultsTable.isResultsWindow()) {
       IJ.error("Requires Results window open");
       return;

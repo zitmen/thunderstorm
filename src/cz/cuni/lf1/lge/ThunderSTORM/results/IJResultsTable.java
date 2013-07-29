@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
+import java.util.Vector;
 
 /**
  * Class similar to ImageJ's ResultsTable class containing some of the most
@@ -84,4 +85,139 @@ public class IJResultsTable {
   public synchronized void reset() {
     model.resetAll();
   }
+  
+  //generated delegate methods
+  public void resetSelectedState(){
+    model.reset();
+  }
+
+  public TripleStateTableModel.StateName getSelectedState() {
+    return model.getSelectedState();
+  }
+
+  public void copyActualToUndo() {
+    model.copyActualToUndo();
+  }
+
+  public void copyUndoToActual() {
+    model.copyUndoToActual();
+  }
+
+  public void copyOriginalToActual() {
+    model.copyOriginalToActual();
+  }
+
+  public void swapUndoAndActual() {
+    model.swapUndoAndActual();
+  }
+
+  public void setOriginalState() {
+    model.setOriginalState();
+  }
+
+  public void setActualState() {
+    model.setActualState();
+  }
+
+  public void addColumn(String label) {
+    model.addColumn(label);
+  }
+
+  public void addColumn(String label, Vector<Double> data) {
+    model.addColumn(label, data);
+  }
+
+  public void addValue(Double value, int columnIndex) {
+    model.addValue(value, columnIndex);
+  }
+
+  public void addValue(Double value, String columnLabel) {
+    model.addValue(value, columnLabel);
+  }
+
+  public Vector<Double> getColumnAsVector(int columnIndex, int[] indices) {
+    return model.getColumnAsVector(columnIndex, indices);
+  }
+
+  public Vector<Double> getColumnAsVector(int columnIndex) {
+    return model.getColumnAsVector(columnIndex);
+  }
+
+  public Vector<Double> getColumnAsVector(String columnLabel) {
+    return model.getColumnAsVector(columnLabel);
+  }
+
+  public Double[] getColumnAsDoubleObjects(int columnIndex) {
+    return model.getColumnAsDoubleObjects(columnIndex);
+  }
+
+  public Double[] getColumnAsDoubleObjects(String columnLabel) {
+    return model.getColumnAsDoubleObjects(columnLabel);
+  }
+
+  public double[] getColumnAsDoubles(int index) {
+    return model.getColumnAsDoubles(index);
+  }
+
+  public double[] getColumnAsDoubles(String heading) {
+    return model.getColumnAsDoubles(heading);
+  }
+
+  public float[] getColumnAsFloats(int index) {
+    return model.getColumnAsFloats(index);
+  }
+
+  public float[] getColumnAsFloats(String heading) {
+    return model.getColumnAsFloats(heading);
+  }
+
+  public int getRowCount() {
+    return model.getRowCount();
+  }
+
+  public int getColumnCount() {
+    return model.getColumnCount();
+  }
+
+  public String getColumnName(int columnIndex) {
+    return model.getColumnName(columnIndex);
+  }
+
+  public Double getValueAt(int rowIndex, int columnIndex) {
+    return model.getValueAt(rowIndex, columnIndex);
+  }
+
+  public Double getValue(String column, int columnIndex) {
+    return model.getValue(column, columnIndex);
+  }
+
+  public synchronized int addRow() {
+    return model.addRow();
+  }
+
+  public void deleteRow(int row) {
+    model.deleteRow(row);
+  }
+
+  public String[] getColumnNames() {
+    return model.getColumnNames();
+  }
+
+  public boolean columnExists(int column) {
+    return model.columnExists(column);
+  }
+
+  public boolean columnExists(String column) {
+    return model.columnExists(column);
+  }
+
+  public void filterRows(boolean[] keep) {
+    model.filterRows(keep);
+  }
+
+  public int findColumn(String columnName) {
+    return model.findColumn(columnName);
+  }
+ 
+  
 }

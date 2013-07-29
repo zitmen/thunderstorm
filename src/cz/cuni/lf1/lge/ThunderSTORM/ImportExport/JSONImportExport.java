@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
-import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -19,13 +18,13 @@ public class JSONImportExport implements IImportExport {
     static final String ROOT = "results";
     
     @Override
-    public void importFromFile(String fp, TripleStateTableModel rt) throws IOException {
+    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.resetAll();
-        rt.setSelectedState(TripleStateTableModel.StateName.ORIGINAL);
+        rt.reset();
+        rt.setOriginalState();
         
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Vector<HashMap<String,Double>> molecules = gson.fromJson(new FileReader(fp), new TypeToken<Vector<HashMap<String,Double>>>(){}.getType());
@@ -40,11 +39,11 @@ public class JSONImportExport implements IImportExport {
             }
         }
         rt.copyOriginalToActual();
-        rt.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
+        rt.setActualState();
     }
 
     @Override
-    public void exportToFile(String fp, TripleStateTableModel rt, Vector<String> columns) throws IOException {
+    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());

@@ -7,7 +7,7 @@ import java.util.Vector;
 /**
  * 
  */
-public class TripleStateTableModel extends ResultsTableModel {
+class TripleStateTableModel extends ResultsTableModel {
 
   EnumMap<StateName, SavedState> savedStates = new EnumMap<StateName, SavedState>(StateName.class);
   StateName selectedState;

@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import au.com.bytecode.opencsv.CSVReader;
-import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
 import java.io.BufferedWriter;
@@ -20,13 +19,13 @@ abstract public class DLMImportExport implements IImportExport {
     }
 
     @Override
-    public void importFromFile(String fp, TripleStateTableModel rt) throws IOException {
+    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.resetAll();
-        rt.setSelectedState(TripleStateTableModel.StateName.ORIGINAL);
+        rt.reset();
+        rt.setOriginalState();
         
         CSVReader csvReader = new CSVReader(new FileReader(fp), separator);
         List<String[]> lines;
@@ -50,11 +49,11 @@ abstract public class DLMImportExport implements IImportExport {
             IJ.showProgress((double)r / (double)rm);
         }
         rt.copyOriginalToActual();
-        rt.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
+        rt.setActualState();
     }
 
     @Override
-    public void exportToFile(String fp, TripleStateTableModel rt, Vector<String> columns) throws IOException {
+    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());

@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
-import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import ij.IJ;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,13 +25,13 @@ public class XMLImportExport implements IImportExport {
     static final String ITEM = "molecule";
     
     @Override
-    public void importFromFile(String fp, TripleStateTableModel rt) throws IOException {
+    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.resetAll();
-        rt.setSelectedState(TripleStateTableModel.StateName.ORIGINAL);
+        rt.reset();
+        rt.setOriginalState();
         
         try {
             // First create a new XMLInputFactory
@@ -40,7 +39,6 @@ public class XMLImportExport implements IImportExport {
             // Setup a new eventReader
             InputStream in = new FileInputStream(fp);
             XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
-            int idx = 0;
             while(eventReader.hasNext()) {
                 XMLEvent event = eventReader.nextEvent();
 
@@ -74,13 +72,13 @@ public class XMLImportExport implements IImportExport {
             throw new IOException(ex.toString());
         } finally{
           rt.copyOriginalToActual();
-          rt.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
+          rt.setActualState();
         }
                 
     }
 
     @Override
-    public void exportToFile(String fp, TripleStateTableModel rt, Vector<String> columns) throws IOException {
+    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());

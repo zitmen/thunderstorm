@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
-import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Results;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
@@ -15,12 +14,13 @@ import java.util.Vector;
 public class ProtoImportExport implements IImportExport {
 
     @Override
-    public void importFromFile(String fp, TripleStateTableModel rt) throws FileNotFoundException, IOException {
+    public void importFromFile(String fp, IJResultsTable rt) throws FileNotFoundException, IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.resetAll();
+        rt.reset();
+        rt.setOriginalState();
         
         Results results = Results.parseFrom(new FileInputStream(fp));
         
@@ -38,10 +38,12 @@ public class ProtoImportExport implements IImportExport {
             
             IJ.showProgress((double)(r++) / (double)nrows);
         }
+        rt.copyOriginalToActual();
+        rt.setActualState();
     }
 
     @Override
-    public void exportToFile(String fp, TripleStateTableModel rt, Vector<String> columns) throws FileNotFoundException, IOException {
+    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws FileNotFoundException, IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());

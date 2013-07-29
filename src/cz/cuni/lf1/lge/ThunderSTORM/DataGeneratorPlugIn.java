@@ -6,7 +6,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.IntegratedGaussian;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
-import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import fiji.util.gui.GenericDialogPlus;
@@ -136,13 +135,12 @@ public class DataGeneratorPlugIn implements PlugIn {
             }
         }
         processing_frame = 0;
-        TripleStateTableModel tableModel = IJResultsTable.getModel();
-        tableModel.setOriginalState();
+        rt.setOriginalState();
         for(int c = 0; c < cores; c++) {
-            generators[c].fillResults(stack, tableModel);   // and generate stack and table of ground-truth data
+            generators[c].fillResults(stack, rt);   // and generate stack and table of ground-truth data
         }
-        tableModel.copyOriginalToActual();
-        tableModel.setActualState();
+        rt.copyOriginalToActual();
+        rt.setActualState();
         //
         ImagePlus imp = IJ.createImage("ThunderSTORM: artificial dataset", "16-bit", width, height, frames);
         imp.setStack(stack);
@@ -199,7 +197,7 @@ public class DataGeneratorPlugIn implements PlugIn {
             }
         }
 
-        private void fillResults(ImageStack stack, TripleStateTableModel rt) {
+        private void fillResults(ImageStack stack, IJResultsTable rt) {
             for(int f = frame_start, i = 0; f <= frame_end; f++, i++) {
                 processingNewFrame("ThunderSTORM is building the image stack - frame %d out of %d...");
                 stack.addSlice(local_stack.elementAt(i));

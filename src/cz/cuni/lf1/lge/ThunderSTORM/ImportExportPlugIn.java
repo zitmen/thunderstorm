@@ -3,12 +3,10 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
-import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.plugin.PlugIn;
 import java.awt.Choice;
-import java.awt.TextComponent;
 import java.awt.TextField;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -56,7 +54,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             String [] col_headers = null;
             if("export".equals(command)) {
                 gd.addMessage("Columns to export:");
-                TripleStateTableModel rt = IJResultsTable.getModel();
+                IJResultsTable rt = IJResultsTable.getResultsTable();
                 col_headers = rt.getColumnNames();
                 boolean [] active_columns = new boolean[col_headers.length];
                 Arrays.fill(active_columns, true); active_columns[rt.findColumn("#")] = false;
@@ -88,7 +86,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         IJ.showStatus("ThunderSTORM is exporting your results...");
         IJ.showProgress(0.0);
         IImportExport exporter = ie.elementAt(active_ie);
-        exporter.exportToFile(fpath, IJResultsTable.getModel(), columns);
+        exporter.exportToFile(fpath, IJResultsTable.getResultsTable(), columns);
         IJ.showProgress(1.0);
         IJ.showStatus("ThunderSTORM has exported your results.");
     }
@@ -99,7 +97,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         IJ.showProgress(0.0);
         rt.reset();
         IImportExport importer = ie.elementAt(active_ie);
-        importer.importFromFile(fpath, rt.getModel());
+        importer.importFromFile(fpath, rt);
         rt.show("Results");
         IJ.showProgress(1.0);
         IJ.showStatus("ThunderSTORM has imported your file.");

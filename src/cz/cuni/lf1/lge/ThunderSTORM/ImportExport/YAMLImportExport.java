@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
-import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
 import java.io.BufferedWriter;
@@ -17,12 +16,13 @@ import org.yaml.snakeyaml.Yaml;
 public class YAMLImportExport implements IImportExport {
 
     @Override
-    public void importFromFile(String fp, TripleStateTableModel rt) throws IOException {
+    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.resetAll();
+        rt.reset();
+        rt.setOriginalState();
         
         Yaml yaml = new Yaml();
         ArrayList<HashMap<String,Double>> molecules = (ArrayList<HashMap<String,Double>>)yaml.load(new FileReader(fp));
@@ -36,10 +36,12 @@ public class YAMLImportExport implements IImportExport {
                 IJ.showProgress((double)(r++) / (double)nrows);
             }
         }
+        rt.copyOriginalToActual();
+        rt.setActualState();
     }
 
     @Override
-    public void exportToFile(String fp, TripleStateTableModel rt, Vector<String> columns) throws IOException {
+    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());

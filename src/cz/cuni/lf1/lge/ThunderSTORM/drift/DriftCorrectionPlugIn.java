@@ -3,7 +3,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.drift;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
-import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
@@ -64,7 +63,7 @@ public class DriftCorrectionPlugIn implements PlugIn {
   }
 
   void getResultsFromTable() {
-    TripleStateTableModel rt = IJResultsTable.getResultsTable().getModel();
+    IJResultsTable rt = IJResultsTable.getResultsTable();
     if (!rt.columnExists(PSFInstance.X) || !rt.columnExists(PSFInstance.Y)) {
       throw new RuntimeException("Could not find " + PSFInstance.X + " and " + PSFInstance.Y + " columns.");
     }
