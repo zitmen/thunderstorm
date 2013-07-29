@@ -62,7 +62,7 @@ public class DataGenerator {
                     dx = rand.nextUniform(-0.5, +0.5);
                     dy = rand.nextUniform(-0.5, +0.5);
                     molist.add(new IntegratedGaussian(rand, x+0.5+dx, y+0.5+dy, energy, fwhm));
-                    p_px *= p_px;
+                    p_px -= 1.0;
                 }
             }
         }
