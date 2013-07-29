@@ -99,10 +99,14 @@ public class TripleStateTableModel extends AbstractTableModel {
   }
 
   @Override
-  public Object getValueAt(int rowIndex, int columnIndex) {
+  public Double getValueAt(int rowIndex, int columnIndex) {
     return stateModels.get(selectedState).getValueAt(rowIndex, columnIndex);
   }
-
+  
+  public Double getValue(String columnName, int columnIndex){
+    return stateModels.get(selectedState).getValue(columnName, columnIndex);
+  }
+  
   @Override
   public void setValueAt(Object value, int rowIndex, int columnIndex) {
     stateModels.get(selectedState).setValueAt(value, rowIndex, columnIndex);

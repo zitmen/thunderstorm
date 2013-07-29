@@ -1,14 +1,15 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
 import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
+import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 abstract public class DLMImportExport implements IImportExport {
     
@@ -43,6 +44,7 @@ abstract public class DLMImportExport implements IImportExport {
         for(int r = 1, rm = lines.size(); r < rm; r++) {
             rt.addRow();
             for(int c = 0, cm = lines.get(r).length; c < cm; c++) {
+              if(IJResultsTable.COLUMN_ID.equals(headers[c])) continue;
               rt.addValue(Double.parseDouble(lines.get(r)[c]), headers[c]);
             }
             IJ.showProgress((double)r / (double)rm);
@@ -52,28 +54,29 @@ abstract public class DLMImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, TripleStateTableModel rt) throws IOException {
+    public void exportToFile(String fp, TripleStateTableModel rt, Vector<String> columns) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
-        LinkedList<String[]> lines = new LinkedList<String[]>();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fp));
+        for(int c = 0, cm = columns.size(); c < cm; c++) {
+            if(c > 0) writer.write(",");
+            writer.write("\"" + columns.elementAt(c) + "\"");
+        }
+        writer.newLine();
         
-        String [] headers = rt.getColumnNames();
-        lines.add(headers);
-        
-        String [][] values = new String[nrows][ncols];
+        int ncols = columns.size(), nrows = rt.getRowCount();
         for(int r = 0; r < nrows; r++) {
-            for(int c = 0; c < ncols; c++)
-                values[r][c] = Double.toString((Double)rt.getValueAt(c,r));
-            lines.add(values[r]);
+            for(int c = 0; c < ncols; c++) {
+                if(c > 0) writer.write(",");
+                writer.write(Double.toString(rt.getValue(columns.elementAt(c),r)));
+            }
+            writer.newLine();
             IJ.showProgress((double)r / (double)nrows);
         }
         
-        CSVWriter csvWriter = new CSVWriter(new FileWriter(fp), separator);
-        csvWriter.writeAll(lines);
-        csvWriter.close();
+        writer.close();
     }
 
 }

@@ -1,9 +1,12 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import ags.utils.dataStructures.MaxHeap;
+import ags.utils.dataStructures.trees.thirdGenKD.KdTree;
+import ags.utils.dataStructures.trees.thirdGenKD.SquareEuclideanDistanceFunction;
 import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_X_POS;
 import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_Y_POS;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import ij.IJ;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -11,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -66,6 +71,9 @@ class GroupingListener {
     }
   }
 
+    // TODO: due to the wrong design of cooperation with results table the grouping
+    //       cannot be called more than once, because it will throw an exception
+    //       (index out of bounds), because some rows have been deleted
   protected void runGrouping(double dist) {
     if (dist == 0) {
       return;
@@ -177,152 +185,176 @@ class GroupingListener {
   // ====================================================================
   //
   // TODO: in future this should be replaced by a PSF which implements the method for merging
-  // + speed-up or put it into a separate thread!!
-  static class Molecule {
+    // + put it into a separate thread!!
+    static class Molecule implements Comparable<Molecule> {
 
-    public ArrayList<Molecule> detections;
-    public double x, y, I, b, s; // xpos, ypos, Intensity, background, sigma
-    public int id, frame;
+        public double x, y, I, b, s; // xpos, ypos, Intensity, background, sigma
+        public int id, frame;
+        public double abs_pos;
+        private boolean sorted;
+        private ArrayList<Molecule> detections;
 
-    /*
-     * [xpos,ypos] = center of gravity of individual detections
-     * Intensity = sum of intensities of all contributing detections
-     * sigma = mean value
-     * background = sum of all background intensities to keep the SNR of single detections
-     * frame = first frame where the molecule appeared
-     */
-    private void updateParameters() {
-      double xpos = 0.0, ypos = 0.0, Intensity = 0.0, background = 0.0, sigma = 0.0;
-      for (int i = 0; i < detections.size(); i++) {
-        Molecule mol = detections.get(i);
-        frame = Math.min(frame, mol.frame);
-        Intensity += mol.I;
-        background += mol.b;
-        sigma += mol.s;
-        xpos += mol.x * mol.I;
-        ypos += mol.y * mol.I;
-      }
-      this.x = xpos / Intensity;
-      this.y = ypos / Intensity;
-      this.I = Intensity;
-      this.b = background;
-      this.s = sigma / (double) detections.size();
-    }
-
-    public Molecule(int id, double x, double y, double I, double b, double sigma, int frame) {
-      detections = new ArrayList<Molecule>();
-      this.id = id;
-      this.x = x;
-      this.y = y;
-      this.I = I;
-      this.b = b;
-      this.s = sigma;
-      this.frame = frame;
-      addDetection(this);
-    }
-
-    public double dist2xy(Molecule mol) {
-      return (sqr(mol.x - x) + sqr(mol.y - y));
-    }
-
-    public void addDetection(Molecule mol) {
-      if (mol.detections.isEmpty()) {
-        detections.add(mol);
-      } else {    // if it is not empty, it already contains, at least, itself
-        for (Molecule m : mol.detections) {
-          detections.add(m);
+        /*
+         * [xpos,ypos] = center of gravity of individual detections
+         * Intensity = sum of intensities of all contributing detections
+         * sigma = mean value
+         * background = sum of all background intensities to keep the SNR of single detections
+         * frame = first frame where the molecule appeared
+         */
+        private void updateParameters() {
+            double xpos = 0.0, ypos = 0.0, Intensity = 0.0, background = 0.0, sigma = 0.0;
+            for (int i = 0; i < detections.size(); i++) {
+                Molecule mol = detections.get(i);
+                id = Math.min(id, mol.id);
+                frame = Math.min(frame, mol.frame);
+                Intensity += mol.I;
+                background += mol.b;
+                sigma += mol.s;
+                xpos += mol.x * mol.I;
+                ypos += mol.y * mol.I;
+            }
+            this.x = xpos / Intensity;
+            this.y = ypos / Intensity;
+            this.I = Intensity;
+            this.b = background;
+            this.s = sigma / (double)detections.size();
         }
-      }
-      updateParameters();
-    }
 
-    public boolean isSingle() {
-      return (detections.size() == 1);
+        public Molecule(int id, double x, double y, double I, double b, double sigma, int frame) {
+            this.id = id;
+            this.x = x;
+            this.y = y;
+            this.I = I;
+            this.b = b;
+            this.s = sigma;
+            this.frame = frame;
+            //
+            detections = new ArrayList<Molecule>();
+            this.sorted = true;
+            //
+            addDetection(this);
+        }
+
+        public double dist2xy(Molecule mol) {
+            return (sqr(mol.x - x) + sqr(mol.y - y));
+        }
+
+        public void addDetection(Molecule mol) {
+            if (mol.detections.isEmpty()) {
+                detections.add(mol);
+            } else {    // if it is not empty, it already contains, at least, itself
+                for (Molecule m : mol.detections) {
+                    detections.add(m);
+                }
+            }
+            updateParameters();
+            this.sorted = false;
+        }
+        
+        public ArrayList<Molecule> getDetections() {
+            if(sorted == false) {
+                Collections.sort(detections);
+                sorted = true;
+            }
+            return detections;
+        }
+        
+        public boolean isSingle() {
+            return (detections.size() == 1);
+        }
+
+        @Override
+        public int compareTo(Molecule mol) {
+            // first by frame, then by id, but it should never happen,
+            // since two molecules cannot be merged if they are in the same frame
+            if(frame == mol.frame) {
+                return (id - mol.id);
+            } else {
+                return (frame - mol.frame);
+            }
+        }
+        
     }
-  }
 
   //
   // ===================================================================
   //
   static class FrameSequence {
 
-    // <Frame #, List of Molecules>
-    private HashMap<Integer, ArrayList<Molecule>> detections;
-    private ArrayList<Molecule> molecules;
-    private SortedSet frames;
+        // <Frame #, List of Molecules>
+        private HashMap<Integer, ArrayList<Molecule>> detections;
+        private ArrayList<Molecule> molecules;
+        private SortedSet frames;
+        
+        public FrameSequence() {
+            detections = new HashMap<Integer, ArrayList<Molecule>>();
+            molecules = new ArrayList<Molecule>();
+            frames = new TreeSet();
+        }
 
-    public FrameSequence() {
-      detections = new HashMap<Integer, ArrayList<Molecule>>();
-      molecules = new ArrayList<Molecule>();
-      frames = new TreeSet();
-    }
-
-    public void InsertMolecule(Molecule mol) {
-      if (!detections.containsKey(mol.frame)) {
-        detections.put(mol.frame, new ArrayList<Molecule>());
-      }
-      detections.get(mol.frame).add(mol);
-      frames.add(mol.frame);
-    }
-
-    public ArrayList<Molecule> getAllMolecules() {
-      return molecules;
-    }
-
-    /*
-     * Note: this method makes changes into `detections`!
-     * 
-     * The method matches molecules at the same positions
-     * lasting for more than just 1 frame.
-     * 
-     * In the description of the competition
-     * (http://bigwww.epfl.ch/smlm/challenge/images/lm.003.png)
-     * they generate molecules only with their energy going down,
-     * but in real-life data I have whitnessed meny sitiations
-     * where the molecules were pulsing, i.e., their intensity
-     * went up and down again. Also a molecule could be photoactivated
-     * later in a frame acquisition Therefore this constraint is not
-     * included in this method.
-     */
-    public void matchMolecules(double dist2_thr) {
-      molecules.clear();
-      Integer[] frno = new Integer[frames.size()];
-      frames.toArray(frno);
-      for (int fi = 1; fi < frno.length; fi++) {
-        ArrayList<Molecule> fr1mol = detections.get(frno[fi - 1]);
-        ArrayList<Molecule> fr2mol = detections.get(frno[fi]);
-        boolean[] selected = new boolean[fr1mol.size()];
-        //
-        for (Molecule mol2 : fr2mol) {
-          // init flag array
-          for (int si = 0; si < selected.length; si++) {
-            selected[si] = false;
-          }
-          // match
-          {
-            int si = 0;
-            for (Molecule mol1 : fr1mol) {
-              if (selected[si] == false) {
-                if (mol2.dist2xy(mol1) <= dist2_thr) {
-                  mol2.addDetection(mol1);
-                  selected[si] = true;
-                }
-              }
-              si++;
+        public void InsertMolecule(Molecule mol) {
+            if (!detections.containsKey(mol.frame)) {
+                detections.put(mol.frame, new ArrayList<Molecule>());
             }
-          }
+            detections.get(mol.frame).add(mol);
+            frames.add(mol.frame);
         }
-        // store the not-selected molecules as real ones
-        for (int si = 0; si < selected.length; si++) {
-          if (selected[si] == false) {
-            molecules.add(fr1mol.get(si));
-          }
+
+        public ArrayList<Molecule> getAllMolecules() {
+            return molecules;
         }
-      }
-      // finally, store all the molecules from the last frame
-      for (Molecule mol : detections.get(frno[frno.length - 1])) {
-        molecules.add(mol);
-      }
+
+        /*
+         * Note: this method makes changes into `detections`!
+         * 
+         * The method matches molecules at the same positions
+         * lasting for more than just 1 frame.
+         * 
+         * In the description of the competition
+         * (http://bigwww.epfl.ch/smlm/challenge/images/lm.003.png)
+         * they generate molecules only with their energy going down,
+         * but in real-life data I have whitnessed meny sitiations
+         * where the molecules were pulsing, i.e., their intensity
+         * went up and down again. Also a molecule could be photoactivated
+         * later in a frame acquisition Therefore this constraint is not
+         * included in this method.
+         */
+        public void matchMolecules(double dist2_thr) {
+            molecules.clear();
+            Integer[] frno = new Integer[frames.size()];
+            frames.toArray(frno);
+            SquareEuclideanDistanceFunction dist_fn = new SquareEuclideanDistanceFunction();
+            MaxHeap<Molecule> nn_mol;
+            for (int fi = 1; fi < frno.length; fi++) {
+                ArrayList<Molecule> fr1mol = detections.get(frno[fi-1]);
+                ArrayList<Molecule> fr2mol = detections.get(frno[fi]);
+                //
+                boolean[] selected = new boolean[fr1mol.size()];
+                Arrays.fill(selected, false);
+                //
+                KdTree<Molecule> tree = new KdTree<Molecule>(2);
+                for(Molecule mol : fr2mol) {
+                    tree.addPoint(new double[]{mol.x, mol.y}, mol);
+                }
+                for(int si = 0, sim = fr1mol.size(); si < sim; si++) {
+                    Molecule mol = fr1mol.get(si);
+                    nn_mol = tree.findNearestNeighbors(new double[]{mol.x, mol.y}, 1, dist_fn);
+                    if(nn_mol.getMaxKey() < dist2_thr) {
+                        nn_mol.getMax().addDetection(mol);
+                        selected[si] = true;
+                    }
+                }
+                // store the not-selected molecules as real ones
+                for(int si = 0; si < selected.length; si++) {
+                    if (selected[si] == false) {
+                        molecules.add(fr1mol.get(si));
+                    }
+                }
+            }
+            // at the end store all the molecules from the last frame
+            for(Molecule mol : detections.get(frno[frno.length-1])) {
+                molecules.add(mol);
+            }
+        }
     }
-  }
 }

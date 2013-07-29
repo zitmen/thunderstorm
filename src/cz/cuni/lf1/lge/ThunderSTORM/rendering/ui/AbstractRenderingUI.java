@@ -2,14 +2,13 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import ij.ImagePlus;
 import ij.Macro;
 import ij.plugin.frame.Recorder;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -86,7 +85,7 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   public void readParameters() {
     threeD = threeDCheckBox.isSelected();
     if (threeD) {
-      parseRange(zRangeTextField.getText());
+      setZRange(zRangeTextField.getText());
     }
     resolution = Double.parseDouble(resolutionTextField.getText());
     repaintFrequency = Integer.parseInt(repaintFrequencyTextField.getText());
@@ -113,7 +112,7 @@ public abstract class AbstractRenderingUI implements IRendererUI {
       threeD = false;
     } else {
       threeD = true;
-      parseRange(rangeText);
+      setZRange(rangeText);
     }
     resolution = Double.parseDouble(Macro.getValue(options, "resolution", "" + DEFAULT_RESOLUTION));
     repaintFrequency = Integer.parseInt(Macro.getValue(options, "repaintFrequency", "" + DEFAULT_REPAINT_FREQUENCY));
@@ -125,23 +124,18 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   }
 
   protected abstract IncrementalRenderingMethod getMethod();
-
-  private void parseRange(String rangeText) throws RuntimeException {
-    Matcher m = Pattern.compile("^([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?):([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?):([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)$").matcher(rangeText);
-    if (m.lookingAt()) {
-      zFrom = Double.parseDouble(m.group(1));
-      zStep = Double.parseDouble(m.group(2));
-      zTo = Double.parseDouble(m.group(3));
-      int nSlices = (int) ((zTo - zFrom) / zStep);
-      if (zFrom > zTo) {
+  
+  private void setZRange(String rangeText) {
+    Range r = Range.parseFromStepTo(rangeText);
+    zTo = r.to; zFrom = r.from; zStep = r.step;
+    int nSlices = (int) ((zTo - zFrom) / zStep);
+    if (zFrom > zTo) {
         throw new RuntimeException("Z range \"from\" value (" + zFrom + ") must be smaller than \"to\" value (" + zTo + ").");
-      }
-      if (nSlices < 1) {
-        throw new RuntimeException("Invalid range: Must have at least one slice.");
-      }
-      zTo = nSlices * zStep + zFrom;
-    } else {
-      throw new RuntimeException("Wrong format of range field.");
     }
+    if (nSlices < 1) {
+        throw new RuntimeException("Invalid range: Must have at least one slice.");
+    }
+    zTo = nSlices * zStep + zFrom;
   }
+
 }

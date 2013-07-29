@@ -11,4 +11,9 @@ public class XLSImportExport extends DLMImportExport implements IImportExport {
         return "XLS (tab separated)";
     }
 
+    @Override
+    public String getSuffix() {
+        return "xls";
+    }
+
 }

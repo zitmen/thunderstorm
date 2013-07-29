@@ -1,0 +1,19 @@
+package cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto;
+
+option java_package = "cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto";
+option java_outer_classname = "ResultsTable";
+
+message Molecule {
+  optional uint32 id = 1;
+  optional double x = 2;
+  optional double y = 3;
+  optional double z = 4;
+  optional double sigma = 5;
+  optional double sigma2 = 6;
+  optional double intensity = 7;
+  optional double background = 8;
+}
+
+message Results {
+  repeated Molecule molecule = 1;
+}

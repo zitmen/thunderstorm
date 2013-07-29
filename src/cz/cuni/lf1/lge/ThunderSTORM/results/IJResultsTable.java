@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
-import java.util.Vector;
 
 /**
  * Class similar to ImageJ's ResultsTable class containing some of the most
@@ -19,6 +18,7 @@ import java.util.Vector;
  */
 public class IJResultsTable {
 
+  public static final String COLUMN_ID = "#";
   public static final int COLUMN_NOT_FOUND = ResultsTableModel.COLUMN_NOT_FOUND;  // -1
   public static final int COLUMN_IN_USE = -2;
   private static IJResultsTable resultsTable = null;
@@ -33,11 +33,11 @@ public class IJResultsTable {
     }
     return resultsTable;
   }
-  
+
   public static TripleStateTableModel getModel() {
     return getResultsTable().model;
   }
-  
+
   public static void setResultsTable(IJResultsTable rt) {
     resultsTable = rt;
   }
@@ -68,8 +68,6 @@ public class IJResultsTable {
     tableWindow.show();
   }
 
-  
-
   /**
    * Displays the contents of this ResultsTable in a window with the specified
    * title, or updates an existing results window. Opens a new window if there
@@ -89,7 +87,6 @@ public class IJResultsTable {
   public synchronized void addRow() {
     model.addRow();
   }
-
 
   /**
    * Returns true if the specified column exists and is not empty.
@@ -151,7 +148,6 @@ public class IJResultsTable {
     return model.getColumnCount();
   }
 
-
   /**
    * Returns the heading of the specified column or null if the column is empty.
    */
@@ -185,5 +181,4 @@ public class IJResultsTable {
   public int getLastColumn() {
     return model.getColumnCount() - 1;
   }
-
 }

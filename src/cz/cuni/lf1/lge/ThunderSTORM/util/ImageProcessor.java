@@ -2,11 +2,24 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import ij.process.FloatProcessor;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.pow;
+import java.util.Arrays;
 
 /**
  * Helper class to offer some additional functionality over the ImageProcessor from ImageJ.
  */
 public class ImageProcessor {
+    
+    public static FloatProcessor ones(int width, int height) {
+        float [] matrix = new float[height*width];
+        Arrays.fill(matrix, 1f);
+        return new FloatProcessor(width, height, matrix);
+    }
+    
+    public static FloatProcessor zeros(int width, int height) {
+        float [] matrix = new float[height*width];
+        Arrays.fill(matrix, 0f);
+        return new FloatProcessor(width, height, matrix);
+    }
 
     /**
      * Add two images.

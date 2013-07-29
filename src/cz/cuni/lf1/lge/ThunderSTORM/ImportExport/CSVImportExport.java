@@ -11,4 +11,9 @@ public class CSVImportExport extends DLMImportExport implements IImportExport {
         return "CSV (comma separated)";
     }
 
+    @Override
+    public String getSuffix() {
+        return "csv";
+    }
+
 }

@@ -1,8 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TableModelListener;
@@ -43,8 +41,7 @@ final class ResultsTableModel extends AbstractTableModel {
     columns.clear();
     colnames.clear();
 
-    addColumn("#");
-
+    addColumn(IJResultsTable.COLUMN_ID);
     fireTableStructureChanged();
   }
 
@@ -163,8 +160,12 @@ final class ResultsTableModel extends AbstractTableModel {
   }
 
   @Override
-  public Object getValueAt(int rowIndex, int columnIndex) {
+  public Double getValueAt(int rowIndex, int columnIndex) {
     return columns.elementAt(columnIndex).data.elementAt(rowIndex);
+  }
+  
+  public Double getValue(String column, int columnIndex){
+    return getColumn(column).data.elementAt(columnIndex);
   }
 
   @Override

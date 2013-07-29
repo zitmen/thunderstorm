@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Vector;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
@@ -62,7 +63,9 @@ public class XMLImportExport implements IImportExport {
                     if (event.isStartElement()) {
                         String name = event.asStartElement().getName().getLocalPart();
                         String value = eventReader.nextEvent().asCharacters().getData();
-                        rt.addValue(Double.parseDouble(value),name);
+                        if(!IJResultsTable.COLUMN_ID.equals(name)) {
+                          rt.addValue(Double.parseDouble(value),name);
+                        }
                         continue;
                     }
                 }
@@ -77,7 +80,7 @@ public class XMLImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, TripleStateTableModel rt) throws IOException {
+    public void exportToFile(String fp, TripleStateTableModel rt, Vector<String> columns) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -153,6 +156,11 @@ public class XMLImportExport implements IImportExport {
     @Override
     public String getName() {
         return "XML";
+    }
+
+    @Override
+    public String getSuffix() {
+        return "xml";
     }
 
 }
