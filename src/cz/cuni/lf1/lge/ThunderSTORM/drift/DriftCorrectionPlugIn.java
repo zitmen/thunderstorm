@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.drift;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
@@ -63,16 +64,16 @@ public class DriftCorrectionPlugIn implements PlugIn {
   }
 
   void getResultsFromTable() {
-    IJResultsTable rt = IJResultsTable.getResultsTable();
+    TripleStateTableModel rt = IJResultsTable.getResultsTable().getModel();
     if (!rt.columnExists(PSFInstance.X) || !rt.columnExists(PSFInstance.Y)) {
       throw new RuntimeException("Could not find " + PSFInstance.X + " and " + PSFInstance.Y + " columns.");
     }
     if (!rt.columnExists("frame")) {
       throw new RuntimeException("Could not find \"frame\" column.");
     }
-    x = rt.getColumnAsDoubles(rt.getColumnIndex(PSFInstance.X));
-    y = rt.getColumnAsDoubles(rt.getColumnIndex(PSFInstance.Y));
-    frame = rt.getColumnAsDoubles(rt.getColumnIndex("frame"));
+    x = rt.getColumnAsDoubles(PSFInstance.X);
+    y = rt.getColumnAsDoubles(PSFInstance.Y);
+    frame = rt.getColumnAsDoubles("frame");
   }
 
   static void showDriftPlot(CrossCorrelationDriftCorrection driftCorrection) {

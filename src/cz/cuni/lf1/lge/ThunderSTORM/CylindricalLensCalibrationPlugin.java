@@ -195,6 +195,9 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     for (Position p : beadPositions) {
       double[] framesArray = p.getFramesAsArray();
       try {
+        if(framesArray.length < 20){
+          continue;
+        }
         double[] sigmaParamArray = quadraticFitter.fitParams(framesArray, p.getSigmaAsArray());
         double[] sigma2ParamArray = quadraticFitter.fitParams(framesArray, p.getSigma2AsArray());
 

@@ -8,8 +8,13 @@ import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import ij.IJ;
 import ij.WindowManager;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -24,31 +29,26 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableRowSorter;
 
 class JavaTableWindow {
-  
+
   private JTable table;
   private JFrame frame;
-  private JLabel filterLabel;
-  private JTextField filterText;
-  private TableRowSorter<ResultsTableModel> sorter;
   private JButton export;
   private JButton render;
-  private JButton filterButton;
   private JCheckBox preview;
   private JLabel status;
   private RenderingQueue previewRenderer;
   private boolean livePreview;
-  private JTextField groupThrText;
-  private JLabel groupThrLabel;
-  private JButton groupButton;
   private JButton showHist;
-  
+  private JButton resetButton;
+  private JTabbedPane tabbedPane;
+  private OperationsStackPanel operationsStackPanel;
+
   public JavaTableWindow() {
     frame = new JFrame("ThunderSTORM: Results");
     frame.setIconImage(IJ.getInstance().getIconImage());
@@ -59,44 +59,17 @@ class JavaTableWindow {
     frame.addWindowListener(windowListener);
     frame.addWindowStateListener(windowListener);
     //
-    ResultsTableModel model = new ResultsTableModel();
+    final TripleStateTableModel model = new TripleStateTableModel(new ResultsTableModel());
     table = new JTable(model);
-    sorter = new TableRowSorter<ResultsTableModel>(model);
+    TableRowSorter<TripleStateTableModel> sorter = new TableRowSorter<TripleStateTableModel>(model);
     table.setRowSorter(sorter);
     //
-    status = new JLabel(" ", JLabel.CENTER);
-    JPanel statusBar = new JPanel();
-    statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.Y_AXIS));
-    statusBar.add(Box.createVerticalStrut(10));
-    statusBar.add(new JSeparator(JSeparator.HORIZONTAL));
-    statusBar.add(status);
-    statusBar.setAlignmentX(Component.CENTER_ALIGNMENT);
+    status = new JLabel(" ");
+    status.setAlignmentX(Component.CENTER_ALIGNMENT);
+    status.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
     //
-    JPanel grouping = new JPanel();
-    grouping.setLayout(new BoxLayout(grouping, BoxLayout.X_AXIS));
-    groupThrText = new JTextField();
-    GroupingListener groupingListener = new GroupingListener(this, status, groupThrText);
-    groupThrText.addKeyListener(groupingListener);
-    groupThrLabel = new JLabel("Merge molecules in subsequent frames with mutual lateral distance equal or less than: ", SwingConstants.TRAILING);
-    groupThrLabel.setLabelFor(groupThrText);
-    groupButton = new JButton("Merge");
-    groupButton.addActionListener(groupingListener);
-    grouping.add(groupThrLabel);
-    grouping.add(groupThrText);
-    grouping.add(groupButton);
-    //
-    JPanel filter = new JPanel();
-    filter.setLayout(new BoxLayout(filter, BoxLayout.X_AXIS));
-    filterText = new JTextField();
-    FilterListener filterListener = new FilterListener(this, model, sorter, filterText, status);
-    filterText.addKeyListener(filterListener);
-    filterLabel = new JLabel("Filter: ", SwingConstants.TRAILING);
-    filterLabel.setLabelFor(filterText);
-    filterButton = new JButton("Apply");
-    filterButton.addActionListener(filterListener);
-    filter.add(filterLabel);
-    filter.add(filterText);
-    filter.add(filterButton);
+    JPanel grouping = new GroupingListener(this, model).createUIPanel();
+    JPanel filter = new ResultsFilter(this, model).createUIPanel();
     //
     JPanel buttons = new JPanel();
     buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
@@ -138,29 +111,57 @@ class JavaTableWindow {
     buttons.add(Box.createHorizontalStrut(10));
     buttons.add(export);
     //
-    JPanel pane = new JPanel();
-    pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
-    pane.add(new JScrollPane(table));
-    pane.add(grouping);
-    pane.add(filter);
-    pane.add(buttons);
-    pane.add(statusBar);
+    
+    
+    //fill tabbed pane
+    tabbedPane = new JTabbedPane();
+    tabbedPane.addTab("filter", filter);
+    tabbedPane.addTab("grouping", grouping);
+    
+    //history pane
+    JPanel historyPane = new JPanel(new GridBagLayout());
+    operationsStackPanel = new OperationsStackPanel();
+    resetButton = new JButton("Reset");
+    resetButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        model.copyOriginalToActual();
+        operationsStackPanel.removeAllOperations();
+        setStatus("Results reset.");
+        showPreview();
+      }
+    });
+    historyPane.add(operationsStackPanel, new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+    historyPane.add(resetButton);
+    
+    Container contentPane = frame.getContentPane();
+    JPanel controlsPane = new JPanel();
+    controlsPane.setLayout(new BoxLayout(controlsPane, BoxLayout.PAGE_AXIS));
+    contentPane.add(new JScrollPane(table), BorderLayout.CENTER);
+    contentPane.add(controlsPane, BorderLayout.SOUTH);
+    
+    controlsPane.add(tabbedPane);
+    controlsPane.add(historyPane);
+    controlsPane.add(buttons);
+    controlsPane.add(status);
     //
-    frame.setContentPane(pane);
+    frame.setContentPane(contentPane);
     frame.pack();
   }
-  
+
   public void showPreview() {
-    if(livePreview == false || previewRenderer == null) return;
-    //
-    IJResultsTable.View rt = IJResultsTable.getResultsTable().view;
-    if (!rt.columnExists(LABEL_X_POS) || !rt.columnExists(LABEL_Y_POS)) {
-      IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, rt.getColumnHeadings()));
+    if (livePreview == false || previewRenderer == null) {
       return;
     }
-    double[] xpos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_X_POS));
-    double[] ypos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_Y_POS));
-    double[] zpos = rt.columnExists(LABEL_Z_POS)? rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_Z_POS)) : null;
+    //
+    TripleStateTableModel tableModel = IJResultsTable.getResultsTable().getModel();
+    if (!tableModel.columnExists(LABEL_X_POS) || !tableModel.columnExists(LABEL_Y_POS)) {
+      IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, tableModel.getColumnNames()));
+      return;
+    }
+    double[] xpos = tableModel.getColumnAsDoubles(LABEL_X_POS);
+    double[] ypos = tableModel.getColumnAsDoubles(LABEL_Y_POS);
+    double[] zpos = tableModel.columnExists(LABEL_Z_POS) ? tableModel.getColumnAsDoubles(LABEL_Z_POS) : null;
     if (xpos == null || ypos == null) {
       IJ.error("results were empty");
       return;
@@ -169,51 +170,63 @@ class JavaTableWindow {
     previewRenderer.renderLater(xpos, ypos, zpos, null);
     previewRenderer.repaintLater();
   }
-  
-  public ResultsTableModel getModel() {
-    return (ResultsTableModel)table.getModel();
+
+  public TripleStateTableModel getModel() {
+    return (TripleStateTableModel) table.getModel();
   }
-  
+
   public JTable getView() {
-      return table;
+    return table;
   }
-  
+
   public void show(String title) {
     frame.setTitle(title);
     show();
   }
-  
+
   public void show() {
     WindowManager.addWindow(frame); // ImageJ's own Window Manager
-    frame.setVisible(true);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        frame.setVisible(true);
+      }
+    });
     WindowManager.setWindow(frame); // ImageJ's own Window Manager
   }
-  
+
   public void hide() {
     frame.setVisible(false);
     WindowManager.removeWindow(frame); // ImageJ's own Window Manager
   }
-  
+
   public boolean isVisible() {
     return frame.isVisible();
   }
-  
-  public void setPreviewRenderer(RenderingQueue renderer){
+
+  public void setPreviewRenderer(RenderingQueue renderer) {
     previewRenderer = renderer;
+  }
+  
+  public void setStatus(String text){
+    this.status.setText(text);
+  }
+  
+  public OperationsStackPanel getOperationHistoryPanel(){
+    return operationsStackPanel;
   }
 
   private class JavaTableWindowListener extends WindowAdapter {
 
     private JavaTableWindow window;
-    
+
     public JavaTableWindowListener(JavaTableWindow window) {
       this.window = window;
     }
-    
+
     @Override
     public void windowClosing(WindowEvent e) {
       window.hide();
     }
   }
-
 }

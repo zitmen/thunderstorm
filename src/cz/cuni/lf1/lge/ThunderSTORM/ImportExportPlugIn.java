@@ -66,7 +66,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
         IJ.showStatus("ThunderSTORM is exporting your results...");
         IJ.showProgress(0.0);            
         IImportExport exporter = ie.elementAt(active_ie);
-        exporter.exportToFile(fpath, rt);
+        exporter.exportToFile(fpath, rt.getModel());
         IJ.showProgress(1.0);
         IJ.showStatus("ThunderSTORM has exported your results.");
     }
@@ -77,7 +77,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener {
         IJ.showProgress(0.0);
         rt.reset();
         IImportExport importer = ie.elementAt(active_ie);
-        importer.importFromFile(fpath, rt);
+        importer.importFromFile(fpath, rt.getModel());
         rt.show("Results");
         IJ.showProgress(1.0);
         IJ.showStatus("ThunderSTORM has imported your file.");

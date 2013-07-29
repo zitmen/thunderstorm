@@ -12,6 +12,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
@@ -89,17 +90,21 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         IJResultsTable.setResultsTable(rt);
       }
       rt.reset();
+      TripleStateTableModel tableModel = rt.getModel();
+      tableModel.setSelectedState(TripleStateTableModel.State.ORIGINAL);
       for (int frame = 1; frame <= stackSize; frame++) {
         if(results[frame] != null) {
           for (PSFInstance psf : results[frame]) {
-            rt.addRow();
-            rt.addValue("frame", frame);
+            tableModel.addRow();
+            tableModel.addValue((double) frame, "frame");
             for (Map.Entry<String, Double> parameter : psf) {
-              rt.addValue(parameter.getKey(), parameter.getValue());
+              tableModel.addValue(parameter.getValue(), parameter.getKey());
             }
           }
         }
       }
+      tableModel.copyOriginalToActual();
+      tableModel.setSelectedState(TripleStateTableModel.State.ACTUAL);
       rt.setPreviewRenderer(renderingQueue);
       rt.show();
       //

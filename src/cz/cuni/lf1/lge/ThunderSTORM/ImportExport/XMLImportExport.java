@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import ij.IJ;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,12 +25,13 @@ public class XMLImportExport implements IImportExport {
     static final String ITEM = "molecule";
     
     @Override
-    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
+    public void importFromFile(String fp, TripleStateTableModel rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.reset();
+        rt.resetAll();
+        rt.setSelectedState(TripleStateTableModel.State.ORIGINAL);
         
         try {
             // First create a new XMLInputFactory
@@ -37,7 +39,7 @@ public class XMLImportExport implements IImportExport {
             // Setup a new eventReader
             InputStream in = new FileInputStream(fp);
             XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
-            
+            int idx = 0;
             while(eventReader.hasNext()) {
                 XMLEvent event = eventReader.nextEvent();
 
@@ -60,18 +62,22 @@ public class XMLImportExport implements IImportExport {
                     if (event.isStartElement()) {
                         String name = event.asStartElement().getName().getLocalPart();
                         String value = eventReader.nextEvent().asCharacters().getData();
-                        rt.addValue(name, Double.parseDouble(value));
+                        rt.addValue(Double.parseDouble(value),name);
                         continue;
                     }
                 }
             }
         } catch (XMLStreamException ex) {
             throw new IOException(ex.toString());
+        } finally{
+          rt.copyOriginalToActual();
+          rt.setSelectedState(TripleStateTableModel.State.ACTUAL);
         }
+                
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable rt) throws IOException {
+    public void exportToFile(String fp, TripleStateTableModel rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -97,10 +103,8 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(resultsStartElement);
             eventWriter.add(end);
             
-            int ncols = rt.view.getColumnCount(), nrows = rt.view.getRowCount();
-            String [] headers = new String[ncols];
-            for(int c = 0; c < ncols; c++)
-                headers[c] = rt.view.getColumnHeading(c);
+            int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
+            String [] headers = rt.getColumnNames();
             
             for(int r = 0; r < nrows; r++) {
                 StartElement moleculeStartElement = eventFactory.createStartElement("", "", ITEM);
@@ -109,7 +113,7 @@ public class XMLImportExport implements IImportExport {
                 eventWriter.add(end);
 
                 for(int c = 0; c < ncols; c++) {
-                    createNode(eventWriter, headers[c], Double.toString(rt.view.getValueAsDouble(c,r)));
+                    createNode(eventWriter, headers[c], Double.toString((Double)rt.getValueAt(c,r)));
                 }
                 
                 eventWriter.add(tab);
@@ -126,7 +130,7 @@ public class XMLImportExport implements IImportExport {
             eventWriter.close();
         } catch(XMLStreamException ex) {
             throw new IOException(ex.toString());
-        }
+        } 
     }
     
     private void createNode(XMLEventWriter eventWriter, String name, String value) throws XMLStreamException {

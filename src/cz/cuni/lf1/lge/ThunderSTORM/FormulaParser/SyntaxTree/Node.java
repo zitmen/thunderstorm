@@ -46,7 +46,7 @@ public abstract class Node {
         throw new UnsupportedOperationException("Unsupported type of parser! Supported types are: thresholding and results filtering.");
       }
     }
-    
+
     public RetVal getVariable(String obj, String var) {
       if(isThresholding()) {
         if(obj == null) {   // active filter this filter is already active,
@@ -57,13 +57,12 @@ public abstract class Node {
             IFilter impl = f.getImplementation();
             if(impl.getFilterVarName().equals(obj)) {
               return new RetVal(impl.exportVariables(true).get(var));
-            }
+}
           }
         }
         return new RetVal((FloatProcessor)null);
       } else if(isResultsFiltering()) {
-        int col_idx = IJResultsTable.getResultsTable().getColumnIndex(var);
-        Double [] col_data = IJResultsTable.getResultsTable().getColumnAsDoubleObjects(col_idx);
+        Double [] col_data = IJResultsTable.getResultsTable().getModel().getColumnAsDoubleObjects(var);
         return new RetVal(col_data);
       } else {
         throw new UnsupportedOperationException("Unsupported type of parser! Supported types are: thresholding and results filtering.");

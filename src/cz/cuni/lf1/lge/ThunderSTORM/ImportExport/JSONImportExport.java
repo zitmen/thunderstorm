@@ -4,7 +4,7 @@ import com.json.generators.JSONGenerator;
 import com.json.generators.JsonGeneratorFactory;
 import com.json.parsers.JSONParser;
 import com.json.parsers.JsonParserFactory;
-import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import ij.IJ;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -21,12 +21,13 @@ public class JSONImportExport implements IImportExport {
     static final String ROOT = "results";
     
     @Override
-    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
+    public void importFromFile(String fp, TripleStateTableModel rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.reset();
+        rt.resetAll();
+        rt.setSelectedState(TripleStateTableModel.State.ORIGINAL);
         
         String inputJsonString = new Scanner(fp).useDelimiter("\\Z").next();  
         
@@ -43,25 +44,25 @@ public class JSONImportExport implements IImportExport {
             Iterator it = ((Map)item).entrySet().iterator();
             while(it.hasNext()) {
                 Map.Entry pairs = (Map.Entry)it.next();
-                rt.addValue((String)pairs.getKey(), Double.parseDouble((String)pairs.getValue()));
+                rt.addValue(Double.parseDouble((String)pairs.getValue()), (String)pairs.getKey());
                 IJ.showProgress((double)(r++) / (double)nrows);
                 it.remove(); // avoids a ConcurrentModificationException
             }
         }
+        rt.copyOriginalToActual();
+        rt.setSelectedState(TripleStateTableModel.State.ACTUAL);
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable rt) throws IOException {
+    public void exportToFile(String fp, TripleStateTableModel rt) throws IOException {
         int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
-        String [] headers = new String[ncols];
-        for(int c = 0; c < ncols; c++)
-            headers[c] = rt.view.getColumnHeading(c);
+        String [] headers = rt.getColumnNames();
         
         Object [] results = new Object[nrows];
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(headers[c], rt.view.getValueAsDouble(c,r));
+                molecule.put(headers[c], (Double)rt.getValueAt(c,r));
             results[r] = molecule;
             IJ.showProgress((double)r / (double)nrows);
         }

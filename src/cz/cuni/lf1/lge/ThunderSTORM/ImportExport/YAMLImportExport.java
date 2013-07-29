@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
-import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.TripleStateTableModel;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,18 +9,18 @@ import org.yaml.snakeyaml.Yaml;
 public class YAMLImportExport implements IImportExport {
 
     @Override
-    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
+    public void importFromFile(String fp, TripleStateTableModel rt) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.reset();
+        rt.resetAll();
         
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable rt) throws IOException {
+    public void exportToFile(String fp, TripleStateTableModel rt) throws IOException {
         // TODO
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("name", "Silenthand Olleander");
