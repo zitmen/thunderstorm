@@ -75,11 +75,11 @@ class JavaTableWindow {
     JPanel grouping = new JPanel();
     grouping.setLayout(new BoxLayout(grouping, BoxLayout.X_AXIS));
     groupThrText = new JTextField();
-    GroupingListener groupingListener = new GroupingListener(this, status, groupThrText);
-    groupThrText.addKeyListener(groupingListener);
     groupThrLabel = new JLabel("Merge molecules in subsequent frames with mutual lateral distance equal or less than: ", SwingConstants.TRAILING);
     groupThrLabel.setLabelFor(groupThrText);
     groupButton = new JButton("Merge");
+    GroupingListener groupingListener = new GroupingListener(this, status, groupThrText, groupButton);
+    groupThrText.addKeyListener(groupingListener);
     groupButton.addActionListener(groupingListener);
     grouping.add(groupThrLabel);
     grouping.add(groupThrText);
