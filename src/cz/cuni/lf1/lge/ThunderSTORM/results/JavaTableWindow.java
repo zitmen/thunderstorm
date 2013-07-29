@@ -47,7 +47,7 @@ class JavaTableWindow {
   private JButton showHist;
   private JButton resetButton;
   private JTabbedPane tabbedPane;
-  private OperationsStackPanel operationsStackPanel;
+  private OperationsHistoryPanel operationsStackPanel;
 
   public JavaTableWindow() {
     frame = new JFrame("ThunderSTORM: Results");
@@ -59,7 +59,7 @@ class JavaTableWindow {
     frame.addWindowListener(windowListener);
     frame.addWindowStateListener(windowListener);
     //
-    final TripleStateTableModel model = new TripleStateTableModel(new ResultsTableModel());
+    final TripleStateTableModel model = new TripleStateTableModel();
     table = new JTable(model);
     TableRowSorter<TripleStateTableModel> sorter = new TableRowSorter<TripleStateTableModel>(model);
     table.setRowSorter(sorter);
@@ -68,7 +68,7 @@ class JavaTableWindow {
     status.setAlignmentX(Component.CENTER_ALIGNMENT);
     status.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
     //
-    JPanel grouping = new GroupingListener(this, model).createUIPanel();
+    JPanel grouping = new ResultsGrouping(this, model).createUIPanel();
     JPanel filter = new ResultsFilter(this, model).createUIPanel();
     //
     JPanel buttons = new JPanel();
@@ -120,7 +120,7 @@ class JavaTableWindow {
     
     //history pane
     JPanel historyPane = new JPanel(new GridBagLayout());
-    operationsStackPanel = new OperationsStackPanel();
+    operationsStackPanel = new OperationsHistoryPanel();
     resetButton = new JButton("Reset");
     resetButton.addActionListener(new ActionListener() {
       @Override
@@ -212,7 +212,7 @@ class JavaTableWindow {
     this.status.setText(text);
   }
   
-  public OperationsStackPanel getOperationHistoryPanel(){
+  public OperationsHistoryPanel getOperationHistoryPanel(){
     return operationsStackPanel;
   }
 

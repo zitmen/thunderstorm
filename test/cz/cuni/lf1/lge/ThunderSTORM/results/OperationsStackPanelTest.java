@@ -13,8 +13,8 @@ public class OperationsStackPanelTest {
   @Test
   public void testAddOperation() throws InterruptedException {
 
-    final OperationsStackPanel panel = new OperationsStackPanel();
-    panel.addOperation(new OperationsStackPanel.Operation() {
+    final OperationsHistoryPanel panel = new OperationsHistoryPanel();
+    panel.addOperation(new OperationsHistoryPanel.Operation() {
       @Override
       public String getName() {
         return "operation1";
@@ -27,7 +27,7 @@ public class OperationsStackPanelTest {
 
       @Override
       public void clicked() {
-        panel.addOperation(new OperationsStackPanel.Operation() {
+        panel.addOperation(new OperationsHistoryPanel.Operation() {
           @Override
           public String getName() {
             return "nextOperation";

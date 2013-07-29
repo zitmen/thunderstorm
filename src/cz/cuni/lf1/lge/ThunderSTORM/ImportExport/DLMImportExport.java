@@ -26,7 +26,7 @@ abstract public class DLMImportExport implements IImportExport {
         assert(!fp.isEmpty());
         
         rt.resetAll();
-        rt.setSelectedState(TripleStateTableModel.State.ORIGINAL);
+        rt.setSelectedState(TripleStateTableModel.StateName.ORIGINAL);
         
         CSVReader csvReader = new CSVReader(new FileReader(fp), separator);
         List<String[]> lines;
@@ -50,7 +50,7 @@ abstract public class DLMImportExport implements IImportExport {
             IJ.showProgress((double)r / (double)rm);
         }
         rt.copyOriginalToActual();
-        rt.setSelectedState(TripleStateTableModel.State.ACTUAL);
+        rt.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
     }
 
     @Override

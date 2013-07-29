@@ -136,9 +136,13 @@ public class DataGeneratorPlugIn implements PlugIn {
             }
         }
         processing_frame = 0;
+        TripleStateTableModel tableModel = IJResultsTable.getModel();
+        tableModel.setOriginalState();
         for(int c = 0; c < cores; c++) {
-            generators[c].fillResults(stack, IJResultsTable.getModel());   // and generate stack and table of ground-truth data
+            generators[c].fillResults(stack, tableModel);   // and generate stack and table of ground-truth data
         }
+        tableModel.copyOriginalToActual();
+        tableModel.setActualState();
         //
         ImagePlus imp = IJ.createImage("ThunderSTORM: artificial dataset", "16-bit", width, height, frames);
         imp.setStack(stack);

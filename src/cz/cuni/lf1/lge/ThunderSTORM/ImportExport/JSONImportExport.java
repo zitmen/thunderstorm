@@ -25,7 +25,7 @@ public class JSONImportExport implements IImportExport {
         assert(!fp.isEmpty());
         
         rt.resetAll();
-        rt.setSelectedState(TripleStateTableModel.State.ORIGINAL);
+        rt.setSelectedState(TripleStateTableModel.StateName.ORIGINAL);
         
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Vector<HashMap<String,Double>> molecules = gson.fromJson(new FileReader(fp), new TypeToken<Vector<HashMap<String,Double>>>(){}.getType());
@@ -40,7 +40,7 @@ public class JSONImportExport implements IImportExport {
             }
         }
         rt.copyOriginalToActual();
-        rt.setSelectedState(TripleStateTableModel.State.ACTUAL);
+        rt.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
     }
 
     @Override

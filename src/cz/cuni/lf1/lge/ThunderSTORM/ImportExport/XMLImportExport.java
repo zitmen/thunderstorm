@@ -32,7 +32,7 @@ public class XMLImportExport implements IImportExport {
         assert(!fp.isEmpty());
         
         rt.resetAll();
-        rt.setSelectedState(TripleStateTableModel.State.ORIGINAL);
+        rt.setSelectedState(TripleStateTableModel.StateName.ORIGINAL);
         
         try {
             // First create a new XMLInputFactory
@@ -74,7 +74,7 @@ public class XMLImportExport implements IImportExport {
             throw new IOException(ex.toString());
         } finally{
           rt.copyOriginalToActual();
-          rt.setSelectedState(TripleStateTableModel.State.ACTUAL);
+          rt.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
         }
                 
     }

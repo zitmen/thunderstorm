@@ -6,12 +6,12 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-final class ResultsTableModel extends AbstractTableModel {
+class ResultsTableModel extends AbstractTableModel {
 
   public static final int COLUMN_NOT_FOUND = -1;
-  private int counter;
-  private Vector<TableColumn> columns;
-  private HashMap<String, Integer> colnames;
+  protected int counter;
+  protected Vector<TableColumn> columns;
+  protected HashMap<String, Integer> colnames;
   // -----------------------------------------------------
 
   public void addColumn(String label) {
@@ -123,7 +123,8 @@ final class ResultsTableModel extends AbstractTableModel {
     columns = new Vector<TableColumn>();
     colnames = new HashMap<String, Integer>();
 
-    reset();
+    counter = 0;
+    addColumn(IJResultsTable.COLUMN_ID);
   }
 
   @Override
@@ -194,6 +195,14 @@ final class ResultsTableModel extends AbstractTableModel {
 
   public String[] getColumnNames() {
     return colnames.keySet().toArray(new String[0]);
+  }
+  
+  public boolean columnExists(int column) {
+    return ((column >= 0) && (column < getColumnCount()));
+  }
+
+  public boolean columnExists(String column) {
+    return (findColumn(column) != COLUMN_NOT_FOUND);
   }
   
   public void filterRows(boolean[] keep){

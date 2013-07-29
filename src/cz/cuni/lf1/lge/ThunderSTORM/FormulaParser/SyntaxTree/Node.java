@@ -41,7 +41,7 @@ public abstract class Node {
         return false;
       } else if(isResultsFiltering()) {
         if(obj != null) return false;
-        return IJResultsTable.getResultsTable().columnExists(var);
+        return IJResultsTable.getModel().columnExists(var);
       } else {
         throw new UnsupportedOperationException("Unsupported type of parser! Supported types are: thresholding and results filtering.");
       }
@@ -62,7 +62,7 @@ public abstract class Node {
         }
         return new RetVal((FloatProcessor)null);
       } else if(isResultsFiltering()) {
-        Double [] col_data = IJResultsTable.getResultsTable().getModel().getColumnAsDoubleObjects(var);
+        Double [] col_data = IJResultsTable.getModel().getColumnAsDoubleObjects(var);
         return new RetVal(col_data);
       } else {
         throw new UnsupportedOperationException("Unsupported type of parser! Supported types are: thresholding and results filtering.");

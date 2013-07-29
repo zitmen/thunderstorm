@@ -57,14 +57,14 @@ class ResultsFilter {
     filterTextField.setBackground(Color.WHITE);
     GUI.closeBalloonTip();
     try {
-      OperationsStackPanel opHistory = table.getOperationHistoryPanel();
+      OperationsHistoryPanel opHistory = table.getOperationHistoryPanel();
       if(opHistory.getLastOperation() instanceof FilteringOperation){
         model.copyUndoToActual();
         opHistory.removeLastOperation();
       }else{
         model.copyActualToUndo();
       }
-      model.setSelectedState(TripleStateTableModel.State.ACTUAL);
+      model.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
       int all = model.getRowCount();
       applyToModel(model, filterText);
       opHistory.addOperation(new FilteringOperation(filterText));
@@ -81,7 +81,7 @@ class ResultsFilter {
     }
   }
 
-  static void applyToModel(TripleStateTableModel model, String text) {
+  static void applyToModel(ResultsTableModel model, String text) {
     boolean[] results = new boolean[model.getRowCount()];
     if (text.isEmpty()) {
       Arrays.fill(results, true);
@@ -100,7 +100,7 @@ class ResultsFilter {
     }
   }
 
-  public class FilteringOperation extends OperationsStackPanel.Operation {
+  public class FilteringOperation extends OperationsHistoryPanel.Operation {
     String filterText;
 
     public FilteringOperation(String filterText) {

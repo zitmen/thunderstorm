@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import com.sun.org.apache.bcel.internal.generic.LASTORE;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -13,18 +12,20 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class OperationsStackPanel extends JPanel {
+public class OperationsHistoryPanel extends JPanel {
 
   private List<LabelWithCheckbox> stack;
 
-  public OperationsStackPanel() {
+  public OperationsHistoryPanel() {
     stack = new ArrayList<LabelWithCheckbox>();
     this.setLayout(new FlowLayout(FlowLayout.LEFT, 3, 0));
   }
 
   public void addOperation(Operation op) {
-    //if (stack.get(WIDTH)){ TODO: remove last if unchecked
-    
+    //if (stack.get()){ TODO: remove last if unchecked
+    if(!stack.isEmpty() && !stack.get(stack.size() - 1).isChecked()){
+      removeLastOperation();
+    }
     //add arrow
     JLabel arrow = null;
     if (!stack.isEmpty()) {
@@ -80,6 +81,7 @@ public class OperationsStackPanel extends JPanel {
 
     public LabelWithCheckbox(final Operation op, JLabel arrow) {
       this.op = op;
+      this.arrow = arrow;
       setLayout(new FlowLayout(FlowLayout.LEFT, 3, 0));
       setBorder(javax.swing.BorderFactory.createEtchedBorder());
       //label
@@ -120,7 +122,7 @@ public class OperationsStackPanel extends JPanel {
     }
 
     public boolean isChecked() {
-      return chb == null ? false : chb.isSelected();
+      return chb == null ? true : chb.isSelected();
     }
 
     public Operation getOperation() {

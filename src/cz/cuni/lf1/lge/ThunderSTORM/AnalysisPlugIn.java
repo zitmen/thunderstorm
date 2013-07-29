@@ -90,8 +90,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         IJResultsTable.setResultsTable(rt);
       }
       rt.reset();
-      TripleStateTableModel tableModel = rt.getModel();
-      tableModel.setSelectedState(TripleStateTableModel.State.ORIGINAL);
+      TripleStateTableModel tableModel = IJResultsTable.getModel();
+      tableModel.setOriginalState();
       for (int frame = 1; frame <= stackSize; frame++) {
         if(results[frame] != null) {
           for (PSFInstance psf : results[frame]) {
@@ -104,7 +104,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         }
       }
       tableModel.copyOriginalToActual();
-      tableModel.setSelectedState(TripleStateTableModel.State.ACTUAL);
+      tableModel.setActualState();
       rt.setPreviewRenderer(renderingQueue);
       rt.show();
       //

@@ -29,7 +29,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
-class GroupingListener {
+class ResultsGrouping {
 
   private JavaTableWindow table;
   private TripleStateTableModel model;
@@ -37,7 +37,7 @@ class GroupingListener {
   private JTextField distanceTextField;
   private JButton applyButton;
 
-  public GroupingListener(JavaTableWindow table, TripleStateTableModel model) {
+  public ResultsGrouping(JavaTableWindow table, TripleStateTableModel model) {
     this.table = table;
     this.model = model;
   }
@@ -84,14 +84,14 @@ class GroupingListener {
     GUI.closeBalloonTip();
     try {
       applyButton.setEnabled(false);
-      final OperationsStackPanel opHistory = table.getOperationHistoryPanel();
-      if (opHistory.getLastOperation() instanceof ResultsFilter.FilteringOperation) {
+      final OperationsHistoryPanel opHistory = table.getOperationHistoryPanel();
+      if (opHistory.getLastOperation() instanceof ResultsGrouping.MergingOperation) {
         model.copyUndoToActual();
         opHistory.removeLastOperation();
       } else {
         model.copyActualToUndo();
       }
-      model.setSelectedState(TripleStateTableModel.State.ACTUAL);
+      model.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
       final int merged = model.getRowCount();
       new SwingWorker() {
         @Override
@@ -106,7 +106,7 @@ class GroupingListener {
             get();
             int into = model.getRowCount();
             opHistory.addOperation(new MergingOperation(dist));
-            
+
             table.setStatus(Integer.toString(merged) + " molecules were merged into " + Integer.toString(into) + " molecules");
             table.showPreview();
           } catch (InterruptedException ex) {
@@ -114,7 +114,7 @@ class GroupingListener {
             IJ.handleException(ex);
             distanceTextField.setBackground(new Color(255, 200, 200));
             GUI.showBalloonTip(distanceTextField, ex.getCause().toString());
-          } finally{
+          } finally {
             applyButton.setEnabled(true);
           }
         }
@@ -127,7 +127,7 @@ class GroupingListener {
     }
   }
 
-  private class MergingOperation extends OperationsStackPanel.Operation {
+  private class MergingOperation extends OperationsHistoryPanel.Operation {
 
     double threshold;
 
@@ -169,7 +169,7 @@ class GroupingListener {
     }
   }
 
-  public static void applyToModel(TripleStateTableModel model, double dist) {
+  public static void applyToModel(ResultsTableModel model, double dist) {
     if (!model.columnExists(LABEL_X_POS) || !model.columnExists(LABEL_Y_POS)) {
       throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, model.getColumnNames()));
     }
@@ -189,19 +189,17 @@ class GroupingListener {
     frames.matchMolecules(dist2);
     //
 
-    model.resetSelected();
+    model.reset();
 
     for (Molecule mol : frames.getAllMolecules()) {
-      if (!mol.isSingle()) {
-        //
-        model.addRow();
-        model.addValue(mol.x, LABEL_X_POS);
-        model.addValue(mol.y, LABEL_Y_POS);
-        model.addValue(mol.I, "intensity");
-        model.addValue(mol.b, "background");
-        model.addValue(mol.s, "sigma");
-        model.addValue((double) mol.detections.size(), "detections");
-      }
+      //
+      model.addRow();
+      model.addValue(mol.x, LABEL_X_POS);
+      model.addValue(mol.y, LABEL_Y_POS);
+      model.addValue(mol.I, "intensity");
+      model.addValue(mol.b, "background");
+      model.addValue(mol.s, "sigma");
+      model.addValue((double) mol.detections.size(), "detections");
     }
   }
 
