@@ -7,7 +7,6 @@ import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.plugin.PlugIn;
 import java.awt.Choice;
-import java.awt.TextComponent;
 import java.awt.TextField;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -55,10 +54,10 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             String [] col_headers = null;
             if("export".equals(command)) {
                 gd.addMessage("Columns to export:");
-                IJResultsTable.View rt = IJResultsTable.getResultsTable().view;
-                col_headers = rt.getColumnHeadings().split(",");
+                IJResultsTable rt = IJResultsTable.getResultsTable();
+                col_headers = rt.getColumnNames();
                 boolean [] active_columns = new boolean[col_headers.length];
-                Arrays.fill(active_columns, true); active_columns[rt.getColumnIndex("#")] = false;
+                Arrays.fill(active_columns, true); active_columns[rt.findColumn("#")] = false;
                 gd.addCheckboxGroup(col_headers.length, 1, col_headers, active_columns);
             }
             gd.showDialog();
@@ -87,7 +86,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         IJ.showStatus("ThunderSTORM is exporting your results...");
         IJ.showProgress(0.0);
         IImportExport exporter = ie.elementAt(active_ie);
-        exporter.exportToFile(fpath, IJResultsTable.getResultsTable().view, columns);
+        exporter.exportToFile(fpath, IJResultsTable.getResultsTable(), columns);
         IJ.showProgress(1.0);
         IJ.showStatus("ThunderSTORM has exported your results.");
     }

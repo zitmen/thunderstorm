@@ -25,6 +25,7 @@ abstract public class DLMImportExport implements IImportExport {
         assert(!fp.isEmpty());
         
         rt.reset();
+        rt.setOriginalState();
         
         CSVReader csvReader = new CSVReader(new FileReader(fp), separator);
         List<String[]> lines;
@@ -42,15 +43,17 @@ abstract public class DLMImportExport implements IImportExport {
         for(int r = 1, rm = lines.size(); r < rm; r++) {
             rt.addRow();
             for(int c = 0, cm = lines.get(r).length; c < cm; c++) {
-                if(IJResultsTable.COLUMN_ID.equals(headers[c])) continue;
-                rt.addValue(headers[c], Double.parseDouble(lines.get(r)[c]));
+              if(IJResultsTable.COLUMN_ID.equals(headers[c])) continue;
+              rt.addValue(Double.parseDouble(lines.get(r)[c]), headers[c]);
             }
             IJ.showProgress((double)r / (double)rm);
         }
+        rt.copyOriginalToActual();
+        rt.setActualState();
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws IOException {
+    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -66,7 +69,7 @@ abstract public class DLMImportExport implements IImportExport {
         for(int r = 0; r < nrows; r++) {
             for(int c = 0; c < ncols; c++) {
                 if(c > 0) writer.write(",");
-                writer.write(Double.toString(rt.getValue(columns.elementAt(c),r)));
+                writer.write(Double.toString(rt.getValue(r, columns.elementAt(c))));
             }
             writer.newLine();
             IJ.showProgress((double)r / (double)nrows);

@@ -24,6 +24,7 @@ public class JSONImportExport implements IImportExport {
         assert(!fp.isEmpty());
         
         rt.reset();
+        rt.setOriginalState();
         
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Vector<HashMap<String,Double>> molecules = gson.fromJson(new FileReader(fp), new TypeToken<Vector<HashMap<String,Double>>>(){}.getType());
@@ -33,28 +34,29 @@ public class JSONImportExport implements IImportExport {
             rt.addRow();
             for(Entry<String,Double> entry : mol.entrySet()) {
                 if(IJResultsTable.COLUMN_ID.equals(entry.getKey())) continue;
-                rt.addValue(entry.getKey(), entry.getValue().doubleValue());
+                rt.addValue(entry.getValue(), entry.getKey());
                 IJ.showProgress((double)(r++) / (double)nrows);
             }
         }
+        rt.copyOriginalToActual();
+        rt.setActualState();
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws IOException {
+    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         assert(columns != null);
         
-        int ncols = columns.size(), nrows = rt.getRowCount();
-        String [] headers = new String[ncols];
-        columns.toArray(headers);
+        int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
+        String [] headers = rt.getColumnNames();
         
         Vector<HashMap<String, Double>> results = new Vector<HashMap<String,Double>>();
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(headers[c], rt.getValue(headers[c],r));
+                molecule.put(headers[c], (Double)rt.getValueAt(c,r));
             results.add(molecule);
             IJ.showProgress((double)r / (double)nrows);
         }

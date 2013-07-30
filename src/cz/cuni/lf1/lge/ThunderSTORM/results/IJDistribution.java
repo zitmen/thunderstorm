@@ -14,7 +14,6 @@ import java.awt.Checkbox;
 import java.awt.TextField;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 /**
@@ -33,21 +32,15 @@ public class IJDistribution implements PlugIn, TextListener {
 
     @Override
 	public void run(String arg) {
-		IJResultsTable.View rt = IJResultsTable.getResultsTable().view;
+		IJResultsTable rt = IJResultsTable.getResultsTable();
 		int count = rt.getRowCount();
 		if (count==0) {
 			IJ.error("ThunderSTORM: Distribution", "The \"ThunderSTORM: Results\" table is empty");
 			return;
 		}
-		String head = rt.getColumnHeadings();
 		//IJ.log(head);
 
-		StringTokenizer t = new StringTokenizer(head, ",");
-		int tokens = t.countTokens()-1;
-		String[] strings = new String[tokens];
-		strings[0] = t.nextToken(); // first token is empty?
-	   	for(int i=0; i<tokens; i++)
-			strings[i] = t.nextToken();
+		String[] strings = rt.getColumnNames();
 
 		defaultNBins = ""+nBins;
 		defaultRange = range;
@@ -81,12 +74,10 @@ public class IJDistribution implements PlugIn, TextListener {
 			if (Double.isNaN(nMin) || Double.isNaN(nMax))
 				{nMin=0.0; nMax=0.0; range="0-0";}
 		}
-
-		float[] data = null;
-		int index = rt.getColumnIndex(parameter);
-		if (index>=0)
-			data = rt.getColumn(index);
-		if (data==null) {
+                float[] data;
+                if(rt.columnExists(parameter)){
+                        data= rt.getColumnAsFloats(parameter);
+                }else{
 			IJ.error("Distribution", "No available results: \""+parameter+"\"");
 			return;
 		}

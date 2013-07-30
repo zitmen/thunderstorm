@@ -89,17 +89,21 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         IJResultsTable.setResultsTable(rt);
       }
       rt.reset();
+      IJResultsTable tableModel = IJResultsTable.getResultsTable();
+      tableModel.setOriginalState();
       for (int frame = 1; frame <= stackSize; frame++) {
         if(results[frame] != null) {
           for (PSFInstance psf : results[frame]) {
-            rt.addRow();
-            rt.addValue("frame", frame);
+            tableModel.addRow();
+            tableModel.addValue((double) frame, "frame");
             for (Map.Entry<String, Double> parameter : psf) {
-              rt.addValue(parameter.getKey(), parameter.getValue());
+              tableModel.addValue(parameter.getValue(), parameter.getKey());
             }
           }
         }
       }
+      tableModel.copyOriginalToActual();
+      tableModel.setActualState();
       rt.setPreviewRenderer(renderingQueue);
       rt.show();
       //

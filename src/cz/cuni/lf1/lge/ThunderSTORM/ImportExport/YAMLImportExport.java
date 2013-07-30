@@ -22,6 +22,7 @@ public class YAMLImportExport implements IImportExport {
         assert(!fp.isEmpty());
         
         rt.reset();
+        rt.setOriginalState();
         
         Yaml yaml = new Yaml();
         ArrayList<HashMap<String,Double>> molecules = (ArrayList<HashMap<String,Double>>)yaml.load(new FileReader(fp));
@@ -31,14 +32,16 @@ public class YAMLImportExport implements IImportExport {
             rt.addRow();
             for(Map.Entry<String,Double> entry : mol.entrySet()) {
                 if(IJResultsTable.COLUMN_ID.equals(entry.getKey())) continue;
-                rt.addValue(entry.getKey(), entry.getValue().doubleValue());
+                rt.addValue(entry.getValue().doubleValue(), entry.getKey());
                 IJ.showProgress((double)(r++) / (double)nrows);
             }
         }
+        rt.copyOriginalToActual();
+        rt.setActualState();
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws IOException {
+    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -52,7 +55,7 @@ public class YAMLImportExport implements IImportExport {
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(headers[c], rt.getValue(headers[c],r));
+                molecule.put(headers[c], rt.getValue(r, headers[c]));
             results.add(molecule);
             IJ.showProgress((double)r / (double)nrows);
         }

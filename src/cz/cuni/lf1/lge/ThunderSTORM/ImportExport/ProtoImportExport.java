@@ -20,6 +20,7 @@ public class ProtoImportExport implements IImportExport {
         assert(!fp.isEmpty());
         
         rt.reset();
+        rt.setOriginalState();
         
         Results results = Results.parseFrom(new FileInputStream(fp));
         
@@ -27,20 +28,22 @@ public class ProtoImportExport implements IImportExport {
         for(Molecule mol : results.getMoleculeList()) {
             rt.addRow();
             //if(mol.hasId()) rt.addValue(IJResultsTable.COLUMN_ID, mol.getId());   // skip!
-            if(mol.hasX()) rt.addValue(PSFInstance.X, mol.getX());
-            if(mol.hasY()) rt.addValue(PSFInstance.Y, mol.getY());
-            if(mol.hasZ()) rt.addValue(PSFInstance.Z, mol.getZ());
-            if(mol.hasSigma()) rt.addValue(PSFInstance.SIGMA, mol.getSigma());
-            if(mol.hasSigma2()) rt.addValue(PSFInstance.SIGMA2, mol.getSigma2());
-            if(mol.hasIntensity()) rt.addValue(PSFInstance.INTENSITY, mol.getIntensity());
-            if(mol.hasBackground()) rt.addValue(PSFInstance.BACKGROUND, mol.getBackground());
+            if(mol.hasX()) rt.addValue(mol.getX(), PSFInstance.X);
+            if(mol.hasY()) rt.addValue(mol.getY(), PSFInstance.Y);
+            if(mol.hasZ()) rt.addValue(mol.getZ(), PSFInstance.Z);
+            if(mol.hasSigma()) rt.addValue(mol.getSigma(), PSFInstance.SIGMA);
+            if(mol.hasSigma2()) rt.addValue(mol.getSigma2(), PSFInstance.SIGMA2);
+            if(mol.hasIntensity()) rt.addValue(mol.getIntensity(), PSFInstance.INTENSITY);
+            if(mol.hasBackground()) rt.addValue(mol.getBackground(), PSFInstance.BACKGROUND);
             
             IJ.showProgress((double)(r++) / (double)nrows);
         }
+        rt.copyOriginalToActual();
+        rt.setActualState();
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws FileNotFoundException, IOException {
+    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws FileNotFoundException, IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -54,7 +57,7 @@ public class ProtoImportExport implements IImportExport {
         for(int r = 0; r < nrows; r++) {
             Molecule.Builder mol = Molecule.newBuilder();
             for(int c = 0; c < ncols; c++) {
-                double value = rt.getValue(headers[c],r);
+                double value = rt.getValue(r, headers[c]);
                 if(IJResultsTable.COLUMN_ID.equals(headers[c])) {
                     mol.setId((int)value);
                 } else if(PSFInstance.X.equals(headers[c])) {

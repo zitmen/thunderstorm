@@ -30,18 +30,18 @@ public class RenderingPlugIn implements PlugIn {
   public void run(String string) {
     GUI.setLookAndFeel();
     //
-    IJResultsTable.View rt = IJResultsTable.getResultsTable().view;
+    IJResultsTable rt = IJResultsTable.getResultsTable();
     if (!IJResultsTable.isResultsWindow()) {
       IJ.error("Requires Results window open");
       return;
     }
     if (!rt.columnExists(LABEL_X_POS) || !rt.columnExists(LABEL_Y_POS)) {
-      IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, rt.getColumnHeadings()));
+      IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, rt.getColumnNames()));
       return;
     }
 
-    double[] xpos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_X_POS));
-    double[] ypos = rt.getColumnAsDoubles(rt.getColumnIndex(LABEL_Y_POS));
+    double[] xpos = rt.getColumnAsDoubles(LABEL_X_POS);
+    double[] ypos = rt.getColumnAsDoubles(LABEL_Y_POS);
     if (xpos == null || ypos == null) {
       IJ.error("results were null");
       return;

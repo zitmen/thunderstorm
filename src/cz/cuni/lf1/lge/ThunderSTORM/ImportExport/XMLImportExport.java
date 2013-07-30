@@ -31,6 +31,7 @@ public class XMLImportExport implements IImportExport {
         assert(!fp.isEmpty());
         
         rt.reset();
+        rt.setOriginalState();
         
         try {
             // First create a new XMLInputFactory
@@ -38,7 +39,6 @@ public class XMLImportExport implements IImportExport {
             // Setup a new eventReader
             InputStream in = new FileInputStream(fp);
             XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
-            
             while(eventReader.hasNext()) {
                 XMLEvent event = eventReader.nextEvent();
 
@@ -62,7 +62,7 @@ public class XMLImportExport implements IImportExport {
                         String name = event.asStartElement().getName().getLocalPart();
                         String value = eventReader.nextEvent().asCharacters().getData();
                         if(!IJResultsTable.COLUMN_ID.equals(name)) {
-                            rt.addValue(name, Double.parseDouble(value));
+                          rt.addValue(Double.parseDouble(value),name);
                         }
                         continue;
                     }
@@ -70,11 +70,15 @@ public class XMLImportExport implements IImportExport {
             }
         } catch (XMLStreamException ex) {
             throw new IOException(ex.toString());
+        } finally{
+          rt.copyOriginalToActual();
+          rt.setActualState();
         }
+                
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable.View rt, Vector<String> columns) throws IOException {
+    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws IOException {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -100,9 +104,8 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(resultsStartElement);
             eventWriter.add(end);
             
-            int ncols = columns.size(), nrows = rt.getRowCount();
-            String [] headers = new String[ncols];
-            columns.toArray(headers);
+            int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
+            String [] headers = rt.getColumnNames();
             
             for(int r = 0; r < nrows; r++) {
                 StartElement moleculeStartElement = eventFactory.createStartElement("", "", ITEM);
@@ -111,7 +114,7 @@ public class XMLImportExport implements IImportExport {
                 eventWriter.add(end);
 
                 for(int c = 0; c < ncols; c++) {
-                    createNode(eventWriter, headers[c], Double.toString(rt.getValue(headers[c],r)));
+                    createNode(eventWriter, headers[c], Double.toString((Double)rt.getValueAt(c,r)));
                 }
                 
                 eventWriter.add(tab);
@@ -128,7 +131,7 @@ public class XMLImportExport implements IImportExport {
             eventWriter.close();
         } catch(XMLStreamException ex) {
             throw new IOException(ex.toString());
-        }
+        } 
     }
     
     private void createNode(XMLEventWriter eventWriter, String name, String value) throws XMLStreamException {

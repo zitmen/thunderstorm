@@ -119,7 +119,7 @@ public class CrossCorrelationDriftCorrection {
     firstImage.transform();
     FHT secondImage;
     for (int i = 1; i < xBinnedByFrame.length; i++) {
-      IJ.showStatus("processing part " + i + " from " + binCount);
+      IJ.showStatus("processing part " + i + " from " + (binCount-1));
       secondImage = new FHT(renderer.getRenderedImage(xBinnedByFrame[i], yBinnedByFrame[i], null, null).getProcessor());
       secondImage.setShowProgress(false);
       //new ImagePlus("render " + i,renderer.getRenderedImage(xBinnedByFrame[i], yBinnedByFrame[i], null, null).getProcessor()).show();
@@ -155,6 +155,7 @@ public class CrossCorrelationDriftCorrection {
     frame = null;
     xBinnedByFrame = null;
     yBinnedByFrame = null;
+    IJ.showStatus("");
   }
 
   private void binResultByFrame() {

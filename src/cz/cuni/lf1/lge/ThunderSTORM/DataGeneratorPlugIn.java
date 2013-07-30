@@ -135,9 +135,12 @@ public class DataGeneratorPlugIn implements PlugIn {
             }
         }
         processing_frame = 0;
+        rt.setOriginalState();
         for(int c = 0; c < cores; c++) {
             generators[c].fillResults(stack, rt);   // and generate stack and table of ground-truth data
         }
+        rt.copyOriginalToActual();
+        rt.setActualState();
         //
         ImagePlus imp = IJ.createImage("ThunderSTORM: artificial dataset", "16-bit", width, height, frames);
         imp.setStack(stack);
@@ -200,11 +203,11 @@ public class DataGeneratorPlugIn implements PlugIn {
                 stack.addSlice(local_stack.elementAt(i));
                 for(IntegratedGaussian mol : local_table.elementAt(i)) {
                     rt.addRow();
-                    rt.addValue("frame", f+1);
-                    rt.addValue(PSFInstance.X, mol.x0);
-                    rt.addValue(PSFInstance.Y, mol.y0);
-                    rt.addValue(PSFInstance.INTENSITY, mol.I0);
-                    rt.addValue(PSFInstance.SIGMA, mol.sig0);
+                    rt.addValue((double)f+1, "frame");
+                    rt.addValue(mol.x0, PSFInstance.X);
+                    rt.addValue(mol.y0, PSFInstance.Y);
+                    rt.addValue(mol.I0, PSFInstance.INTENSITY);
+                    rt.addValue(mol.sig0, PSFInstance.SIGMA);
                 }
             }
         }
