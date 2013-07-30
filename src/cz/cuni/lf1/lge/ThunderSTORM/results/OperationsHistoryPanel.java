@@ -22,7 +22,6 @@ public class OperationsHistoryPanel extends JPanel {
   }
 
   public void addOperation(Operation op) {
-    //if (stack.get()){ TODO: remove last if unchecked
     if(!stack.isEmpty() && !stack.get(stack.size() - 1).isChecked()){
       removeLastOperation();
     }

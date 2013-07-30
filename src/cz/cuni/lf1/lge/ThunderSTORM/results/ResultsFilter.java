@@ -7,12 +7,13 @@ import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.RetVal;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import ij.IJ;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -37,15 +38,17 @@ class ResultsFilter {
   }
 
   public JPanel createUIPanel() {
-    filterPanel = new JPanel();
-    filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.X_AXIS));
+    filterPanel = new JPanel(new GridBagLayout());
     filterTextField = new JTextField();
     InputListener listener = new InputListener();
     filterTextField.addKeyListener(listener);
     applyButton = new JButton("Apply");
     applyButton.addActionListener(listener);
     filterPanel.add(new JLabel("Filter: ", SwingConstants.TRAILING));
-    filterPanel.add(filterTextField);
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weightx = 1;
+    filterPanel.add(filterTextField, gbc);
     filterPanel.add(applyButton);
     return filterPanel;
   }
@@ -64,7 +67,7 @@ class ResultsFilter {
       }else{
         model.copyActualToUndo();
       }
-      model.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
+      model.setActualState();
       int all = model.getRowCount();
       applyToModel(model, filterText);
       opHistory.addOperation(new FilteringOperation(filterText));

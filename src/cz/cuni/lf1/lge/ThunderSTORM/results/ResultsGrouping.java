@@ -9,6 +9,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import ij.IJ;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -20,7 +22,6 @@ import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,8 +44,7 @@ class ResultsGrouping {
   }
 
   public JPanel createUIPanel() {
-    grouping = new JPanel();
-    grouping.setLayout(new BoxLayout(grouping, BoxLayout.X_AXIS));
+    grouping = new JPanel(new GridBagLayout());
     InputListener listener = new InputListener();
     distanceTextField = new JTextField();
     distanceTextField.addKeyListener(listener);
@@ -53,7 +53,10 @@ class ResultsGrouping {
     applyButton = new JButton("Merge");
     applyButton.addActionListener(listener);
     grouping.add(groupThrLabel);
-    grouping.add(distanceTextField);
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weightx = 1;
+    grouping.add(distanceTextField, gbc);
     grouping.add(applyButton);
     return grouping;
   }
@@ -68,7 +71,7 @@ class ResultsGrouping {
     @Override
     public void keyPressed(KeyEvent e) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-        runGrouping(distanceTextField.getText().isEmpty() ? 0.0 : Double.parseDouble(distanceTextField.getText()));
+        applyButton.doClick();
       }
     }
   }

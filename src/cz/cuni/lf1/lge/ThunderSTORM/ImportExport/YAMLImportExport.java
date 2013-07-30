@@ -55,7 +55,7 @@ public class YAMLImportExport implements IImportExport {
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(headers[c], rt.getValue(headers[c],r));
+                molecule.put(headers[c], rt.getValue(r, headers[c]));
             results.add(molecule);
             IJ.showProgress((double)r / (double)nrows);
         }

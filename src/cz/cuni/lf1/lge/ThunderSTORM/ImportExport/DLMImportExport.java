@@ -69,7 +69,7 @@ abstract public class DLMImportExport implements IImportExport {
         for(int r = 0; r < nrows; r++) {
             for(int c = 0; c < ncols; c++) {
                 if(c > 0) writer.write(",");
-                writer.write(Double.toString(rt.getValue(columns.elementAt(c),r)));
+                writer.write(Double.toString(rt.getValue(r, columns.elementAt(c))));
             }
             writer.newLine();
             IJ.showProgress((double)r / (double)nrows);

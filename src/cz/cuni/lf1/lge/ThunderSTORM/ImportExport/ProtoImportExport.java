@@ -57,7 +57,7 @@ public class ProtoImportExport implements IImportExport {
         for(int r = 0; r < nrows; r++) {
             Molecule.Builder mol = Molecule.newBuilder();
             for(int c = 0; c < ncols; c++) {
-                double value = rt.getValue(headers[c],r);
+                double value = rt.getValue(r, headers[c]);
                 if(IJResultsTable.COLUMN_ID.equals(headers[c])) {
                     mol.setId((int)value);
                 } else if(PSFInstance.X.equals(headers[c])) {

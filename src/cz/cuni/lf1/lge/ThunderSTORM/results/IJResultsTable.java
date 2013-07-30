@@ -28,16 +28,13 @@ public class IJResultsTable {
    * Returns the ResultsTable used by the Measure command. This table must be
    * displayed in the "Results" window.
    */
-  public static IJResultsTable getResultsTable() {
+  public synchronized static IJResultsTable getResultsTable() {
     if (resultsTable == null) {
       setResultsTable(new IJResultsTable());
     }
     return resultsTable;
   }
 
-  public static TripleStateTableModel getModel() {
-    return getResultsTable().model;
-  }
 
   public static void setResultsTable(IJResultsTable rt) {
     resultsTable = rt;
@@ -68,7 +65,6 @@ public class IJResultsTable {
   public void show() {
     tableWindow.show();
   }
-
   /**
    * Displays the contents of this ResultsTable in a window with the specified
    * title, or updates an existing results window. Opens a new window if there
@@ -78,15 +74,11 @@ public class IJResultsTable {
     tableWindow.show(windowTitle);
   }
 
-  public void setPreviewRenderer(RenderingQueue renderer) {
-    tableWindow.setPreviewRenderer(renderer);
-  }
-
   public synchronized void reset() {
     model.resetAll();
   }
   
-  //generated delegate methods
+  //delegated methods from model
   public void resetSelectedState(){
     model.reset();
   }
@@ -187,8 +179,8 @@ public class IJResultsTable {
     return model.getValueAt(rowIndex, columnIndex);
   }
 
-  public Double getValue(String column, int columnIndex) {
-    return model.getValue(column, columnIndex);
+  public Double getValue(int rowIndex, String column) {
+    return model.getValue(rowIndex, column);
   }
 
   public synchronized int addRow() {
@@ -218,6 +210,31 @@ public class IJResultsTable {
   public int findColumn(String columnName) {
     return model.findColumn(columnName);
   }
+
+  public void setValueAt(Double value, int rowIndex, String columnLabel) {
+    model.setValueAt(value, rowIndex, columnLabel);
+  }
+
+  public void setValueAt(Double value, int rowIndex, int columnIndex) {
+    model.setValueAt(value, rowIndex, columnIndex);
+  }
  
+  //delegated methods from window
+  public void showPreview() {
+    tableWindow.showPreview();
+  }
+
+  public OperationsHistoryPanel getOperationHistoryPanel() {
+    return tableWindow.getOperationHistoryPanel();
+  }
+  
+  public void setPreviewRenderer(RenderingQueue renderer) {
+    tableWindow.setPreviewRenderer(renderer);
+  }
+
+  public void setStatus(String text) {
+    tableWindow.setStatus(text);
+  }
+
   
 }

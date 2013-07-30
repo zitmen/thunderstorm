@@ -32,7 +32,7 @@ public class IJDistribution implements PlugIn, TextListener {
 
     @Override
 	public void run(String arg) {
-		TripleStateTableModel rt = IJResultsTable.getResultsTable().getModel();
+		IJResultsTable rt = IJResultsTable.getResultsTable();
 		int count = rt.getRowCount();
 		if (count==0) {
 			IJ.error("ThunderSTORM: Distribution", "The \"ThunderSTORM: Results\" table is empty");

@@ -62,6 +62,7 @@ class ResultsTableModel extends AbstractTableModel {
 
   public void setValueAt(Double value, int rowIndex, String columnLabel) {
     getColumn(columnLabel).data.set(rowIndex, value);
+    fireTableCellUpdated(rowIndex, findColumn(columnLabel));
   }
 
   public Vector<Double> getColumnAsVector(int columnIndex, int[] indices) {
@@ -165,8 +166,8 @@ class ResultsTableModel extends AbstractTableModel {
     return columns.elementAt(columnIndex).data.elementAt(rowIndex);
   }
   
-  public Double getValue(String column, int columnIndex){
-    return getColumn(column).data.elementAt(columnIndex);
+  public Double getValue(int rowIndex, String column){
+    return getColumn(column).data.elementAt(rowIndex);
   }
 
   @Override

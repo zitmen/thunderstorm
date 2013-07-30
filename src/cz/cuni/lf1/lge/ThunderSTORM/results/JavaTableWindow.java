@@ -68,9 +68,6 @@ class JavaTableWindow {
     status.setAlignmentX(Component.CENTER_ALIGNMENT);
     status.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
     //
-    JPanel grouping = new ResultsGrouping(this, model).createUIPanel();
-    JPanel filter = new ResultsFilter(this, model).createUIPanel();
-    //
     JPanel buttons = new JPanel();
     buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
     showHist = new JButton("Plot histogram...");
@@ -111,12 +108,15 @@ class JavaTableWindow {
     buttons.add(Box.createHorizontalStrut(10));
     buttons.add(export);
     //
-    
-    
+    JPanel grouping = new ResultsGrouping(this, model).createUIPanel();
+    JPanel filter = new ResultsFilter(this, model).createUIPanel();
+    JPanel drift = new ResultsDriftCorrection().createUIPanel();
+
     //fill tabbed pane
     tabbedPane = new JTabbedPane();
     tabbedPane.addTab("filter", filter);
     tabbedPane.addTab("grouping", grouping);
+    tabbedPane.addTab("drift correction", drift);
     
     //history pane
     JPanel historyPane = new JPanel(new GridBagLayout());
@@ -154,7 +154,7 @@ class JavaTableWindow {
       return;
     }
     //
-    TripleStateTableModel tableModel = IJResultsTable.getResultsTable().getModel();
+    IJResultsTable tableModel = IJResultsTable.getResultsTable();
     if (!tableModel.columnExists(LABEL_X_POS) || !tableModel.columnExists(LABEL_Y_POS)) {
       IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, tableModel.getColumnNames()));
       return;
