@@ -111,10 +111,12 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       // Show detections in the image
       imp.setOverlay(null);
       for (int frame = 1; frame <= stackSize; frame++) {
-        RenderingOverlay.showPointsInImageSlice(imp,
-                Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.X), roi.getBounds().x),
-                Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.Y), roi.getBounds().y),
-                frame, Color.red, RenderingOverlay.MARKER_CROSS);
+        if(results[frame]!= null){
+          RenderingOverlay.showPointsInImageSlice(imp,
+                  Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.X), roi.getBounds().x),
+                  Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.Y), roi.getBounds().y),
+                  frame, Color.red, RenderingOverlay.MARKER_CROSS);
+        }
       }
       renderingQueue.repaintLater();
       //
