@@ -115,7 +115,7 @@ class JavaTableWindow {
     //fill tabbed pane
     tabbedPane = new JTabbedPane();
     tabbedPane.addTab("filter", filter);
-    tabbedPane.addTab("grouping", grouping);
+    tabbedPane.addTab("merging", grouping);
     tabbedPane.addTab("drift correction", drift);
     
     //history pane

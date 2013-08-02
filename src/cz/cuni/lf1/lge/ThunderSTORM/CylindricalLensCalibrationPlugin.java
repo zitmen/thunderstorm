@@ -16,6 +16,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -40,7 +41,9 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.yaml.snakeyaml.Yaml;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.*;
+import ij.gui.Roi;
+import ij.process.ImageProcessor;
+import java.awt.Rectangle;
 
 /**
  *
@@ -56,6 +59,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
   CalibrationEstimatorUI calibrationEstimatorUI;
   String savePath;
   ImagePlus imp;
+  Roi roi;
 
   @Override
   public void run(String arg) {
@@ -112,6 +116,8 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         }
       }
 
+      roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
+
       estimateAngle();
       IJ.log("angle = " + angle);
       fitQuadraticPolynomial();
@@ -132,9 +138,12 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
       @Override
       public void run(int i) {
-        FloatProcessor fp = (FloatProcessor) stack.getProcessor(i).crop().convertToFloat();
-        Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
-                Point.applyRoiMask(imp.getRoi(), selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp))));
+        ImageProcessor ip = stack.getProcessor(i);
+        ip.setRoi(roi);
+        FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
+        Thresholder.setCurrentImage(fp);
+        Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters(fp,
+                Point.applyRoiMask(roi, selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp))));
         framesProcessed.incrementAndGet();
 
         for (Iterator<PSFInstance> iterator = fits.iterator(); iterator.hasNext();) {
@@ -154,14 +163,24 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         IJ.showStatus("Determining angle: frame " + framesProcessed + " of " + stack.getSize() + "...");
       }
     });
-    angle = bootstrapMeanEstimation(angles, 100, angles.size());
+    List<Double> sins = new ArrayList<Double>(angles);
+    List<Double> coss = new ArrayList<Double>(angles);
+    for (int i = 0; i < angles.size(); i++) {
+      double sin = Math.sin(Math.toRadians(sins.get(i) * 4));
+      double cos = Math.cos(Math.toRadians(coss.get(i)) * 4);
+      sins.set(i, sin);
+      coss.set(i, cos);
+    }
+    double sin = bootstrapMeanEstimation(sins, 100, angles.size());
+    double cos = bootstrapMeanEstimation(coss, 100, angles.size());
+    angle = Math.toDegrees(Math.atan2(sin, cos))/4;
   }
 
   private void fitQuadraticPolynomial() {
     calibrationEstimatorUI.setAngle(angle);
     final IEstimatorUI threadLocalEstimatorUI = ThreadLocalWrapper.wrap(calibrationEstimatorUI); //create new ThreadLocal wrapper because the underlying estimator was changed
     //fit stack again with fixed angle
-    final PSFSeparator separator = new PSFSeparator(calibrationEstimatorUI.getFitradius() / 2);
+    final PSFSeparator separator = new PSFSeparator(calibrationEstimatorUI.getFitradius() / 3);
     final ImageStack stack = imp.getStack();
     final AtomicInteger framesProcessed = new AtomicInteger(0);
 
@@ -169,9 +188,12 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
       @Override
       public void run(int i) {
         //fit elliptic gaussians
-        FloatProcessor fp = (FloatProcessor) stack.getProcessor(i).crop().convertToFloat();
-        Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters((FloatProcessor) stack.getProcessor(i).convertToFloat(),
-                Point.applyRoiMask(imp.getRoi(), selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp))));
+        ImageProcessor ip = stack.getProcessor(i);
+        ip.setRoi(roi);
+        FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
+        Thresholder.setCurrentImage(fp);
+        Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters(fp,
+                Point.applyRoiMask(roi, selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp))));
         framesProcessed.incrementAndGet();
 
         for (PSFInstance fit : fits) {
@@ -183,7 +205,6 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     });
     //group fits from the same bead through z-stack
     List<Position> beadPositions = separator.getPositions();
-    drawOverlay(beadPositions);
 
     //fit a quadratic polynomial to sigma1 = f(zpos) and sigma1 = f(zpos) for each bead
     IterativeQuadraticFitting quadraticFitter = new IterativeQuadraticFitting();
@@ -192,43 +213,50 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
 //    StringBuilder sb = new StringBuilder();
     //Locale.setDefault(Locale.ENGLISH);
     AtomicInteger moleculesProcessed = new AtomicInteger(0);
+    List<Position> usedPositions = new ArrayList<Position>();
     for (Position p : beadPositions) {
+      moleculesProcessed.incrementAndGet();
+      IJ.showProgress(0.9 + 0.1 * (double) moleculesProcessed.intValue() / (double) beadPositions.size());
+      IJ.showStatus("Fitting polynoms: molecule " + moleculesProcessed + " of " + beadPositions.size() + "...");
+
       double[] framesArray = p.getFramesAsArray();
       try {
-        if(framesArray.length < 20){
+        if (framesArray.length < 20) {
           continue;
         }
         double[] sigmaParamArray = quadraticFitter.fitParams(framesArray, p.getSigmaAsArray());
         double[] sigma2ParamArray = quadraticFitter.fitParams(framesArray, p.getSigma2AsArray());
 
-        if (hasEnoughData(framesArray, sigmaParamArray, sigma2ParamArray)) {
-          //find the intersection of the two quadratic polynomials and shift the origin to the intersection
-          double intersection = IterativeQuadraticFitting.shiftToOrigin(sigmaParamArray, sigma2ParamArray);
-          sigmaQuadratics.add(sigmaParamArray);
-          sigma2Quadratics.add(sigma2ParamArray);
-
-          //          sb.append(String.format("fits(%d).z = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(framesArray)));
-          //          sb.append(String.format("fits(%d).s1 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigmaAsArray())));
-          //          sb.append(String.format("fits(%d).s2 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigma2AsArray())));
-          //          sb.append(String.format("fits(%d).a1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[1]));
-          //          sb.append(String.format("fits(%d).a2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[1]));
-          //          sb.append(String.format("fits(%d).b1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[2]));
-          //          sb.append(String.format("fits(%d).b2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[2]));
-          //          sb.append(String.format("fits(%d).c1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[0]));
-          //          sb.append(String.format("fits(%d).c2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[0]));
-          //          sb.append(String.format("fits(%d).intersection = %f;\n", moleculesProcessed.intValue() + 1, intersection));
-
-          //showXYplot(add(framesArray, -intersection), add(p.getXAsArray(), -p.getFitsByFrame().get((int) intersection).getX()), add(p.getYAsArray(), -p.getFitsByFrame().get((int) intersection).getY()));
-
+        if (!isInZRange(sigmaParamArray[0]) || !isInZRange(sigma2ParamArray[0])) {
+          continue;
         }
+        //find the intersection of the two quadratic polynomials and shift the origin to the intersection
+        double intersection = IterativeQuadraticFitting.shiftToOrigin(sigmaParamArray, sigma2ParamArray);
+        if (!hasEnoughData(framesArray, intersection) || !isInZRange(intersection)) {
+          continue;
+        }
+        sigmaQuadratics.add(sigmaParamArray);
+        sigma2Quadratics.add(sigma2ParamArray);
+        usedPositions.add(p);
+
+        //          sb.append(String.format("fits(%d).z = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(framesArray)));
+        //          sb.append(String.format("fits(%d).s1 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigmaAsArray())));
+        //          sb.append(String.format("fits(%d).s2 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigma2AsArray())));
+        //          sb.append(String.format("fits(%d).a1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[1]));
+        //          sb.append(String.format("fits(%d).a2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[1]));
+        //          sb.append(String.format("fits(%d).b1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[2]));
+        //          sb.append(String.format("fits(%d).b2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[2]));
+        //          sb.append(String.format("fits(%d).c1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[0]));
+        //          sb.append(String.format("fits(%d).c2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[0]));
+        //          sb.append(String.format("fits(%d).intersection = %f;\n", moleculesProcessed.intValue() + 1, intersection));
+
+        //showXYplot(add(framesArray, -intersection), add(p.getXAsArray(), -p.getFitsByFrame().get((int) intersection).getX()), add(p.getYAsArray(), -p.getFitsByFrame().get((int) intersection).getY()));
+
       } catch (TooManyEvaluationsException ex) {
         IJ.log(ex.getMessage());
       }
-      moleculesProcessed.incrementAndGet();
-      IJ.showProgress(0.9 + 0.1 * (double) moleculesProcessed.intValue() / (double) beadPositions.size());
-      IJ.showStatus("Fitting polynoms: molecule " + moleculesProcessed + " of " + beadPositions.size() + "...");
     }
-
+    drawOverlay(beadPositions, usedPositions);
 //    for (int i = 0; i < sigma2Quadratics.size(); i++) {
 //      IJ.log(Arrays.toString(sigmaQuadratics.get(i)) + " ; " + Arrays.toString(sigma2Quadratics.get(i)));
 //    }
@@ -236,6 +264,8 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     if (sigmaQuadratics.size() < 1) {
       throw new RuntimeException("Could not fit a parabola in any location.");
     }
+
+    drawSigmaPlots(sigmaQuadratics, sigma2Quadratics);
     //average the parameters of the fitted polynomials for each bead
     avgSigmaPolynom = bootstrapMeanEstimationArray(sigmaQuadratics, 100, sigmaQuadratics.size());
     avgSigma2Polynom = bootstrapMeanEstimationArray(sigma2Quadratics, 100, sigma2Quadratics.size());
@@ -259,19 +289,20 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     IJ.log(String.format(Locale.ENGLISH, "s2 =  %f*(z%+f)^2 %+f", avgSigma2Polynom[1], -avgSigma2Polynom[0], avgSigma2Polynom[2]));
   }
 
-  private boolean hasEnoughData(double[] framesArray, double[] sigmaParamArray, double[] sigma2ParamArray) {
-    int minPts = (int) Math.max(20, 0.3 * framesArray.length);
+  private boolean isInZRange(double z) {
+    return z > 0 && z <= imp.getStackSize();
+  }
 
-    double sigma1QuadraticCenter = sigmaParamArray[0];
-    double sigma2QuadraticCenter = sigma2ParamArray[0];
+  private boolean hasEnoughData(double[] framesArray, double intersection) {
+    int minPts = (int) Math.max(10, 0.3 * framesArray.length);
 
     int smallerThanCenterSigma1 = 0;
     int smallerThanCenterSigma2 = 0;
     for (int i = 0; i < framesArray.length; i++) {
-      if (framesArray[i] < sigma1QuadraticCenter) {
+      if (framesArray[i] < intersection) {
         smallerThanCenterSigma1++;
       }
-      if (framesArray[i] < sigma2QuadraticCenter) {
+      if (framesArray[i] < intersection) {
         smallerThanCenterSigma2++;
       }
     }
@@ -342,12 +373,52 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     plot.show();
   }
 
-  private void drawOverlay(List<Position> list) {
+  private void drawSigmaPlots(List<double[]> sigmaQuadratics, List<double[]> sigma2Quadratics) {
+    int range = imp.getStackSize() / 2;
+    Plot plot = new Plot("Sigma", "z[slices]", "sigma");
+    plot.setLimits(-range, +range, 0, 10);
+    double[] xVals = new double[range * 2 + 1];
+    for (int val = -range, i = 0; val <= range; val++, i++) {
+      xVals[i] = val;
+    }
+    plot.draw();
+    for (int i = 0; i < sigmaQuadratics.size(); i++) {
+      double[] sigmaVals = new double[xVals.length];
+      double[] sigma2Vals = new double[xVals.length];
+      double[] params = sigmaQuadratics.get(i);
+      double[] params2 = sigma2Quadratics.get(i);
+      for (int j = 0; j < sigmaVals.length; j++) {
+        sigmaVals[j] = Math.sqr(xVals[j] - params[0]) * params[1] + params[2];
+        sigma2Vals[j] = Math.sqr(xVals[j] - params2[0]) * params2[1] + params2[2];
+      }
+      plot.setColor(Color.red);
+      plot.addPoints(xVals, sigmaVals, Plot.LINE);
+      plot.setColor(Color.BLUE);
+      plot.addPoints(xVals, sigma2Vals, Plot.LINE);
+    }
+
+    plot.setColor(Color.red);
+    plot.addLabel(0.1, 0.8, "sigma");
+    plot.setColor(Color.blue);
+    plot.addLabel(0.1, 0.9, "sigma2");
+    plot.show();
+  }
+
+  private void drawOverlay(List<Position> allPositions, List<Position> usedPositions) {
     imp.setOverlay(null);
-    for (Position p : list) {
+    Rectangle roiBounds = roi.getBounds();
+    double[] xCentroids = new double[usedPositions.size()];
+    double[] yCentroids = new double[usedPositions.size()];
+    for (int i = 0; i < xCentroids.length; i++) {
+      Position p = usedPositions.get(i);
+      xCentroids[i] = p.centroidX + roiBounds.x;
+      yCentroids[i] = p.centroidY + roiBounds.y;
+    }
+    RenderingOverlay.showPointsInImage(imp, xCentroids, yCentroids, Color.red, RenderingOverlay.MARKER_CIRCLE);
+    for (Position p : allPositions) {
       double[] frame = p.getFramesAsArray();
-      double[] x = p.getXAsArray();
-      double[] y = p.getYAsArray();
+      double[] x = Math.add(p.getXAsArray(), roiBounds.x);
+      double[] y = Math.add(p.getYAsArray(), roiBounds.y);
       for (int i = 0; i < frame.length; i++) {
         RenderingOverlay.showPointsInImageSlice(imp, new double[]{x[i]}, new double[]{y[i]}, (int) frame[i], Color.BLUE, RenderingOverlay.MARKER_CROSS);
       }
