@@ -14,6 +14,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
@@ -120,10 +121,12 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       // Show detections in the image
       imp.setOverlay(null);
       for (int frame = 1; frame <= stackSize; frame++) {
-        RenderingOverlay.showPointsInImageSlice(imp,
-                offset(roi.getBounds().x, PSFInstance.extractParamToArray(results[frame], PSFInstance.X)),
-                offset(roi.getBounds().y, PSFInstance.extractParamToArray(results[frame], PSFInstance.Y)),
-                frame, Color.red, RenderingOverlay.MARKER_CROSS);
+        if(results[frame]!= null){
+          RenderingOverlay.showPointsInImageSlice(imp,
+                  Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.X), roi.getBounds().x),
+                  Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.Y), roi.getBounds().y),
+                  frame, Color.red, RenderingOverlay.MARKER_CROSS);
+        }
       }
       renderingQueue.repaintLater();
       //
@@ -271,14 +274,5 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     } catch (Exception ex) {
       IJ.handleException(ex);
     }
-  }
-
-  private double[] offset(double offset, double[] arr) {
-    if (offset != 0) {
-      for (int i = 0; i < arr.length; i++) {
-        arr[i] = arr[i] + offset;
-      }
-    }
-    return arr;
   }
 }
