@@ -2,26 +2,29 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_X_POS;
 import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_Y_POS;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.DensityRendering;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRendering;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ScatterRendering;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.CardsPanel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.IJ;
-import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
-import java.awt.Choice;
-import java.awt.TextField;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.Vector;
+import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
+import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-/**
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
- */
 public class RenderingPlugIn implements PlugIn {
 
   public static final String[] METHODS = new String[]{"Density", "ASH", "Histogram", "Scatter"};
@@ -46,67 +49,43 @@ public class RenderingPlugIn implements PlugIn {
       IJ.error("results were null");
       return;
     }
+    double[] z = rt.columnExists(PSFInstance.Z)? rt.getColumnAsDoubles(PSFInstance.Z): null;
+    double[] dx = rt.columnExists("dx")? rt.getColumnAsDoubles("dx"): null;
 
-    GenericDialog gd = new GenericDialog("SMLM rendering");
-    gd.addChoice("Method", METHODS, "ASH");
-    gd.addNumericField("Image_size_X", Math.ceil(max(xpos)) + 2, 2);
-    gd.addNumericField("Image_size_Y", Math.ceil(max(ypos)) + 2, 2);
-    gd.addNumericField("Resolution", 0.2, 3);
-    gd.addNumericField("dx (Localization accuracy)", 0.2, 3);
-    gd.addNumericField("ASH_shifts", 2, 0);
-    gd.addNumericField("Histogram_averages", 0, 0);
-
-    Vector choices = gd.getChoices();
-    final Choice ch = (Choice) choices.get(0);
-
-    Vector numericFields = gd.getNumericFields();
-    final TextField shiftsField = (TextField) numericFields.get(4);
-    final TextField avgField = (TextField) numericFields.get(5);
-
-    avgField.setEnabled(false);
-    ch.addItemListener(new ItemListener() {
-      @Override
-      public void itemStateChanged(ItemEvent e) {
-        String selected = (String) e.getItem();
-        if ("ASH".equals(selected)) {
-          avgField.setEnabled(false);
-          shiftsField.setEnabled(true);
-        } else if ("Histogram".equals(selected)) {
-          avgField.setEnabled(true);
-          shiftsField.setEnabled(false);
-        } else {
-          avgField.setEnabled(false);
-          shiftsField.setEnabled(false);
-        }
+    List<IRendererUI> knownRenderers = ModuleLoader.getUIModules(IRendererUI.class);
+    for (Iterator<IRendererUI> it = knownRenderers.iterator(); it.hasNext();) {
+      if (it.next() instanceof EmptyRendererUI) {
+        it.remove();
       }
-    });
-
-    gd.showDialog();
-    if (gd.wasCanceled()) {
-      return;
     }
-    String selectedMethod = gd.getNextChoice();
-    double imSizeX = gd.getNextNumber();
-    double imSizeY = gd.getNextNumber();
-    double resolution = gd.getNextNumber();
-    double dx = gd.getNextNumber();
-    int shifts = (int) gd.getNextNumber();
-    int avg = (int) gd.getNextNumber();
-
-    RenderingMethod renderer;
-    if ("Density".equals(selectedMethod)) {
-      renderer = new DensityRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).defaultDX(dx).build();
-    } else if ("ASH".equals(selectedMethod)) {
-      renderer = new ASHRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).defaultDX(dx).shifts(shifts).build();
-    } else if ("Histogram".equals(selectedMethod)) {
-      renderer = new HistogramRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).average(avg).defaultDX(dx).build();
-    } else if ("Scatter".equals(selectedMethod)) {
-      renderer = new ScatterRendering.Builder().resolution(resolution).roi(0, imSizeX, 0, imSizeY).defaultDX(dx).build();
+    IRendererUI selectedRendererUI;
+    int sizeX, sizeY;
+    
+    if (MacroParser.isRanFromMacro()) {
+      MacroParser parser = new MacroParser(null, null, null, knownRenderers);
+      selectedRendererUI = parser.getRendererUI();
+      
+      //TODO: parse size
+      sizeX = 0;
+      sizeY = 0;
     } else {
-      IJ.error("Unknown rendering method. " + selectedMethod);
-      return;
+      RenderingDialog dialog = new RenderingDialog(knownRenderers, (int)Math.ceil(max(xpos)) + 1, (int)Math.ceil(max(ypos)) + 1);
+      dialog.setVisible(true);
+      if(!dialog.okPressed){
+        return;
+      }
+      selectedRendererUI = dialog.getSelectedRendererUI();
+      sizeX = dialog.sizeX;
+      sizeY = dialog.sizeY;
     }
-    renderer.getRenderedImage(xpos, ypos, null, null).show();
+
+    selectedRendererUI.setSize(sizeX, sizeY);
+    IncrementalRenderingMethod method = selectedRendererUI.getImplementation();
+    
+    method.reset();
+    method.addToImage(xpos, ypos, z, dx);
+    method.getRenderedImage().show();
+    //TODO: adjust brightness
 
   }
 
@@ -118,5 +97,89 @@ public class RenderingPlugIn implements PlugIn {
       }
     }
     return max;
+  }
+}
+
+class RenderingDialog extends JDialog {
+
+  CardsPanel<IRendererUI> cardsPanel;
+  JButton okButton;
+  JButton cancelButton;
+  boolean okPressed = false;
+  JTextField sizeXTextField;
+  JTextField sizeYTextField;
+  int sizeX, sizeY;
+
+  public RenderingDialog(List<IRendererUI> knownRenderers, int sizeX, int sizeY) {
+    super(IJ.getInstance(), "Rendering options", true);
+    this.cardsPanel = new CardsPanel<IRendererUI>(knownRenderers, 0);
+    this.sizeX = sizeX;
+    this.sizeY = sizeY;
+    layoutComponents();
+  }
+
+  @Override
+  public  void setVisible(boolean b) {
+    super.setVisible(b);
+  }
+
+  public IRendererUI getSelectedRendererUI(){
+    return cardsPanel.getActiveComboBoxItem();
+  }
+  
+  private void layoutComponents() {
+    setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+    getContentPane().setLayout(new GridBagLayout());
+    JPanel sizePanel = new JPanel(new GridBagLayout());
+    sizeXTextField = new JTextField(Integer.toString(sizeX),20);
+    sizeYTextField = new JTextField(Integer.toString(sizeY),20);
+    sizePanel.add(new JLabel("Image size X:"), GridBagHelper.leftCol());
+    sizePanel.add(sizeXTextField, GridBagHelper.rightCol());
+    sizePanel.add(new JLabel("Image size Y:"), GridBagHelper.leftCol());
+    sizePanel.add(sizeYTextField, GridBagHelper.rightCol());
+
+    JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    okButton = new JButton("OK");
+    okButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          validateFields();
+          okPressed = true;
+          dispose();
+        } catch (Exception ex) {
+          IJ.showMessage(ex.toString());
+        }
+      }
+    });
+    getRootPane().setDefaultButton(okButton);
+    cancelButton = new JButton("Cancel");
+    cancelButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        okPressed = false;
+        dispose();
+      }
+    });
+    buttonsPanel.add(okButton);
+    buttonsPanel.add(cancelButton);
+
+    add(sizePanel, GridBagHelper.leftCol());
+    add(cardsPanel.getPanel("Renderer:"),GridBagHelper.leftCol());
+    add(buttonsPanel,GridBagHelper.leftCol());
+
+    pack();
+  }
+
+  private void validateFields() {
+    sizeX = Integer.parseInt(sizeXTextField.getText());
+    if (sizeX < 1) {
+      throw new IllegalArgumentException("Image width must be positive.");
+    }
+    sizeY = Integer.parseInt(sizeYTextField.getText());
+    if (sizeY < 1) {
+      throw new IllegalArgumentException("Image height must be positive.");
+    }
+    cardsPanel.getActiveComboBoxItem().readParameters();
   }
 }

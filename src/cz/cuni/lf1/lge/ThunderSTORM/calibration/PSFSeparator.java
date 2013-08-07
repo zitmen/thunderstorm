@@ -2,10 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import java.util.List;
-import java.util.Map;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Organizes localizations by position (close molecules are grouped together)
@@ -42,17 +40,19 @@ public class PSFSeparator {
 
     double sumX = 0;
     double sumY = 0;
-    double centroidX;
-    double centroidY;
-    Map<Integer, PSFInstance> fitsByFrame = new HashMap<Integer, PSFInstance>();
+    public double centroidX;
+    public double centroidY;
+    List<Integer> frames  = new ArrayList<Integer>();
+    List<PSFInstance> fits = new ArrayList<PSFInstance>();
 
     private void add(PSFInstance fit, int frame) {
       sumX += fit.getX();
       sumY += fit.getY();
-      fitsByFrame.put(frame, fit);
+      frames.add(frame);
+      fits.add(fit);
 
-      centroidX = sumX / fitsByFrame.size();
-      centroidY = sumY / fitsByFrame.size();
+      centroidX = sumX / frames.size();
+      centroidY = sumY / frames.size();
     }
 
     private double getDistanceFromCentroid(double x, double y) {
@@ -60,60 +60,53 @@ public class PSFSeparator {
     }
 
     public double[] getSigmaAsArray() {
-      double[] array = new double[fitsByFrame.size()];
+      double[] array = new double[frames.size()];
       int i = 0;
-      for (Map.Entry<Integer, PSFInstance> entry : fitsByFrame.entrySet()) {
-        array[i] = entry.getValue().getParam(PSFInstance.SIGMA);
+      for (PSFInstance psf : fits) {
+        array[i] = psf.getParam(PSFInstance.SIGMA);
         i++;
       }
       return array;
     }
 
     public double[] getSigma2AsArray() {
-      double[] array = new double[fitsByFrame.size()];
+      double[] array = new double[frames.size()];
       int i = 0;
-      for (Map.Entry<Integer, PSFInstance> entry : fitsByFrame.entrySet()) {
-        array[i] = entry.getValue().getParam(PSFInstance.SIGMA2);
+      for (PSFInstance psf : fits) {
+        array[i] = psf.getParam(PSFInstance.SIGMA2);
         i++;
       }
       return array;
     }
 
     public double[] getXAsArray() {
-      double[] array = new double[fitsByFrame.size()];
+      double[] array = new double[frames.size()];
       int i = 0;
-      for (Map.Entry<Integer, PSFInstance> entry : fitsByFrame.entrySet()) {
-        array[i] = entry.getValue().getX();
+      for (PSFInstance psf : fits) {
+        array[i] = psf.getX();
         i++;
       }
       return array;
     }
     
     public double[] getYAsArray() {
-      double[] array = new double[fitsByFrame.size()];
+      double[] array = new double[frames.size()];
       int i = 0;
-      for (Map.Entry<Integer, PSFInstance> entry : fitsByFrame.entrySet()) {
-        array[i] = entry.getValue().getY();
+      for (PSFInstance psf : fits) {
+        array[i] = psf.getY();
         i++;
       }
       return array;
     }
 
     public double[] getFramesAsArray() {
-      double[] array = new double[fitsByFrame.size()];
+      double[] array = new double[frames.size()];
       int i = 0;
-      for (Map.Entry<Integer, PSFInstance> entry : fitsByFrame.entrySet()) {
-        array[i] = entry.getKey();
+      for (Integer frame : frames) {
+        array[i] = frame;
         i++;
       }
       return array;
     }
-
-    public Map<Integer, PSFInstance> getFitsByFrame() {
-      return fitsByFrame;
-    }
-    
   }
-  
-  
 }

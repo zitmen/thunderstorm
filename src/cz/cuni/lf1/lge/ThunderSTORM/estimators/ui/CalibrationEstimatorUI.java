@@ -43,7 +43,7 @@ public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
 
   @Override
   public IEstimator getImplementation() {
-    PSFModel psf = angleWasSet ? new EllipticGaussianPSF(sigma, angle) : new EllipticGaussianWAnglePSF(sigma, 0);
+    PSFModel psf = angleWasSet ? new EllipticGaussianPSF(sigma, Math.toRadians(angle)) : new EllipticGaussianWAnglePSF(sigma, 0);
     if (LSQ.equals(method)) {
       LSQFitter fitter = new LSQFitter(psf);
       return new MultipleLocationsImageFitting(fitradius / 2, fitter);

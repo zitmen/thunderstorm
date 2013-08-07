@@ -143,6 +143,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
           try {
             IJ.showStatus("Creating preview image.");
             FloatProcessor fp = (FloatProcessor) imp.getProcessor().crop().convertToFloat();
+            Thresholder.setCurrentImage(fp);
             FloatProcessor filtered = getActiveFilterUI().getImplementation().filterImage(fp);
             checkForInterruption();
             List<Point> detections = Point.applyRoiMask(imp.getRoi(), getActiveDetectorUI().getImplementation().detectMoleculeCandidates(filtered));

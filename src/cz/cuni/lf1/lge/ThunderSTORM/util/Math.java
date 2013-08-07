@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import java.util.Arrays;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  * This class wraps mathematical functions used in ThunderSTORM.
@@ -139,8 +140,10 @@ public class Math {
   }
 
   public static double[] add(double[] arr, double scalar) {
-    for (int i = 0; i < arr.length; i++) {
-      arr[i] += scalar;
+    if(scalar != 0){
+      for (int i = 0; i < arr.length; i++) {
+        arr[i] += scalar;
+      }
     }
     return arr;
   }
@@ -609,5 +612,36 @@ public class Math {
       res[i] = abs(vec[i]);
     }
     return res;
+  }
+
+  public static double toRadians(Double get) {
+    return FastMath.toRadians(PI);
+  }
+  
+  public static double toDegrees(double x) {
+    return FastMath.toDegrees(x);
+  }
+
+  public static double sin(double radians) {
+    return FastMath.sin(radians);
+  }
+
+  public static double cos(double radians) {
+    return FastMath.cos(radians);
+  }
+
+  public static double atan2(double y, double x) {
+    return FastMath.atan2(y, x);
+  }
+  public static int min(int a, int b) {
+    return FastMath.min(a, b);
+  }
+
+  public static double min(double a, double b) {
+    return FastMath.min(a, b);
+  }
+
+  public static double max(double a, double b) {
+    return FastMath.max(a, b);
   }
 }
