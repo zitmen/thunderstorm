@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import ij.IJ;
-import ij.ImageJ;
 import ij.ImagePlus;
 import ij.plugin.PlugIn;
 import ij.process.ImageProcessor;
@@ -16,12 +15,11 @@ public class AboutPlugIn implements PlugIn {
     @Override
     public void run(String arg) {
         ImageProcessor ip = null;
-        ImageJ ij = IJ.getInstance();
-        URL url = ij.getClass().getResource("/" + FILE_NAME);
+        URL url = getClass().getResource("/" + FILE_NAME);
         if (url != null) {
             Image img = null;
             try {
-                img = ij.createImage((ImageProducer)url.getContent());
+                img = IJ.getInstance().createImage((ImageProducer)url.getContent());
             } catch (Exception e) {
             }
             if (img != null) {
