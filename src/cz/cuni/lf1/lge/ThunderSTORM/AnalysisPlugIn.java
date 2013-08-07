@@ -4,6 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
@@ -21,9 +22,13 @@ import ij.plugin.filter.ExtendedPlugInFilter;
 import static ij.plugin.filter.PlugInFilter.DOES_16;
 import static ij.plugin.filter.PlugInFilter.DOES_32;
 import static ij.plugin.filter.PlugInFilter.DOES_8G;
+import static ij.plugin.filter.PlugInFilter.DOES_STACKS;
 import static ij.plugin.filter.PlugInFilter.DONE;
+import static ij.plugin.filter.PlugInFilter.FINAL_PROCESSING;
 import static ij.plugin.filter.PlugInFilter.NO_CHANGES;
 import static ij.plugin.filter.PlugInFilter.NO_UNDO;
+import static ij.plugin.filter.PlugInFilter.PARALLELIZE_STACKS;
+import static ij.plugin.filter.PlugInFilter.SUPPORTS_MASKING;
 import ij.plugin.filter.PlugInFilterRunner;
 import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
@@ -52,12 +57,17 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   private AtomicInteger nProcessed = new AtomicInteger(0);
   private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING | SUPPORTS_MASKING;
   private List<PSFInstance>[] results;
-  private IFilterUI selectedFilter;
-  private IEstimatorUI selectedEstimator;
-  private IDetectorUI selectedDetector;
-  Roi roi;
+  private List<IFilterUI> allFilters;
+  private List<IDetectorUI> allDetectors;
+  private List<IEstimatorUI> allEstimators;
+  private List<IRendererUI> allRenderers;
+  private int selectedFilter;
+  private int selectedEstimator;
+  private int selectedDetector;
+  private int selectedRenderer;
   private RenderingQueue renderingQueue;
   private ImagePlus renderedImage;
+  private Roi roi;
 
   /**
    * Returns flags specifying capabilities of the plugin.
@@ -143,24 +153,25 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
     try {
       // load modules
-      List<IFilterUI> filters = ThreadLocalWrapper.wrapFilters(ModuleLoader.getUIModules(IFilterUI.class));
-      List<IDetectorUI> detectors = ThreadLocalWrapper.wrapDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
-      List<IEstimatorUI> estimators = ThreadLocalWrapper.wrapEstimators(ModuleLoader.getUIModules(IEstimatorUI.class));
-      List<IRendererUI> renderers = ModuleLoader.getUIModules(IRendererUI.class);
+      allFilters = ThreadLocalWrapper.wrapFilters(ModuleLoader.getUIModules(IFilterUI.class));
+      allDetectors = ThreadLocalWrapper.wrapDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
+      allEstimators = ThreadLocalWrapper.wrapEstimators(ModuleLoader.getUIModules(IEstimatorUI.class));
+      allRenderers = ModuleLoader.getUIModules(IRendererUI.class);
 
-      int default_filter = 0;
-      int default_detector = 0;
-      int default_estimator = 0;
-
-      Thresholder.loadFilters(filters);
-      Thresholder.setActiveFilter(default_filter);
-
+      selectedFilter = 0;
+      selectedDetector = 0;
+      selectedEstimator = 0;
+      selectedRenderer = 0;
+      
+      Thresholder.loadFilters(allFilters);
+      Thresholder.setActiveFilter(selectedFilter);
+      
       if (MacroParser.isRanFromMacro()) {
         //parse the macro options
-        MacroParser parser = new MacroParser(filters, estimators, detectors, renderers);
-        selectedFilter = parser.getFilterUI();
-        selectedDetector = parser.getDetectorUI();
-        selectedEstimator = parser.getEstimatorUI();
+        MacroParser parser = new MacroParser(allFilters, allEstimators, allDetectors, allRenderers);
+        selectedFilter = parser.getFilterIndex();
+        selectedDetector = parser.getDetectorIndex();
+        selectedEstimator = parser.getEstimatorIndex();
 
         roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
         IRendererUI rendererPanel = parser.getRendererUI();
@@ -171,28 +182,30 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         return pluginFlags;
       } else {
         // Create and show the dialog
-        AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, filters, default_filter, detectors, default_detector, estimators, default_estimator, renderers, 0);
+        AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, allFilters, selectedFilter, allDetectors, selectedDetector, allEstimators, selectedEstimator, allRenderers, selectedRenderer);
         dialog.setVisible(true);
         if (dialog.wasCanceled()) {  // This is a blocking call!!
           return DONE;    // cancel
         }
-        selectedFilter = dialog.getFilter();
-        selectedDetector = dialog.getDetector();
-        selectedEstimator = dialog.getEstimator();
+        selectedFilter = dialog.getFilterIndex();
+        selectedDetector = dialog.getDetectorIndex();
+        selectedEstimator = dialog.getEstimatorIndex();
+        selectedRenderer = dialog.getRendererIndex();
+        Thresholder.setActiveFilter(selectedFilter);   // !! must be called before any threshold is evaluated !!
 
         roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
-        IRendererUI selectedRenderer = dialog.getRenderer();
-        selectedRenderer.setSize(roi.getBounds().width, roi.getBounds().height);
-        IncrementalRenderingMethod method = selectedRenderer.getImplementation();
+        IRendererUI renderer = allRenderers.get(selectedRenderer);
+        renderer.setSize(roi.getBounds().width, roi.getBounds().height);
+        IncrementalRenderingMethod method = renderer.getImplementation();
         renderedImage = method.getRenderedImage();
-        renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), selectedRenderer.getRepaintFrequency());
+        renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), renderer.getRepaintFrequency());
 
         //if recording window is open, record parameters of all modules
         if (Recorder.record) {
           MacroParser.recordFilterUI(dialog.getFilter());
           MacroParser.recordDetectorUI(dialog.getDetector());
           MacroParser.recordEstimatorUI(dialog.getEstimator());
-          MacroParser.recordRendererUI(selectedRenderer);
+          MacroParser.recordRendererUI(dialog.getRenderer());
         }
         return pluginFlags; // ok
       }
@@ -227,27 +240,25 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
    */
   @Override
   public void run(ImageProcessor ip) {
-    assert (selectedFilter != null) : "Filter was not selected!";
-    assert (selectedDetector != null) : "Detector was not selected!";
-    assert (selectedEstimator != null) : "Estimator was not selected!";
-    assert (renderingQueue != null) : "Renderer was not selected!";
+    assert(selectedFilter >= 0 && selectedFilter < allFilters.size()) : "Index out of bounds: selectedFilter!";
+    assert(selectedDetector >= 0 && selectedDetector < allDetectors.size()) : "Index out of bounds: selectedDetector!";
+    assert(selectedEstimator >= 0 && selectedEstimator < allEstimators.size()) : "Index out of bounds: selectedEstimator!";
+    assert(selectedRenderer >= 0 && selectedRenderer < allRenderers.size()) : "Index out of bounds: selectedRenderer!";
+    assert(renderingQueue != null) : "Renderer was not selected!";
     //
     ip.setRoi(roi);
     FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
     Vector<PSFInstance> fits;
     try {
       Thresholder.setCurrentImage(fp);
-      fits = selectedEstimator.getImplementation().estimateParameters(
-              fp,
-              Point.applyRoiMask(roi,
-              selectedDetector.getImplementation().detectMoleculeCandidates(
-              selectedFilter.getImplementation().filterImage(fp))));
-
-      //
+      FloatProcessor filtered = allFilters.get(selectedFilter).getImplementation().filterImage(fp);
+      IDetector detector = allDetectors.get(selectedDetector).getImplementation();
+      Vector<Point> detections = detector.detectMoleculeCandidates(filtered);
+      fits = allEstimators.get(selectedEstimator).getImplementation().estimateParameters(fp, Point.applyRoiMask(roi, detections));
       results[ip.getSliceNumber()] = fits;
       nProcessed.incrementAndGet();
 
-      if (fits.size() > 0) {
+      if(fits.size() > 0) {
         renderingQueue.renderLater(
                 PSFInstance.extractParamToArray(fits, PSFInstance.X),
                 PSFInstance.extractParamToArray(fits, PSFInstance.Y),

@@ -18,6 +18,7 @@ public final class GaussianFilter extends ConvolutionFilter implements IFilter {
     
     private int size;
     private double sigma;
+    private int padding;
     
     private static float [] getKernel(int size, double sigma)
     {
@@ -32,9 +33,9 @@ public final class GaussianFilter extends ConvolutionFilter implements IFilter {
         super.updateKernel(new FloatProcessor(1, size, getKernel(size, sigma)), true);
     }
 
-  public GaussianFilter() {
-    this(11, 1.6);
-  }
+    public GaussianFilter() {
+        this(11, 1.6);
+    }
 
     
     /**
@@ -48,6 +49,7 @@ public final class GaussianFilter extends ConvolutionFilter implements IFilter {
         super(new FloatProcessor(1, size, getKernel(size, sigma)), true, Padding.PADDING_DUPLICATE);
         this.size = size;
         this.sigma = sigma;
+        this.padding = Padding.PADDING_DUPLICATE;
     }
     
     /**
@@ -65,6 +67,7 @@ public final class GaussianFilter extends ConvolutionFilter implements IFilter {
         super(new FloatProcessor(1, size, getKernel(size, sigma)), true, padding_method);
         this.size = size;
         this.sigma = sigma;
+        this.padding = padding_method;
     }
 
 
@@ -85,6 +88,11 @@ public final class GaussianFilter extends ConvolutionFilter implements IFilter {
         export_variables.put("I", input);
         export_variables.put("F", result);
         return export_variables;
+    }
+    
+    @Override
+    public IFilter clone() {
+      return new GaussianFilter(size, sigma, padding);
     }
     
 }

@@ -46,4 +46,6 @@ public interface IFilter extends IModule {
      */
     public HashMap<String,FloatProcessor> exportVariables(boolean reevaluate);
     
+    public IFilter clone();
+    
 }

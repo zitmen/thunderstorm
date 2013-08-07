@@ -86,4 +86,5 @@ public class MedianFilterUI implements IFilterUI {
     String value = Macro.getValue(options, "pattern", DEFAULT_PATTERN == BOX ? "box" : "cross");
     pattern = value.equals("box") ? BOX : CROSS;
   }
+  
 }

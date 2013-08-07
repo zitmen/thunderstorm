@@ -68,4 +68,9 @@ public final class EmptyFilter implements IFilter, IFilterUI {
   @Override
   public void readMacroOptions(String options) {
   }
+  
+  @Override
+  public IFilter clone() {
+    return new EmptyFilter();
+  }
 }

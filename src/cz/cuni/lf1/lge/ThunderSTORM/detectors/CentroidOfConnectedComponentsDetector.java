@@ -14,7 +14,6 @@ import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import java.awt.GridBagLayout;
-import java.awt.Rectangle;
 import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;

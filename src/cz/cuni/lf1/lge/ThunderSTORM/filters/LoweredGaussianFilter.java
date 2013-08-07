@@ -100,5 +100,10 @@ public final class LoweredGaussianFilter implements IFilter {
         export_variables.put("F", result);
         return export_variables;
     }
+    
+    @Override
+    public IFilter clone() {
+      return new LoweredGaussianFilter(size, sigma, padding);
+    }
 
 }

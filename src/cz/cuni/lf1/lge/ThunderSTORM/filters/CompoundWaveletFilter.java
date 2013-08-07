@@ -90,4 +90,9 @@ public final class CompoundWaveletFilter implements IFilter {
         return export_variables;
     }
     
+    @Override
+    public IFilter clone() {
+        return new CompoundWaveletFilter(third_plane);
+    }
+    
 }

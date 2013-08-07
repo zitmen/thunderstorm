@@ -52,4 +52,9 @@ public final class BoxFilter extends UniformFilter implements IFilter {
     export_variables.put("F", result);
     return export_variables;
   }
+
+  @Override
+  public IFilter clone() {
+    return new BoxFilter(size);
+  }
 }

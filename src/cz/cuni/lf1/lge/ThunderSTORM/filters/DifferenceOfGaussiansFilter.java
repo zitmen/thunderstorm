@@ -128,4 +128,9 @@ public final class DifferenceOfGaussiansFilter implements IFilter {
         return export_variables;
     }
     
+    @Override
+    public IFilter clone() {
+        return new DifferenceOfGaussiansFilter(size, sigma_g1, sigma_g2, padding);
+    }
+    
 }

@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree;
 
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
@@ -32,10 +31,9 @@ public abstract class Node {
     
     public boolean isVariable(String obj, String var) {
       if(isThresholding()) {
-        for(IFilterUI f : Thresholder.getLoadedFilters()) {
-          IFilter impl = f.getImplementation();
-            if(impl.getFilterVarName().equals(obj)) {
-                return impl.exportVariables(false).containsKey(var);
+        for(IFilter f : Thresholder.getLoadedFilters()) {
+            if(f.getFilterVarName().equals(obj)) {
+                return f.exportVariables(false).containsKey(var);
             }
         }
         return false;
@@ -53,10 +51,9 @@ public abstract class Node {
           // hence there is no need to redo the filtering step, since it has been already done
           return new RetVal(Thresholder.getActiveFilter().exportVariables(false).get(var));
         } else {    // the other ones
-          for(IFilterUI f : Thresholder.getLoadedFilters()) {
-            IFilter impl = f.getImplementation();
-            if(impl.getFilterVarName().equals(obj)) {
-              return new RetVal(impl.exportVariables(true).get(var));
+          for(IFilter f : Thresholder.getLoadedFilters()) {
+            if(f.getFilterVarName().equals(obj)) {
+              return new RetVal(f.exportVariables(true).get(var));
 }
           }
         }

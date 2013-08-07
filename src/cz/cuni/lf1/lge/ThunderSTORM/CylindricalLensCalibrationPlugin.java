@@ -40,7 +40,6 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.yaml.snakeyaml.Yaml;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.*;
 
 /**
  *

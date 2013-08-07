@@ -36,19 +36,23 @@ import javax.swing.JSeparator;
  */
 public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 
-  private CardsPanel<IFilterUI> filters;
-  private CardsPanel<IDetectorUI> detectors;
-  private CardsPanel<IEstimatorUI> estimators;
-  private CardsPanel<IRendererUI> renderers;
+  private CardsPanel<IFilterUI> filtersPanel;
+  private CardsPanel<IDetectorUI> detectorsPanel;
+  private CardsPanel<IEstimatorUI> estimatorsPanel;
+  private CardsPanel<IRendererUI> renderersPanel;
+  private List<IFilterUI> allFilters;
+  private List<IDetectorUI> allDetectors;
+  private List<IEstimatorUI> allEstimators;
+  private List<IRendererUI> allRenderers;
   private JButton preview, ok, cancel;
   private ImagePlus imp;
   private boolean canceled;
   private Semaphore semaphore;    // ensures waiting for a dialog without the dialog being modal!
-  private IFilterUI activeFilter;
-  private IDetectorUI activeDetector;
-  private IEstimatorUI activeEstimator;
-  private IRendererUI activeRenderer;
-  ExecutorService previewThredRunner = Executors.newSingleThreadExecutor();
+  private int activeFilterIndex;
+  private int activeDetectorIndex;
+  private int activeEstimatorIndex;
+  private int activeRendererIndex;
+  ExecutorService previewThreadRunner = Executors.newSingleThreadExecutor();
   Future<?> previewFuture = null;
 
   /**
@@ -81,10 +85,20 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     //
     this.imp = imp;
     //
-    this.filters = new CardsPanel<IFilterUI>(filters, default_filter);
-    this.detectors = new CardsPanel<IDetectorUI>(detectors, default_detector);
-    this.estimators = new CardsPanel<IEstimatorUI>(estimators, default_estimator);
-    this.renderers = new CardsPanel<IRendererUI>(renderers, default_renderer);
+    this.allFilters = filters;
+    this.allDetectors = detectors;
+    this.allEstimators = estimators;
+    this.allRenderers = renderers;
+    //
+    this.activeFilterIndex = default_filter;
+    this.activeDetectorIndex = default_detector;
+    this.activeEstimatorIndex = default_estimator;
+    this.activeRendererIndex = default_renderer;
+    //
+    this.filtersPanel = new CardsPanel<IFilterUI>(filters, default_filter);
+    this.detectorsPanel = new CardsPanel<IDetectorUI>(detectors, default_detector);
+    this.estimatorsPanel = new CardsPanel<IEstimatorUI>(estimators, default_estimator);
+    this.renderersPanel = new CardsPanel<IRendererUI>(renderers, default_renderer);
     //
     this.preview = new JButton("Preview");
     this.ok = new JButton("Ok");
@@ -92,12 +106,6 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     //
     this.semaphore = new Semaphore(0);
     //
-    // Outputs from this dialog
-    this.activeFilter = null;
-    this.activeDetector = null;
-    this.activeEstimator = null;
-    this.activeRenderer = null;
-
     setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     addComponentsToPane();
   }
@@ -114,13 +122,13 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     GridBagConstraints lineConstraints = (GridBagConstraints) componentConstraints.clone();
     lineConstraints.insets = new Insets(0, 0, 0, 0);
 
-    pane.add(filters.getPanel("Filters: "), componentConstraints);
+    pane.add(filtersPanel.getPanel("Filters: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-    pane.add(detectors.getPanel("Detectors: "), componentConstraints);
+    pane.add(detectorsPanel.getPanel("Detectors: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-    pane.add(estimators.getPanel("Estimators: "), componentConstraints);
+    pane.add(estimatorsPanel.getPanel("Estimators: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-    pane.add(renderers.getPanel("Renderers: "), componentConstraints);
+    pane.add(renderersPanel.getPanel("Renderers: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
     //
     preview.addActionListener(this);
@@ -155,18 +163,17 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     if (e.getActionCommand().equals("Cancel")) {
       closeDialog(true);
     } else if (e.getActionCommand().equals("Ok")) {
-      Thresholder.setActiveFilter(filters.getActiveComboBoxItemIndex());
-      //
-      activeFilter = filters.getActiveComboBoxItem();
-      activeDetector = detectors.getActiveComboBoxItem();
-      activeEstimator = estimators.getActiveComboBoxItem();
-      activeRenderer = renderers.getActiveComboBoxItem();
+      activeFilterIndex = filtersPanel.getActiveComboBoxItemIndex();
+      activeDetectorIndex = detectorsPanel.getActiveComboBoxItemIndex();
+      activeEstimatorIndex = estimatorsPanel.getActiveComboBoxItemIndex();
+      activeRendererIndex = renderersPanel.getActiveComboBoxItemIndex();
+      Thresholder.setActiveFilter(activeFilterIndex);   // !! must be called before any threshold is evaluated !!
       //
       try {
-        activeFilter.readParameters();
-        activeDetector.readParameters();
-        activeEstimator.readParameters();
-        activeRenderer.readParameters();
+        allFilters.get(activeFilterIndex).readParameters();
+        allDetectors.get(activeDetectorIndex).readParameters();
+        allEstimators.get(activeEstimatorIndex).readParameters();
+        allRenderers.get(activeRendererIndex).readParameters();
       } catch (Exception ex) {
         IJ.error("Error parsing parameters: " + ex.toString());
         return;
@@ -174,16 +181,17 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
       //
       closeDialog(false);
     } else if (e.getActionCommand().equals("Preview")) {
-      Thresholder.setActiveFilter(filters.getActiveComboBoxItemIndex());
-      //
-      activeFilter = filters.getActiveComboBoxItem();
-      activeDetector = detectors.getActiveComboBoxItem();
-      activeEstimator = estimators.getActiveComboBoxItem();
+      activeFilterIndex = filtersPanel.getActiveComboBoxItemIndex();
+      activeDetectorIndex = detectorsPanel.getActiveComboBoxItemIndex();
+      activeEstimatorIndex = estimatorsPanel.getActiveComboBoxItemIndex();
+      activeRendererIndex = renderersPanel.getActiveComboBoxItemIndex();
+      Thresholder.setActiveFilter(activeFilterIndex);   // !! must be called before any threshold is evaluated !!
       //
       try {
-        activeFilter.readParameters();
-        activeDetector.readParameters();
-        activeEstimator.readParameters();
+        allFilters.get(activeFilterIndex).readParameters();
+        allDetectors.get(activeDetectorIndex).readParameters();
+        allEstimators.get(activeEstimatorIndex).readParameters();
+        allRenderers.get(activeRendererIndex).readParameters();
       } catch (Exception ex) {
         IJ.error("Error parsing parameters: " + ex.toString());
         return;
@@ -191,7 +199,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
       if (previewFuture != null) {
         previewFuture.cancel(true);
       }
-      previewFuture = previewThredRunner.submit(new Runnable() {
+      previewFuture = previewThreadRunner.submit(new Runnable() {
         void checkForInterruption() throws InterruptedException {
           if (Thread.interrupted()) {
             throw new InterruptedException();
@@ -208,11 +216,11 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             IJ.showStatus("Creating preview image.");
             FloatProcessor fp = (FloatProcessor) imp.getProcessor().crop().convertToFloat();
             Thresholder.setCurrentImage(fp);
-            FloatProcessor filtered = activeFilter.getImplementation().filterImage(fp);
+            FloatProcessor filtered = allFilters.get(activeFilterIndex).getImplementation().filterImage(fp);
             checkForInterruption();
-            Vector<Point> detections = Point.applyRoiMask(imp.getRoi(), activeDetector.getImplementation().detectMoleculeCandidates(filtered));
+            Vector<Point> detections = Point.applyRoiMask(imp.getRoi(), allDetectors.get(activeDetectorIndex).getImplementation().detectMoleculeCandidates(filtered));
             checkForInterruption();
-            Vector<PSFInstance> results = activeEstimator.getImplementation().estimateParameters(fp, detections);
+            Vector<PSFInstance> results = allEstimators.get(activeEstimatorIndex).getImplementation().estimateParameters(fp, detections);
             checkForInterruption();
             //
             ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
@@ -244,8 +252,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
   public void dispose() {
     super.dispose();
     semaphore.release();
-    if (previewThredRunner != null) {
-      previewThredRunner.shutdownNow();
+    if (previewThreadRunner != null) {
+      previewThreadRunner.shutdownNow();
     }
   }
 
@@ -290,7 +298,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
    * @return selected filter
    */
   public IFilterUI getFilter() {
-    return activeFilter;
+    return allFilters.get(activeFilterIndex);
   }
 
   /**
@@ -299,7 +307,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
    * @return selected detector
    */
   public IDetectorUI getDetector() {
-    return activeDetector;
+    return allDetectors.get(activeDetectorIndex);
   }
 
   /**
@@ -308,10 +316,26 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
    * @return selected estimator
    */
   public IEstimatorUI getEstimator() {
-    return activeEstimator;
+    return allEstimators.get(activeEstimatorIndex);
   }
 
   public IRendererUI getRenderer() {
-    return activeRenderer;
+    return allRenderers.get(activeRendererIndex);
+  }
+
+  public int getFilterIndex() {
+    return activeFilterIndex;
+  }
+
+  public int getDetectorIndex() {
+    return activeDetectorIndex;
+  }
+
+  public int getEstimatorIndex() {
+    return activeEstimatorIndex;
+  }
+
+  public int getRendererIndex() {
+    return activeRendererIndex;
   }
 }
