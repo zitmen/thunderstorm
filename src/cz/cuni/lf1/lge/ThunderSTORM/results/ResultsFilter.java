@@ -64,7 +64,7 @@ class ResultsFilter {
       if(opHistory.getLastOperation() instanceof FilteringOperation){
         model.copyUndoToActual();
         opHistory.removeLastOperation();
-      }else{
+      } else {
         model.copyActualToUndo();
       }
       model.setActualState();
@@ -77,10 +77,11 @@ class ResultsFilter {
       String item = ((all > 1) ? "items" : "item");
       table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
       table.showPreview();
-    } catch (Exception ex) {
-      IJ.handleException(ex);
+    } catch (FormulaParserException ex) {
       filterTextField.setBackground(new Color(255, 200, 200));
       GUI.showBalloonTip(filterTextField, ex.getMessage());
+    } catch(Exception ex) {
+      IJ.handleException(ex);
     }
   }
 

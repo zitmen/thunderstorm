@@ -12,7 +12,7 @@ class FormulaLexer {
     }
 
     public FormulaToken nextToken() {
-        if(!scanner.hasNext()) return new FormulaToken(FormulaToken.EOI);
+        if(!scanner.hasNext()) return new FormulaToken(FormulaToken.EOI, FormulaToken.toString(FormulaToken.EOI));
         scanner.skip("[ ]*");
         
         FormulaToken token = new FormulaToken();

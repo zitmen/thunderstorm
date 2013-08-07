@@ -21,6 +21,16 @@ class FormulaToken {
     public static final int NAME = 15;
     public static final int FLOAT = 16;
     
+    private static final String[] TYPE_NAMES = new String[] {
+        "end of input", "+", "-", "*", "/", "%", "^", "&", "|", "<", ">",
+        "=", "(", ")", ".", "a variable", "a number"
+    };
+
+    static String toString(int type) {
+        if(type == UNKNOWN) return "unknown";
+        return TYPE_NAMES[type];
+    }
+    
     public int type;
     public String token;
 

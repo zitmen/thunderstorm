@@ -4,7 +4,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.NodeFactory.
 import static cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaToken.*;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Node;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Operator;
-// TODO: implementovat relacni a logicke operatory !!
+
 public class FormulaParser {
 
     public final static int FORMULA_THRESHOLD = 1;
@@ -29,7 +29,7 @@ public class FormulaParser {
             token = null;
             return tok;
         }
-        error();
+        error("Syntax error near `" + token.token + "`. Expected `" + FormulaToken.toString(type) + "` instead!");
         // this will never happen due to thrown FormulaParserException from error()
         assert(true);
         return null;
@@ -42,10 +42,11 @@ public class FormulaParser {
     // ---------------------------------------------- //
     // --- Implementation of LL1 recursive parser --- //
     // ---------------------------------------------- //
-    private void error() throws FormulaParserException {
-        // Note: if needed, it is possible to add more information
-        //       about the error, but I don't think it is necessary
-        throw new FormulaParserException("Syntax error!");
+    private void error(String message) throws FormulaParserException {
+        if((message == null) || message.trim().isEmpty()) {
+            message = "Syntax error!";
+        }
+        throw new FormulaParserException(message);
     }
     
     private Node expr() throws FormulaParserException {
@@ -53,54 +54,83 @@ public class FormulaParser {
     }
     
     private Node logOrExpr() throws FormulaParserException {    // l|r
-        Node l = logAndExpr();
+        return logOrExprTail(logAndExpr());
+    }
+    
+    private Node logOrExprTail(Node l) throws FormulaParserException {    // l|r
         switch(peek()) {
-            case OP_OR: match(OP_OR); return getNewOperator(Operator.OR, l, logAndExpr());
+            case OP_OR: match(OP_OR); return logOrExprTail(getNewOperator(Operator.OR, l, logAndExpr()));
         }
         return l;
     }
     
     private Node logAndExpr() throws FormulaParserException {    // l&r
-        Node l = relExpr();
+        return logAndExprTail(relExpr());
+    }
+    
+    private Node logAndExprTail(Node l) throws FormulaParserException {    // l&r
         switch(peek()) {
-            case OP_AND: match(OP_AND); return getNewOperator(Operator.AND, l, relExpr());
+            case OP_AND: match(OP_AND); return logAndExprTail(getNewOperator(Operator.AND, l, relExpr()));
         }
         return l;
     }
     
     private Node relExpr() throws FormulaParserException {    // l=r, l<r, l>r
-        Node l = addSubExpr();
+        return relExprTail(addSubExpr());
+    }
+    
+    private Node relExprTail(Node l) throws FormulaParserException {    // l=r, l<r, l>r
         switch(peek()) {
-            case OP_EQ: match(OP_EQ); return getNewOperator(Operator.EQ, l, addSubExpr());
-            case OP_GT: match(OP_GT); return getNewOperator(Operator.GT, l, addSubExpr());
-            case OP_LT: match(OP_LT); return getNewOperator(Operator.LT, l, addSubExpr());
+            case OP_EQ: match(OP_EQ); return relExprTail(getNewOperator(Operator.EQ, l, addSubExpr()));
+            case OP_GT: match(OP_GT); return relExprTail(getNewOperator(Operator.GT, l, addSubExpr()));
+            case OP_LT: match(OP_LT); return relExprTail(getNewOperator(Operator.LT, l, addSubExpr()));
         }
         return l;
     }
 
     private Node addSubExpr() throws FormulaParserException {    // l+r, l-r
-        Node l = mulDivExpr();
+        return addSubExprTail(mulDivExpr());
+    }
+    
+    private Node addSubExprTail(Node l) throws FormulaParserException {    // l+r, l-r
         switch(peek()) {
-            case OP_ADD: match(OP_ADD); return getNewOperator(Operator.ADD, l, mulDivExpr());
-            case OP_SUB: match(OP_SUB); return getNewOperator(Operator.SUB, l, mulDivExpr());
+            case OP_ADD: match(OP_ADD); return addSubExprTail(getNewOperator(Operator.ADD, l, mulDivExpr()));
+            case OP_SUB: match(OP_SUB); return addSubExprTail(getNewOperator(Operator.SUB, l, mulDivExpr()));
         }
         return l;
     }
     
     private Node mulDivExpr() throws FormulaParserException {    // l*r, l/r, l%r
-        Node l = powExpr();
+        return mulDivExprTail(powExpr());
+    }
+    
+    private Node mulDivExprTail(Node l) throws FormulaParserException {    // l*r, l/r, l%r
         switch(peek()) {
-            case OP_MUL: match(OP_MUL); return getNewOperator(Operator.MUL, l, powExpr());
-            case OP_DIV: match(OP_DIV); return getNewOperator(Operator.DIV, l, powExpr());
-            case OP_MOD: match(OP_MOD); return getNewOperator(Operator.MOD, l, powExpr());
+            case OP_MUL: match(OP_MUL); return mulDivExprTail(getNewOperator(Operator.MUL, l, powExpr()));
+            case OP_DIV: match(OP_DIV); return mulDivExprTail(getNewOperator(Operator.DIV, l, powExpr()));
+            case OP_MOD: match(OP_MOD); return mulDivExprTail(getNewOperator(Operator.MOD, l, powExpr()));
         }
         return l;
     }
     
     private Node powExpr() throws FormulaParserException {   // x^n
-        Node x = atom();
-        if(peek() == OP_POW) return getNewOperator(Operator.POW, x, atom());
-        return x;
+        return powExprTail(unaryExpr());
+    }
+    
+    private Node powExprTail(Node l) throws FormulaParserException {   // x^n
+        if(peek() == OP_POW) {
+            match(OP_POW);
+            return powExprTail(getNewOperator(Operator.POW, l, unaryExpr()));
+        }
+        return l;
+    }
+    
+    private Node unaryExpr() throws FormulaParserException {   // -x or +x
+        switch(peek()) {
+            case OP_ADD: match(OP_ADD); return getNewOperator(Operator.ADD, getNewConstant("0"), atom());
+            case OP_SUB: match(OP_SUB); return getNewOperator(Operator.SUB, getNewConstant("0"), atom());
+        }
+        return atom();
     }
 
     private Node atom() throws FormulaParserException {
@@ -109,8 +139,8 @@ public class FormulaParser {
             case FLOAT: return floatVal();
             case NAME: return name();
         }
-        error();
-        // this will never happen due to thrown FormulaParserException from error()
+        error("Syntax error near `" + token.token + "`. Expected `(expression)` or a number or a variable instead!");
+        // the following will never happen due to the FormulaParserException thrown from the error()
         assert(true);
         return null;
     }
