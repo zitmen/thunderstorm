@@ -57,7 +57,7 @@ public class UpdaterPlugIn implements PlugIn {
         GenericDialog gd = new GenericDialog("ThunderSTORM Updater");
         gd.addChoice("Upgrade To:", versions, versions[0]);
         String msg =
-                "You are currently running v" + version() + ".\n"
+                "You are currently running version " + version() + ".\n"
                 + " \n"
                 + "If you click \"OK\", ImageJ will reload ThunderSTORM.\n";
         gd.addMessage(msg);
