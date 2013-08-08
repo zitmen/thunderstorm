@@ -29,8 +29,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableRowSorter;
 
@@ -38,7 +40,8 @@ class JavaTableWindow {
 
   private JTable table;
   private JFrame frame;
-  private JButton export;
+  private JButton io_import;
+  private JButton io_export;
   private JButton render;
   private JCheckBox preview;
   private JLabel status;
@@ -71,7 +74,8 @@ class JavaTableWindow {
     JPanel buttons = new JPanel();
     buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
     showHist = new JButton("Plot histogram...");
-    export = new JButton("Export...");
+    io_import = new JButton("Import...");
+    io_export = new JButton("Export...");
     render = new JButton("Render...");
     showHist.addActionListener(new ActionListener() {
       @Override
@@ -79,7 +83,13 @@ class JavaTableWindow {
         new IJDistribution().run(null);
       }
     });
-    export.addActionListener(new ActionListener() {
+    io_import.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        new ImportExportPlugIn().run("import");
+      }
+    });
+    io_export.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         new ImportExportPlugIn().run("export");
@@ -106,7 +116,9 @@ class JavaTableWindow {
     buttons.add(Box.createHorizontalStrut(10));
     buttons.add(render);
     buttons.add(Box.createHorizontalStrut(10));
-    buttons.add(export);
+    buttons.add(io_import);
+    buttons.add(Box.createHorizontalStrut(3));
+    buttons.add(io_export);
     //
     JPanel grouping = new ResultsGrouping(this, model).createUIPanel();
     JPanel filter = new ResultsFilter(this, model).createUIPanel();
@@ -142,7 +154,9 @@ class JavaTableWindow {
     
     controlsPane.add(tabbedPane);
     controlsPane.add(historyPane);
+    controlsPane.add(new JSeparator(SwingConstants.HORIZONTAL));
     controlsPane.add(buttons);
+    controlsPane.add(new JSeparator(SwingConstants.HORIZONTAL));
     controlsPane.add(status);
     //
     frame.setContentPane(contentPane);

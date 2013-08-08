@@ -23,14 +23,19 @@ public class JSONImportExport implements IImportExport {
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.reset();
-        rt.setOriginalState();
-        
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Vector<HashMap<String,Double>> molecules = gson.fromJson(new FileReader(fp), new TypeToken<Vector<HashMap<String,Double>>>(){}.getType());
 
+        String [] headers = new String[1];
         int r = 0, nrows = molecules.size();
         for(HashMap<String,Double> mol : molecules) {
+            if(mol.size() != headers.length)
+                headers = new String[mol.size()];
+            mol.keySet().toArray(headers);
+            if(!rt.columnNamesEqual(headers)) {
+                throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + IJResultsTable.COLUMN_ID + "')!");
+            }
+            //
             rt.addRow();
             for(Entry<String,Double> entry : mol.entrySet()) {
                 if(IJResultsTable.COLUMN_ID.equals(entry.getKey())) continue;
@@ -56,7 +61,7 @@ public class JSONImportExport implements IImportExport {
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(headers[c], (Double)rt.getValueAt(c,r));
+                molecule.put(headers[c], (Double)rt.getValue(r ,headers[c]));
             results.add(molecule);
             IJ.showProgress((double)r / (double)nrows);
         }

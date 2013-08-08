@@ -158,7 +158,7 @@ class ResultsTableModel extends AbstractTableModel {
 
   @Override
   public boolean isCellEditable(int rowIndex, int columnIndex) {
-    return (columnIndex > 0); // "#" column is not editable!
+    return (columnIndex > 0); // column id is not editable!
   }
 
   @Override

@@ -19,222 +19,232 @@ import java.util.Vector;
  */
 public class IJResultsTable {
 
-  public static final String COLUMN_ID = "#";
-  public static final int COLUMN_NOT_FOUND = ResultsTableModel.COLUMN_NOT_FOUND;  // -1
-  public static final int COLUMN_IN_USE = -2;
-  private static IJResultsTable resultsTable = null;
+    public static final String COLUMN_ID = "id";
+    public static final int COLUMN_NOT_FOUND = ResultsTableModel.COLUMN_NOT_FOUND;  // -1
+    public static final int COLUMN_IN_USE = -2;
+    private static IJResultsTable resultsTable = null;
 
-  /**
-   * Returns the ResultsTable used by the Measure command. This table must be
-   * displayed in the "Results" window.
-   */
-  public synchronized static IJResultsTable getResultsTable() {
-    if (resultsTable == null) {
-      setResultsTable(new IJResultsTable());
+    /**
+     * Returns the ResultsTable used by the Measure command. This table must be
+     * displayed in the "Results" window.
+     */
+    public synchronized static IJResultsTable getResultsTable() {
+        if (resultsTable == null) {
+            setResultsTable(new IJResultsTable());
+        }
+        return resultsTable;
     }
-    return resultsTable;
-  }
 
-
-  public static void setResultsTable(IJResultsTable rt) {
-    resultsTable = rt;
-  }
-
-  public static boolean isResultsWindow() {
-    if (resultsTable == null) {
-      return false;
+    public static void setResultsTable(IJResultsTable rt) {
+        resultsTable = rt;
     }
-    return resultsTable.tableWindow.isVisible();
-  }
-  private JavaTableWindow tableWindow;
-  private TripleStateTableModel model;
 
-  /**
-   * Constructs an empty ResultsTable with the counter=0 and no columns.
-   */
-  public IJResultsTable() {
-    tableWindow = new JavaTableWindow();
-    model = tableWindow.getModel();
-  }
+    public static boolean isResultsWindow() {
+        if (resultsTable == null) {
+            return false;
+        }
+        return resultsTable.tableWindow.isVisible();
+    }
+    private JavaTableWindow tableWindow;
+    private TripleStateTableModel model;
 
-  /**
-   * Displays the contents of this ResultsTable in a window with the default
-   * title "ThunderSTORM: Results", or updates an existing results window. Opens
-   * a new window if there is no open results window.
-   */
-  public void show() {
-    tableWindow.show();
-  }
-  /**
-   * Displays the contents of this ResultsTable in a window with the specified
-   * title, or updates an existing results window. Opens a new window if there
-   * is no open results window.
-   */
-  public void show(String windowTitle) {
-    tableWindow.show(windowTitle);
-  }
+    /**
+     * Constructs an empty ResultsTable with the counter=0 and no columns.
+     */
+    public IJResultsTable() {
+        tableWindow = new JavaTableWindow();
+        model = tableWindow.getModel();
+    }
 
-  public synchronized void reset() {
-    model.resetAll();
-  }
-  
-  //delegated methods from model
-  public void resetSelectedState(){
-    model.reset();
-  }
+    /**
+     * Displays the contents of this ResultsTable in a window with the default
+     * title "ThunderSTORM: Results", or updates an existing results window.
+     * Opens a new window if there is no open results window.
+     */
+    public void show() {
+        tableWindow.show();
+    }
 
-  public TripleStateTableModel.StateName getSelectedState() {
-    return model.getSelectedState();
-  }
+    /**
+     * Displays the contents of this ResultsTable in a window with the specified
+     * title, or updates an existing results window. Opens a new window if there
+     * is no open results window.
+     */
+    public void show(String windowTitle) {
+        tableWindow.show(windowTitle);
+    }
 
-  public void copyActualToUndo() {
-    model.copyActualToUndo();
-  }
+    public synchronized void reset() {
+        model.resetAll();
+    }
 
-  public void copyUndoToActual() {
-    model.copyUndoToActual();
-  }
+    //delegated methods from model
+    public void resetSelectedState() {
+        model.reset();
+    }
 
-  public void copyOriginalToActual() {
-    model.copyOriginalToActual();
-  }
+    public TripleStateTableModel.StateName getSelectedState() {
+        return model.getSelectedState();
+    }
 
-  public void swapUndoAndActual() {
-    model.swapUndoAndActual();
-  }
+    public void copyActualToUndo() {
+        model.copyActualToUndo();
+    }
 
-  public void setOriginalState() {
-    model.setOriginalState();
-  }
+    public void copyUndoToActual() {
+        model.copyUndoToActual();
+    }
 
-  public void setActualState() {
-    model.setActualState();
-  }
+    public void copyOriginalToActual() {
+        model.copyOriginalToActual();
+    }
 
-  public void addColumn(String label) {
-    model.addColumn(label);
-  }
+    public void swapUndoAndActual() {
+        model.swapUndoAndActual();
+    }
 
-  public void addColumn(String label, Vector<Double> data) {
-    model.addColumn(label, data);
-  }
+    public void setOriginalState() {
+        model.setOriginalState();
+    }
 
-  public void addValue(Double value, int columnIndex) {
-    model.addValue(value, columnIndex);
-  }
+    public void setActualState() {
+        model.setActualState();
+    }
 
-  public void addValue(Double value, String columnLabel) {
-    model.addValue(value, columnLabel);
-  }
+    public void addColumn(String label) {
+        model.addColumn(label);
+    }
 
-  public Vector<Double> getColumnAsVector(int columnIndex, int[] indices) {
-    return model.getColumnAsVector(columnIndex, indices);
-  }
+    public void addColumn(String label, Vector<Double> data) {
+        model.addColumn(label, data);
+    }
 
-  public Vector<Double> getColumnAsVector(int columnIndex) {
-    return model.getColumnAsVector(columnIndex);
-  }
+    public void addValue(Double value, int columnIndex) {
+        model.addValue(value, columnIndex);
+    }
 
-  public Vector<Double> getColumnAsVector(String columnLabel) {
-    return model.getColumnAsVector(columnLabel);
-  }
+    public void addValue(Double value, String columnLabel) {
+        model.addValue(value, columnLabel);
+    }
 
-  public Double[] getColumnAsDoubleObjects(int columnIndex) {
-    return model.getColumnAsDoubleObjects(columnIndex);
-  }
+    public Vector<Double> getColumnAsVector(int columnIndex, int[] indices) {
+        return model.getColumnAsVector(columnIndex, indices);
+    }
 
-  public Double[] getColumnAsDoubleObjects(String columnLabel) {
-    return model.getColumnAsDoubleObjects(columnLabel);
-  }
+    public Vector<Double> getColumnAsVector(int columnIndex) {
+        return model.getColumnAsVector(columnIndex);
+    }
 
-  public double[] getColumnAsDoubles(int index) {
-    return model.getColumnAsDoubles(index);
-  }
+    public Vector<Double> getColumnAsVector(String columnLabel) {
+        return model.getColumnAsVector(columnLabel);
+    }
 
-  public double[] getColumnAsDoubles(String heading) {
-    return model.getColumnAsDoubles(heading);
-  }
+    public Double[] getColumnAsDoubleObjects(int columnIndex) {
+        return model.getColumnAsDoubleObjects(columnIndex);
+    }
 
-  public float[] getColumnAsFloats(int index) {
-    return model.getColumnAsFloats(index);
-  }
+    public Double[] getColumnAsDoubleObjects(String columnLabel) {
+        return model.getColumnAsDoubleObjects(columnLabel);
+    }
 
-  public float[] getColumnAsFloats(String heading) {
-    return model.getColumnAsFloats(heading);
-  }
+    public double[] getColumnAsDoubles(int index) {
+        return model.getColumnAsDoubles(index);
+    }
 
-  public int getRowCount() {
-    return model.getRowCount();
-  }
+    public double[] getColumnAsDoubles(String heading) {
+        return model.getColumnAsDoubles(heading);
+    }
 
-  public int getColumnCount() {
-    return model.getColumnCount();
-  }
+    public float[] getColumnAsFloats(int index) {
+        return model.getColumnAsFloats(index);
+    }
 
-  public String getColumnName(int columnIndex) {
-    return model.getColumnName(columnIndex);
-  }
+    public float[] getColumnAsFloats(String heading) {
+        return model.getColumnAsFloats(heading);
+    }
 
-  public Double getValueAt(int rowIndex, int columnIndex) {
-    return model.getValueAt(rowIndex, columnIndex);
-  }
+    public int getRowCount() {
+        return model.getRowCount();
+    }
 
-  public Double getValue(int rowIndex, String column) {
-    return model.getValue(rowIndex, column);
-  }
+    public int getColumnCount() {
+        return model.getColumnCount();
+    }
 
-  public synchronized int addRow() {
-    return model.addRow();
-  }
+    public String getColumnName(int columnIndex) {
+        return model.getColumnName(columnIndex);
+    }
 
-  public void deleteRow(int row) {
-    model.deleteRow(row);
-  }
+    public Double getValueAt(int rowIndex, int columnIndex) {
+        return model.getValueAt(rowIndex, columnIndex);
+    }
 
-  public String[] getColumnNames() {
-    return model.getColumnNames();
-  }
+    public Double getValue(int rowIndex, String column) {
+        return model.getValue(rowIndex, column);
+    }
 
-  public boolean columnExists(int column) {
-    return model.columnExists(column);
-  }
+    public synchronized int addRow() {
+        return model.addRow();
+    }
 
-  public boolean columnExists(String column) {
-    return model.columnExists(column);
-  }
+    public void deleteRow(int row) {
+        model.deleteRow(row);
+    }
 
-  public void filterRows(boolean[] keep) {
-    model.filterRows(keep);
-  }
+    public String[] getColumnNames() {
+        return model.getColumnNames();
+    }
 
-  public int findColumn(String columnName) {
-    return model.findColumn(columnName);
-  }
+    public boolean columnNamesEqual(String[] headers) {
+        if(getRowCount() == 0) return true; // if the table is empty then the colums are assumed to be empty
+        //
+        int checked = 1;    // ignoring column id
+        for(int i = 0; i < headers.length; i++) {
+            if(IJResultsTable.COLUMN_ID.equals(headers[i]))   continue;  // ignoring column id
+            if(columnExists(headers[i])) checked++;
+            else                         return false;
+        }
+        return (checked == getColumnCount());
+    }
 
-  public void setValueAt(Double value, int rowIndex, String columnLabel) {
-    model.setValueAt(value, rowIndex, columnLabel);
-  }
+    public boolean columnExists(int column) {
+        return model.columnExists(column);
+    }
 
-  public void setValueAt(Double value, int rowIndex, int columnIndex) {
-    model.setValueAt(value, rowIndex, columnIndex);
-  }
- 
-  //delegated methods from window
-  public void showPreview() {
-    tableWindow.showPreview();
-  }
+    public boolean columnExists(String column) {
+        return model.columnExists(column);
+    }
 
-  public OperationsHistoryPanel getOperationHistoryPanel() {
-    return tableWindow.getOperationHistoryPanel();
-  }
-  
-  public void setPreviewRenderer(RenderingQueue renderer) {
-    tableWindow.setPreviewRenderer(renderer);
-  }
+    public void filterRows(boolean[] keep) {
+        model.filterRows(keep);
+    }
 
-  public void setStatus(String text) {
-    tableWindow.setStatus(text);
-  }
+    public int findColumn(String columnName) {
+        return model.findColumn(columnName);
+    }
 
-  
+    public void setValueAt(Double value, int rowIndex, String columnLabel) {
+        model.setValueAt(value, rowIndex, columnLabel);
+    }
+
+    public void setValueAt(Double value, int rowIndex, int columnIndex) {
+        model.setValueAt(value, rowIndex, columnIndex);
+    }
+
+    //delegated methods from window
+    public void showPreview() {
+        tableWindow.showPreview();
+    }
+
+    public OperationsHistoryPanel getOperationHistoryPanel() {
+        return tableWindow.getOperationHistoryPanel();
+    }
+
+    public void setPreviewRenderer(RenderingQueue renderer) {
+        tableWindow.setPreviewRenderer(renderer);
+    }
+
+    public void setStatus(String text) {
+        tableWindow.setStatus(text);
+    }
 }

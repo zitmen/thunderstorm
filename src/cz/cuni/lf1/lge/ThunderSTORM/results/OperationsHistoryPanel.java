@@ -15,10 +15,15 @@ import javax.swing.JPanel;
 public class OperationsHistoryPanel extends JPanel {
 
   private List<LabelWithCheckbox> stack;
+  private JLabel historyLabel;
+  private final static String LABEL = "Post-processing history: ";
+  private final static String LABEL_EMPTY = "Post-processing history: empty";
 
   public OperationsHistoryPanel() {
     stack = new ArrayList<LabelWithCheckbox>();
     this.setLayout(new FlowLayout(FlowLayout.LEFT, 3, 0));
+    historyLabel = new JLabel(OperationsHistoryPanel.LABEL_EMPTY);
+    add(historyLabel);
   }
 
   public void addOperation(Operation op) {
@@ -30,6 +35,8 @@ public class OperationsHistoryPanel extends JPanel {
     if (!stack.isEmpty()) {
       arrow = new JLabel("\u2192");
       add(arrow);
+    } else {
+        historyLabel.setText(OperationsHistoryPanel.LABEL);
     }
 
     LabelWithCheckbox opLabel = new LabelWithCheckbox(op, arrow);
@@ -46,6 +53,8 @@ public class OperationsHistoryPanel extends JPanel {
   public void removeAllOperations() {
     stack.clear();
     removeAll();
+    historyLabel.setText(OperationsHistoryPanel.LABEL_EMPTY);
+    add(historyLabel);
     repaint();
   }
 

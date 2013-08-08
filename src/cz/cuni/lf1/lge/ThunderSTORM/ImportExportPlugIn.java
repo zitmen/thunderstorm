@@ -57,8 +57,10 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 IJResultsTable rt = IJResultsTable.getResultsTable();
                 col_headers = rt.getColumnNames();
                 boolean [] active_columns = new boolean[col_headers.length];
-                Arrays.fill(active_columns, true); active_columns[rt.findColumn("#")] = false;
+                Arrays.fill(active_columns, true); active_columns[rt.findColumn(IJResultsTable.COLUMN_ID)] = false;
                 gd.addCheckboxGroup(col_headers.length, 1, col_headers, active_columns);
+            } else if("import".equals(command)) {
+                gd.addCheckbox("clear the table of results before import", true);
             }
             gd.showDialog();
             
@@ -73,8 +75,8 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                         }
                     }
                     exportToFile(filePath, columns);
-                } else {
-                    importFromFile(filePath);
+                } else if("import".equals(command)) {
+                    importFromFile(filePath, gd.getNextBoolean());
                 }
             }
         } catch (Exception ex) {
@@ -82,25 +84,38 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         }
     }
     
-    private void exportToFile(String fpath, Vector<String> columns) throws IOException {
+    private void exportToFile(String fpath, Vector<String> columns) {
         IJ.showStatus("ThunderSTORM is exporting your results...");
         IJ.showProgress(0.0);
-        IImportExport exporter = ie.elementAt(active_ie);
-        exporter.exportToFile(fpath, IJResultsTable.getResultsTable(), columns);
+        try {
+            IImportExport exporter = ie.elementAt(active_ie);
+            exporter.exportToFile(fpath, IJResultsTable.getResultsTable(), columns);
+            IJ.showStatus("ThunderSTORM has exported your results.");
+        } catch(IOException ex) {
+            IJ.showMessage("Exception", ex.getMessage());
+        } catch(Exception ex) {
+            IJ.handleException(ex);
+        }
         IJ.showProgress(1.0);
-        IJ.showStatus("ThunderSTORM has exported your results.");
     }
     
-    private void importFromFile(String fpath) throws IOException {
+    private void importFromFile(String fpath, boolean reset_first) {
         IJResultsTable rt = IJResultsTable.getResultsTable();
         IJ.showStatus("ThunderSTORM is importing your file...");
         IJ.showProgress(0.0);
-        rt.reset();
-        IImportExport importer = ie.elementAt(active_ie);
-        importer.importFromFile(fpath, rt);
+        try {
+            if(reset_first) rt.reset();
+            rt.setOriginalState();
+            IImportExport importer = ie.elementAt(active_ie);
+            importer.importFromFile(fpath, rt);
+            IJ.showStatus("ThunderSTORM has imported your file.");
+        } catch(IOException ex) {
+            IJ.showMessage("Exception", ex.getMessage());
+        } catch(Exception ex) {
+            IJ.handleException(ex);
+        }
         rt.show("Results");
         IJ.showProgress(1.0);
-        IJ.showStatus("ThunderSTORM has imported your file.");
     }
 
     @Override

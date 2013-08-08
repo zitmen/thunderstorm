@@ -21,14 +21,19 @@ public class YAMLImportExport implements IImportExport {
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.reset();
-        rt.setOriginalState();
-        
         Yaml yaml = new Yaml();
         ArrayList<HashMap<String,Double>> molecules = (ArrayList<HashMap<String,Double>>)yaml.load(new FileReader(fp));
         
+        String [] headers = new String[1];
         int r = 0, nrows = molecules.size();
         for(HashMap<String,Double> mol : molecules) {
+            if(mol.size() != headers.length)
+                headers = new String[mol.size()];
+            mol.keySet().toArray(headers);
+            if(!rt.columnNamesEqual(headers)) {
+                throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + IJResultsTable.COLUMN_ID + "')!");
+            }
+            //
             rt.addRow();
             for(Map.Entry<String,Double> entry : mol.entrySet()) {
                 if(IJResultsTable.COLUMN_ID.equals(entry.getKey())) continue;

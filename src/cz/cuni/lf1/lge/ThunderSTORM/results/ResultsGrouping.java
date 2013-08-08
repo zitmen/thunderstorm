@@ -3,9 +3,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 import ags.utils.dataStructures.MaxHeap;
 import ags.utils.dataStructures.trees.thirdGenKD.KdTree;
 import ags.utils.dataStructures.trees.thirdGenKD.SquareEuclideanDistanceFunction;
-import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_X_POS;
-import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_Y_POS;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import ij.IJ;
 import java.awt.Color;
@@ -173,18 +172,18 @@ class ResultsGrouping {
   }
 
   public static void applyToModel(ResultsTableModel model, double dist) {
-    if (!model.columnExists(LABEL_X_POS) || !model.columnExists(LABEL_Y_POS)) {
-      throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, model.getColumnNames()));
+    if (!model.columnExists(PSFInstance.X) || !model.columnExists(PSFInstance.Y)) {
+      throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFInstance.X, PSFInstance.Y, model.getColumnNames()));
     }
     //
     double dist2 = sqr(dist);
-    double[] x = model.getColumnAsDoubles(LABEL_X_POS);
-    double[] y = model.getColumnAsDoubles(LABEL_Y_POS);
-    double[] I = model.getColumnAsDoubles("intensity");
-    double[] b = model.getColumnAsDoubles("background");
-    double[] s = model.getColumnAsDoubles("sigma");
+    double[] x = model.getColumnAsDoubles(PSFInstance.X);
+    double[] y = model.getColumnAsDoubles(PSFInstance.Y);
+    double[] I = model.getColumnAsDoubles(PSFInstance.INTENSITY);
+    double[] b = model.getColumnAsDoubles(PSFInstance.BACKGROUND);
+    double[] s = model.getColumnAsDoubles(PSFInstance.SIGMA);
     double[] fno = model.getColumnAsDoubles("frame");
-    double[] id = model.getColumnAsDoubles("#");
+    double[] id = model.getColumnAsDoubles(IJResultsTable.COLUMN_ID);
     FrameSequence frames = new FrameSequence();
     for (int i = 0, im = model.getRowCount(); i < im; i++) {
       frames.InsertMolecule(new Molecule((int) id[i], x[i], y[i], I[i], b[i], s[i], (int) fno[i]));
@@ -197,11 +196,12 @@ class ResultsGrouping {
     for (Molecule mol : frames.getAllMolecules()) {
       //
       model.addRow();
-      model.addValue(mol.x, LABEL_X_POS);
-      model.addValue(mol.y, LABEL_Y_POS);
-      model.addValue(mol.I, "intensity");
-      model.addValue(mol.b, "background");
-      model.addValue(mol.s, "sigma");
+      model.addValue((double) mol.frame, "frame");
+      model.addValue(mol.x, PSFInstance.X);
+      model.addValue(mol.y, PSFInstance.Y);
+      model.addValue(mol.I, PSFInstance.INTENSITY);
+      model.addValue(mol.b, PSFInstance.BACKGROUND);
+      model.addValue(mol.s, PSFInstance.SIGMA);
       model.addValue((double) mol.detections.size(), "detections");
     }
   }

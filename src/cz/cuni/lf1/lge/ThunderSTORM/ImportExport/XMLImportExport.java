@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
@@ -30,9 +33,10 @@ public class XMLImportExport implements IImportExport {
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.reset();
-        rt.setOriginalState();
-        
+        //
+        // 1. Read the XML file into the hashmap
+        ArrayList<HashMap<String,Double>> molecules = null;
+        HashMap<String,Double> molecule = null;
         try {
             // First create a new XMLInputFactory
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
@@ -47,13 +51,13 @@ public class XMLImportExport implements IImportExport {
 
                     // the root element?
                     if (startElement.getName().getLocalPart().equals(ROOT)) {
-                        // skip over it
+                        molecules = new ArrayList<HashMap<String,Double>>();
                         continue;
                     }
                     
                     // an item element?
                     if (startElement.getName().getLocalPart().equals(ITEM)) {
-                        rt.addRow();
+                        molecule = new HashMap<String, Double>();
                         continue;
                     }
 
@@ -61,20 +65,46 @@ public class XMLImportExport implements IImportExport {
                     if (event.isStartElement()) {
                         String name = event.asStartElement().getName().getLocalPart();
                         String value = eventReader.nextEvent().asCharacters().getData();
-                        if(!IJResultsTable.COLUMN_ID.equals(name)) {
-                          rt.addValue(Double.parseDouble(value),name);
-                        }
+                        molecule.put(name, Double.parseDouble(value));
+                        continue;
+                    }
+                } else if(event.isEndElement()) {
+                    EndElement endElement = event.asEndElement();
+                    
+                    // an item element?
+                    if (endElement.getName().getLocalPart().equals(ITEM)) {
+                        molecules.add(molecule);
                         continue;
                     }
                 }
             }
         } catch (XMLStreamException ex) {
             throw new IOException(ex.toString());
-        } finally{
-          rt.copyOriginalToActual();
-          rt.setActualState();
         }
-                
+        
+        //
+        // 2. Fill the table by values from the hashmap
+        if(molecules != null) {
+            String [] headers = new String[1];
+            int r = 0, nrows = molecules.size();
+            for(HashMap<String,Double> mol : molecules) {
+                if(mol.size() != headers.length)
+                    headers = new String[mol.size()];
+                mol.keySet().toArray(headers);
+                if(!rt.columnNamesEqual(headers)) {
+                    throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + IJResultsTable.COLUMN_ID + "')!");
+                }
+                //
+                rt.addRow();
+                for(Map.Entry<String,Double> entry : mol.entrySet()) {
+                    if(IJResultsTable.COLUMN_ID.equals(entry.getKey())) continue;
+                    rt.addValue(entry.getValue().doubleValue(), entry.getKey());
+                    IJ.showProgress((double)(r++) / (double)nrows);
+                }
+            }
+        }
+        rt.copyOriginalToActual();
+        rt.setActualState();
     }
 
     @Override
@@ -114,7 +144,7 @@ public class XMLImportExport implements IImportExport {
                 eventWriter.add(end);
 
                 for(int c = 0; c < ncols; c++) {
-                    createNode(eventWriter, headers[c], Double.toString((Double)rt.getValueAt(c,r)));
+                    createNode(eventWriter, headers[c], Double.toString((Double)rt.getValue(r,headers[c])));
                 }
                 
                 eventWriter.add(tab);

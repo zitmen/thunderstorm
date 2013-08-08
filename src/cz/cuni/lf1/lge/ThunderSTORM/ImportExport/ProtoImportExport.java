@@ -11,6 +11,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
+// TODO#1: perform header checking just like other Import plugins do
+// TODO#2: extend the protocol
+
 public class ProtoImportExport implements IImportExport {
 
     @Override
@@ -18,9 +21,6 @@ public class ProtoImportExport implements IImportExport {
         assert(rt != null);
         assert(fp != null);
         assert(!fp.isEmpty());
-        
-        rt.reset();
-        rt.setOriginalState();
         
         Results results = Results.parseFrom(new FileInputStream(fp));
         

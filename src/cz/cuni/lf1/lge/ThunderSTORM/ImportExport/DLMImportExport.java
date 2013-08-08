@@ -24,9 +24,6 @@ abstract public class DLMImportExport implements IImportExport {
         assert(fp != null);
         assert(!fp.isEmpty());
         
-        rt.reset();
-        rt.setOriginalState();
-        
         CSVReader csvReader = new CSVReader(new FileReader(fp), separator);
         List<String[]> lines;
         lines = csvReader.readAll();
@@ -38,6 +35,10 @@ abstract public class DLMImportExport implements IImportExport {
         String [] headers = new String[lines.get(0).length];
         for(int c = 0, cm = lines.get(0).length; c < cm; c++) {
             headers[c] = lines.get(0)[c];
+        }
+        
+        if(!rt.columnNamesEqual(headers)) {
+            throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + IJResultsTable.COLUMN_ID + "')!");
         }
         
         for(int r = 1, rm = lines.size(); r < rm; r++) {
