@@ -10,10 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-/**
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
- */
 public class GaussianFilterUI implements IFilterUI {
 
   private int size;
@@ -33,9 +29,9 @@ public class GaussianFilterUI implements IFilterUI {
     sigmaTextField = new JTextField(Double.toString(DEFAULT_SIGMA), 20);
     //
     JPanel panel = new JPanel(new GridBagLayout());
-    panel.add(new JLabel("Size: "), GridBagHelper.leftCol());
+    panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());
     panel.add(sizeTextField, GridBagHelper.rightCol());
-    panel.add(new JLabel("Sigma: "), GridBagHelper.leftCol());
+    panel.add(new JLabel("Sigma [px]: "), GridBagHelper.leftCol());
     panel.add(sigmaTextField, GridBagHelper.rightCol());
     return panel;
   }

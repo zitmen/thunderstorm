@@ -33,9 +33,9 @@ public class LoweredGaussianFilterUI implements IFilterUI {
     sigmaTextField = new JTextField(Double.toString(DEFAULT_SIGMA), 20);
     //
     JPanel panel = new JPanel(new GridBagLayout());
-    panel.add(new JLabel("Size: "), GridBagHelper.leftCol());
+    panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());
     panel.add(sizeTextField, GridBagHelper.rightCol());
-    panel.add(new JLabel("Sigma: "), GridBagHelper.leftCol());
+    panel.add(new JLabel("Sigma [px]: "), GridBagHelper.leftCol());
     panel.add(sigmaTextField, GridBagHelper.rightCol());
     return panel;
   }

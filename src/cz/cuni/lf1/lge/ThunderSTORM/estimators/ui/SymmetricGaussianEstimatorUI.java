@@ -42,11 +42,11 @@ public class SymmetricGaussianEstimatorUI implements IEstimatorUI {
     sigmaTextField = new JTextField(Double.toString(DEFAULT_SIGMA));
     
     JPanel panel = new JPanel(new GridBagLayout());
-    panel.add(new JLabel("Region size:"), GridBagHelper.leftCol());
+    panel.add(new JLabel("Fitting radius [px]:"), GridBagHelper.leftCol());
     panel.add(fitregsizeTextField, GridBagHelper.rightCol());
     panel.add(new JLabel("Fitting method:"), GridBagHelper.leftCol());
     panel.add(methodComboBox, GridBagHelper.rightCol());
-    panel.add(new JLabel("Initial sigma:"), GridBagHelper.leftCol());
+    panel.add(new JLabel("Initial sigma [px]:"), GridBagHelper.leftCol());
     panel.add(sigmaTextField, GridBagHelper.rightCol());
     
     return panel;

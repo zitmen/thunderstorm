@@ -31,7 +31,7 @@ public class RadialSymmetryEstimatorUI implements IEstimatorUI {
     fitregsizeTextField = new JTextField(Integer.toString(DEFAULT_FITRAD), 20);
 
     JPanel panel = new JPanel(new GridBagLayout());
-    panel.add(new JLabel("Region size:"), GridBagHelper.leftCol());
+    panel.add(new JLabel("Estimation radius [px]:"), GridBagHelper.leftCol());
     panel.add(fitregsizeTextField, GridBagHelper.rightCol());
 
     return panel;

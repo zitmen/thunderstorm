@@ -54,10 +54,10 @@ public abstract class AbstractRenderingUI implements IRendererUI {
 
     resolutionTextField = new JTextField("" + DEFAULT_RESOLUTION, 20);
     repaintFrequencyTextField = new JTextField("" + DEFAULT_REPAINT_FREQUENCY, 20);
-    panel.add(new JLabel("Pixel size:"), GridBagHelper.leftCol());
+    panel.add(new JLabel("Pixels per one super-resolution pixel:"), GridBagHelper.leftCol());
     panel.add(resolutionTextField, GridBagHelper.rightCol());
 
-    panel.add(new JLabel("Repaint frequency:"), GridBagHelper.leftCol());
+    panel.add(new JLabel("Repaint frequency [frames]:"), GridBagHelper.leftCol());
     panel.add(repaintFrequencyTextField, GridBagHelper.rightCol());
 
     threeDCheckBox = new JCheckBox("", threeD);
@@ -71,7 +71,7 @@ public abstract class AbstractRenderingUI implements IRendererUI {
     panel.add(new JLabel("3D:"), GridBagHelper.leftCol());
     panel.add(threeDCheckBox, GridBagHelper.rightCol());
 
-    zRangeLabel = new JLabel("Z range [from:step:to]:");
+    zRangeLabel = new JLabel("Z range (from:step:to) [nm]:");
     panel.add(zRangeLabel, GridBagHelper.leftCol());
     zRangeTextField = new JTextField("-50:10:50", 20);
     zRangeLabel.setEnabled(threeD);

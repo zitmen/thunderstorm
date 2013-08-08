@@ -45,7 +45,7 @@ public class MedianFilterUI implements IFilterUI {
     patternCrossRadioButton.setSelected(DEFAULT_PATTERN == CROSS);
     //
     JPanel panel = new JPanel(new GridBagLayout());
-    panel.add(new JLabel("Size: "), GridBagHelper.leftCol());
+    panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());
     panel.add(sizeTextField, GridBagHelper.rightCol());
     panel.add(new JLabel("Pattern: "), GridBagHelper.leftCol());
     panel.add(patternBoxRadioButton, GridBagHelper.rightCol());

@@ -24,7 +24,7 @@ public class CompoundWaveletFilterUI implements IFilterUI {
 
   @Override
   public JPanel getOptionsPanel() {
-    thirdCheckBox = new JCheckBox("third plane");
+    thirdCheckBox = new JCheckBox("use third plane");
     thirdCheckBox.setSelected(DEFAULT_THIRD_PLANE);
     //
     JPanel panel = new JPanel();

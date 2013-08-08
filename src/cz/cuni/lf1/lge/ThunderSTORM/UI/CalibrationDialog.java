@@ -80,7 +80,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
     aditionalOptions.add(new JLabel("Save to: "), GridBagHelper.leftCol());
     JPanel calibrationPanel = new JPanel(new BorderLayout());
     calibrationFileTextField = new JTextField(20);
-    findCalibrationButton = new JButton("Find");
+    findCalibrationButton = new JButton("Browse...");
     calibrationPanel.add(calibrationFileTextField, BorderLayout.CENTER);
     calibrationPanel.add(findCalibrationButton, BorderLayout.EAST);
     GridBagConstraints gbc = GridBagHelper.rightCol();
@@ -167,7 +167,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
         }
       });
       
-    } else if ("Find".equals(e.getActionCommand())) {
+    } else if ("Browse...".equals(e.getActionCommand())) {
       JFileChooser fileChooser = new JFileChooser(IJ.getDirectory("image"));
       int userAction = fileChooser.showSaveDialog(null);
       if (userAction == JFileChooser.APPROVE_OPTION) {

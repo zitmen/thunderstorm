@@ -9,8 +9,6 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.Macro;
@@ -150,7 +148,7 @@ public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
 
   @Override
   public String getName() {
-    return "Minimizing least squares error";
+    return "Minimizing least squares error (old)";
   }
 
   @Override
@@ -158,7 +156,7 @@ public class LeastSquaresEstimator implements IEstimator, IEstimatorUI {
     fitregsizeTextField = new JTextField(Integer.toString(DEFAULT_FITRAD), 20);
     //
     JPanel panel = new JPanel();
-    panel.add(new JLabel("Fitting region size: "));
+    panel.add(new JLabel("Fitting radius [px]: "));
     panel.add(fitregsizeTextField);
     return panel;
   }

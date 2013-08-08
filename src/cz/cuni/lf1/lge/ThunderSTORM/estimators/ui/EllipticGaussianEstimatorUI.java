@@ -46,7 +46,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
 
     parentPanel.add(new JLabel("Calibration file:"), GridBagHelper.leftCol());
     calibrationFileTextField = new JTextField();
-    findCalibrationButton = new JButton("Find");
+    findCalibrationButton = new JButton("Browse...");
     findCalibrationButton.addActionListener(this);
     JPanel calibrationPanel = new JPanel(new BorderLayout());
     calibrationPanel.add(calibrationFileTextField, BorderLayout.CENTER);

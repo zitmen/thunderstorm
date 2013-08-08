@@ -44,12 +44,12 @@ public class DataGeneratorPlugIn implements PlugIn {
             gd.addStringField("Emitter FWHM range [px]: ", "1.8:4");
             gd.addStringField("Emitter energy range [digital units]: ", "1500:2000");
             gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
-            gd.addStringField("Background intensity range: ", "100:120");
+            gd.addStringField("Background intensity range [digital units]: ", "100:120");
             gd.addMessage("Read-out:");
-            gd.addNumericField("Additive Poisson noise variance: ", 10, 0);
+            gd.addNumericField("Additive Poisson noise variance [digital units]: ", 10, 0);
             gd.addMessage("Gain:");
-            gd.addNumericField("Multiplicative Gaussian noise mean: ", 1, 0);
-            gd.addNumericField("Multiplicative Gaussian noise variance: ", 10, 0);
+            gd.addNumericField("Multiplicative Gaussian noise mean [digital units]: ", 1, 0);
+            gd.addNumericField("Multiplicative Gaussian noise variance [digital units]: ", 10, 0);
             gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
             gd.addNumericField("Linear drift distance [px]: ", 0, 0);
             gd.addNumericField("Linear drift angle [deg]: ", 0, 0);

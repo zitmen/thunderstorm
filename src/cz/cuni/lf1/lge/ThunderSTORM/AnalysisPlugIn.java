@@ -180,7 +180,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         IRendererUI rendererPanel = parser.getRendererUI();
         rendererPanel.setSize(roi.getBounds().width, roi.getBounds().height);
         IncrementalRenderingMethod method = rendererPanel.getImplementation();
-        renderedImage = method.getRenderedImage();
+        renderedImage = (method != null) ? method.getRenderedImage() : null;
         renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), rendererPanel.getRepaintFrequency());
         return pluginFlags;
       } else {
@@ -200,9 +200,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         IRendererUI renderer = allRenderers.get(selectedRenderer);
         renderer.setSize(roi.getBounds().width, roi.getBounds().height);
         IncrementalRenderingMethod method = renderer.getImplementation();
-        renderedImage = method.getRenderedImage();
+        renderedImage = (method != null) ? method.getRenderedImage() : null;
         renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), renderer.getRepaintFrequency());
-
+        
         //if recording window is open, record parameters of all modules
         if (Recorder.record) {
           MacroParser.recordFilterUI(dialog.getFilter());

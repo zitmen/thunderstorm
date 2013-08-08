@@ -31,7 +31,7 @@ public class BoxFilterUI implements IFilterUI {
     JPanel panel = new JPanel(new GridBagLayout());
     sizeTextField = new JTextField(Integer.toString(DEFAULT_SIZE), 20);
     //
-    panel.add(new JLabel("Size: "), GridBagHelper.leftCol());
+    panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());
     panel.add(sizeTextField, GridBagHelper.rightCol());
     return panel;
   }

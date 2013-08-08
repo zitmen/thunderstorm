@@ -59,7 +59,8 @@ public class UpdaterPlugIn implements PlugIn {
         String msg =
                 "You are currently running version " + version() + ".\n"
                 + " \n"
-                + "If you click \"OK\", ImageJ will reload ThunderSTORM.\n";
+                + "If you click \"OK\", ImageJ will reload ThunderSTORM.\n"
+                + "You may have to need administrator rights.\n";
         gd.addMessage(msg);
         gd.showDialog();
         if (gd.wasCanceled()) {
@@ -123,7 +124,8 @@ public class UpdaterPlugIn implements PlugIn {
                 }
             }
             br.close();
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            IJ.showMessage("Error!", "Connection problem! Check you connection to the Internet or your firewall settings.");
         }
         String[] lines = new String[v.size()];
         v.copyInto((String[]) lines);
