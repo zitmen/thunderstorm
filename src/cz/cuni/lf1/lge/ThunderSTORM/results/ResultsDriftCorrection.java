@@ -63,50 +63,54 @@ public class ResultsDriftCorrection {
     if (magnification <= 0) {
       throw new IllegalArgumentException("Rendering magnification must be greater than 0. Input: " + magnification);
     }
-    applyButton.setEnabled(false);
-    final IJResultsTable rt = IJResultsTable.getResultsTable();
-    final OperationsHistoryPanel history = rt.getOperationHistoryPanel();
-    if (history.getLastOperation() instanceof DriftCorrectionOperation) {
-      rt.copyUndoToActual();  //replace last operation
-      history.removeLastOperation();
-    } else {
-      rt.copyActualToUndo();  //save state for later undo
-    }
-
-    getResultsFromTable();
-    
-    new SwingWorker<CrossCorrelationDriftCorrection, Void>() {
-      @Override
-      protected CrossCorrelationDriftCorrection doInBackground() {
-        CrossCorrelationDriftCorrection driftCorrection = new CrossCorrelationDriftCorrection(x, y, frame, bins, magnification, -1, -1, showCorrelationImages);
-        return driftCorrection;
-      }
-
-      @Override
-      protected void done() {
-        try {
-          CrossCorrelationDriftCorrection driftCorrection = get();
-          //show plots
-          if (showPlot) {
-            showDriftPlot(driftCorrection);
-          }
-          if (showCorrelationImages) {
-            showCorrelations(driftCorrection);
-          }
-          //update results table
-          applyToResultsTable(driftCorrection);
-          history.addOperation(new DriftCorrectionOperation(magnification, bins, showPlot, showCorrelationImages));
-          rt.setStatus("Drift correction applied.");
-          rt.showPreview();
-        } catch (InterruptedException ex) {
-          GUI.showBalloonTip(applyButton, ex.getMessage());
-        } catch (ExecutionException ex) {
-          GUI.showBalloonTip(applyButton, ex.getCause().getMessage());
-        } finally {
-          applyButton.setEnabled(true);
+    try {
+        applyButton.setEnabled(false);
+        final IJResultsTable rt = IJResultsTable.getResultsTable();
+        final OperationsHistoryPanel history = rt.getOperationHistoryPanel();
+        if (history.getLastOperation() instanceof DriftCorrectionOperation) {
+          rt.copyUndoToActual();  //replace last operation
+          history.removeLastOperation();
+        } else {
+          rt.copyActualToUndo();  //save state for later undo
         }
-      }
-    }.execute();
+        
+        getResultsFromTable();
+
+        new SwingWorker<CrossCorrelationDriftCorrection, Void>() {
+          @Override
+          protected CrossCorrelationDriftCorrection doInBackground() {
+            CrossCorrelationDriftCorrection driftCorrection = new CrossCorrelationDriftCorrection(x, y, frame, bins, magnification, -1, -1, showCorrelationImages);
+            return driftCorrection;
+          }
+
+          @Override
+          protected void done() {
+            try {
+              CrossCorrelationDriftCorrection driftCorrection = get();
+              //show plots
+              if (showPlot) {
+                showDriftPlot(driftCorrection);
+              }
+              if (showCorrelationImages) {
+                showCorrelations(driftCorrection);
+              }
+              //update results table
+              applyToResultsTable(driftCorrection);
+              history.addOperation(new DriftCorrectionOperation(magnification, bins, showPlot, showCorrelationImages));
+              rt.setStatus("Drift correction applied.");
+              rt.showPreview();
+            } catch (InterruptedException ex) {
+              GUI.showBalloonTip(applyButton, ex.getMessage());
+            } catch (ExecutionException ex) {
+              GUI.showBalloonTip(applyButton, ex.getCause().getMessage());
+            } finally {
+              applyButton.setEnabled(true);
+            }
+          }
+        }.execute();
+    } finally {
+        applyButton.setEnabled(true);
+    }
   }
 
   void getResultsFromTable() {
