@@ -225,8 +225,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             //
             ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
             RenderingOverlay.showPointsInImage(impPreview, 
-                    PSFInstance.extractParamToArray(results, PSFInstance.X),
-                    PSFInstance.extractParamToArray(results, PSFInstance.Y),
+                    PSFInstance.extractParamToArray(results, PSFInstance.X_POS),
+                    PSFInstance.extractParamToArray(results, PSFInstance.Y_POS),
                     Color.red, RenderingOverlay.MARKER_CROSS);
             impPreview.show();
           } catch (InterruptedException ex) {

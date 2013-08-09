@@ -38,7 +38,7 @@ public class CylindricalLensZEstimator implements IEstimator {
     double[] originalValues = psf.getParamArray();
     String[] newNames = Arrays.copyOf(originalNames, originalNames.length + 1);
     double[] newValues = Arrays.copyOf(originalValues, originalValues.length + 1);
-    newNames[newNames.length - 1] = PSFInstance.Z;
+    newNames[newNames.length - 1] = PSFInstance.Z_POS;
     newValues[newNames.length - 1] = zValue;
 
     return new PSFInstance(newNames, newValues);

@@ -17,7 +17,7 @@ public class EllipticGaussianPSF extends PSFModel {
   double defaultSigma;
   double fi; //angle
   double sinfi,cosfi;
-  private static final String[] parameterNames = {PSFInstance.X, PSFInstance.Y, PSFInstance.INTENSITY, PSFInstance.SIGMA, PSFInstance.SIGMA2, PSFInstance.BACKGROUND};
+  private static final String[] parameterNames = {PSFInstance.X_POS, PSFInstance.Y_POS, PSFInstance.SIGMA, PSFInstance.SIGMA2, PSFInstance.INTENSITY, PSFInstance.BACKGROUND};
 
   public EllipticGaussianPSF(double defaultSigma, double fi) {
     this.defaultSigma = defaultSigma;

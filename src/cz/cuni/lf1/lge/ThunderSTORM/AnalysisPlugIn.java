@@ -113,6 +113,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
           }
         }
       }
+      for(String colname : tableModel.getColumnNames()) {
+        tableModel.setColumnUnits(colname, PSFInstance.getUnit(colname));
+      }
       tableModel.copyOriginalToActual();
       tableModel.setActualState();
       rt.setPreviewRenderer(renderingQueue);
@@ -123,8 +126,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       for (int frame = 1; frame <= stackSize; frame++) {
         if(results[frame]!= null){
           RenderingOverlay.showPointsInImageSlice(imp,
-                  Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.X), roi.getBounds().x),
-                  Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.Y), roi.getBounds().y),
+                  Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.X_POS), roi.getBounds().x),
+                  Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.Y_POS), roi.getBounds().y),
                   frame, Color.red, RenderingOverlay.MARKER_CROSS);
         }
       }
@@ -263,9 +266,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
       if(fits.size() > 0) {
         renderingQueue.renderLater(
-                PSFInstance.extractParamToArray(fits, PSFInstance.X),
-                PSFInstance.extractParamToArray(fits, PSFInstance.Y),
-                fits.get(0).hasParam(PSFInstance.Z) ? PSFInstance.extractParamToArray(fits, PSFInstance.Z) : null,
+                PSFInstance.extractParamToArray(fits, PSFInstance.X_POS),
+                PSFInstance.extractParamToArray(fits, PSFInstance.Y_POS),
+                fits.get(0).hasParam(PSFInstance.Z_POS) ? PSFInstance.extractParamToArray(fits, PSFInstance.Z_POS) : null,
                 null);
       }
       //

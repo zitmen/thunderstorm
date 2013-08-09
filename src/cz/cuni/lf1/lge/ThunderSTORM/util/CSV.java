@@ -69,7 +69,7 @@ public class CSV {
         if(lines.get(0).length < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
         
         Vector<PSFInstance> loc = new Vector<PSFInstance>();
-        String[] names = new String[]{PSFInstance.X, PSFInstance.Y, "Intensity", PSFInstance.SIGMA, "Background"};
+        String[] names = new String[]{PSFInstance.X_POS, PSFInstance.Y_POS, "Intensity", PSFInstance.SIGMA, "Background"};
         for(int r = start_row, rm = lines.size(); r < rm; r++) {
             loc.add(new PSFInstance(names, new double[]{
                 Float.parseFloat(lines.get(r)[start_col+0]),    // x

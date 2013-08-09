@@ -17,7 +17,7 @@ public class OperationsHistoryPanel extends JPanel {
   private List<LabelWithCheckbox> stack;
   private JLabel historyLabel;
   private final static String LABEL = "Post-processing history: ";
-  private final static String LABEL_EMPTY = "Post-processing history: empty";
+  private final static String LABEL_EMPTY = "Post-processing history: -";
 
   public OperationsHistoryPanel() {
     stack = new ArrayList<LabelWithCheckbox>();

@@ -26,22 +26,37 @@ public class JSONImportExport implements IImportExport {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Vector<HashMap<String,Double>> molecules = gson.fromJson(new FileReader(fp), new TypeToken<Vector<HashMap<String,Double>>>(){}.getType());
 
-        String [] headers = new String[1];
+        String [] colnames = new String[1];
+        String [] colunits = new String[1];
+        Double [] values = new Double[1];
         int r = 0, nrows = molecules.size();
         for(HashMap<String,Double> mol : molecules) {
-            if(mol.size() != headers.length)
-                headers = new String[mol.size()];
-            mol.keySet().toArray(headers);
-            if(!rt.columnNamesEqual(headers)) {
+            if(mol.size() != colnames.length) {
+                colnames = new String[mol.size()];
+                colunits = new String[mol.size()];
+                values = new Double[mol.size()];
+            }
+            int c = 0;
+            for(String label : mol.keySet().toArray(new String[0])) {
+                String [] tmp = IJResultsTable.parseColumnLabel(label);
+                colnames[c] = tmp[0];
+                colunits[c] = tmp[1];
+                values[c] = mol.get(label);
+                c++;
+            }
+            if(!rt.columnNamesEqual(colnames)) {
                 throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + IJResultsTable.COLUMN_ID + "')!");
             }
             //
             rt.addRow();
-            for(Entry<String,Double> entry : mol.entrySet()) {
-                if(IJResultsTable.COLUMN_ID.equals(entry.getKey())) continue;
-                rt.addValue(entry.getValue(), entry.getKey());
+            for(int i = 0; i < colnames.length; i++) {
+                if(IJResultsTable.COLUMN_ID.equals(colnames[i])) continue;
+                rt.addValue(values[i], colnames[i]);
                 IJ.showProgress((double)(r++) / (double)nrows);
             }
+        }
+        for(int c = 0; c < colnames.length; c++) {
+            rt.setColumnUnits(colnames[c], colunits[c]);
         }
         rt.copyOriginalToActual();
         rt.setActualState();
@@ -54,14 +69,13 @@ public class JSONImportExport implements IImportExport {
         assert(!fp.isEmpty());
         assert(columns != null);
         
-        int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
-        String [] headers = rt.getColumnNames();
+        int ncols = columns.size(), nrows = rt.getRowCount();
         
         Vector<HashMap<String, Double>> results = new Vector<HashMap<String,Double>>();
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(headers[c], (Double)rt.getValue(r ,headers[c]));
+                molecule.put(rt.getColumnLabel(columns.elementAt(c)), (Double)rt.getValue(r ,columns.elementAt(c)));
             results.add(molecule);
             IJ.showProgress((double)r / (double)nrows);
         }

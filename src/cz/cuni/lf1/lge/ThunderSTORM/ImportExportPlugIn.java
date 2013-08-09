@@ -92,8 +92,10 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             exporter.exportToFile(fpath, IJResultsTable.getResultsTable(), columns);
             IJ.showStatus("ThunderSTORM has exported your results.");
         } catch(IOException ex) {
+            IJ.showStatus("");
             IJ.showMessage("Exception", ex.getMessage());
         } catch(Exception ex) {
+            IJ.showStatus("");
             IJ.handleException(ex);
         }
         IJ.showProgress(1.0);
@@ -110,8 +112,10 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             importer.importFromFile(fpath, rt);
             IJ.showStatus("ThunderSTORM has imported your file.");
         } catch(IOException ex) {
+            IJ.showStatus("");
             IJ.showMessage("Exception", ex.getMessage());
         } catch(Exception ex) {
+            IJ.showStatus("");
             IJ.handleException(ex);
         }
         rt.show("Results");

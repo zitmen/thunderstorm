@@ -115,14 +115,14 @@ public class ResultsDriftCorrection {
 
   void getResultsFromTable() {
     IJResultsTable rt = IJResultsTable.getResultsTable();
-    if (!rt.columnExists(PSFInstance.X) || !rt.columnExists(PSFInstance.Y)) {
-      throw new RuntimeException("Could not find " + PSFInstance.X + " and " + PSFInstance.Y + " columns.");
+    if (!rt.columnExists(PSFInstance.X_POS) || !rt.columnExists(PSFInstance.Y_POS)) {
+      throw new RuntimeException("Could not find " + PSFInstance.X_POS + " and " + PSFInstance.Y_POS + " columns.");
     }
     if (!rt.columnExists("frame")) {
       throw new RuntimeException("Could not find \"frame\" column.");
     }
-    x = rt.getColumnAsDoubles(PSFInstance.X);
-    y = rt.getColumnAsDoubles(PSFInstance.Y);
+    x = rt.getColumnAsDoubles(PSFInstance.X_POS);
+    y = rt.getColumnAsDoubles(PSFInstance.Y_POS);
     frame = rt.getColumnAsDoubles("frame");
   }
 
@@ -165,11 +165,11 @@ public class ResultsDriftCorrection {
     IJResultsTable rt = IJResultsTable.getResultsTable();
     for (int i = 0; i < rt.getRowCount(); i++) {
       double frameNumber = rt.getValue(i, "frame");
-      double xVal = rt.getValue(i, PSFInstance.X);
-      double yVal = rt.getValue(i, PSFInstance.Y);
+      double xVal = rt.getValue(i, PSFInstance.X_POS);
+      double yVal = rt.getValue(i, PSFInstance.Y_POS);
       Point2D.Double drift = driftCorrection.getInterpolatedDrift(frameNumber);
-      rt.setValueAt(xVal - drift.x, i, PSFInstance.X);
-      rt.setValueAt(yVal - drift.y, i, PSFInstance.Y);
+      rt.setValueAt(xVal - drift.x, i, PSFInstance.X_POS);
+      rt.setValueAt(yVal - drift.y, i, PSFInstance.Y_POS);
     }
   }
 

@@ -43,7 +43,7 @@ public class GaussianPSF extends PSFModel {
     //private final static String[] titles = new String[] { "x", "y", "z", "I", "b", "sigma_x", "sigma_y", "angle" };
     private final double[] gradient = new double[5];
     private final double[] params = new double[5];
-    private final static String[] titles = new String[] { "x", "y", "I", "sigma", "b" };
+    private final static String[] titles = new String[] { PSFInstance.X_POS, PSFInstance.Y_POS, PSFInstance.SIGMA, PSFInstance.INTENSITY, PSFInstance.BACKGROUND };
 
     /**
      *

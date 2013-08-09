@@ -172,13 +172,13 @@ class ResultsGrouping {
   }
 
   public static void applyToModel(ResultsTableModel model, double dist) {
-    if (!model.columnExists(PSFInstance.X) || !model.columnExists(PSFInstance.Y)) {
-      throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFInstance.X, PSFInstance.Y, model.getColumnNames()));
+    if (!model.columnExists(PSFInstance.X_POS) || !model.columnExists(PSFInstance.Y_POS)) {
+      throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFInstance.X_POS, PSFInstance.Y_POS, model.getColumnNames()));
     }
     //
     double dist2 = sqr(dist);
-    double[] x = model.getColumnAsDoubles(PSFInstance.X);
-    double[] y = model.getColumnAsDoubles(PSFInstance.Y);
+    double[] x = model.getColumnAsDoubles(PSFInstance.X_POS);
+    double[] y = model.getColumnAsDoubles(PSFInstance.Y_POS);
     double[] I = model.getColumnAsDoubles(PSFInstance.INTENSITY);
     double[] b = model.getColumnAsDoubles(PSFInstance.BACKGROUND);
     double[] s = model.getColumnAsDoubles(PSFInstance.SIGMA);
@@ -197,8 +197,8 @@ class ResultsGrouping {
       //
       model.addRow();
       model.addValue((double) mol.frame, "frame");
-      model.addValue(mol.x, PSFInstance.X);
-      model.addValue(mol.y, PSFInstance.Y);
+      model.addValue(mol.x, PSFInstance.X_POS);
+      model.addValue(mol.y, PSFInstance.Y_POS);
       model.addValue(mol.I, PSFInstance.INTENSITY);
       model.addValue(mol.b, PSFInstance.BACKGROUND);
       model.addValue(mol.s, PSFInstance.SIGMA);

@@ -12,7 +12,7 @@ import ij.process.FloatProcessor;
  */
 public class RadialSymmetryFitter implements OneLocationFitter {
 
-  public static final String[] paramNames = {PSFInstance.X, PSFInstance.Y};
+  public static final String[] paramNames = {PSFInstance.X_POS, PSFInstance.Y_POS};
 
   @Override
   public PSFInstance fit(SubImage img) {

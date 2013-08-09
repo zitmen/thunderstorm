@@ -19,7 +19,7 @@ public class SymmetricGaussianPSF extends PSFModel {
    *
    */
   public double defaultSigma;
-  private static final String[] parameterNames = {PSFInstance.X, PSFInstance.Y, PSFInstance.INTENSITY, PSFInstance.SIGMA, PSFInstance.BACKGROUND};
+  private static final String[] parameterNames = {PSFInstance.X_POS, PSFInstance.Y_POS, PSFInstance.SIGMA, PSFInstance.INTENSITY, PSFInstance.BACKGROUND};
 
   public SymmetricGaussianPSF(double defaultSigma) {
     this.defaultSigma = defaultSigma;

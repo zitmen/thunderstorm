@@ -111,20 +111,32 @@ public class IJResultsTable {
         model.setActualState();
     }
 
-    public void addColumn(String label) {
-        model.addColumn(label);
+    public void addColumn(String name, String units) {
+        model.addColumn(name, units);
+    }
+    
+    public void addColumn(String name) {
+        model.addColumn(name, null);
+    }
+    
+    public void addColumn(String name, String units, Vector<Double> data) {
+        model.addColumn(name, units, data);
     }
 
-    public void addColumn(String label, Vector<Double> data) {
-        model.addColumn(label, data);
+    public void addColumn(String name, Vector<Double> data) {
+        model.addColumn(name, null, data);
     }
 
     public void addValue(Double value, int columnIndex) {
         model.addValue(value, columnIndex);
     }
 
-    public void addValue(Double value, String columnLabel) {
-        model.addValue(value, columnLabel);
+    public void addValue(Double value, String columnName) {
+        model.addValue(value, columnName);
+    }
+    
+    public static String [] parseColumnLabel(String columnLabel) {
+        return TableColumn.parseLabel(columnLabel);
     }
 
     public Vector<Double> getColumnAsVector(int columnIndex, int[] indices) {
@@ -135,32 +147,32 @@ public class IJResultsTable {
         return model.getColumnAsVector(columnIndex);
     }
 
-    public Vector<Double> getColumnAsVector(String columnLabel) {
-        return model.getColumnAsVector(columnLabel);
+    public Vector<Double> getColumnAsVector(String columnName) {
+        return model.getColumnAsVector(columnName);
     }
 
     public Double[] getColumnAsDoubleObjects(int columnIndex) {
         return model.getColumnAsDoubleObjects(columnIndex);
     }
 
-    public Double[] getColumnAsDoubleObjects(String columnLabel) {
-        return model.getColumnAsDoubleObjects(columnLabel);
+    public Double[] getColumnAsDoubleObjects(String columnName) {
+        return model.getColumnAsDoubleObjects(columnName);
     }
 
     public double[] getColumnAsDoubles(int index) {
         return model.getColumnAsDoubles(index);
     }
 
-    public double[] getColumnAsDoubles(String heading) {
-        return model.getColumnAsDoubles(heading);
+    public double[] getColumnAsDoubles(String columnName) {
+        return model.getColumnAsDoubles(columnName);
     }
 
     public float[] getColumnAsFloats(int index) {
         return model.getColumnAsFloats(index);
     }
 
-    public float[] getColumnAsFloats(String heading) {
-        return model.getColumnAsFloats(heading);
+    public float[] getColumnAsFloats(String columnName) {
+        return model.getColumnAsFloats(columnName);
     }
 
     public int getRowCount() {
@@ -172,15 +184,23 @@ public class IJResultsTable {
     }
 
     public String getColumnName(int columnIndex) {
-        return model.getColumnName(columnIndex);
+        return model.getColumnRealName(columnIndex);
+    }
+    
+    public String getColumnLabel(String columnName) {
+        return model.getColumnLabel(columnName);
+    }
+    
+    public String getColumnLabel(int columnIndex) {
+        return model.getColumnLabel(columnIndex);
     }
 
     public Double getValueAt(int rowIndex, int columnIndex) {
         return model.getValueAt(rowIndex, columnIndex);
     }
 
-    public Double getValue(int rowIndex, String column) {
-        return model.getValue(rowIndex, column);
+    public Double getValue(int rowIndex, String columnName) {
+        return model.getValue(rowIndex, columnName);
     }
 
     public synchronized int addRow() {
@@ -195,14 +215,18 @@ public class IJResultsTable {
         return model.getColumnNames();
     }
 
-    public boolean columnNamesEqual(String[] headers) {
+    public boolean columnNamesEqual(String[] names) {
         if(getRowCount() == 0) return true; // if the table is empty then the colums are assumed to be empty
-        //
         int checked = 1;    // ignoring column id
-        for(int i = 0; i < headers.length; i++) {
-            if(IJResultsTable.COLUMN_ID.equals(headers[i]))   continue;  // ignoring column id
-            if(columnExists(headers[i])) checked++;
-            else                         return false;
+        for(int i = 0; i < names.length; i++) {
+            if(IJResultsTable.COLUMN_ID.equals(names[i])) {
+                continue;  // ignoring column id
+            }
+            if(columnExists(names[i])) {
+                checked++;
+            } else {
+                return false;
+            }
         }
         return (checked == getColumnCount());
     }
@@ -211,8 +235,8 @@ public class IJResultsTable {
         return model.columnExists(column);
     }
 
-    public boolean columnExists(String column) {
-        return model.columnExists(column);
+    public boolean columnExists(String columnName) {
+        return model.columnExists(columnName);
     }
 
     public void filterRows(boolean[] keep) {
@@ -222,9 +246,25 @@ public class IJResultsTable {
     public int findColumn(String columnName) {
         return model.findColumn(columnName);
     }
+    
+    public void setColumnUnits(String columnName, String new_units) {
+        model.setColumnUnits(columnName, new_units);
+    }
+    
+    public void setColumnUnits(int columnIndex, String new_units) {
+        model.setColumnUnits(columnIndex, new_units);
+    }
+    
+    public String getColumnUnits(String columnName) {
+        return model.getColumnUnits(columnName);
+    }
+    
+    public String getColumnUnits(int columnIndex) {
+        return model.getColumnUnits(columnIndex);
+    }
 
-    public void setValueAt(Double value, int rowIndex, String columnLabel) {
-        model.setValueAt(value, rowIndex, columnLabel);
+    public void setValueAt(Double value, int rowIndex, String columnName) {
+        model.setValueAt(value, rowIndex, columnName);
     }
 
     public void setValueAt(Double value, int rowIndex, int columnIndex) {

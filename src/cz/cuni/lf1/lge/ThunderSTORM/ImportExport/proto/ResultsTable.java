@@ -8,6 +8,1881 @@ public final class ResultsTable {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  public interface UnitsOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // optional string id = 1;
+    /**
+     * <code>optional string id = 1;</code>
+     */
+    boolean hasId();
+    /**
+     * <code>optional string id = 1;</code>
+     */
+    java.lang.String getId();
+    /**
+     * <code>optional string id = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getIdBytes();
+
+    // optional string frame = 2;
+    /**
+     * <code>optional string frame = 2;</code>
+     */
+    boolean hasFrame();
+    /**
+     * <code>optional string frame = 2;</code>
+     */
+    java.lang.String getFrame();
+    /**
+     * <code>optional string frame = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getFrameBytes();
+
+    // optional string x = 3;
+    /**
+     * <code>optional string x = 3;</code>
+     */
+    boolean hasX();
+    /**
+     * <code>optional string x = 3;</code>
+     */
+    java.lang.String getX();
+    /**
+     * <code>optional string x = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getXBytes();
+
+    // optional string y = 4;
+    /**
+     * <code>optional string y = 4;</code>
+     */
+    boolean hasY();
+    /**
+     * <code>optional string y = 4;</code>
+     */
+    java.lang.String getY();
+    /**
+     * <code>optional string y = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getYBytes();
+
+    // optional string z = 5;
+    /**
+     * <code>optional string z = 5;</code>
+     */
+    boolean hasZ();
+    /**
+     * <code>optional string z = 5;</code>
+     */
+    java.lang.String getZ();
+    /**
+     * <code>optional string z = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getZBytes();
+
+    // optional string sigma = 6;
+    /**
+     * <code>optional string sigma = 6;</code>
+     */
+    boolean hasSigma();
+    /**
+     * <code>optional string sigma = 6;</code>
+     */
+    java.lang.String getSigma();
+    /**
+     * <code>optional string sigma = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getSigmaBytes();
+
+    // optional string sigma2 = 7;
+    /**
+     * <code>optional string sigma2 = 7;</code>
+     */
+    boolean hasSigma2();
+    /**
+     * <code>optional string sigma2 = 7;</code>
+     */
+    java.lang.String getSigma2();
+    /**
+     * <code>optional string sigma2 = 7;</code>
+     */
+    com.google.protobuf.ByteString
+        getSigma2Bytes();
+
+    // optional string intensity = 8;
+    /**
+     * <code>optional string intensity = 8;</code>
+     */
+    boolean hasIntensity();
+    /**
+     * <code>optional string intensity = 8;</code>
+     */
+    java.lang.String getIntensity();
+    /**
+     * <code>optional string intensity = 8;</code>
+     */
+    com.google.protobuf.ByteString
+        getIntensityBytes();
+
+    // optional string background = 9;
+    /**
+     * <code>optional string background = 9;</code>
+     */
+    boolean hasBackground();
+    /**
+     * <code>optional string background = 9;</code>
+     */
+    java.lang.String getBackground();
+    /**
+     * <code>optional string background = 9;</code>
+     */
+    com.google.protobuf.ByteString
+        getBackgroundBytes();
+
+    // optional string detections = 10;
+    /**
+     * <code>optional string detections = 10;</code>
+     */
+    boolean hasDetections();
+    /**
+     * <code>optional string detections = 10;</code>
+     */
+    java.lang.String getDetections();
+    /**
+     * <code>optional string detections = 10;</code>
+     */
+    com.google.protobuf.ByteString
+        getDetectionsBytes();
+  }
+  /**
+   * Protobuf type {@code cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units}
+   */
+  public static final class Units extends
+      com.google.protobuf.GeneratedMessage
+      implements UnitsOrBuilder {
+    // Use Units.newBuilder() to construct.
+    private Units(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private Units(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final Units defaultInstance;
+    public static Units getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public Units getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Units(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              id_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              frame_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              x_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              y_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              z_ = input.readBytes();
+              break;
+            }
+            case 50: {
+              bitField0_ |= 0x00000020;
+              sigma_ = input.readBytes();
+              break;
+            }
+            case 58: {
+              bitField0_ |= 0x00000040;
+              sigma2_ = input.readBytes();
+              break;
+            }
+            case 66: {
+              bitField0_ |= 0x00000080;
+              intensity_ = input.readBytes();
+              break;
+            }
+            case 74: {
+              bitField0_ |= 0x00000100;
+              background_ = input.readBytes();
+              break;
+            }
+            case 82: {
+              bitField0_ |= 0x00000200;
+              detections_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.class, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Units> PARSER =
+        new com.google.protobuf.AbstractParser<Units>() {
+      public Units parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Units(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Units> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // optional string id = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private java.lang.Object id_;
+    /**
+     * <code>optional string id = 1;</code>
+     */
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional string id = 1;</code>
+     */
+    public java.lang.String getId() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          id_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string id = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getIdBytes() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        id_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string frame = 2;
+    public static final int FRAME_FIELD_NUMBER = 2;
+    private java.lang.Object frame_;
+    /**
+     * <code>optional string frame = 2;</code>
+     */
+    public boolean hasFrame() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional string frame = 2;</code>
+     */
+    public java.lang.String getFrame() {
+      java.lang.Object ref = frame_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          frame_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string frame = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getFrameBytes() {
+      java.lang.Object ref = frame_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        frame_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string x = 3;
+    public static final int X_FIELD_NUMBER = 3;
+    private java.lang.Object x_;
+    /**
+     * <code>optional string x = 3;</code>
+     */
+    public boolean hasX() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional string x = 3;</code>
+     */
+    public java.lang.String getX() {
+      java.lang.Object ref = x_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          x_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string x = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getXBytes() {
+      java.lang.Object ref = x_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        x_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string y = 4;
+    public static final int Y_FIELD_NUMBER = 4;
+    private java.lang.Object y_;
+    /**
+     * <code>optional string y = 4;</code>
+     */
+    public boolean hasY() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional string y = 4;</code>
+     */
+    public java.lang.String getY() {
+      java.lang.Object ref = y_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          y_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string y = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getYBytes() {
+      java.lang.Object ref = y_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        y_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string z = 5;
+    public static final int Z_FIELD_NUMBER = 5;
+    private java.lang.Object z_;
+    /**
+     * <code>optional string z = 5;</code>
+     */
+    public boolean hasZ() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional string z = 5;</code>
+     */
+    public java.lang.String getZ() {
+      java.lang.Object ref = z_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          z_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string z = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getZBytes() {
+      java.lang.Object ref = z_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        z_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string sigma = 6;
+    public static final int SIGMA_FIELD_NUMBER = 6;
+    private java.lang.Object sigma_;
+    /**
+     * <code>optional string sigma = 6;</code>
+     */
+    public boolean hasSigma() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional string sigma = 6;</code>
+     */
+    public java.lang.String getSigma() {
+      java.lang.Object ref = sigma_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          sigma_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string sigma = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSigmaBytes() {
+      java.lang.Object ref = sigma_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sigma_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string sigma2 = 7;
+    public static final int SIGMA2_FIELD_NUMBER = 7;
+    private java.lang.Object sigma2_;
+    /**
+     * <code>optional string sigma2 = 7;</code>
+     */
+    public boolean hasSigma2() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>optional string sigma2 = 7;</code>
+     */
+    public java.lang.String getSigma2() {
+      java.lang.Object ref = sigma2_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          sigma2_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string sigma2 = 7;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSigma2Bytes() {
+      java.lang.Object ref = sigma2_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sigma2_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string intensity = 8;
+    public static final int INTENSITY_FIELD_NUMBER = 8;
+    private java.lang.Object intensity_;
+    /**
+     * <code>optional string intensity = 8;</code>
+     */
+    public boolean hasIntensity() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional string intensity = 8;</code>
+     */
+    public java.lang.String getIntensity() {
+      java.lang.Object ref = intensity_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          intensity_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string intensity = 8;</code>
+     */
+    public com.google.protobuf.ByteString
+        getIntensityBytes() {
+      java.lang.Object ref = intensity_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        intensity_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string background = 9;
+    public static final int BACKGROUND_FIELD_NUMBER = 9;
+    private java.lang.Object background_;
+    /**
+     * <code>optional string background = 9;</code>
+     */
+    public boolean hasBackground() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    /**
+     * <code>optional string background = 9;</code>
+     */
+    public java.lang.String getBackground() {
+      java.lang.Object ref = background_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          background_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string background = 9;</code>
+     */
+    public com.google.protobuf.ByteString
+        getBackgroundBytes() {
+      java.lang.Object ref = background_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        background_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string detections = 10;
+    public static final int DETECTIONS_FIELD_NUMBER = 10;
+    private java.lang.Object detections_;
+    /**
+     * <code>optional string detections = 10;</code>
+     */
+    public boolean hasDetections() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    /**
+     * <code>optional string detections = 10;</code>
+     */
+    public java.lang.String getDetections() {
+      java.lang.Object ref = detections_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          detections_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string detections = 10;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDetectionsBytes() {
+      java.lang.Object ref = detections_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        detections_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private void initFields() {
+      id_ = "";
+      frame_ = "";
+      x_ = "";
+      y_ = "";
+      z_ = "";
+      sigma_ = "";
+      sigma2_ = "";
+      intensity_ = "";
+      background_ = "";
+      detections_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getFrameBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getXBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getYBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getZBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(6, getSigmaBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBytes(7, getSigma2Bytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeBytes(8, getIntensityBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeBytes(9, getBackgroundBytes());
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeBytes(10, getDetectionsBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getFrameBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getXBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getYBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getZBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getSigmaBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(7, getSigma2Bytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(8, getIntensityBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(9, getBackgroundBytes());
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(10, getDetectionsBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.UnitsOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.class, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.Builder.class);
+      }
+
+      // Construct using cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        id_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        frame_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        x_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        y_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        z_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
+        sigma_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
+        sigma2_ = "";
+        bitField0_ = (bitField0_ & ~0x00000040);
+        intensity_ = "";
+        bitField0_ = (bitField0_ & ~0x00000080);
+        background_ = "";
+        bitField0_ = (bitField0_ & ~0x00000100);
+        detections_ = "";
+        bitField0_ = (bitField0_ & ~0x00000200);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_descriptor;
+      }
+
+      public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units getDefaultInstanceForType() {
+        return cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.getDefaultInstance();
+      }
+
+      public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units build() {
+        cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units buildPartial() {
+        cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units result = new cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.id_ = id_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.frame_ = frame_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.x_ = x_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.y_ = y_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.z_ = z_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.sigma_ = sigma_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.sigma2_ = sigma2_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.intensity_ = intensity_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.background_ = background_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.detections_ = detections_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units) {
+          return mergeFrom((cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units other) {
+        if (other == cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          bitField0_ |= 0x00000001;
+          id_ = other.id_;
+          onChanged();
+        }
+        if (other.hasFrame()) {
+          bitField0_ |= 0x00000002;
+          frame_ = other.frame_;
+          onChanged();
+        }
+        if (other.hasX()) {
+          bitField0_ |= 0x00000004;
+          x_ = other.x_;
+          onChanged();
+        }
+        if (other.hasY()) {
+          bitField0_ |= 0x00000008;
+          y_ = other.y_;
+          onChanged();
+        }
+        if (other.hasZ()) {
+          bitField0_ |= 0x00000010;
+          z_ = other.z_;
+          onChanged();
+        }
+        if (other.hasSigma()) {
+          bitField0_ |= 0x00000020;
+          sigma_ = other.sigma_;
+          onChanged();
+        }
+        if (other.hasSigma2()) {
+          bitField0_ |= 0x00000040;
+          sigma2_ = other.sigma2_;
+          onChanged();
+        }
+        if (other.hasIntensity()) {
+          bitField0_ |= 0x00000080;
+          intensity_ = other.intensity_;
+          onChanged();
+        }
+        if (other.hasBackground()) {
+          bitField0_ |= 0x00000100;
+          background_ = other.background_;
+          onChanged();
+        }
+        if (other.hasDetections()) {
+          bitField0_ |= 0x00000200;
+          detections_ = other.detections_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // optional string id = 1;
+      private java.lang.Object id_ = "";
+      /**
+       * <code>optional string id = 1;</code>
+       */
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional string id = 1;</code>
+       */
+      public java.lang.String getId() {
+        java.lang.Object ref = id_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          id_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string id = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getIdBytes() {
+        java.lang.Object ref = id_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          id_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string id = 1;</code>
+       */
+      public Builder setId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        id_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string id = 1;</code>
+       */
+      public Builder clearId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        id_ = getDefaultInstance().getId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string id = 1;</code>
+       */
+      public Builder setIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        id_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string frame = 2;
+      private java.lang.Object frame_ = "";
+      /**
+       * <code>optional string frame = 2;</code>
+       */
+      public boolean hasFrame() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string frame = 2;</code>
+       */
+      public java.lang.String getFrame() {
+        java.lang.Object ref = frame_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          frame_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string frame = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getFrameBytes() {
+        java.lang.Object ref = frame_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          frame_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string frame = 2;</code>
+       */
+      public Builder setFrame(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        frame_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string frame = 2;</code>
+       */
+      public Builder clearFrame() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        frame_ = getDefaultInstance().getFrame();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string frame = 2;</code>
+       */
+      public Builder setFrameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        frame_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string x = 3;
+      private java.lang.Object x_ = "";
+      /**
+       * <code>optional string x = 3;</code>
+       */
+      public boolean hasX() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional string x = 3;</code>
+       */
+      public java.lang.String getX() {
+        java.lang.Object ref = x_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          x_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string x = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getXBytes() {
+        java.lang.Object ref = x_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          x_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string x = 3;</code>
+       */
+      public Builder setX(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        x_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string x = 3;</code>
+       */
+      public Builder clearX() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        x_ = getDefaultInstance().getX();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string x = 3;</code>
+       */
+      public Builder setXBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        x_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string y = 4;
+      private java.lang.Object y_ = "";
+      /**
+       * <code>optional string y = 4;</code>
+       */
+      public boolean hasY() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional string y = 4;</code>
+       */
+      public java.lang.String getY() {
+        java.lang.Object ref = y_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          y_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string y = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getYBytes() {
+        java.lang.Object ref = y_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          y_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string y = 4;</code>
+       */
+      public Builder setY(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        y_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string y = 4;</code>
+       */
+      public Builder clearY() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        y_ = getDefaultInstance().getY();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string y = 4;</code>
+       */
+      public Builder setYBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        y_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string z = 5;
+      private java.lang.Object z_ = "";
+      /**
+       * <code>optional string z = 5;</code>
+       */
+      public boolean hasZ() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional string z = 5;</code>
+       */
+      public java.lang.String getZ() {
+        java.lang.Object ref = z_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          z_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string z = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getZBytes() {
+        java.lang.Object ref = z_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          z_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string z = 5;</code>
+       */
+      public Builder setZ(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        z_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string z = 5;</code>
+       */
+      public Builder clearZ() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        z_ = getDefaultInstance().getZ();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string z = 5;</code>
+       */
+      public Builder setZBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        z_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string sigma = 6;
+      private java.lang.Object sigma_ = "";
+      /**
+       * <code>optional string sigma = 6;</code>
+       */
+      public boolean hasSigma() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional string sigma = 6;</code>
+       */
+      public java.lang.String getSigma() {
+        java.lang.Object ref = sigma_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          sigma_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string sigma = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSigmaBytes() {
+        java.lang.Object ref = sigma_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          sigma_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string sigma = 6;</code>
+       */
+      public Builder setSigma(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        sigma_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sigma = 6;</code>
+       */
+      public Builder clearSigma() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        sigma_ = getDefaultInstance().getSigma();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sigma = 6;</code>
+       */
+      public Builder setSigmaBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        sigma_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string sigma2 = 7;
+      private java.lang.Object sigma2_ = "";
+      /**
+       * <code>optional string sigma2 = 7;</code>
+       */
+      public boolean hasSigma2() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional string sigma2 = 7;</code>
+       */
+      public java.lang.String getSigma2() {
+        java.lang.Object ref = sigma2_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          sigma2_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string sigma2 = 7;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSigma2Bytes() {
+        java.lang.Object ref = sigma2_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          sigma2_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string sigma2 = 7;</code>
+       */
+      public Builder setSigma2(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        sigma2_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sigma2 = 7;</code>
+       */
+      public Builder clearSigma2() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        sigma2_ = getDefaultInstance().getSigma2();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sigma2 = 7;</code>
+       */
+      public Builder setSigma2Bytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        sigma2_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string intensity = 8;
+      private java.lang.Object intensity_ = "";
+      /**
+       * <code>optional string intensity = 8;</code>
+       */
+      public boolean hasIntensity() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional string intensity = 8;</code>
+       */
+      public java.lang.String getIntensity() {
+        java.lang.Object ref = intensity_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          intensity_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string intensity = 8;</code>
+       */
+      public com.google.protobuf.ByteString
+          getIntensityBytes() {
+        java.lang.Object ref = intensity_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          intensity_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string intensity = 8;</code>
+       */
+      public Builder setIntensity(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        intensity_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string intensity = 8;</code>
+       */
+      public Builder clearIntensity() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        intensity_ = getDefaultInstance().getIntensity();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string intensity = 8;</code>
+       */
+      public Builder setIntensityBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        intensity_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string background = 9;
+      private java.lang.Object background_ = "";
+      /**
+       * <code>optional string background = 9;</code>
+       */
+      public boolean hasBackground() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional string background = 9;</code>
+       */
+      public java.lang.String getBackground() {
+        java.lang.Object ref = background_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          background_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string background = 9;</code>
+       */
+      public com.google.protobuf.ByteString
+          getBackgroundBytes() {
+        java.lang.Object ref = background_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          background_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string background = 9;</code>
+       */
+      public Builder setBackground(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000100;
+        background_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string background = 9;</code>
+       */
+      public Builder clearBackground() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        background_ = getDefaultInstance().getBackground();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string background = 9;</code>
+       */
+      public Builder setBackgroundBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000100;
+        background_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string detections = 10;
+      private java.lang.Object detections_ = "";
+      /**
+       * <code>optional string detections = 10;</code>
+       */
+      public boolean hasDetections() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>optional string detections = 10;</code>
+       */
+      public java.lang.String getDetections() {
+        java.lang.Object ref = detections_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          detections_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string detections = 10;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDetectionsBytes() {
+        java.lang.Object ref = detections_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          detections_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string detections = 10;</code>
+       */
+      public Builder setDetections(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000200;
+        detections_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string detections = 10;</code>
+       */
+      public Builder clearDetections() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        detections_ = getDefaultInstance().getDetections();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string detections = 10;</code>
+       */
+      public Builder setDetectionsBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000200;
+        detections_ = value;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units)
+    }
+
+    static {
+      defaultInstance = new Units(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units)
+  }
+
   public interface MoleculeOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
@@ -21,75 +1896,95 @@ public final class ResultsTable {
      */
     int getId();
 
-    // optional double x = 2;
+    // optional uint32 frame = 2;
     /**
-     * <code>optional double x = 2;</code>
+     * <code>optional uint32 frame = 2;</code>
+     */
+    boolean hasFrame();
+    /**
+     * <code>optional uint32 frame = 2;</code>
+     */
+    int getFrame();
+
+    // optional double x = 3;
+    /**
+     * <code>optional double x = 3;</code>
      */
     boolean hasX();
     /**
-     * <code>optional double x = 2;</code>
+     * <code>optional double x = 3;</code>
      */
     double getX();
 
-    // optional double y = 3;
+    // optional double y = 4;
     /**
-     * <code>optional double y = 3;</code>
+     * <code>optional double y = 4;</code>
      */
     boolean hasY();
     /**
-     * <code>optional double y = 3;</code>
+     * <code>optional double y = 4;</code>
      */
     double getY();
 
-    // optional double z = 4;
+    // optional double z = 5;
     /**
-     * <code>optional double z = 4;</code>
+     * <code>optional double z = 5;</code>
      */
     boolean hasZ();
     /**
-     * <code>optional double z = 4;</code>
+     * <code>optional double z = 5;</code>
      */
     double getZ();
 
-    // optional double sigma = 5;
+    // optional double sigma = 6;
     /**
-     * <code>optional double sigma = 5;</code>
+     * <code>optional double sigma = 6;</code>
      */
     boolean hasSigma();
     /**
-     * <code>optional double sigma = 5;</code>
+     * <code>optional double sigma = 6;</code>
      */
     double getSigma();
 
-    // optional double sigma2 = 6;
+    // optional double sigma2 = 7;
     /**
-     * <code>optional double sigma2 = 6;</code>
+     * <code>optional double sigma2 = 7;</code>
      */
     boolean hasSigma2();
     /**
-     * <code>optional double sigma2 = 6;</code>
+     * <code>optional double sigma2 = 7;</code>
      */
     double getSigma2();
 
-    // optional double intensity = 7;
+    // optional double intensity = 8;
     /**
-     * <code>optional double intensity = 7;</code>
+     * <code>optional double intensity = 8;</code>
      */
     boolean hasIntensity();
     /**
-     * <code>optional double intensity = 7;</code>
+     * <code>optional double intensity = 8;</code>
      */
     double getIntensity();
 
-    // optional double background = 8;
+    // optional double background = 9;
     /**
-     * <code>optional double background = 8;</code>
+     * <code>optional double background = 9;</code>
      */
     boolean hasBackground();
     /**
-     * <code>optional double background = 8;</code>
+     * <code>optional double background = 9;</code>
      */
     double getBackground();
+
+    // optional uint32 detections = 10;
+    /**
+     * <code>optional uint32 detections = 10;</code>
+     */
+    boolean hasDetections();
+    /**
+     * <code>optional uint32 detections = 10;</code>
+     */
+    int getDetections();
   }
   /**
    * Protobuf type {@code cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule}
@@ -147,39 +2042,49 @@ public final class ResultsTable {
               id_ = input.readUInt32();
               break;
             }
-            case 17: {
+            case 16: {
               bitField0_ |= 0x00000002;
-              x_ = input.readDouble();
+              frame_ = input.readUInt32();
               break;
             }
             case 25: {
               bitField0_ |= 0x00000004;
-              y_ = input.readDouble();
+              x_ = input.readDouble();
               break;
             }
             case 33: {
               bitField0_ |= 0x00000008;
-              z_ = input.readDouble();
+              y_ = input.readDouble();
               break;
             }
             case 41: {
               bitField0_ |= 0x00000010;
-              sigma_ = input.readDouble();
+              z_ = input.readDouble();
               break;
             }
             case 49: {
               bitField0_ |= 0x00000020;
-              sigma2_ = input.readDouble();
+              sigma_ = input.readDouble();
               break;
             }
             case 57: {
               bitField0_ |= 0x00000040;
-              intensity_ = input.readDouble();
+              sigma2_ = input.readDouble();
               break;
             }
             case 65: {
               bitField0_ |= 0x00000080;
+              intensity_ = input.readDouble();
+              break;
+            }
+            case 73: {
+              bitField0_ |= 0x00000100;
               background_ = input.readDouble();
+              break;
+            }
+            case 80: {
+              bitField0_ |= 0x00000200;
+              detections_ = input.readUInt32();
               break;
             }
           }
@@ -238,120 +2143,153 @@ public final class ResultsTable {
       return id_;
     }
 
-    // optional double x = 2;
-    public static final int X_FIELD_NUMBER = 2;
-    private double x_;
+    // optional uint32 frame = 2;
+    public static final int FRAME_FIELD_NUMBER = 2;
+    private int frame_;
     /**
-     * <code>optional double x = 2;</code>
+     * <code>optional uint32 frame = 2;</code>
      */
-    public boolean hasX() {
+    public boolean hasFrame() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional double x = 2;</code>
+     * <code>optional uint32 frame = 2;</code>
+     */
+    public int getFrame() {
+      return frame_;
+    }
+
+    // optional double x = 3;
+    public static final int X_FIELD_NUMBER = 3;
+    private double x_;
+    /**
+     * <code>optional double x = 3;</code>
+     */
+    public boolean hasX() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional double x = 3;</code>
      */
     public double getX() {
       return x_;
     }
 
-    // optional double y = 3;
-    public static final int Y_FIELD_NUMBER = 3;
+    // optional double y = 4;
+    public static final int Y_FIELD_NUMBER = 4;
     private double y_;
     /**
-     * <code>optional double y = 3;</code>
+     * <code>optional double y = 4;</code>
      */
     public boolean hasY() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional double y = 3;</code>
+     * <code>optional double y = 4;</code>
      */
     public double getY() {
       return y_;
     }
 
-    // optional double z = 4;
-    public static final int Z_FIELD_NUMBER = 4;
+    // optional double z = 5;
+    public static final int Z_FIELD_NUMBER = 5;
     private double z_;
     /**
-     * <code>optional double z = 4;</code>
+     * <code>optional double z = 5;</code>
      */
     public boolean hasZ() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>optional double z = 4;</code>
+     * <code>optional double z = 5;</code>
      */
     public double getZ() {
       return z_;
     }
 
-    // optional double sigma = 5;
-    public static final int SIGMA_FIELD_NUMBER = 5;
+    // optional double sigma = 6;
+    public static final int SIGMA_FIELD_NUMBER = 6;
     private double sigma_;
     /**
-     * <code>optional double sigma = 5;</code>
+     * <code>optional double sigma = 6;</code>
      */
     public boolean hasSigma() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>optional double sigma = 5;</code>
+     * <code>optional double sigma = 6;</code>
      */
     public double getSigma() {
       return sigma_;
     }
 
-    // optional double sigma2 = 6;
-    public static final int SIGMA2_FIELD_NUMBER = 6;
+    // optional double sigma2 = 7;
+    public static final int SIGMA2_FIELD_NUMBER = 7;
     private double sigma2_;
     /**
-     * <code>optional double sigma2 = 6;</code>
+     * <code>optional double sigma2 = 7;</code>
      */
     public boolean hasSigma2() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>optional double sigma2 = 6;</code>
+     * <code>optional double sigma2 = 7;</code>
      */
     public double getSigma2() {
       return sigma2_;
     }
 
-    // optional double intensity = 7;
-    public static final int INTENSITY_FIELD_NUMBER = 7;
+    // optional double intensity = 8;
+    public static final int INTENSITY_FIELD_NUMBER = 8;
     private double intensity_;
     /**
-     * <code>optional double intensity = 7;</code>
+     * <code>optional double intensity = 8;</code>
      */
     public boolean hasIntensity() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     /**
-     * <code>optional double intensity = 7;</code>
+     * <code>optional double intensity = 8;</code>
      */
     public double getIntensity() {
       return intensity_;
     }
 
-    // optional double background = 8;
-    public static final int BACKGROUND_FIELD_NUMBER = 8;
+    // optional double background = 9;
+    public static final int BACKGROUND_FIELD_NUMBER = 9;
     private double background_;
     /**
-     * <code>optional double background = 8;</code>
+     * <code>optional double background = 9;</code>
      */
     public boolean hasBackground() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
-     * <code>optional double background = 8;</code>
+     * <code>optional double background = 9;</code>
      */
     public double getBackground() {
       return background_;
     }
 
+    // optional uint32 detections = 10;
+    public static final int DETECTIONS_FIELD_NUMBER = 10;
+    private int detections_;
+    /**
+     * <code>optional uint32 detections = 10;</code>
+     */
+    public boolean hasDetections() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    /**
+     * <code>optional uint32 detections = 10;</code>
+     */
+    public int getDetections() {
+      return detections_;
+    }
+
     private void initFields() {
       id_ = 0;
+      frame_ = 0;
       x_ = 0D;
       y_ = 0D;
       z_ = 0D;
@@ -359,6 +2297,7 @@ public final class ResultsTable {
       sigma2_ = 0D;
       intensity_ = 0D;
       background_ = 0D;
+      detections_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -376,25 +2315,31 @@ public final class ResultsTable {
         output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeDouble(2, x_);
+        output.writeUInt32(2, frame_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeDouble(3, y_);
+        output.writeDouble(3, x_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeDouble(4, z_);
+        output.writeDouble(4, y_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeDouble(5, sigma_);
+        output.writeDouble(5, z_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeDouble(6, sigma2_);
+        output.writeDouble(6, sigma_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeDouble(7, intensity_);
+        output.writeDouble(7, sigma2_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeDouble(8, background_);
+        output.writeDouble(8, intensity_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeDouble(9, background_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeUInt32(10, detections_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -411,31 +2356,39 @@ public final class ResultsTable {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(2, x_);
+          .computeUInt32Size(2, frame_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(3, y_);
+          .computeDoubleSize(3, x_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(4, z_);
+          .computeDoubleSize(4, y_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(5, sigma_);
+          .computeDoubleSize(5, z_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(6, sigma2_);
+          .computeDoubleSize(6, sigma_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(7, intensity_);
+          .computeDoubleSize(7, sigma2_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(8, background_);
+          .computeDoubleSize(8, intensity_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(9, background_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(10, detections_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -555,20 +2508,24 @@ public final class ResultsTable {
         super.clear();
         id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        x_ = 0D;
+        frame_ = 0;
         bitField0_ = (bitField0_ & ~0x00000002);
-        y_ = 0D;
+        x_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000004);
-        z_ = 0D;
+        y_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000008);
-        sigma_ = 0D;
+        z_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000010);
-        sigma2_ = 0D;
+        sigma_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000020);
-        intensity_ = 0D;
+        sigma2_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000040);
-        background_ = 0D;
+        intensity_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000080);
+        background_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        detections_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
 
@@ -604,31 +2561,39 @@ public final class ResultsTable {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.x_ = x_;
+        result.frame_ = frame_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.y_ = y_;
+        result.x_ = x_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.z_ = z_;
+        result.y_ = y_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.sigma_ = sigma_;
+        result.z_ = z_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.sigma2_ = sigma2_;
+        result.sigma_ = sigma_;
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.intensity_ = intensity_;
+        result.sigma2_ = sigma2_;
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000080;
         }
+        result.intensity_ = intensity_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
         result.background_ = background_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.detections_ = detections_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -647,6 +2612,9 @@ public final class ResultsTable {
         if (other == cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.getDefaultInstance()) return this;
         if (other.hasId()) {
           setId(other.getId());
+        }
+        if (other.hasFrame()) {
+          setFrame(other.getFrame());
         }
         if (other.hasX()) {
           setX(other.getX());
@@ -668,6 +2636,9 @@ public final class ResultsTable {
         }
         if (other.hasBackground()) {
           setBackground(other.getBackground());
+        }
+        if (other.hasDetections()) {
+          setDetections(other.getDetections());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -729,233 +2700,299 @@ public final class ResultsTable {
         return this;
       }
 
-      // optional double x = 2;
-      private double x_ ;
+      // optional uint32 frame = 2;
+      private int frame_ ;
       /**
-       * <code>optional double x = 2;</code>
+       * <code>optional uint32 frame = 2;</code>
        */
-      public boolean hasX() {
+      public boolean hasFrame() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional double x = 2;</code>
+       * <code>optional uint32 frame = 2;</code>
+       */
+      public int getFrame() {
+        return frame_;
+      }
+      /**
+       * <code>optional uint32 frame = 2;</code>
+       */
+      public Builder setFrame(int value) {
+        bitField0_ |= 0x00000002;
+        frame_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 frame = 2;</code>
+       */
+      public Builder clearFrame() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        frame_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional double x = 3;
+      private double x_ ;
+      /**
+       * <code>optional double x = 3;</code>
+       */
+      public boolean hasX() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional double x = 3;</code>
        */
       public double getX() {
         return x_;
       }
       /**
-       * <code>optional double x = 2;</code>
+       * <code>optional double x = 3;</code>
        */
       public Builder setX(double value) {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         x_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double x = 2;</code>
+       * <code>optional double x = 3;</code>
        */
       public Builder clearX() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         x_ = 0D;
         onChanged();
         return this;
       }
 
-      // optional double y = 3;
+      // optional double y = 4;
       private double y_ ;
       /**
-       * <code>optional double y = 3;</code>
+       * <code>optional double y = 4;</code>
        */
       public boolean hasY() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional double y = 3;</code>
+       * <code>optional double y = 4;</code>
        */
       public double getY() {
         return y_;
       }
       /**
-       * <code>optional double y = 3;</code>
+       * <code>optional double y = 4;</code>
        */
       public Builder setY(double value) {
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         y_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double y = 3;</code>
+       * <code>optional double y = 4;</code>
        */
       public Builder clearY() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         y_ = 0D;
         onChanged();
         return this;
       }
 
-      // optional double z = 4;
+      // optional double z = 5;
       private double z_ ;
       /**
-       * <code>optional double z = 4;</code>
+       * <code>optional double z = 5;</code>
        */
       public boolean hasZ() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>optional double z = 4;</code>
+       * <code>optional double z = 5;</code>
        */
       public double getZ() {
         return z_;
       }
       /**
-       * <code>optional double z = 4;</code>
+       * <code>optional double z = 5;</code>
        */
       public Builder setZ(double value) {
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000010;
         z_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double z = 4;</code>
+       * <code>optional double z = 5;</code>
        */
       public Builder clearZ() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         z_ = 0D;
         onChanged();
         return this;
       }
 
-      // optional double sigma = 5;
+      // optional double sigma = 6;
       private double sigma_ ;
       /**
-       * <code>optional double sigma = 5;</code>
+       * <code>optional double sigma = 6;</code>
        */
       public boolean hasSigma() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional double sigma = 5;</code>
+       * <code>optional double sigma = 6;</code>
        */
       public double getSigma() {
         return sigma_;
       }
       /**
-       * <code>optional double sigma = 5;</code>
+       * <code>optional double sigma = 6;</code>
        */
       public Builder setSigma(double value) {
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
         sigma_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double sigma = 5;</code>
+       * <code>optional double sigma = 6;</code>
        */
       public Builder clearSigma() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         sigma_ = 0D;
         onChanged();
         return this;
       }
 
-      // optional double sigma2 = 6;
+      // optional double sigma2 = 7;
       private double sigma2_ ;
       /**
-       * <code>optional double sigma2 = 6;</code>
+       * <code>optional double sigma2 = 7;</code>
        */
       public boolean hasSigma2() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>optional double sigma2 = 6;</code>
+       * <code>optional double sigma2 = 7;</code>
        */
       public double getSigma2() {
         return sigma2_;
       }
       /**
-       * <code>optional double sigma2 = 6;</code>
+       * <code>optional double sigma2 = 7;</code>
        */
       public Builder setSigma2(double value) {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000040;
         sigma2_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double sigma2 = 6;</code>
+       * <code>optional double sigma2 = 7;</code>
        */
       public Builder clearSigma2() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000040);
         sigma2_ = 0D;
         onChanged();
         return this;
       }
 
-      // optional double intensity = 7;
+      // optional double intensity = 8;
       private double intensity_ ;
       /**
-       * <code>optional double intensity = 7;</code>
+       * <code>optional double intensity = 8;</code>
        */
       public boolean hasIntensity() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
-       * <code>optional double intensity = 7;</code>
+       * <code>optional double intensity = 8;</code>
        */
       public double getIntensity() {
         return intensity_;
       }
       /**
-       * <code>optional double intensity = 7;</code>
+       * <code>optional double intensity = 8;</code>
        */
       public Builder setIntensity(double value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000080;
         intensity_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double intensity = 7;</code>
+       * <code>optional double intensity = 8;</code>
        */
       public Builder clearIntensity() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         intensity_ = 0D;
         onChanged();
         return this;
       }
 
-      // optional double background = 8;
+      // optional double background = 9;
       private double background_ ;
       /**
-       * <code>optional double background = 8;</code>
+       * <code>optional double background = 9;</code>
        */
       public boolean hasBackground() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
-       * <code>optional double background = 8;</code>
+       * <code>optional double background = 9;</code>
        */
       public double getBackground() {
         return background_;
       }
       /**
-       * <code>optional double background = 8;</code>
+       * <code>optional double background = 9;</code>
        */
       public Builder setBackground(double value) {
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000100;
         background_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double background = 8;</code>
+       * <code>optional double background = 9;</code>
        */
       public Builder clearBackground() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000100);
         background_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      // optional uint32 detections = 10;
+      private int detections_ ;
+      /**
+       * <code>optional uint32 detections = 10;</code>
+       */
+      public boolean hasDetections() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>optional uint32 detections = 10;</code>
+       */
+      public int getDetections() {
+        return detections_;
+      }
+      /**
+       * <code>optional uint32 detections = 10;</code>
+       */
+      public Builder setDetections(int value) {
+        bitField0_ |= 0x00000200;
+        detections_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 detections = 10;</code>
+       */
+      public Builder clearDetections() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        detections_ = 0;
         onChanged();
         return this;
       }
@@ -974,27 +3011,41 @@ public final class ResultsTable {
   public interface ResultsOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;
+    // optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;
     /**
-     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+     * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+     */
+    boolean hasUnits();
+    /**
+     * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+     */
+    cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units getUnits();
+    /**
+     * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+     */
+    cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.UnitsOrBuilder getUnitsOrBuilder();
+
+    // repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;
+    /**
+     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
      */
     java.util.List<cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule> 
         getMoleculeList();
     /**
-     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
      */
     cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule getMolecule(int index);
     /**
-     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
      */
     int getMoleculeCount();
     /**
-     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
      */
     java.util.List<? extends cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.MoleculeOrBuilder> 
         getMoleculeOrBuilderList();
     /**
-     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
      */
     cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.MoleculeOrBuilder getMoleculeOrBuilder(
         int index);
@@ -1051,9 +3102,22 @@ public final class ResultsTable {
               break;
             }
             case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+              cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = units_.toBuilder();
+              }
+              units_ = input.readMessage(cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(units_);
+                units_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000001;
+              break;
+            }
+            case 18: {
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
                 molecule_ = new java.util.ArrayList<cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule>();
-                mutable_bitField0_ |= 0x00000001;
+                mutable_bitField0_ |= 0x00000002;
               }
               molecule_.add(input.readMessage(cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.PARSER, extensionRegistry));
               break;
@@ -1066,7 +3130,7 @@ public final class ResultsTable {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
           molecule_ = java.util.Collections.unmodifiableList(molecule_);
         }
         this.unknownFields = unknownFields.build();
@@ -1100,36 +3164,59 @@ public final class ResultsTable {
       return PARSER;
     }
 
-    // repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;
-    public static final int MOLECULE_FIELD_NUMBER = 1;
+    private int bitField0_;
+    // optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;
+    public static final int UNITS_FIELD_NUMBER = 1;
+    private cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units units_;
+    /**
+     * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+     */
+    public boolean hasUnits() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+     */
+    public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units getUnits() {
+      return units_;
+    }
+    /**
+     * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+     */
+    public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.UnitsOrBuilder getUnitsOrBuilder() {
+      return units_;
+    }
+
+    // repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;
+    public static final int MOLECULE_FIELD_NUMBER = 2;
     private java.util.List<cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule> molecule_;
     /**
-     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
      */
     public java.util.List<cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule> getMoleculeList() {
       return molecule_;
     }
     /**
-     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
      */
     public java.util.List<? extends cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.MoleculeOrBuilder> 
         getMoleculeOrBuilderList() {
       return molecule_;
     }
     /**
-     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
      */
     public int getMoleculeCount() {
       return molecule_.size();
     }
     /**
-     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
      */
     public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule getMolecule(int index) {
       return molecule_.get(index);
     }
     /**
-     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+     * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
      */
     public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.MoleculeOrBuilder getMoleculeOrBuilder(
         int index) {
@@ -1137,6 +3224,7 @@ public final class ResultsTable {
     }
 
     private void initFields() {
+      units_ = cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.getDefaultInstance();
       molecule_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
@@ -1151,8 +3239,11 @@ public final class ResultsTable {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, units_);
+      }
       for (int i = 0; i < molecule_.size(); i++) {
-        output.writeMessage(1, molecule_.get(i));
+        output.writeMessage(2, molecule_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -1163,9 +3254,13 @@ public final class ResultsTable {
       if (size != -1) return size;
 
       size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, units_);
+      }
       for (int i = 0; i < molecule_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, molecule_.get(i));
+          .computeMessageSize(2, molecule_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1275,6 +3370,7 @@ public final class ResultsTable {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getUnitsFieldBuilder();
           getMoleculeFieldBuilder();
         }
       }
@@ -1284,9 +3380,15 @@ public final class ResultsTable {
 
       public Builder clear() {
         super.clear();
+        if (unitsBuilder_ == null) {
+          units_ = cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.getDefaultInstance();
+        } else {
+          unitsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
         if (moleculeBuilder_ == null) {
           molecule_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
         } else {
           moleculeBuilder_.clear();
         }
@@ -1317,15 +3419,25 @@ public final class ResultsTable {
       public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Results buildPartial() {
         cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Results result = new cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Results(this);
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (unitsBuilder_ == null) {
+          result.units_ = units_;
+        } else {
+          result.units_ = unitsBuilder_.build();
+        }
         if (moleculeBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
             molecule_ = java.util.Collections.unmodifiableList(molecule_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.molecule_ = molecule_;
         } else {
           result.molecule_ = moleculeBuilder_.build();
         }
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -1341,11 +3453,14 @@ public final class ResultsTable {
 
       public Builder mergeFrom(cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Results other) {
         if (other == cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Results.getDefaultInstance()) return this;
+        if (other.hasUnits()) {
+          mergeUnits(other.getUnits());
+        }
         if (moleculeBuilder_ == null) {
           if (!other.molecule_.isEmpty()) {
             if (molecule_.isEmpty()) {
               molecule_ = other.molecule_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensureMoleculeIsMutable();
               molecule_.addAll(other.molecule_);
@@ -1358,7 +3473,7 @@ public final class ResultsTable {
               moleculeBuilder_.dispose();
               moleculeBuilder_ = null;
               molecule_ = other.molecule_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
               moleculeBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getMoleculeFieldBuilder() : null;
@@ -1394,13 +3509,130 @@ public final class ResultsTable {
       }
       private int bitField0_;
 
-      // repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;
+      // optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;
+      private cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units units_ = cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.Builder, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.UnitsOrBuilder> unitsBuilder_;
+      /**
+       * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+       */
+      public boolean hasUnits() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+       */
+      public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units getUnits() {
+        if (unitsBuilder_ == null) {
+          return units_;
+        } else {
+          return unitsBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+       */
+      public Builder setUnits(cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units value) {
+        if (unitsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          units_ = value;
+          onChanged();
+        } else {
+          unitsBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+       */
+      public Builder setUnits(
+          cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.Builder builderForValue) {
+        if (unitsBuilder_ == null) {
+          units_ = builderForValue.build();
+          onChanged();
+        } else {
+          unitsBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+       */
+      public Builder mergeUnits(cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units value) {
+        if (unitsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              units_ != cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.getDefaultInstance()) {
+            units_ =
+              cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.newBuilder(units_).mergeFrom(value).buildPartial();
+          } else {
+            units_ = value;
+          }
+          onChanged();
+        } else {
+          unitsBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+       */
+      public Builder clearUnits() {
+        if (unitsBuilder_ == null) {
+          units_ = cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.getDefaultInstance();
+          onChanged();
+        } else {
+          unitsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      /**
+       * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+       */
+      public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.Builder getUnitsBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getUnitsFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+       */
+      public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.UnitsOrBuilder getUnitsOrBuilder() {
+        if (unitsBuilder_ != null) {
+          return unitsBuilder_.getMessageOrBuilder();
+        } else {
+          return units_;
+        }
+      }
+      /**
+       * <code>optional .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units units = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.Builder, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.UnitsOrBuilder> 
+          getUnitsFieldBuilder() {
+        if (unitsBuilder_ == null) {
+          unitsBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.Builder, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.UnitsOrBuilder>(
+                  units_,
+                  getParentForChildren(),
+                  isClean());
+          units_ = null;
+        }
+        return unitsBuilder_;
+      }
+
+      // repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;
       private java.util.List<cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule> molecule_ =
         java.util.Collections.emptyList();
       private void ensureMoleculeIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
           molecule_ = new java.util.ArrayList<cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule>(molecule_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
          }
       }
 
@@ -1408,7 +3640,7 @@ public final class ResultsTable {
           cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.Builder, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.MoleculeOrBuilder> moleculeBuilder_;
 
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public java.util.List<cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule> getMoleculeList() {
         if (moleculeBuilder_ == null) {
@@ -1418,7 +3650,7 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public int getMoleculeCount() {
         if (moleculeBuilder_ == null) {
@@ -1428,7 +3660,7 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule getMolecule(int index) {
         if (moleculeBuilder_ == null) {
@@ -1438,7 +3670,7 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public Builder setMolecule(
           int index, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule value) {
@@ -1455,7 +3687,7 @@ public final class ResultsTable {
         return this;
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public Builder setMolecule(
           int index, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.Builder builderForValue) {
@@ -1469,7 +3701,7 @@ public final class ResultsTable {
         return this;
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public Builder addMolecule(cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule value) {
         if (moleculeBuilder_ == null) {
@@ -1485,7 +3717,7 @@ public final class ResultsTable {
         return this;
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public Builder addMolecule(
           int index, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule value) {
@@ -1502,7 +3734,7 @@ public final class ResultsTable {
         return this;
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public Builder addMolecule(
           cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.Builder builderForValue) {
@@ -1516,7 +3748,7 @@ public final class ResultsTable {
         return this;
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public Builder addMolecule(
           int index, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.Builder builderForValue) {
@@ -1530,7 +3762,7 @@ public final class ResultsTable {
         return this;
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public Builder addAllMolecule(
           java.lang.Iterable<? extends cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule> values) {
@@ -1544,12 +3776,12 @@ public final class ResultsTable {
         return this;
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public Builder clearMolecule() {
         if (moleculeBuilder_ == null) {
           molecule_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           moleculeBuilder_.clear();
@@ -1557,7 +3789,7 @@ public final class ResultsTable {
         return this;
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public Builder removeMolecule(int index) {
         if (moleculeBuilder_ == null) {
@@ -1570,14 +3802,14 @@ public final class ResultsTable {
         return this;
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.Builder getMoleculeBuilder(
           int index) {
         return getMoleculeFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.MoleculeOrBuilder getMoleculeOrBuilder(
           int index) {
@@ -1587,7 +3819,7 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public java.util.List<? extends cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.MoleculeOrBuilder> 
            getMoleculeOrBuilderList() {
@@ -1598,14 +3830,14 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.Builder addMoleculeBuilder() {
         return getMoleculeFieldBuilder().addBuilder(
             cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.getDefaultInstance());
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.Builder addMoleculeBuilder(
           int index) {
@@ -1613,7 +3845,7 @@ public final class ResultsTable {
             index, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.getDefaultInstance());
       }
       /**
-       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 1;</code>
+       * <code>repeated .cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule molecule = 2;</code>
        */
       public java.util.List<cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.Builder> 
            getMoleculeBuilderList() {
@@ -1626,7 +3858,7 @@ public final class ResultsTable {
           moleculeBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule.Builder, cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.MoleculeOrBuilder>(
                   molecule_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000002) == 0x00000002),
                   getParentForChildren(),
                   isClean());
           molecule_ = null;
@@ -1645,6 +3877,11 @@ public final class ResultsTable {
     // @@protoc_insertion_point(class_scope:cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Results)
   }
 
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_descriptor;
   private static
@@ -1665,32 +3902,45 @@ public final class ResultsTable {
   static {
     java.lang.String[] descriptorData = {
       "\n\rresults.proto\022/cz.cuni.lf1.lge.Thunder" +
-      "STORM.ImportExport.proto\"}\n\010Molecule\022\n\n\002" +
-      "id\030\001 \001(\r\022\t\n\001x\030\002 \001(\001\022\t\n\001y\030\003 \001(\001\022\t\n\001z\030\004 \001(" +
-      "\001\022\r\n\005sigma\030\005 \001(\001\022\016\n\006sigma2\030\006 \001(\001\022\021\n\tinte" +
-      "nsity\030\007 \001(\001\022\022\n\nbackground\030\010 \001(\001\"V\n\007Resul" +
-      "ts\022K\n\010molecule\030\001 \003(\01329.cz.cuni.lf1.lge.T" +
-      "hunderSTORM.ImportExport.proto.MoleculeB" +
-      "?\n/cz.cuni.lf1.lge.ThunderSTORM.ImportEx" +
-      "port.protoB\014ResultsTable"
+      "STORM.ImportExport.proto\"\235\001\n\005Units\022\n\n\002id" +
+      "\030\001 \001(\t\022\r\n\005frame\030\002 \001(\t\022\t\n\001x\030\003 \001(\t\022\t\n\001y\030\004 " +
+      "\001(\t\022\t\n\001z\030\005 \001(\t\022\r\n\005sigma\030\006 \001(\t\022\016\n\006sigma2\030" +
+      "\007 \001(\t\022\021\n\tintensity\030\010 \001(\t\022\022\n\nbackground\030\t" +
+      " \001(\t\022\022\n\ndetections\030\n \001(\t\"\240\001\n\010Molecule\022\n\n" +
+      "\002id\030\001 \001(\r\022\r\n\005frame\030\002 \001(\r\022\t\n\001x\030\003 \001(\001\022\t\n\001y" +
+      "\030\004 \001(\001\022\t\n\001z\030\005 \001(\001\022\r\n\005sigma\030\006 \001(\001\022\016\n\006sigm" +
+      "a2\030\007 \001(\001\022\021\n\tintensity\030\010 \001(\001\022\022\n\nbackgroun" +
+      "d\030\t \001(\001\022\022\n\ndetections\030\n \001(\r\"\235\001\n\007Results\022",
+      "E\n\005units\030\001 \001(\01326.cz.cuni.lf1.lge.Thunder" +
+      "STORM.ImportExport.proto.Units\022K\n\010molecu" +
+      "le\030\002 \003(\01329.cz.cuni.lf1.lge.ThunderSTORM." +
+      "ImportExport.proto.MoleculeB?\n/cz.cuni.l" +
+      "f1.lge.ThunderSTORM.ImportExport.protoB\014" +
+      "ResultsTable"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_descriptor =
+          internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_descriptor =
             getDescriptor().getMessageTypes().get(0);
+          internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_descriptor,
+              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma2", "Intensity", "Background", "Detections", });
+          internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_descriptor =
+            getDescriptor().getMessageTypes().get(1);
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_descriptor,
-              new java.lang.String[] { "Id", "X", "Y", "Z", "Sigma", "Sigma2", "Intensity", "Background", });
+              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma2", "Intensity", "Background", "Detections", });
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Results_descriptor =
-            getDescriptor().getMessageTypes().get(1);
+            getDescriptor().getMessageTypes().get(2);
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Results_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Results_descriptor,
-              new java.lang.String[] { "Molecule", });
+              new java.lang.String[] { "Units", "Molecule", });
           return null;
         }
       };

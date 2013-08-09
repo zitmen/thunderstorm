@@ -16,7 +16,7 @@ import javax.swing.JPanel;
  */
 public class EmptyEstimator implements IEstimator, IEstimatorUI {
 
-  public static final String[] names = new String[]{PSFInstance.X, PSFInstance.Y};
+  public static final String[] names = new String[]{PSFInstance.X_POS, PSFInstance.Y_POS};
 
   @Override
   public Vector<PSFInstance> estimateParameters(FloatProcessor fp, Vector<Point> detections) {

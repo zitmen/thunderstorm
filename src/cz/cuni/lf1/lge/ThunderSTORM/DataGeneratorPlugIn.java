@@ -204,8 +204,8 @@ public class DataGeneratorPlugIn implements PlugIn {
                 for(IntegratedGaussian mol : local_table.elementAt(i)) {
                     rt.addRow();
                     rt.addValue((double)f+1, "frame");
-                    rt.addValue(mol.x0, PSFInstance.X);
-                    rt.addValue(mol.y0, PSFInstance.Y);
+                    rt.addValue(mol.x0, PSFInstance.X_POS);
+                    rt.addValue(mol.y0, PSFInstance.Y_POS);
                     rt.addValue(mol.I0, PSFInstance.INTENSITY);
                     rt.addValue(mol.sig0, PSFInstance.SIGMA);
                 }

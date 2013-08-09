@@ -49,7 +49,7 @@ public class RenderingPlugIn implements PlugIn {
       IJ.error("results were null");
       return;
     }
-    double[] z = rt.columnExists(PSFInstance.Z)? rt.getColumnAsDoubles(PSFInstance.Z): null;
+    double[] z = rt.columnExists(PSFInstance.Z_POS)? rt.getColumnAsDoubles(PSFInstance.Z_POS): null;
     double[] dx = rt.columnExists("dx")? rt.getColumnAsDoubles("dx"): null;
 
     List<IRendererUI> knownRenderers = ModuleLoader.getUIModules(IRendererUI.class);

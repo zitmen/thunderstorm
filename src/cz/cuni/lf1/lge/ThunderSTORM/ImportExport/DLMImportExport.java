@@ -32,22 +32,27 @@ abstract public class DLMImportExport implements IImportExport {
         if(lines.size() < 1) return;
         if(lines.get(0).length < 2) return; // header + at least 1 record!
         
-        String [] headers = new String[lines.get(0).length];
+        String [] colnames = new String[lines.get(0).length];
+        String [] colunits = new String[lines.get(0).length];
         for(int c = 0, cm = lines.get(0).length; c < cm; c++) {
-            headers[c] = lines.get(0)[c];
+            String [] tmp = IJResultsTable.parseColumnLabel(lines.get(0)[c]);
+            colnames[c] = tmp[0];
+            colunits[c] = tmp[1];
         }
-        
-        if(!rt.columnNamesEqual(headers)) {
+        if(!rt.columnNamesEqual(colnames)) {
             throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + IJResultsTable.COLUMN_ID + "')!");
         }
         
         for(int r = 1, rm = lines.size(); r < rm; r++) {
             rt.addRow();
             for(int c = 0, cm = lines.get(r).length; c < cm; c++) {
-              if(IJResultsTable.COLUMN_ID.equals(headers[c])) continue;
-              rt.addValue(Double.parseDouble(lines.get(r)[c]), headers[c]);
+              if(IJResultsTable.COLUMN_ID.equals(colnames[c])) continue;
+              rt.addValue(Double.parseDouble(lines.get(r)[c]), colnames[c]);
             }
             IJ.showProgress((double)r / (double)rm);
+        }
+        for(int c = 0; c < colnames.length; c++) {
+            rt.setColumnUnits(colnames[c], colunits[c]);
         }
         rt.copyOriginalToActual();
         rt.setActualState();
@@ -62,7 +67,7 @@ abstract public class DLMImportExport implements IImportExport {
         BufferedWriter writer = new BufferedWriter(new FileWriter(fp));
         for(int c = 0, cm = columns.size(); c < cm; c++) {
             if(c > 0) writer.write(",");
-            writer.write("\"" + columns.elementAt(c) + "\"");
+            writer.write("\"" + rt.getColumnLabel(columns.elementAt(c)) + "\"");
         }
         writer.newLine();
         

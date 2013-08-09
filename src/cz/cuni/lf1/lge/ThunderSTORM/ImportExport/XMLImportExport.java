@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
@@ -26,6 +27,7 @@ public class XMLImportExport implements IImportExport {
     
     static final String ROOT = "results";
     static final String ITEM = "molecule";
+    static final String UNITS = "units";
     
     @Override
     public void importFromFile(String fp, IJResultsTable rt) throws IOException {
@@ -35,6 +37,8 @@ public class XMLImportExport implements IImportExport {
         
         //
         // 1. Read the XML file into the hashmap
+        HashMap<String,String> units = null;
+        boolean filling_units = false;
         ArrayList<HashMap<String,Double>> molecules = null;
         HashMap<String,Double> molecule = null;
         try {
@@ -55,6 +59,13 @@ public class XMLImportExport implements IImportExport {
                         continue;
                     }
                     
+                    // the units element?
+                    if (startElement.getName().getLocalPart().equals(UNITS)) {
+                        units = new HashMap<String, String>();
+                        filling_units = true;
+                        continue;
+                    }
+                    
                     // an item element?
                     if (startElement.getName().getLocalPart().equals(ITEM)) {
                         molecule = new HashMap<String, Double>();
@@ -65,11 +76,21 @@ public class XMLImportExport implements IImportExport {
                     if (event.isStartElement()) {
                         String name = event.asStartElement().getName().getLocalPart();
                         String value = eventReader.nextEvent().asCharacters().getData();
-                        molecule.put(name, Double.parseDouble(value));
+                        if(filling_units) { // units
+                            units.put(name, value);
+                        } else {    // molecule
+                            molecule.put(name, Double.parseDouble(value));
+                        }
                         continue;
                     }
                 } else if(event.isEndElement()) {
                     EndElement endElement = event.asEndElement();
+                    
+                    // the units element?
+                    if (endElement.getName().getLocalPart().equals(UNITS)) {
+                        filling_units = false;
+                        continue;
+                    }
                     
                     // an item element?
                     if (endElement.getName().getLocalPart().equals(ITEM)) {
@@ -100,6 +121,11 @@ public class XMLImportExport implements IImportExport {
                     if(IJResultsTable.COLUMN_ID.equals(entry.getKey())) continue;
                     rt.addValue(entry.getValue().doubleValue(), entry.getKey());
                     IJ.showProgress((double)(r++) / (double)nrows);
+                }
+            }
+            if(units != null) {
+                for(Entry<String,String> col : units.entrySet()) {
+                    rt.setColumnUnits(col.getKey(), col.getValue());
                 }
             }
         }
@@ -134,9 +160,24 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(resultsStartElement);
             eventWriter.add(end);
             
-            int ncols = rt.getColumnCount(), nrows = rt.getRowCount();
-            String [] headers = rt.getColumnNames();
+            int ncols = columns.size(), nrows = rt.getRowCount();
             
+            // Write columns headers with units
+            StartElement unitsStartElement = eventFactory.createStartElement("", "", UNITS);
+            eventWriter.add(tab);
+            eventWriter.add(unitsStartElement);
+            eventWriter.add(end);
+            for(int c = 0; c < ncols; c++) {
+                String units = rt.getColumnUnits(columns.elementAt(c));
+                if((units != null) && !units.trim().isEmpty()) {
+                    createNode(eventWriter, columns.elementAt(c), units);
+                }
+            }
+            eventWriter.add(tab);
+            eventWriter.add(eventFactory.createEndElement("", "", UNITS));
+            eventWriter.add(end);
+            
+            // Write molecules
             for(int r = 0; r < nrows; r++) {
                 StartElement moleculeStartElement = eventFactory.createStartElement("", "", ITEM);
                 eventWriter.add(tab);
@@ -144,7 +185,7 @@ public class XMLImportExport implements IImportExport {
                 eventWriter.add(end);
 
                 for(int c = 0; c < ncols; c++) {
-                    createNode(eventWriter, headers[c], Double.toString((Double)rt.getValue(r,headers[c])));
+                    createNode(eventWriter, columns.elementAt(c), Double.toString((Double)rt.getValue(r,columns.elementAt(c))));
                 }
                 
                 eventWriter.add(tab);
