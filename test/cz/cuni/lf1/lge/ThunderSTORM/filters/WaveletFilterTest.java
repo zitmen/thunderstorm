@@ -17,21 +17,22 @@ public class WaveletFilterTest {
         System.out.println("WaveletFilter::filterImage");
         
         try {
-            FloatProcessor image = (FloatProcessor) IJ.openImage("test/resources/rice.png").getProcessor().convertToFloat();
+            String basePath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+            FloatProcessor image = (FloatProcessor) IJ.openImage(basePath + "resources/rice.png").getProcessor().convertToFloat();
             
             WaveletFilter instance = new WaveletFilter(1);
             float[] result = (float[]) instance.filterImage(image).getPixels();
-            float[] expResult = (float[]) CSV.csv2fp("test/resources/rice_filter_wavelet-V1.csv").getPixels();
+            float[] expResult = (float[]) CSV.csv2fp(basePath + "resources/rice_filter_wavelet-V1.csv").getPixels();
             assertArrayEquals(expResult, result, 0.01f);
             
             instance = new WaveletFilter(2);
             result = (float[]) instance.filterImage(image).getPixels();
-            expResult = (float[]) CSV.csv2fp("test/resources/rice_filter_wavelet-V2.csv").getPixels();
+            expResult = (float[]) CSV.csv2fp(basePath + "resources/rice_filter_wavelet-V2.csv").getPixels();
             assertArrayEquals(expResult, result, 0.01f);
             
             instance = new WaveletFilter(3);
             result = (float[]) instance.filterImage(image).getPixels();
-            expResult = (float[]) CSV.csv2fp("test/resources/rice_filter_wavelet-V3.csv").getPixels();
+            expResult = (float[]) CSV.csv2fp(basePath + "resources/rice_filter_wavelet-V3.csv").getPixels();
             assertArrayEquals(expResult, result, 0.01f);
             
             try {

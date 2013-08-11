@@ -10,10 +10,11 @@ message Units {
     optional string y = 4;
     optional string z = 5;
     optional string sigma = 6;
-    optional string sigma2 = 7;
-    optional string intensity = 8;
-    optional string background = 9;
-    optional string detections = 10;
+	optional string sigma1 = 7;
+    optional string sigma2 = 8;
+    optional string intensity = 9;
+    optional string background = 10;
+    optional string detections = 11;
 }
 
 message Molecule {
@@ -23,10 +24,11 @@ message Molecule {
     optional double y = 4;
     optional double z = 5;
     optional double sigma = 6;
-    optional double sigma2 = 7;
-    optional double intensity = 8;
-    optional double background = 9;
-    optional uint32 detections = 10;
+	optional double sigma1 = 7;
+    optional double sigma2 = 8;
+    optional double intensity = 9;
+    optional double background = 10;
+    optional uint32 detections = 11;
 }
 
 message Results {

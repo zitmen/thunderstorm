@@ -3,13 +3,13 @@ package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Vector;
 
 public class JSONImportExport implements IImportExport {
@@ -45,12 +45,12 @@ public class JSONImportExport implements IImportExport {
                 c++;
             }
             if(!rt.columnNamesEqual(colnames)) {
-                throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + IJResultsTable.COLUMN_ID + "')!");
+                throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + PSFInstance.LABEL_ID + "')!");
             }
             //
             rt.addRow();
             for(int i = 0; i < colnames.length; i++) {
-                if(IJResultsTable.COLUMN_ID.equals(colnames[i])) continue;
+                if(PSFInstance.LABEL_ID.equals(colnames[i])) continue;
                 rt.addValue(values[i], colnames[i]);
                 IJ.showProgress((double)(r++) / (double)nrows);
             }

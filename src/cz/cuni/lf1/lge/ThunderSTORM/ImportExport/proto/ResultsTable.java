@@ -101,62 +101,77 @@ public final class ResultsTable {
     com.google.protobuf.ByteString
         getSigmaBytes();
 
-    // optional string sigma2 = 7;
+    // optional string sigma1 = 7;
     /**
-     * <code>optional string sigma2 = 7;</code>
+     * <code>optional string sigma1 = 7;</code>
+     */
+    boolean hasSigma1();
+    /**
+     * <code>optional string sigma1 = 7;</code>
+     */
+    java.lang.String getSigma1();
+    /**
+     * <code>optional string sigma1 = 7;</code>
+     */
+    com.google.protobuf.ByteString
+        getSigma1Bytes();
+
+    // optional string sigma2 = 8;
+    /**
+     * <code>optional string sigma2 = 8;</code>
      */
     boolean hasSigma2();
     /**
-     * <code>optional string sigma2 = 7;</code>
+     * <code>optional string sigma2 = 8;</code>
      */
     java.lang.String getSigma2();
     /**
-     * <code>optional string sigma2 = 7;</code>
+     * <code>optional string sigma2 = 8;</code>
      */
     com.google.protobuf.ByteString
         getSigma2Bytes();
 
-    // optional string intensity = 8;
+    // optional string intensity = 9;
     /**
-     * <code>optional string intensity = 8;</code>
+     * <code>optional string intensity = 9;</code>
      */
     boolean hasIntensity();
     /**
-     * <code>optional string intensity = 8;</code>
+     * <code>optional string intensity = 9;</code>
      */
     java.lang.String getIntensity();
     /**
-     * <code>optional string intensity = 8;</code>
+     * <code>optional string intensity = 9;</code>
      */
     com.google.protobuf.ByteString
         getIntensityBytes();
 
-    // optional string background = 9;
+    // optional string background = 10;
     /**
-     * <code>optional string background = 9;</code>
+     * <code>optional string background = 10;</code>
      */
     boolean hasBackground();
     /**
-     * <code>optional string background = 9;</code>
+     * <code>optional string background = 10;</code>
      */
     java.lang.String getBackground();
     /**
-     * <code>optional string background = 9;</code>
+     * <code>optional string background = 10;</code>
      */
     com.google.protobuf.ByteString
         getBackgroundBytes();
 
-    // optional string detections = 10;
+    // optional string detections = 11;
     /**
-     * <code>optional string detections = 10;</code>
+     * <code>optional string detections = 11;</code>
      */
     boolean hasDetections();
     /**
-     * <code>optional string detections = 10;</code>
+     * <code>optional string detections = 11;</code>
      */
     java.lang.String getDetections();
     /**
-     * <code>optional string detections = 10;</code>
+     * <code>optional string detections = 11;</code>
      */
     com.google.protobuf.ByteString
         getDetectionsBytes();
@@ -244,21 +259,26 @@ public final class ResultsTable {
             }
             case 58: {
               bitField0_ |= 0x00000040;
-              sigma2_ = input.readBytes();
+              sigma1_ = input.readBytes();
               break;
             }
             case 66: {
               bitField0_ |= 0x00000080;
-              intensity_ = input.readBytes();
+              sigma2_ = input.readBytes();
               break;
             }
             case 74: {
               bitField0_ |= 0x00000100;
-              background_ = input.readBytes();
+              intensity_ = input.readBytes();
               break;
             }
             case 82: {
               bitField0_ |= 0x00000200;
+              background_ = input.readBytes();
+              break;
+            }
+            case 90: {
+              bitField0_ |= 0x00000400;
               detections_ = input.readBytes();
               break;
             }
@@ -560,17 +580,60 @@ public final class ResultsTable {
       }
     }
 
-    // optional string sigma2 = 7;
-    public static final int SIGMA2_FIELD_NUMBER = 7;
-    private java.lang.Object sigma2_;
+    // optional string sigma1 = 7;
+    public static final int SIGMA1_FIELD_NUMBER = 7;
+    private java.lang.Object sigma1_;
     /**
-     * <code>optional string sigma2 = 7;</code>
+     * <code>optional string sigma1 = 7;</code>
      */
-    public boolean hasSigma2() {
+    public boolean hasSigma1() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>optional string sigma2 = 7;</code>
+     * <code>optional string sigma1 = 7;</code>
+     */
+    public java.lang.String getSigma1() {
+      java.lang.Object ref = sigma1_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          sigma1_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string sigma1 = 7;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSigma1Bytes() {
+      java.lang.Object ref = sigma1_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sigma1_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string sigma2 = 8;
+    public static final int SIGMA2_FIELD_NUMBER = 8;
+    private java.lang.Object sigma2_;
+    /**
+     * <code>optional string sigma2 = 8;</code>
+     */
+    public boolean hasSigma2() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional string sigma2 = 8;</code>
      */
     public java.lang.String getSigma2() {
       java.lang.Object ref = sigma2_;
@@ -587,7 +650,7 @@ public final class ResultsTable {
       }
     }
     /**
-     * <code>optional string sigma2 = 7;</code>
+     * <code>optional string sigma2 = 8;</code>
      */
     public com.google.protobuf.ByteString
         getSigma2Bytes() {
@@ -603,17 +666,17 @@ public final class ResultsTable {
       }
     }
 
-    // optional string intensity = 8;
-    public static final int INTENSITY_FIELD_NUMBER = 8;
+    // optional string intensity = 9;
+    public static final int INTENSITY_FIELD_NUMBER = 9;
     private java.lang.Object intensity_;
     /**
-     * <code>optional string intensity = 8;</code>
+     * <code>optional string intensity = 9;</code>
      */
     public boolean hasIntensity() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
-     * <code>optional string intensity = 8;</code>
+     * <code>optional string intensity = 9;</code>
      */
     public java.lang.String getIntensity() {
       java.lang.Object ref = intensity_;
@@ -630,7 +693,7 @@ public final class ResultsTable {
       }
     }
     /**
-     * <code>optional string intensity = 8;</code>
+     * <code>optional string intensity = 9;</code>
      */
     public com.google.protobuf.ByteString
         getIntensityBytes() {
@@ -646,17 +709,17 @@ public final class ResultsTable {
       }
     }
 
-    // optional string background = 9;
-    public static final int BACKGROUND_FIELD_NUMBER = 9;
+    // optional string background = 10;
+    public static final int BACKGROUND_FIELD_NUMBER = 10;
     private java.lang.Object background_;
     /**
-     * <code>optional string background = 9;</code>
+     * <code>optional string background = 10;</code>
      */
     public boolean hasBackground() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
+      return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     /**
-     * <code>optional string background = 9;</code>
+     * <code>optional string background = 10;</code>
      */
     public java.lang.String getBackground() {
       java.lang.Object ref = background_;
@@ -673,7 +736,7 @@ public final class ResultsTable {
       }
     }
     /**
-     * <code>optional string background = 9;</code>
+     * <code>optional string background = 10;</code>
      */
     public com.google.protobuf.ByteString
         getBackgroundBytes() {
@@ -689,17 +752,17 @@ public final class ResultsTable {
       }
     }
 
-    // optional string detections = 10;
-    public static final int DETECTIONS_FIELD_NUMBER = 10;
+    // optional string detections = 11;
+    public static final int DETECTIONS_FIELD_NUMBER = 11;
     private java.lang.Object detections_;
     /**
-     * <code>optional string detections = 10;</code>
+     * <code>optional string detections = 11;</code>
      */
     public boolean hasDetections() {
-      return ((bitField0_ & 0x00000200) == 0x00000200);
+      return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     /**
-     * <code>optional string detections = 10;</code>
+     * <code>optional string detections = 11;</code>
      */
     public java.lang.String getDetections() {
       java.lang.Object ref = detections_;
@@ -716,7 +779,7 @@ public final class ResultsTable {
       }
     }
     /**
-     * <code>optional string detections = 10;</code>
+     * <code>optional string detections = 11;</code>
      */
     public com.google.protobuf.ByteString
         getDetectionsBytes() {
@@ -739,6 +802,7 @@ public final class ResultsTable {
       y_ = "";
       z_ = "";
       sigma_ = "";
+      sigma1_ = "";
       sigma2_ = "";
       intensity_ = "";
       background_ = "";
@@ -775,16 +839,19 @@ public final class ResultsTable {
         output.writeBytes(6, getSigmaBytes());
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeBytes(7, getSigma2Bytes());
+        output.writeBytes(7, getSigma1Bytes());
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeBytes(8, getIntensityBytes());
+        output.writeBytes(8, getSigma2Bytes());
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeBytes(9, getBackgroundBytes());
+        output.writeBytes(9, getIntensityBytes());
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeBytes(10, getDetectionsBytes());
+        output.writeBytes(10, getBackgroundBytes());
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeBytes(11, getDetectionsBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -821,19 +888,23 @@ public final class ResultsTable {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(7, getSigma2Bytes());
+          .computeBytesSize(7, getSigma1Bytes());
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(8, getIntensityBytes());
+          .computeBytesSize(8, getSigma2Bytes());
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(9, getBackgroundBytes());
+          .computeBytesSize(9, getIntensityBytes());
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(10, getDetectionsBytes());
+          .computeBytesSize(10, getBackgroundBytes());
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(11, getDetectionsBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -963,14 +1034,16 @@ public final class ResultsTable {
         bitField0_ = (bitField0_ & ~0x00000010);
         sigma_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
-        sigma2_ = "";
+        sigma1_ = "";
         bitField0_ = (bitField0_ & ~0x00000040);
-        intensity_ = "";
+        sigma2_ = "";
         bitField0_ = (bitField0_ & ~0x00000080);
-        background_ = "";
+        intensity_ = "";
         bitField0_ = (bitField0_ & ~0x00000100);
-        detections_ = "";
+        background_ = "";
         bitField0_ = (bitField0_ & ~0x00000200);
+        detections_ = "";
+        bitField0_ = (bitField0_ & ~0x00000400);
         return this;
       }
 
@@ -1026,17 +1099,21 @@ public final class ResultsTable {
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.sigma2_ = sigma2_;
+        result.sigma1_ = sigma1_;
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000080;
         }
-        result.intensity_ = intensity_;
+        result.sigma2_ = sigma2_;
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
           to_bitField0_ |= 0x00000100;
         }
-        result.background_ = background_;
+        result.intensity_ = intensity_;
         if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
           to_bitField0_ |= 0x00000200;
+        }
+        result.background_ = background_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
         }
         result.detections_ = detections_;
         result.bitField0_ = to_bitField0_;
@@ -1085,23 +1162,28 @@ public final class ResultsTable {
           sigma_ = other.sigma_;
           onChanged();
         }
-        if (other.hasSigma2()) {
+        if (other.hasSigma1()) {
           bitField0_ |= 0x00000040;
+          sigma1_ = other.sigma1_;
+          onChanged();
+        }
+        if (other.hasSigma2()) {
+          bitField0_ |= 0x00000080;
           sigma2_ = other.sigma2_;
           onChanged();
         }
         if (other.hasIntensity()) {
-          bitField0_ |= 0x00000080;
+          bitField0_ |= 0x00000100;
           intensity_ = other.intensity_;
           onChanged();
         }
         if (other.hasBackground()) {
-          bitField0_ |= 0x00000100;
+          bitField0_ |= 0x00000200;
           background_ = other.background_;
           onChanged();
         }
         if (other.hasDetections()) {
-          bitField0_ |= 0x00000200;
+          bitField0_ |= 0x00000400;
           detections_ = other.detections_;
           onChanged();
         }
@@ -1576,16 +1658,90 @@ public final class ResultsTable {
         return this;
       }
 
-      // optional string sigma2 = 7;
-      private java.lang.Object sigma2_ = "";
+      // optional string sigma1 = 7;
+      private java.lang.Object sigma1_ = "";
       /**
-       * <code>optional string sigma2 = 7;</code>
+       * <code>optional string sigma1 = 7;</code>
        */
-      public boolean hasSigma2() {
+      public boolean hasSigma1() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>optional string sigma2 = 7;</code>
+       * <code>optional string sigma1 = 7;</code>
+       */
+      public java.lang.String getSigma1() {
+        java.lang.Object ref = sigma1_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          sigma1_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string sigma1 = 7;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSigma1Bytes() {
+        java.lang.Object ref = sigma1_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          sigma1_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string sigma1 = 7;</code>
+       */
+      public Builder setSigma1(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        sigma1_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sigma1 = 7;</code>
+       */
+      public Builder clearSigma1() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        sigma1_ = getDefaultInstance().getSigma1();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sigma1 = 7;</code>
+       */
+      public Builder setSigma1Bytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        sigma1_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string sigma2 = 8;
+      private java.lang.Object sigma2_ = "";
+      /**
+       * <code>optional string sigma2 = 8;</code>
+       */
+      public boolean hasSigma2() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional string sigma2 = 8;</code>
        */
       public java.lang.String getSigma2() {
         java.lang.Object ref = sigma2_;
@@ -1599,7 +1755,7 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>optional string sigma2 = 7;</code>
+       * <code>optional string sigma2 = 8;</code>
        */
       public com.google.protobuf.ByteString
           getSigma2Bytes() {
@@ -1615,51 +1771,51 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>optional string sigma2 = 7;</code>
+       * <code>optional string sigma2 = 8;</code>
        */
       public Builder setSigma2(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000040;
+  bitField0_ |= 0x00000080;
         sigma2_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string sigma2 = 7;</code>
+       * <code>optional string sigma2 = 8;</code>
        */
       public Builder clearSigma2() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         sigma2_ = getDefaultInstance().getSigma2();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string sigma2 = 7;</code>
+       * <code>optional string sigma2 = 8;</code>
        */
       public Builder setSigma2Bytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000040;
+  bitField0_ |= 0x00000080;
         sigma2_ = value;
         onChanged();
         return this;
       }
 
-      // optional string intensity = 8;
+      // optional string intensity = 9;
       private java.lang.Object intensity_ = "";
       /**
-       * <code>optional string intensity = 8;</code>
+       * <code>optional string intensity = 9;</code>
        */
       public boolean hasIntensity() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
-       * <code>optional string intensity = 8;</code>
+       * <code>optional string intensity = 9;</code>
        */
       public java.lang.String getIntensity() {
         java.lang.Object ref = intensity_;
@@ -1673,7 +1829,7 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>optional string intensity = 8;</code>
+       * <code>optional string intensity = 9;</code>
        */
       public com.google.protobuf.ByteString
           getIntensityBytes() {
@@ -1689,51 +1845,51 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>optional string intensity = 8;</code>
+       * <code>optional string intensity = 9;</code>
        */
       public Builder setIntensity(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000080;
+  bitField0_ |= 0x00000100;
         intensity_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string intensity = 8;</code>
+       * <code>optional string intensity = 9;</code>
        */
       public Builder clearIntensity() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000100);
         intensity_ = getDefaultInstance().getIntensity();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string intensity = 8;</code>
+       * <code>optional string intensity = 9;</code>
        */
       public Builder setIntensityBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000080;
+  bitField0_ |= 0x00000100;
         intensity_ = value;
         onChanged();
         return this;
       }
 
-      // optional string background = 9;
+      // optional string background = 10;
       private java.lang.Object background_ = "";
       /**
-       * <code>optional string background = 9;</code>
+       * <code>optional string background = 10;</code>
        */
       public boolean hasBackground() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
+        return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       /**
-       * <code>optional string background = 9;</code>
+       * <code>optional string background = 10;</code>
        */
       public java.lang.String getBackground() {
         java.lang.Object ref = background_;
@@ -1747,7 +1903,7 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>optional string background = 9;</code>
+       * <code>optional string background = 10;</code>
        */
       public com.google.protobuf.ByteString
           getBackgroundBytes() {
@@ -1763,51 +1919,51 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>optional string background = 9;</code>
+       * <code>optional string background = 10;</code>
        */
       public Builder setBackground(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000100;
+  bitField0_ |= 0x00000200;
         background_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string background = 9;</code>
+       * <code>optional string background = 10;</code>
        */
       public Builder clearBackground() {
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000200);
         background_ = getDefaultInstance().getBackground();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string background = 9;</code>
+       * <code>optional string background = 10;</code>
        */
       public Builder setBackgroundBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000100;
+  bitField0_ |= 0x00000200;
         background_ = value;
         onChanged();
         return this;
       }
 
-      // optional string detections = 10;
+      // optional string detections = 11;
       private java.lang.Object detections_ = "";
       /**
-       * <code>optional string detections = 10;</code>
+       * <code>optional string detections = 11;</code>
        */
       public boolean hasDetections() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
+        return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       /**
-       * <code>optional string detections = 10;</code>
+       * <code>optional string detections = 11;</code>
        */
       public java.lang.String getDetections() {
         java.lang.Object ref = detections_;
@@ -1821,7 +1977,7 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>optional string detections = 10;</code>
+       * <code>optional string detections = 11;</code>
        */
       public com.google.protobuf.ByteString
           getDetectionsBytes() {
@@ -1837,36 +1993,36 @@ public final class ResultsTable {
         }
       }
       /**
-       * <code>optional string detections = 10;</code>
+       * <code>optional string detections = 11;</code>
        */
       public Builder setDetections(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000200;
+  bitField0_ |= 0x00000400;
         detections_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string detections = 10;</code>
+       * <code>optional string detections = 11;</code>
        */
       public Builder clearDetections() {
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000400);
         detections_ = getDefaultInstance().getDetections();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string detections = 10;</code>
+       * <code>optional string detections = 11;</code>
        */
       public Builder setDetectionsBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000200;
+  bitField0_ |= 0x00000400;
         detections_ = value;
         onChanged();
         return this;
@@ -1946,43 +2102,53 @@ public final class ResultsTable {
      */
     double getSigma();
 
-    // optional double sigma2 = 7;
+    // optional double sigma1 = 7;
     /**
-     * <code>optional double sigma2 = 7;</code>
+     * <code>optional double sigma1 = 7;</code>
+     */
+    boolean hasSigma1();
+    /**
+     * <code>optional double sigma1 = 7;</code>
+     */
+    double getSigma1();
+
+    // optional double sigma2 = 8;
+    /**
+     * <code>optional double sigma2 = 8;</code>
      */
     boolean hasSigma2();
     /**
-     * <code>optional double sigma2 = 7;</code>
+     * <code>optional double sigma2 = 8;</code>
      */
     double getSigma2();
 
-    // optional double intensity = 8;
+    // optional double intensity = 9;
     /**
-     * <code>optional double intensity = 8;</code>
+     * <code>optional double intensity = 9;</code>
      */
     boolean hasIntensity();
     /**
-     * <code>optional double intensity = 8;</code>
+     * <code>optional double intensity = 9;</code>
      */
     double getIntensity();
 
-    // optional double background = 9;
+    // optional double background = 10;
     /**
-     * <code>optional double background = 9;</code>
+     * <code>optional double background = 10;</code>
      */
     boolean hasBackground();
     /**
-     * <code>optional double background = 9;</code>
+     * <code>optional double background = 10;</code>
      */
     double getBackground();
 
-    // optional uint32 detections = 10;
+    // optional uint32 detections = 11;
     /**
-     * <code>optional uint32 detections = 10;</code>
+     * <code>optional uint32 detections = 11;</code>
      */
     boolean hasDetections();
     /**
-     * <code>optional uint32 detections = 10;</code>
+     * <code>optional uint32 detections = 11;</code>
      */
     int getDetections();
   }
@@ -2069,21 +2235,26 @@ public final class ResultsTable {
             }
             case 57: {
               bitField0_ |= 0x00000040;
-              sigma2_ = input.readDouble();
+              sigma1_ = input.readDouble();
               break;
             }
             case 65: {
               bitField0_ |= 0x00000080;
-              intensity_ = input.readDouble();
+              sigma2_ = input.readDouble();
               break;
             }
             case 73: {
               bitField0_ |= 0x00000100;
+              intensity_ = input.readDouble();
+              break;
+            }
+            case 81: {
+              bitField0_ |= 0x00000200;
               background_ = input.readDouble();
               break;
             }
-            case 80: {
-              bitField0_ |= 0x00000200;
+            case 88: {
+              bitField0_ |= 0x00000400;
               detections_ = input.readUInt32();
               break;
             }
@@ -2223,65 +2394,81 @@ public final class ResultsTable {
       return sigma_;
     }
 
-    // optional double sigma2 = 7;
-    public static final int SIGMA2_FIELD_NUMBER = 7;
-    private double sigma2_;
+    // optional double sigma1 = 7;
+    public static final int SIGMA1_FIELD_NUMBER = 7;
+    private double sigma1_;
     /**
-     * <code>optional double sigma2 = 7;</code>
+     * <code>optional double sigma1 = 7;</code>
      */
-    public boolean hasSigma2() {
+    public boolean hasSigma1() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>optional double sigma2 = 7;</code>
+     * <code>optional double sigma1 = 7;</code>
+     */
+    public double getSigma1() {
+      return sigma1_;
+    }
+
+    // optional double sigma2 = 8;
+    public static final int SIGMA2_FIELD_NUMBER = 8;
+    private double sigma2_;
+    /**
+     * <code>optional double sigma2 = 8;</code>
+     */
+    public boolean hasSigma2() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional double sigma2 = 8;</code>
      */
     public double getSigma2() {
       return sigma2_;
     }
 
-    // optional double intensity = 8;
-    public static final int INTENSITY_FIELD_NUMBER = 8;
+    // optional double intensity = 9;
+    public static final int INTENSITY_FIELD_NUMBER = 9;
     private double intensity_;
     /**
-     * <code>optional double intensity = 8;</code>
+     * <code>optional double intensity = 9;</code>
      */
     public boolean hasIntensity() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
-     * <code>optional double intensity = 8;</code>
+     * <code>optional double intensity = 9;</code>
      */
     public double getIntensity() {
       return intensity_;
     }
 
-    // optional double background = 9;
-    public static final int BACKGROUND_FIELD_NUMBER = 9;
+    // optional double background = 10;
+    public static final int BACKGROUND_FIELD_NUMBER = 10;
     private double background_;
     /**
-     * <code>optional double background = 9;</code>
+     * <code>optional double background = 10;</code>
      */
     public boolean hasBackground() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
+      return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     /**
-     * <code>optional double background = 9;</code>
+     * <code>optional double background = 10;</code>
      */
     public double getBackground() {
       return background_;
     }
 
-    // optional uint32 detections = 10;
-    public static final int DETECTIONS_FIELD_NUMBER = 10;
+    // optional uint32 detections = 11;
+    public static final int DETECTIONS_FIELD_NUMBER = 11;
     private int detections_;
     /**
-     * <code>optional uint32 detections = 10;</code>
+     * <code>optional uint32 detections = 11;</code>
      */
     public boolean hasDetections() {
-      return ((bitField0_ & 0x00000200) == 0x00000200);
+      return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     /**
-     * <code>optional uint32 detections = 10;</code>
+     * <code>optional uint32 detections = 11;</code>
      */
     public int getDetections() {
       return detections_;
@@ -2294,6 +2481,7 @@ public final class ResultsTable {
       y_ = 0D;
       z_ = 0D;
       sigma_ = 0D;
+      sigma1_ = 0D;
       sigma2_ = 0D;
       intensity_ = 0D;
       background_ = 0D;
@@ -2330,16 +2518,19 @@ public final class ResultsTable {
         output.writeDouble(6, sigma_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeDouble(7, sigma2_);
+        output.writeDouble(7, sigma1_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeDouble(8, intensity_);
+        output.writeDouble(8, sigma2_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeDouble(9, background_);
+        output.writeDouble(9, intensity_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeUInt32(10, detections_);
+        output.writeDouble(10, background_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeUInt32(11, detections_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2376,19 +2567,23 @@ public final class ResultsTable {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(7, sigma2_);
+          .computeDoubleSize(7, sigma1_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(8, intensity_);
+          .computeDoubleSize(8, sigma2_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(9, background_);
+          .computeDoubleSize(9, intensity_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(10, detections_);
+          .computeDoubleSize(10, background_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(11, detections_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2518,14 +2713,16 @@ public final class ResultsTable {
         bitField0_ = (bitField0_ & ~0x00000010);
         sigma_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000020);
-        sigma2_ = 0D;
+        sigma1_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000040);
-        intensity_ = 0D;
+        sigma2_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000080);
-        background_ = 0D;
+        intensity_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000100);
-        detections_ = 0;
+        background_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000200);
+        detections_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000400);
         return this;
       }
 
@@ -2581,17 +2778,21 @@ public final class ResultsTable {
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.sigma2_ = sigma2_;
+        result.sigma1_ = sigma1_;
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000080;
         }
-        result.intensity_ = intensity_;
+        result.sigma2_ = sigma2_;
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
           to_bitField0_ |= 0x00000100;
         }
-        result.background_ = background_;
+        result.intensity_ = intensity_;
         if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
           to_bitField0_ |= 0x00000200;
+        }
+        result.background_ = background_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
         }
         result.detections_ = detections_;
         result.bitField0_ = to_bitField0_;
@@ -2627,6 +2828,9 @@ public final class ResultsTable {
         }
         if (other.hasSigma()) {
           setSigma(other.getSigma());
+        }
+        if (other.hasSigma1()) {
+          setSigma1(other.getSigma1());
         }
         if (other.hasSigma2()) {
           setSigma2(other.getSigma2());
@@ -2865,133 +3069,166 @@ public final class ResultsTable {
         return this;
       }
 
-      // optional double sigma2 = 7;
-      private double sigma2_ ;
+      // optional double sigma1 = 7;
+      private double sigma1_ ;
       /**
-       * <code>optional double sigma2 = 7;</code>
+       * <code>optional double sigma1 = 7;</code>
        */
-      public boolean hasSigma2() {
+      public boolean hasSigma1() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>optional double sigma2 = 7;</code>
+       * <code>optional double sigma1 = 7;</code>
+       */
+      public double getSigma1() {
+        return sigma1_;
+      }
+      /**
+       * <code>optional double sigma1 = 7;</code>
+       */
+      public Builder setSigma1(double value) {
+        bitField0_ |= 0x00000040;
+        sigma1_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional double sigma1 = 7;</code>
+       */
+      public Builder clearSigma1() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        sigma1_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      // optional double sigma2 = 8;
+      private double sigma2_ ;
+      /**
+       * <code>optional double sigma2 = 8;</code>
+       */
+      public boolean hasSigma2() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional double sigma2 = 8;</code>
        */
       public double getSigma2() {
         return sigma2_;
       }
       /**
-       * <code>optional double sigma2 = 7;</code>
+       * <code>optional double sigma2 = 8;</code>
        */
       public Builder setSigma2(double value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000080;
         sigma2_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double sigma2 = 7;</code>
+       * <code>optional double sigma2 = 8;</code>
        */
       public Builder clearSigma2() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         sigma2_ = 0D;
         onChanged();
         return this;
       }
 
-      // optional double intensity = 8;
+      // optional double intensity = 9;
       private double intensity_ ;
       /**
-       * <code>optional double intensity = 8;</code>
+       * <code>optional double intensity = 9;</code>
        */
       public boolean hasIntensity() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
-       * <code>optional double intensity = 8;</code>
+       * <code>optional double intensity = 9;</code>
        */
       public double getIntensity() {
         return intensity_;
       }
       /**
-       * <code>optional double intensity = 8;</code>
+       * <code>optional double intensity = 9;</code>
        */
       public Builder setIntensity(double value) {
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000100;
         intensity_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double intensity = 8;</code>
+       * <code>optional double intensity = 9;</code>
        */
       public Builder clearIntensity() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000100);
         intensity_ = 0D;
         onChanged();
         return this;
       }
 
-      // optional double background = 9;
+      // optional double background = 10;
       private double background_ ;
       /**
-       * <code>optional double background = 9;</code>
+       * <code>optional double background = 10;</code>
        */
       public boolean hasBackground() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
+        return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       /**
-       * <code>optional double background = 9;</code>
+       * <code>optional double background = 10;</code>
        */
       public double getBackground() {
         return background_;
       }
       /**
-       * <code>optional double background = 9;</code>
+       * <code>optional double background = 10;</code>
        */
       public Builder setBackground(double value) {
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000200;
         background_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double background = 9;</code>
+       * <code>optional double background = 10;</code>
        */
       public Builder clearBackground() {
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000200);
         background_ = 0D;
         onChanged();
         return this;
       }
 
-      // optional uint32 detections = 10;
+      // optional uint32 detections = 11;
       private int detections_ ;
       /**
-       * <code>optional uint32 detections = 10;</code>
+       * <code>optional uint32 detections = 11;</code>
        */
       public boolean hasDetections() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
+        return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       /**
-       * <code>optional uint32 detections = 10;</code>
+       * <code>optional uint32 detections = 11;</code>
        */
       public int getDetections() {
         return detections_;
       }
       /**
-       * <code>optional uint32 detections = 10;</code>
+       * <code>optional uint32 detections = 11;</code>
        */
       public Builder setDetections(int value) {
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000400;
         detections_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional uint32 detections = 10;</code>
+       * <code>optional uint32 detections = 11;</code>
        */
       public Builder clearDetections() {
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000400);
         detections_ = 0;
         onChanged();
         return this;
@@ -3902,21 +4139,22 @@ public final class ResultsTable {
   static {
     java.lang.String[] descriptorData = {
       "\n\rresults.proto\022/cz.cuni.lf1.lge.Thunder" +
-      "STORM.ImportExport.proto\"\235\001\n\005Units\022\n\n\002id" +
+      "STORM.ImportExport.proto\"\255\001\n\005Units\022\n\n\002id" +
       "\030\001 \001(\t\022\r\n\005frame\030\002 \001(\t\022\t\n\001x\030\003 \001(\t\022\t\n\001y\030\004 " +
-      "\001(\t\022\t\n\001z\030\005 \001(\t\022\r\n\005sigma\030\006 \001(\t\022\016\n\006sigma2\030" +
-      "\007 \001(\t\022\021\n\tintensity\030\010 \001(\t\022\022\n\nbackground\030\t" +
-      " \001(\t\022\022\n\ndetections\030\n \001(\t\"\240\001\n\010Molecule\022\n\n" +
-      "\002id\030\001 \001(\r\022\r\n\005frame\030\002 \001(\r\022\t\n\001x\030\003 \001(\001\022\t\n\001y" +
-      "\030\004 \001(\001\022\t\n\001z\030\005 \001(\001\022\r\n\005sigma\030\006 \001(\001\022\016\n\006sigm" +
-      "a2\030\007 \001(\001\022\021\n\tintensity\030\010 \001(\001\022\022\n\nbackgroun" +
-      "d\030\t \001(\001\022\022\n\ndetections\030\n \001(\r\"\235\001\n\007Results\022",
-      "E\n\005units\030\001 \001(\01326.cz.cuni.lf1.lge.Thunder" +
-      "STORM.ImportExport.proto.Units\022K\n\010molecu" +
-      "le\030\002 \003(\01329.cz.cuni.lf1.lge.ThunderSTORM." +
-      "ImportExport.proto.MoleculeB?\n/cz.cuni.l" +
-      "f1.lge.ThunderSTORM.ImportExport.protoB\014" +
-      "ResultsTable"
+      "\001(\t\022\t\n\001z\030\005 \001(\t\022\r\n\005sigma\030\006 \001(\t\022\016\n\006sigma1\030" +
+      "\007 \001(\t\022\016\n\006sigma2\030\010 \001(\t\022\021\n\tintensity\030\t \001(\t" +
+      "\022\022\n\nbackground\030\n \001(\t\022\022\n\ndetections\030\013 \001(\t" +
+      "\"\260\001\n\010Molecule\022\n\n\002id\030\001 \001(\r\022\r\n\005frame\030\002 \001(\r" +
+      "\022\t\n\001x\030\003 \001(\001\022\t\n\001y\030\004 \001(\001\022\t\n\001z\030\005 \001(\001\022\r\n\005sig" +
+      "ma\030\006 \001(\001\022\016\n\006sigma1\030\007 \001(\001\022\016\n\006sigma2\030\010 \001(\001" +
+      "\022\021\n\tintensity\030\t \001(\001\022\022\n\nbackground\030\n \001(\001\022",
+      "\022\n\ndetections\030\013 \001(\r\"\235\001\n\007Results\022E\n\005units" +
+      "\030\001 \001(\01326.cz.cuni.lf1.lge.ThunderSTORM.Im" +
+      "portExport.proto.Units\022K\n\010molecule\030\002 \003(\013" +
+      "29.cz.cuni.lf1.lge.ThunderSTORM.ImportEx" +
+      "port.proto.MoleculeB?\n/cz.cuni.lf1.lge.T" +
+      "hunderSTORM.ImportExport.protoB\014ResultsT" +
+      "able"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3928,13 +4166,13 @@ public final class ResultsTable {
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_descriptor,
-              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma2", "Intensity", "Background", "Detections", });
+              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma1", "Sigma2", "Intensity", "Background", "Detections", });
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_descriptor,
-              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma2", "Intensity", "Background", "Detections", });
+              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma1", "Sigma2", "Intensity", "Background", "Detections", });
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Results_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Results_fieldAccessorTable = new

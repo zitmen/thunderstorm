@@ -21,7 +21,7 @@ public interface IEstimator extends IModule{
      * @param image an input (raw) image
      * @param detections list of detections returned by a detector
      * @return a Vector of instances of PSFs that contain parameters of every
-     *         single molecule ({@mathjax x,y,\sigma,I,b}). <strong>Note: </strong>
+     *         single molecule, say ({@mathjax x,y,\sigma,I,b}). <strong>Note: </strong>
      *         in a future release the PSFModel will be more abstract to allow easily
      *         work with any possible PSFModel out there, but right we use strictly
      *         the symmetric 2D Gaussian model

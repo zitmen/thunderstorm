@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
@@ -225,8 +226,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             //
             ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
             RenderingOverlay.showPointsInImage(impPreview, 
-                    PSFInstance.extractParamToArray(results, PSFInstance.X_POS),
-                    PSFInstance.extractParamToArray(results, PSFInstance.Y_POS),
+                    PSFInstance.extractParamToArray(results, PSFModel.Params.LABEL_X),
+                    PSFInstance.extractParamToArray(results, PSFModel.Params.LABEL_Y),
                     Color.red, RenderingOverlay.MARKER_CROSS);
             impPreview.show();
           } catch (InterruptedException ex) {

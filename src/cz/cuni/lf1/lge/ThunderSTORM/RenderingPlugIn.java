@@ -1,12 +1,12 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_X_POS;
-import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_Y_POS;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Z;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.CardsPanel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
@@ -38,18 +38,18 @@ public class RenderingPlugIn implements PlugIn {
       IJ.error("Requires Results window open");
       return;
     }
-    if (!rt.columnExists(LABEL_X_POS) || !rt.columnExists(LABEL_Y_POS)) {
-      IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, rt.getColumnNames()));
+    if (!rt.columnExists(LABEL_X) || !rt.columnExists(LABEL_Y)) {
+      IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X, LABEL_Y, rt.getColumnNames()));
       return;
     }
 
-    double[] xpos = rt.getColumnAsDoubles(LABEL_X_POS);
-    double[] ypos = rt.getColumnAsDoubles(LABEL_Y_POS);
+    double[] xpos = rt.getColumnAsDoubles(LABEL_X);
+    double[] ypos = rt.getColumnAsDoubles(LABEL_Y);
     if (xpos == null || ypos == null) {
       IJ.error("results were null");
       return;
     }
-    double[] z = rt.columnExists(PSFInstance.Z_POS)? rt.getColumnAsDoubles(PSFInstance.Z_POS): null;
+    double[] z = rt.columnExists(LABEL_Z)? rt.getColumnAsDoubles(LABEL_Z): null;
     double[] dx = rt.columnExists("dx")? rt.getColumnAsDoubles("dx"): null;
 
     List<IRendererUI> knownRenderers = ModuleLoader.getUIModules(IRendererUI.class);

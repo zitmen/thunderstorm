@@ -1,8 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_X_POS;
-import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_Y_POS;
-import static cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn.LABEL_Z_POS;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Z;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
@@ -169,13 +169,13 @@ class JavaTableWindow {
     }
     //
     IJResultsTable tableModel = IJResultsTable.getResultsTable();
-    if (!tableModel.columnExists(LABEL_X_POS) || !tableModel.columnExists(LABEL_Y_POS)) {
-      IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X_POS, LABEL_Y_POS, tableModel.getColumnNames()));
+    if (!tableModel.columnExists(LABEL_X) || !tableModel.columnExists(LABEL_Y)) {
+      IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X, LABEL_Y, tableModel.getColumnNames()));
       return;
     }
-    double[] xpos = tableModel.getColumnAsDoubles(LABEL_X_POS);
-    double[] ypos = tableModel.getColumnAsDoubles(LABEL_Y_POS);
-    double[] zpos = tableModel.columnExists(LABEL_Z_POS) ? tableModel.getColumnAsDoubles(LABEL_Z_POS) : null;
+    double[] xpos = tableModel.getColumnAsDoubles(LABEL_X);
+    double[] ypos = tableModel.getColumnAsDoubles(LABEL_Y);
+    double[] zpos = tableModel.columnExists(LABEL_Z) ? tableModel.getColumnAsDoubles(LABEL_Z) : null;
     if (xpos == null || ypos == null) {
       IJ.error("results were empty");
       return;

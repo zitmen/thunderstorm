@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.event.EventListenerList;
@@ -46,7 +47,7 @@ class ResultsTableModel extends AbstractTableModel {
         columns.clear();
         colnames.clear();
 
-        addColumn(IJResultsTable.COLUMN_ID, null);
+        addColumn(PSFInstance.LABEL_ID, null);
         fireTableStructureChanged();
     }
 
@@ -130,7 +131,7 @@ class ResultsTableModel extends AbstractTableModel {
         colnames = new HashMap<String, Integer>();
 
         counter = 0;
-        addColumn(IJResultsTable.COLUMN_ID, null);
+        addColumn(PSFInstance.LABEL_ID, null);
     }
 
     @Override

@@ -13,7 +13,8 @@ public class EmptyFilterTest {
     @Test
     public void testFilterImage() {
         System.out.println("EmptyFilter::filterImage");
-        FloatProcessor image = (FloatProcessor) IJ.openImage("test/resources/rice.png").getProcessor().convertToFloat();
+        String basePath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+        FloatProcessor image = (FloatProcessor) IJ.openImage(basePath + "resources/rice.png").getProcessor().convertToFloat();
         EmptyFilter instance = new EmptyFilter();
         FloatProcessor result = instance.filterImage(image);
         assertEquals(image, result);

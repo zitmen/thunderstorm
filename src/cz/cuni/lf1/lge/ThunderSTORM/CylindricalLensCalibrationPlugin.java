@@ -1,5 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.SIGMA1;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.SIGMA2;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.ANGLE;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA1;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA2;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.CalibrationDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
@@ -51,7 +56,7 @@ import java.awt.Rectangle;
  */
 public class CylindricalLensCalibrationPlugin implements PlugIn {
 
-  double[] avgSigmaPolynom;
+  double[] avgSigma1Polynom;
   double[] avgSigma2Polynom;
   double angle;
   IFilterUI selectedFilterUI;
@@ -148,8 +153,8 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
 
         for (Iterator<PSFInstance> iterator = fits.iterator(); iterator.hasNext();) {
           PSFInstance psf = iterator.next();
-          double s1 = psf.getParam(PSFInstance.SIGMA);
-          double s2 = psf.getParam(PSFInstance.SIGMA2);
+          double s1 = psf.getParam(SIGMA1);
+          double s2 = psf.getParam(SIGMA2);
           double ratio = s1 / s2;
           if (ratio > 2 || ratio < 0.5) {
             continue;
@@ -157,7 +162,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
           if (ratio < 1.2 && ratio > 0.83) {
             continue;
           }
-          angles.add(psf.getParam("angle"));
+          angles.add(psf.getParam(ANGLE));
         }
         IJ.showProgress(0.45 * (double) framesProcessed.intValue() / (double) stack.getSize());
         IJ.showStatus("Determining angle: frame " + framesProcessed + " of " + stack.getSize() + "...");
@@ -200,7 +205,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
           separator.add(fit, i);
         }
         IJ.showProgress(0.45 + 0.45 * (double) framesProcessed.intValue() / (double) stack.getSize());
-        IJ.showStatus("Fitting " + PSFInstance.SIGMA + " and " + PSFInstance.SIGMA2 + ": frame " + framesProcessed + " of " + stack.getSize() + "...");
+        IJ.showStatus("Fitting " + LABEL_SIGMA1 + " and " + LABEL_SIGMA2 + ": frame " + framesProcessed + " of " + stack.getSize() + "...");
       }
     });
     //group fits from the same bead through z-stack
@@ -208,7 +213,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
 
     //fit a quadratic polynomial to sigma1 = f(zpos) and sigma1 = f(zpos) for each bead
     IterativeQuadraticFitting quadraticFitter = new IterativeQuadraticFitting();
-    List<double[]> sigmaQuadratics = new ArrayList<double[]>();
+    List<double[]> sigma1Quadratics = new ArrayList<double[]>();
     List<double[]> sigma2Quadratics = new ArrayList<double[]>();
 //    StringBuilder sb = new StringBuilder();
     //Locale.setDefault(Locale.ENGLISH);
@@ -224,29 +229,29 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         if (framesArray.length < 20) {
           continue;
         }
-        double[] sigmaParamArray = quadraticFitter.fitParams(framesArray, p.getSigmaAsArray());
+        double[] sigma1ParamArray = quadraticFitter.fitParams(framesArray, p.getSigma1AsArray());
         double[] sigma2ParamArray = quadraticFitter.fitParams(framesArray, p.getSigma2AsArray());
 
-        if (!isInZRange(sigmaParamArray[0]) || !isInZRange(sigma2ParamArray[0])) {
+        if (!isInZRange(sigma1ParamArray[0]) || !isInZRange(sigma2ParamArray[0])) {
           continue;
         }
         //find the intersection of the two quadratic polynomials and shift the origin to the intersection
-        double intersection = IterativeQuadraticFitting.shiftToOrigin(sigmaParamArray, sigma2ParamArray);
+        double intersection = IterativeQuadraticFitting.shiftToOrigin(sigma1ParamArray, sigma2ParamArray);
         if (!hasEnoughData(framesArray, intersection) || !isInZRange(intersection)) {
           continue;
         }
-        sigmaQuadratics.add(sigmaParamArray);
+        sigma1Quadratics.add(sigma1ParamArray);
         sigma2Quadratics.add(sigma2ParamArray);
         usedPositions.add(p);
 
         //          sb.append(String.format("fits(%d).z = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(framesArray)));
-        //          sb.append(String.format("fits(%d).s1 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigmaAsArray())));
+        //          sb.append(String.format("fits(%d).s1 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigma1AsArray())));
         //          sb.append(String.format("fits(%d).s2 = %s;\n", moleculesProcessed.intValue() + 1, Arrays.toString(p.getSigma2AsArray())));
-        //          sb.append(String.format("fits(%d).a1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[1]));
+        //          sb.append(String.format("fits(%d).a1 = %f;\n", moleculesProcessed.intValue() + 1, sigma1ParamArray[1]));
         //          sb.append(String.format("fits(%d).a2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[1]));
-        //          sb.append(String.format("fits(%d).b1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[2]));
+        //          sb.append(String.format("fits(%d).b1 = %f;\n", moleculesProcessed.intValue() + 1, sigma1ParamArray[2]));
         //          sb.append(String.format("fits(%d).b2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[2]));
-        //          sb.append(String.format("fits(%d).c1 = %f;\n", moleculesProcessed.intValue() + 1, sigmaParamArray[0]));
+        //          sb.append(String.format("fits(%d).c1 = %f;\n", moleculesProcessed.intValue() + 1, sigma1ParamArray[0]));
         //          sb.append(String.format("fits(%d).c2 = %f;\n", moleculesProcessed.intValue() + 1, sigma2ParamArray[0]));
         //          sb.append(String.format("fits(%d).intersection = %f;\n", moleculesProcessed.intValue() + 1, intersection));
 
@@ -258,23 +263,23 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     }
     drawOverlay(beadPositions, usedPositions);
 //    for (int i = 0; i < sigma2Quadratics.size(); i++) {
-//      IJ.log(Arrays.toString(sigmaQuadratics.get(i)) + " ; " + Arrays.toString(sigma2Quadratics.get(i)));
+//      IJ.log(Arrays.toString(sigma1Quadratics.get(i)) + " ; " + Arrays.toString(sigma2Quadratics.get(i)));
 //    }
 
-    if (sigmaQuadratics.size() < 1) {
+    if (sigma1Quadratics.size() < 1) {
       throw new RuntimeException("Could not fit a parabola in any location.");
     }
 
-    drawSigmaPlots(sigmaQuadratics, sigma2Quadratics);
+    drawSigmaPlots(sigma1Quadratics, sigma2Quadratics);
     //average the parameters of the fitted polynomials for each bead
-    avgSigmaPolynom = bootstrapMeanEstimationArray(sigmaQuadratics, 100, sigmaQuadratics.size());
+    avgSigma1Polynom = bootstrapMeanEstimationArray(sigma1Quadratics, 100, sigma1Quadratics.size());
     avgSigma2Polynom = bootstrapMeanEstimationArray(sigma2Quadratics, 100, sigma2Quadratics.size());
 
-//    sb.append(String.format("a1 = %f;\n", avgSigmaPolynom[1]));
+//    sb.append(String.format("a1 = %f;\n", avgSigma1Polynom[1]));
 //    sb.append(String.format("a2 = %f;\n", avgSigma2Polynom[1]));
-//    sb.append(String.format("b1 = %f;\n", avgSigmaPolynom[2]));
+//    sb.append(String.format("b1 = %f;\n", avgSigma1Polynom[2]));
 //    sb.append(String.format("b2 = %f;\n", avgSigma2Polynom[2]));
-//    sb.append(String.format("c1 = %f;\n", avgSigmaPolynom[0]));
+//    sb.append(String.format("c1 = %f;\n", avgSigma1Polynom[0]));
 //    sb.append(String.format("c2 = %f;\n", avgSigma2Polynom[0]));
 //    sb.append("empty_elems = arrayfun(@(s) all(structfun(@isempty,s)), fits);\n"
 //            + "fits(empty_elems) = [];");
@@ -285,7 +290,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
 //    } catch (IOException ex) {
 //    }
     IJ.showProgress(1);
-    IJ.log(String.format(Locale.ENGLISH, "s1 =  %f*(z%+f)^2 %+f", avgSigmaPolynom[1], -avgSigmaPolynom[0], avgSigmaPolynom[2]));
+    IJ.log(String.format(Locale.ENGLISH, "s1 =  %f*(z%+f)^2 %+f", avgSigma1Polynom[1], -avgSigma1Polynom[0], avgSigma1Polynom[2]));
     IJ.log(String.format(Locale.ENGLISH, "s2 =  %f*(z%+f)^2 %+f", avgSigma2Polynom[1], -avgSigma2Polynom[0], avgSigma2Polynom[2]));
   }
 
@@ -355,7 +360,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
 
   private void saveToFile(String path) throws IOException {
     Yaml yaml = new Yaml();
-    PolynomialCalibration calibration = new PolynomialCalibration(angle, avgSigmaPolynom, avgSigma2Polynom);
+    PolynomialCalibration calibration = new PolynomialCalibration(angle, avgSigma1Polynom, avgSigma2Polynom);
     yaml.dump(calibration, new FileWriter(path));
     IJ.showStatus("Calibration file saved to " + path);
   }
@@ -373,7 +378,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     plot.show();
   }
 
-  private void drawSigmaPlots(List<double[]> sigmaQuadratics, List<double[]> sigma2Quadratics) {
+  private void drawSigmaPlots(List<double[]> sigma1Quadratics, List<double[]> sigma2Quadratics) {
     int range = imp.getStackSize() / 2;
     Plot plot = new Plot("Sigma", "z[slices]", "sigma");
     plot.setLimits(-range, +range, 0, 10);
@@ -382,23 +387,23 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
       xVals[i] = val;
     }
     plot.draw();
-    for (int i = 0; i < sigmaQuadratics.size(); i++) {
-      double[] sigmaVals = new double[xVals.length];
+    for (int i = 0; i < sigma1Quadratics.size(); i++) {
+      double[] sigma1Vals = new double[xVals.length];
       double[] sigma2Vals = new double[xVals.length];
-      double[] params = sigmaQuadratics.get(i);
+      double[] params = sigma1Quadratics.get(i);
       double[] params2 = sigma2Quadratics.get(i);
-      for (int j = 0; j < sigmaVals.length; j++) {
-        sigmaVals[j] = Math.sqr(xVals[j] - params[0]) * params[1] + params[2];
+      for (int j = 0; j < sigma1Vals.length; j++) {
+        sigma1Vals[j] = Math.sqr(xVals[j] - params[0]) * params[1] + params[2];
         sigma2Vals[j] = Math.sqr(xVals[j] - params2[0]) * params2[1] + params2[2];
       }
       plot.setColor(Color.red);
-      plot.addPoints(xVals, sigmaVals, Plot.LINE);
+      plot.addPoints(xVals, sigma1Vals, Plot.LINE);
       plot.setColor(Color.BLUE);
       plot.addPoints(xVals, sigma2Vals, Plot.LINE);
     }
 
     plot.setColor(Color.red);
-    plot.addLabel(0.1, 0.8, "sigma");
+    plot.addLabel(0.1, 0.8, "sigma1");
     plot.setColor(Color.blue);
     plot.addLabel(0.1, 0.9, "sigma2");
     plot.show();

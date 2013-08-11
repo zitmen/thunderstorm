@@ -1,9 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
-import java.util.List;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.SIGMA1;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.SIGMA2;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Organizes localizations by position (close molecules are grouped together)
@@ -59,11 +61,11 @@ public class PSFSeparator {
       return sqr(x - centroidX) + sqr(y - centroidY);
     }
 
-    public double[] getSigmaAsArray() {
+    public double[] getSigma1AsArray() {
       double[] array = new double[frames.size()];
       int i = 0;
       for (PSFInstance psf : fits) {
-        array[i] = psf.getParam(PSFInstance.SIGMA);
+        array[i] = psf.getParam(SIGMA1);
         i++;
       }
       return array;
@@ -73,7 +75,7 @@ public class PSFSeparator {
       double[] array = new double[frames.size()];
       int i = 0;
       for (PSFInstance psf : fits) {
-        array[i] = psf.getParam(PSFInstance.SIGMA2);
+        array[i] = psf.getParam(SIGMA2);
         i++;
       }
       return array;

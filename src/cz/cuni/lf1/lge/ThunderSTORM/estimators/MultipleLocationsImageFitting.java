@@ -2,7 +2,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import ij.IJ;
 import ij.process.FloatProcessor;
 import java.util.Vector;
 import org.apache.commons.math3.exception.MaxCountExceededException;

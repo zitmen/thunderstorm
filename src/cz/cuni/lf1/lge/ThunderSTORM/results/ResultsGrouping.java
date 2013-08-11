@@ -5,6 +5,7 @@ import ags.utils.dataStructures.trees.thirdGenKD.KdTree;
 import ags.utils.dataStructures.trees.thirdGenKD.SquareEuclideanDistanceFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import ij.IJ;
 import java.awt.Color;
@@ -172,18 +173,18 @@ class ResultsGrouping {
   }
 
   public static void applyToModel(ResultsTableModel model, double dist) {
-    if (!model.columnExists(PSFInstance.X_POS) || !model.columnExists(PSFInstance.Y_POS)) {
-      throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFInstance.X_POS, PSFInstance.Y_POS, model.getColumnNames()));
+    if (!model.columnExists(PSFModel.Params.LABEL_X) || !model.columnExists(PSFModel.Params.LABEL_Y)) {
+      throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y, model.getColumnNames()));
     }
     //
     double dist2 = sqr(dist);
-    double[] x = model.getColumnAsDoubles(PSFInstance.X_POS);
-    double[] y = model.getColumnAsDoubles(PSFInstance.Y_POS);
-    double[] I = model.getColumnAsDoubles(PSFInstance.INTENSITY);
-    double[] b = model.getColumnAsDoubles(PSFInstance.BACKGROUND);
-    double[] s = model.getColumnAsDoubles(PSFInstance.SIGMA);
-    double[] fno = model.getColumnAsDoubles("frame");
-    double[] id = model.getColumnAsDoubles(IJResultsTable.COLUMN_ID);
+    double[] x = model.getColumnAsDoubles(PSFModel.Params.LABEL_X);
+    double[] y = model.getColumnAsDoubles(PSFModel.Params.LABEL_Y);
+    double[] I = model.getColumnAsDoubles(PSFModel.Params.LABEL_INTENSITY);
+    double[] b = model.getColumnAsDoubles(PSFModel.Params.LABEL_BACKGROUND);
+    double[] s = model.getColumnAsDoubles(PSFModel.Params.LABEL_SIGMA);
+    double[] fno = model.getColumnAsDoubles(PSFInstance.LABEL_FRAME);
+    double[] id = model.getColumnAsDoubles(PSFInstance.LABEL_ID);
     FrameSequence frames = new FrameSequence();
     for (int i = 0, im = model.getRowCount(); i < im; i++) {
       frames.InsertMolecule(new Molecule((int) id[i], x[i], y[i], I[i], b[i], s[i], (int) fno[i]));
@@ -196,13 +197,13 @@ class ResultsGrouping {
     for (Molecule mol : frames.getAllMolecules()) {
       //
       model.addRow();
-      model.addValue((double) mol.frame, "frame");
-      model.addValue(mol.x, PSFInstance.X_POS);
-      model.addValue(mol.y, PSFInstance.Y_POS);
-      model.addValue(mol.I, PSFInstance.INTENSITY);
-      model.addValue(mol.b, PSFInstance.BACKGROUND);
-      model.addValue(mol.s, PSFInstance.SIGMA);
-      model.addValue((double) mol.detections.size(), "detections");
+      model.addValue((double) mol.frame, PSFInstance.LABEL_FRAME);
+      model.addValue(mol.x, PSFModel.Params.LABEL_X);
+      model.addValue(mol.y, PSFModel.Params.LABEL_Y);
+      model.addValue(mol.I, PSFModel.Params.LABEL_INTENSITY);
+      model.addValue(mol.b, PSFModel.Params.LABEL_BACKGROUND);
+      model.addValue(mol.s, PSFModel.Params.LABEL_SIGMA);
+      model.addValue((double) mol.detections.size(), PSFInstance.LABEL_DETECTIONS);
     }
   }
 

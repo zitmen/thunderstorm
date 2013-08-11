@@ -4,6 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.drift.CrossCorrelationDriftCorrection;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import ij.ImagePlus;
 import ij.gui.Plot;
 import java.awt.Color;
@@ -115,14 +116,14 @@ public class ResultsDriftCorrection {
 
   void getResultsFromTable() {
     IJResultsTable rt = IJResultsTable.getResultsTable();
-    if (!rt.columnExists(PSFInstance.X_POS) || !rt.columnExists(PSFInstance.Y_POS)) {
-      throw new RuntimeException("Could not find " + PSFInstance.X_POS + " and " + PSFInstance.Y_POS + " columns.");
+    if (!rt.columnExists(PSFModel.Params.LABEL_X) || !rt.columnExists(PSFModel.Params.LABEL_Y)) {
+      throw new RuntimeException("Could not find " + PSFModel.Params.LABEL_X + " and " + PSFModel.Params.LABEL_Y + " columns.");
     }
     if (!rt.columnExists("frame")) {
       throw new RuntimeException("Could not find \"frame\" column.");
     }
-    x = rt.getColumnAsDoubles(PSFInstance.X_POS);
-    y = rt.getColumnAsDoubles(PSFInstance.Y_POS);
+    x = rt.getColumnAsDoubles(PSFModel.Params.LABEL_X);
+    y = rt.getColumnAsDoubles(PSFModel.Params.LABEL_Y);
     frame = rt.getColumnAsDoubles("frame");
   }
 
@@ -165,11 +166,11 @@ public class ResultsDriftCorrection {
     IJResultsTable rt = IJResultsTable.getResultsTable();
     for (int i = 0; i < rt.getRowCount(); i++) {
       double frameNumber = rt.getValue(i, "frame");
-      double xVal = rt.getValue(i, PSFInstance.X_POS);
-      double yVal = rt.getValue(i, PSFInstance.Y_POS);
+      double xVal = rt.getValue(i, PSFModel.Params.LABEL_X);
+      double yVal = rt.getValue(i, PSFModel.Params.LABEL_Y);
       Point2D.Double drift = driftCorrection.getInterpolatedDrift(frameNumber);
-      rt.setValueAt(xVal - drift.x, i, PSFInstance.X_POS);
-      rt.setValueAt(yVal - drift.y, i, PSFInstance.Y_POS);
+      rt.setValueAt(xVal - drift.x, i, PSFModel.Params.LABEL_X);
+      rt.setValueAt(yVal - drift.y, i, PSFModel.Params.LABEL_Y);
     }
   }
 

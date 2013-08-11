@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.IntegratedGaussian;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
@@ -204,10 +205,10 @@ public class DataGeneratorPlugIn implements PlugIn {
                 for(IntegratedGaussian mol : local_table.elementAt(i)) {
                     rt.addRow();
                     rt.addValue((double)f+1, "frame");
-                    rt.addValue(mol.x0, PSFInstance.X_POS);
-                    rt.addValue(mol.y0, PSFInstance.Y_POS);
-                    rt.addValue(mol.I0, PSFInstance.INTENSITY);
-                    rt.addValue(mol.sig0, PSFInstance.SIGMA);
+                    rt.addValue(mol.x0, PSFModel.Params.LABEL_X);
+                    rt.addValue(mol.y0, PSFModel.Params.LABEL_Y);
+                    rt.addValue(mol.I0, PSFModel.Params.LABEL_INTENSITY);
+                    rt.addValue(mol.sig0, PSFModel.Params.LABEL_SIGMA);
                 }
             }
         }

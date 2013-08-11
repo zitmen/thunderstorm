@@ -1,15 +1,17 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import au.com.bytecode.opencsv.CSVReader;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.GaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import ij.process.FloatProcessor;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.util.List;
 import java.util.Vector;
+
+// Note: this file should be replaced by a newer version; some of the things used here are deprecated
 
 /**
  * Importing CSV files and translating them into internal plugin objects (FloatProcessor, PSFModel, Point).
@@ -69,15 +71,15 @@ public class CSV {
         if(lines.get(0).length < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
         
         Vector<PSFInstance> loc = new Vector<PSFInstance>();
-        String[] names = new String[]{PSFInstance.X_POS, PSFInstance.Y_POS, "Intensity", PSFInstance.SIGMA, "Background"};
+        int[] params = new int[]{PSFModel.Params.X, PSFModel.Params.Y, PSFModel.Params.INTENSITY, PSFModel.Params.SIGMA, PSFModel.Params.BACKGROUND};
         for(int r = start_row, rm = lines.size(); r < rm; r++) {
-            loc.add(new PSFInstance(names, new double[]{
+            loc.add(new PSFInstance(new Params(params, new double[]{
                 Float.parseFloat(lines.get(r)[start_col+0]),    // x
                 Float.parseFloat(lines.get(r)[start_col+1]),    // y
                 Float.parseFloat(lines.get(r)[start_col+3]),    // I
                 Float.parseFloat(lines.get(r)[start_col+2]),    // s
-                0.0}                                             // b
-            ));
+                0.0},                                           // b
+            false)));
         }
         return loc;
     }

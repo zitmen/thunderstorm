@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import java.util.Vector;
 
@@ -19,7 +20,6 @@ import java.util.Vector;
  */
 public class IJResultsTable {
 
-    public static final String COLUMN_ID = "id";
     public static final int COLUMN_NOT_FOUND = ResultsTableModel.COLUMN_NOT_FOUND;  // -1
     public static final int COLUMN_IN_USE = -2;
     private static IJResultsTable resultsTable = null;
@@ -219,7 +219,7 @@ public class IJResultsTable {
         if(getRowCount() == 0) return true; // if the table is empty then the colums are assumed to be empty
         int checked = 1;    // ignoring column id
         for(int i = 0; i < names.length; i++) {
-            if(IJResultsTable.COLUMN_ID.equals(names[i])) {
+            if(PSFInstance.LABEL_ID.equals(names[i])) {
                 continue;  // ignoring column id
             }
             if(columnExists(names[i])) {

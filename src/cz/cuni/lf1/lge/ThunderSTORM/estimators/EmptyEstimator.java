@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
@@ -16,43 +17,42 @@ import javax.swing.JPanel;
  */
 public class EmptyEstimator implements IEstimator, IEstimatorUI {
 
-  public static final String[] names = new String[]{PSFInstance.X_POS, PSFInstance.Y_POS};
+    @Override
+    public Vector<PSFInstance> estimateParameters(FloatProcessor fp, Vector<Point> detections) {
+        Vector<PSFInstance> locations = new Vector<PSFInstance>();
 
-  @Override
-  public Vector<PSFInstance> estimateParameters(FloatProcessor fp, Vector<Point> detections) {
-    Vector<PSFInstance> locations = new Vector<PSFInstance>();
-
-    for (Point detection : detections) {
-      locations.add(new PSFInstance(names, new double[]{detection.x.doubleValue(), detection.y.doubleValue()}));
+        for (Point detection : detections) {
+            locations.add(new PSFInstance(new PSFModel.Params(new int[]{PSFModel.Params.X, PSFModel.Params.Y},
+                    new double[]{detection.x.doubleValue(), detection.y.doubleValue()}, false)));
+        }
+        return locations;
     }
-    return locations;
-  }
 
-  @Override
-  public String getName() {
-    return "No estimator";
-  }
+    @Override
+    public String getName() {
+        return "No estimator";
+    }
 
-  @Override
-  public JPanel getOptionsPanel() {
-    return null;
-  }
+    @Override
+    public JPanel getOptionsPanel() {
+        return null;
+    }
 
-  @Override
-  public void readParameters() {
-    // nothing to do here
-  }
+    @Override
+    public void readParameters() {
+        // nothing to do here
+    }
 
-  @Override
-  public void recordOptions() {
-  }
+    @Override
+    public void recordOptions() {
+    }
 
-  @Override
-  public void readMacroOptions(String options) {
-  }
+    @Override
+    public void readMacroOptions(String options) {
+    }
 
-  @Override
-  public IEstimator getImplementation() {
-    return this;
-  }
+    @Override
+    public IEstimator getImplementation() {
+        return this;
+    }
 }

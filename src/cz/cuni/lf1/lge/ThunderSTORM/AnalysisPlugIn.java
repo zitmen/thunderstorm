@@ -1,5 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Z;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
@@ -50,10 +53,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     
-  public static final String LABEL_X_POS = "x";
-  public static final String LABEL_Y_POS = "y";
-  public static final String LABEL_Z_POS = "z";
-
   private int stackSize;
   private AtomicInteger nProcessed = new AtomicInteger(0);
   private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING | SUPPORTS_MASKING;
@@ -106,7 +105,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         if(results[frame] != null) {
           for (PSFInstance psf : results[frame]) {
             tableModel.addRow();
-            tableModel.addValue((double) frame, "frame");
+            tableModel.addValue((double) frame, PSFInstance.LABEL_FRAME);
             for (Map.Entry<String, Double> parameter : psf) {
               tableModel.addValue(parameter.getValue(), parameter.getKey());
             }
@@ -114,7 +113,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         }
       }
       for(String colname : tableModel.getColumnNames()) {
-        tableModel.setColumnUnits(colname, PSFInstance.getUnit(colname));
+        tableModel.setColumnUnits(colname, PSFInstance.Units.getUnit(colname));
       }
       tableModel.copyOriginalToActual();
       tableModel.setActualState();
@@ -126,8 +125,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       for (int frame = 1; frame <= stackSize; frame++) {
         if(results[frame]!= null){
           RenderingOverlay.showPointsInImageSlice(imp,
-                  Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.X_POS), roi.getBounds().x),
-                  Math.add(PSFInstance.extractParamToArray(results[frame], PSFInstance.Y_POS), roi.getBounds().y),
+                  Math.add(PSFInstance.extractParamToArray(results[frame], LABEL_X), roi.getBounds().x),
+                  Math.add(PSFInstance.extractParamToArray(results[frame], LABEL_Y), roi.getBounds().y),
                   frame, Color.red, RenderingOverlay.MARKER_CROSS);
         }
       }
@@ -266,9 +265,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
       if(fits.size() > 0) {
         renderingQueue.renderLater(
-                PSFInstance.extractParamToArray(fits, PSFInstance.X_POS),
-                PSFInstance.extractParamToArray(fits, PSFInstance.Y_POS),
-                fits.get(0).hasParam(PSFInstance.Z_POS) ? PSFInstance.extractParamToArray(fits, PSFInstance.Z_POS) : null,
+                PSFInstance.extractParamToArray(fits, LABEL_X),
+                PSFInstance.extractParamToArray(fits, LABEL_Y),
+                fits.get(0).hasParam(LABEL_Z) ? PSFInstance.extractParamToArray(fits, LABEL_Z) : null,
                 null);
       }
       //

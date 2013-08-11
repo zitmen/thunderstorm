@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
 import java.io.FileInputStream;
@@ -113,12 +114,12 @@ public class XMLImportExport implements IImportExport {
                     headers = new String[mol.size()];
                 mol.keySet().toArray(headers);
                 if(!rt.columnNamesEqual(headers)) {
-                    throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + IJResultsTable.COLUMN_ID + "')!");
+                    throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + PSFInstance.LABEL_ID + "')!");
                 }
                 //
                 rt.addRow();
                 for(Map.Entry<String,Double> entry : mol.entrySet()) {
-                    if(IJResultsTable.COLUMN_ID.equals(entry.getKey())) continue;
+                    if(PSFInstance.LABEL_ID.equals(entry.getKey())) continue;
                     rt.addValue(entry.getValue().doubleValue(), entry.getKey());
                     IJ.showProgress((double)(r++) / (double)nrows);
                 }

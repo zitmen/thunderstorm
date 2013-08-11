@@ -1,117 +1,109 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- */
+// ============================================================================================= //
+// TODO: pridat metadata pro fitovani, abych mohl spocitat Thompsona, pripadne neco dalsiho      //
+//     + sloucit rozhrani s mergovanim molekul v post-processingu                                //
+//     + zahrnout i scale na energii/peak, fotony/ADU, px/nm/um, atd.                            //
+//    ++ bonbonek na konec, vkladat instance do tabulky a povolit rozbalovani sloucenych molekul //
+// ============================================================================================= //
 public class PSFInstance implements Iterable<Map.Entry<String, Double>> {
 
-    private final String[] paramNames;
-    private final double[] params;
-    public static final String X_POS = "x";
-    public static final String Y_POS = "y";
-    public static final String Z_POS = "z";
-    public static final String SIGMA = "sigma";
-    public static final String SIGMA2 = "sigma2";
-    public static final String INTENSITY = "intensity";
-    public static final String BACKGROUND = "background";
-    public static final String ANGLE = "angle";
-    public static final String UNIT_LATERAL = "px";
-    public static final String UNIT_AXIAL = "nm";
-    public static final String UNIT_SIGNAL = "ADU";
-    public static final String UNIT_ANGLE = "deg";
-    
-    private static HashMap<String, String> UNITS = null;
-    
-    public static String getUnit(String paramName) {
-        if(UNITS == null) {
-            UNITS = new HashMap<String, String>();
-            UNITS.put(X_POS, UNIT_LATERAL);
-            UNITS.put(Y_POS, UNIT_LATERAL);
-            UNITS.put(Z_POS, UNIT_AXIAL);
-            UNITS.put(SIGMA, UNIT_LATERAL);
-            UNITS.put(SIGMA2, UNIT_LATERAL);
-            UNITS.put(INTENSITY, UNIT_SIGNAL);
-            UNITS.put(BACKGROUND, UNIT_SIGNAL);
-            UNITS.put(ANGLE, UNIT_ANGLE);
+    public static class Units {
+        public static final String LABEL_MICROMETER = "um";
+        public static final String LABEL_NANOMETER = "nm";
+        public static final String LABEL_PIXEL = "px";
+        public static final String LABEL_DIGITAL = "ADU";
+        public static final String LABEL_PHOTON = "photon";
+        public static final String LABEL_DEGREE = "deg";
+        public static final String LABEL_RADIAN = "rad";
+        
+        private static HashMap<String, String> all_units = null;
+
+        public static String getUnit(String paramName) {
+            if (all_units == null) {
+                all_units = new HashMap<String, String>();
+                all_units.put(Params.LABEL_X, Units.LABEL_PIXEL);
+                all_units.put(Params.LABEL_Y, Units.LABEL_PIXEL);
+                all_units.put(Params.LABEL_Z, Units.LABEL_NANOMETER);
+                all_units.put(Params.LABEL_SIGMA, Units.LABEL_PIXEL);
+                all_units.put(Params.LABEL_SIGMA1, Units.LABEL_PIXEL);
+                all_units.put(Params.LABEL_SIGMA2, Units.LABEL_PIXEL);
+                all_units.put(Params.LABEL_INTENSITY, Units.LABEL_DIGITAL);
+                all_units.put(Params.LABEL_BACKGROUND, Units.LABEL_DIGITAL);
+                all_units.put(Params.LABEL_ANGLE, Units.LABEL_DEGREE);
+            }
+            return all_units.get(paramName);
         }
-        return UNITS.get(paramName);
     }
+    
+    public static final String LABEL_ID = "id";
+    public static final String LABEL_FRAME = "frame";
+    public static final String LABEL_DETECTIONS = "detections";
+    
+    private Params params;
 
-    public PSFInstance(String[] paramNames, double[] params) {
-        assert paramNames.length == params.length : "names and values array lengths must be the same";
-        this.paramNames = paramNames;
+    public PSFInstance(Params params) {
+        assert params.hasParam(Params.X) && params.hasParam(Params.Y);
         this.params = params;
-        assert contains(X_POS) && contains(Y_POS);
     }
-
-    public double getX() {
-        return getParam(X_POS);
+    
+    public boolean hasParam(int param) {
+        return params.hasParam(param);
     }
-
-    public void setX(double value) {
-        setParam(X_POS, value);
-    }
-
-    public double getY() {
-        return getParam(Y_POS);
-    }
-
-    public void setY(double value) {
-        setParam(Y_POS, value);
+    
+    public boolean hasParam(String name) {
+        return params.hasParam(name);
     }
 
     public double getParamAt(int i) {
-        return params[i];
+        return params.getParamAt(i);
+    }
+    
+    public void setParamAt(int i, double value) {
+        params.setParamAt(i, value);
     }
 
-    public String getParamName(int i) {
-        return paramNames[i];
+    public String getParamNameAt(int i) {
+        return params.getParamNameAt(i);
+    }
+    
+    public double getX() {
+        return params.getParam(Params.X);
+    }
+    
+    public void setX(double value) {
+        params.setParam(Params.X, value);
+    }
+    
+    public double getY() {
+        return params.getParam(Params.Y);
+    }
+    
+    public void setY(double value) {
+        params.setParam(Params.Y, value);
     }
 
-    public double getParam(String name) {
-        return params[getParamIndex(name)];
+    public double getParam(int param) {
+        return params.getParam(param);
     }
-
-    public int getParamIndex(String name) {
-        for (int i = 0; i < paramNames.length; i++) {
-            if (paramNames[i].equals(name)) {
-                return i;
-            }
-        }
-        throw new IllegalArgumentException("This instance does not contain the requested parameter: " + name);
-    }
-
-    public void setParamAt(int pos, double value) {
-        params[pos] = value;
+    
+    public void setParam(int param, double value) {
+        params.setParam(param, value);
     }
 
     public void setParam(String name, double value) {
-        for (int i = 0; i < paramNames.length; i++) {
-            if (paramNames[i].equals(name)) {
-                params[i] = value;
-                return;
-            }
-        }
-        throw new IllegalArgumentException("This instance does not contain the requested parameter: " + name);
+        params.setParam(name, value);
     }
 
-    public final boolean hasParam(String name) {
-        return contains(name);
-    }
-
-    private boolean contains(String name) {
-        for (int i = 0; i < paramNames.length; i++) {
-            if (paramNames[i].equals(name)) {
-                return true;
-            }
-        }
-        return false;
+    public double getParam(String name) {
+        return params.getParam(name);
     }
 
     /**
@@ -124,18 +116,20 @@ public class PSFInstance implements Iterable<Map.Entry<String, Double>> {
      * @param pixelsize size of a single pixel in nanometers
      */
     public void convertXYToNanoMeters(double pixelsize) {
-        int xIndex = getParamIndex(X_POS);
-        int yIndex = getParamIndex(Y_POS);
-        setParamAt(xIndex, pixelsize * getParamAt(xIndex));
-        setParamAt(yIndex, pixelsize * getParamAt(yIndex));
+        setParam(Params.X, pixelsize * getParam(Params.X));
+        setParam(Params.Y, pixelsize * getParam(Params.Y));
     }
 
+    public int[] getParamIndices() {
+        return params.indices;
+    }
+    
     public String[] getParamNames() {
-        return paramNames;
+        return params.names;
     }
 
     public double[] getParamArray() {
-        return params;
+        return params.values;
     }
 
     @Override
@@ -146,19 +140,19 @@ public class PSFInstance implements Iterable<Map.Entry<String, Double>> {
 
             @Override
             public boolean hasNext() {
-                return position < paramNames.length;
+                return position < params.getParamsCount();
             }
 
             @Override
             public Map.Entry<String, Double> next() {
-                retValue = new AbstractMap.SimpleImmutableEntry<String, Double>(paramNames[position], params[position]);
+                retValue = new AbstractMap.SimpleImmutableEntry<String, Double>(params.getParamNameAt(position), params.getParamAt(position));
                 position++;
                 return retValue;
             }
 
             @Override
             public void remove() {
-                throw new UnsupportedOperationException("Removing not supported.");
+                throw new UnsupportedOperationException("Removing is not supported!");
             }
         };
     }
@@ -167,18 +161,26 @@ public class PSFInstance implements Iterable<Map.Entry<String, Double>> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        for (int i = 0; i < paramNames.length; i++) {
+        for (int i = 0; i < params.getParamsCount(); i++) {
             if (i != 0) {
                 sb.append(", ");
             }
-            sb.append(paramNames[i]);
+            sb.append(params.getParamNameAt(i));
             sb.append("=");
-            sb.append(params[i]);
+            sb.append(params.getParamAt(i));
         }
         sb.append("]");
         return sb.toString();
     }
 
+    public static double[] extractParamToArray(List<PSFInstance> fits, int param) {
+        double[] array = new double[fits.size()];
+        for (int i = 0; i < fits.size(); i++) {
+            array[i] = fits.get(i).getParam(param);
+        }
+        return array;
+    }
+    
     public static double[] extractParamToArray(List<PSFInstance> fits, String param) {
         double[] array = new double[fits.size()];
         for (int i = 0; i < fits.size(); i++) {

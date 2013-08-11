@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.plugin.PlugIn;
@@ -57,7 +58,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 IJResultsTable rt = IJResultsTable.getResultsTable();
                 col_headers = rt.getColumnNames();
                 boolean [] active_columns = new boolean[col_headers.length];
-                Arrays.fill(active_columns, true); active_columns[rt.findColumn(IJResultsTable.COLUMN_ID)] = false;
+                Arrays.fill(active_columns, true); active_columns[rt.findColumn(PSFInstance.LABEL_ID)] = false;
                 gd.addCheckboxGroup(col_headers.length, 1, col_headers, active_columns);
             } else if("import".equals(command)) {
                 gd.addCheckbox("clear the table of results before import", true);

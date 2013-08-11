@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import au.com.bytecode.opencsv.CSVReader;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
 import java.io.BufferedWriter;
@@ -40,13 +41,13 @@ abstract public class DLMImportExport implements IImportExport {
             colunits[c] = tmp[1];
         }
         if(!rt.columnNamesEqual(colnames)) {
-            throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + IJResultsTable.COLUMN_ID + "')!");
+            throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + PSFInstance.LABEL_ID + "')!");
         }
         
         for(int r = 1, rm = lines.size(); r < rm; r++) {
             rt.addRow();
             for(int c = 0, cm = lines.get(r).length; c < cm; c++) {
-              if(IJResultsTable.COLUMN_ID.equals(colnames[c])) continue;
+              if(PSFInstance.LABEL_ID.equals(colnames[c])) continue;
               rt.addValue(Double.parseDouble(lines.get(r)[c]), colnames[c]);
             }
             IJ.showProgress((double)r / (double)rm);
