@@ -4,8 +4,8 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Z;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
-import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
+import ij.Executer;
 import ij.IJ;
 import ij.WindowManager;
 import java.awt.BorderLayout;
@@ -98,7 +98,7 @@ class JavaTableWindow {
     render.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        new RenderingPlugIn().run("");
+          new Executer("Rendering").run();
       }
     });
     livePreview = true;
@@ -110,6 +110,7 @@ class JavaTableWindow {
         showPreview();
       }
     });
+    preview.setEnabled(false);
     buttons.add(preview);
     buttons.add(Box.createHorizontalGlue());
     buttons.add(showHist);
@@ -219,10 +220,14 @@ class JavaTableWindow {
   }
 
   public void setPreviewRenderer(RenderingQueue renderer) {
+    preview.setEnabled(renderer != null);
     previewRenderer = renderer;
   }
   
   public void setStatus(String text){
+    if(text == null){
+      text = " ";
+    }
     this.status.setText(text);
   }
   

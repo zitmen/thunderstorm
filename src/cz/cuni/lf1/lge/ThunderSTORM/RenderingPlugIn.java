@@ -8,11 +8,14 @@ import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.IJ;
+import ij.Macro;
 import ij.plugin.PlugIn;
+import ij.plugin.frame.Recorder;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -26,8 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class RenderingPlugIn implements PlugIn {
-
-  public static final String[] METHODS = new String[]{"Density", "ASH", "Histogram", "Scatter"};
 
   @Override
   public void run(String string) {
@@ -49,10 +50,11 @@ public class RenderingPlugIn implements PlugIn {
       IJ.error("results were null");
       return;
     }
-    double[] z = rt.columnExists(LABEL_Z)? rt.getColumnAsDoubles(LABEL_Z): null;
-    double[] dx = rt.columnExists("dx")? rt.getColumnAsDoubles("dx"): null;
+    double[] z = rt.columnExists(LABEL_Z) ? rt.getColumnAsDoubles(LABEL_Z) : null;
+    double[] dx = rt.columnExists("dx") ? rt.getColumnAsDoubles("dx") : null;
 
     List<IRendererUI> knownRenderers = ModuleLoader.getUIModules(IRendererUI.class);
+    //do not show EmptyRenderer
     for (Iterator<IRendererUI> it = knownRenderers.iterator(); it.hasNext();) {
       if (it.next() instanceof EmptyRendererUI) {
         it.remove();
@@ -60,19 +62,22 @@ public class RenderingPlugIn implements PlugIn {
     }
     IRendererUI selectedRendererUI;
     int sizeX, sizeY;
-    
+    boolean setAsPreview = false;
+
     if (MacroParser.isRanFromMacro()) {
       MacroParser parser = new MacroParser(null, null, null, knownRenderers);
       selectedRendererUI = parser.getRendererUI();
-      
-      //TODO: parse size
-      sizeX = 0;
-      sizeY = 0;
+
+      sizeX = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imwidth", "0"));
+      sizeY = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imheight", "0"));
     } else {
-      RenderingDialog dialog = new RenderingDialog(knownRenderers, (int)Math.ceil(max(xpos)) + 1, (int)Math.ceil(max(ypos)) + 1);
+      RenderingDialog dialog = new RenderingDialog(knownRenderers, (int) Math.ceil(max(xpos)) + 1, (int) Math.ceil(max(ypos)) + 1);
       dialog.setVisible(true);
-      if(!dialog.okPressed){
+      if (dialog.result == RenderingDialog.DialogResult.CANCELLED) {
         return;
+      }
+      if (dialog.result == RenderingDialog.DialogResult.PREVIEW) {
+        setAsPreview = true;
       }
       selectedRendererUI = dialog.getSelectedRendererUI();
       sizeX = dialog.sizeX;
@@ -81,12 +86,22 @@ public class RenderingPlugIn implements PlugIn {
 
     selectedRendererUI.setSize(sizeX, sizeY);
     IncrementalRenderingMethod method = selectedRendererUI.getImplementation();
-    
-    method.reset();
-    method.addToImage(xpos, ypos, z, dx);
-    method.getRenderedImage().show();
-    //TODO: adjust brightness
 
+    if (setAsPreview) {
+      RenderingQueue queue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(method.getRenderedImage()), selectedRendererUI.getRepaintFrequency());
+      rt.setPreviewRenderer(queue);
+      rt.showPreview();
+    } else {
+      if (Recorder.record) {
+        Recorder.recordOption("imwidth", Integer.toString(sizeX));
+        Recorder.recordOption("imheight", Integer.toString(sizeY));
+        MacroParser.recordRendererUI(selectedRendererUI);
+      }
+
+      method.reset();
+      method.addToImage(xpos, ypos, z, dx);
+      new RenderingQueue.DefaultRepaintTask(method.getRenderedImage()).run();
+    }
   }
 
   private double max(double[] arr) {
@@ -103,12 +118,18 @@ public class RenderingPlugIn implements PlugIn {
 class RenderingDialog extends JDialog {
 
   CardsPanel<IRendererUI> cardsPanel;
+  JButton previewButton;
   JButton okButton;
   JButton cancelButton;
-  boolean okPressed = false;
+  DialogResult result = DialogResult.CANCELLED;
   JTextField sizeXTextField;
   JTextField sizeYTextField;
   int sizeX, sizeY;
+
+  enum DialogResult {
+
+    CANCELLED, OK, PREVIEW;
+  }
 
   public RenderingDialog(List<IRendererUI> knownRenderers, int sizeX, int sizeY) {
     super(IJ.getInstance(), "Rendering options", true);
@@ -119,33 +140,46 @@ class RenderingDialog extends JDialog {
   }
 
   @Override
-  public  void setVisible(boolean b) {
+  public void setVisible(boolean b) {
     super.setVisible(b);
   }
 
-  public IRendererUI getSelectedRendererUI(){
+  public IRendererUI getSelectedRendererUI() {
     return cardsPanel.getActiveComboBoxItem();
   }
-  
+
   private void layoutComponents() {
     setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     getContentPane().setLayout(new GridBagLayout());
     JPanel sizePanel = new JPanel(new GridBagLayout());
-    sizeXTextField = new JTextField(Integer.toString(sizeX),20);
-    sizeYTextField = new JTextField(Integer.toString(sizeY),20);
+    sizeXTextField = new JTextField(Integer.toString(sizeX), 20);
+    sizeYTextField = new JTextField(Integer.toString(sizeY), 20);
     sizePanel.add(new JLabel("Image size X [px]:"), GridBagHelper.leftCol());
     sizePanel.add(sizeXTextField, GridBagHelper.rightCol());
     sizePanel.add(new JLabel("Image size Y [px]:"), GridBagHelper.leftCol());
     sizePanel.add(sizeYTextField, GridBagHelper.rightCol());
 
     JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    previewButton = new JButton("Use for preview");
+    previewButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          validateFields();
+          result = DialogResult.PREVIEW;
+          dispose();
+        } catch (Exception ex) {
+          IJ.showMessage(ex.toString());
+        }
+      }
+    });
     okButton = new JButton("OK");
     okButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
           validateFields();
-          okPressed = true;
+          result = DialogResult.OK;
           dispose();
         } catch (Exception ex) {
           IJ.showMessage(ex.toString());
@@ -157,18 +191,21 @@ class RenderingDialog extends JDialog {
     cancelButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        okPressed = false;
+        result = DialogResult.CANCELLED;
         dispose();
       }
     });
+    buttonsPanel.add(previewButton);
     buttonsPanel.add(okButton);
     buttonsPanel.add(cancelButton);
 
     add(sizePanel, GridBagHelper.leftCol());
-    add(cardsPanel.getPanel("Renderer:"),GridBagHelper.leftCol());
-    add(buttonsPanel,GridBagHelper.leftCol());
+    add(cardsPanel.getPanel("Renderer:"), GridBagHelper.leftCol());
+    add(buttonsPanel, GridBagHelper.leftCol());
 
     pack();
+    setLocationRelativeTo(null);
+    setResizable(false);
   }
 
   private void validateFields() {
