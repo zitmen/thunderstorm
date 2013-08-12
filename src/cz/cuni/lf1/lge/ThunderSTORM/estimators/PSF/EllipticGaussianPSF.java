@@ -106,7 +106,8 @@ public class EllipticGaussianPSF extends PSFModel {
         steps[Params.X] = 1;
         steps[Params.Y] = 1;
         steps[Params.INTENSITY] = 3000;
-        steps[Params.SIGMA] = 0.1;
+        steps[Params.SIGMA1] = 0.1;
+        steps[Params.SIGMA2] = 0.1;
         steps[Params.BACKGROUND] = 10;
         return steps;
     }
