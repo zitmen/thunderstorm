@@ -36,11 +36,12 @@ public abstract class PSFModel {
         public static final int Z = 2;
         public static final int SIGMA = 3;
         public static final int INTENSITY = 4;
-        public static final int BACKGROUND = 5;
-        public static final int ANGLE = 6;
-        public static final int SIGMA1 = 7;
-        public static final int SIGMA2 = 8;
-        public static final int PARAMS_LENGTH = 9;  // <stop>
+        public static final int OFFSET = 5;
+        public static final int BACKGROUND = 6;
+        public static final int ANGLE = 7;
+        public static final int SIGMA1 = 8;
+        public static final int SIGMA2 = 9;
+        public static final int PARAMS_LENGTH = 10;  // <stop>
         
         private static String [] all_names = null;
         
@@ -49,7 +50,8 @@ public abstract class PSFModel {
         public static final String LABEL_Z = "z";
         public static final String LABEL_SIGMA = "sigma";
         public static final String LABEL_INTENSITY = "intensity";
-        public static final String LABEL_BACKGROUND = "background";
+        public static final String LABEL_OFFSET = "offset";
+        public static final String LABEL_BACKGROUND_VARIANCE = "background";
         public static final String LABEL_SIGMA1 = "sigma1";
         public static final String LABEL_SIGMA2 = "sigma2";
         public static final String LABEL_ANGLE = "angle";
@@ -63,7 +65,8 @@ public abstract class PSFModel {
             Params.all_names[Z] = LABEL_Z;
             Params.all_names[SIGMA] = LABEL_SIGMA;
             Params.all_names[INTENSITY] = LABEL_INTENSITY;
-            Params.all_names[BACKGROUND] = LABEL_BACKGROUND;
+            Params.all_names[OFFSET] = LABEL_OFFSET;
+            Params.all_names[BACKGROUND] = LABEL_BACKGROUND_VARIANCE;
             Params.all_names[SIGMA1] = LABEL_SIGMA1;
             Params.all_names[SIGMA2] = LABEL_SIGMA2;
             Params.all_names[ANGLE] = LABEL_ANGLE;
@@ -237,5 +240,5 @@ public abstract class PSFModel {
 
     public abstract double[] getInitialParams(OneLocationFitter.SubImage subImage);
 
-    public abstract PSFInstance newInstanceFromParams(double [] params);
+    public abstract Molecule newInstanceFromParams(double [] params);
 }

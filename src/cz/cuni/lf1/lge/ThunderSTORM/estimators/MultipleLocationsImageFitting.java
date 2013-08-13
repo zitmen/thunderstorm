@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 import java.util.Vector;
@@ -19,7 +19,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
   int bigSubImageSize;
   int[] xgrid;
   int[] ygrid;
-  Vector<PSFInstance> results;
+  Vector<Molecule> results;
   final OneLocationFitter fitter;
 
   public MultipleLocationsImageFitting(int subimageSize, OneLocationFitter fitter) {
@@ -76,7 +76,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
                   locations.get(i).getX().doubleValue() - xInt,
                   locations.get(i).getY().doubleValue() - yInt);
 
-          PSFInstance psf = fitter.fit(subImage);
+          Molecule psf = fitter.fit(subImage);
           if (checkIsInSubimage(psf.getX(), psf.getY())) {
             psf.setX(psf.getX() + xInt + 0.5);
             psf.setY(psf.getY() + yInt + 0.5);
@@ -100,10 +100,10 @@ public class MultipleLocationsImageFitting implements IEstimator {
   }
 
   @Override
-  public Vector<PSFInstance> estimateParameters(ij.process.FloatProcessor image, Vector<Point> detections) {
+  public Vector<Molecule> estimateParameters(ij.process.FloatProcessor image, Vector<Point> detections) {
     this.image = image;
     this.locations = detections;
-    results = new Vector<PSFInstance>();
+    results = new Vector<Molecule>();
     run();
     return results;
   }

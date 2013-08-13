@@ -26,7 +26,7 @@ public class EllipticGaussianWAnglePSF extends PSFModel {
         double dx = ((x - params[Params.X]) * cosfi - (y - params[Params.Y]) * sinfi);
         double dy = ((x - params[Params.X]) * sinfi + (y - params[Params.Y]) * cosfi);
 
-        return params[Params.INTENSITY] / (2 * PI * params[Params.SIGMA1] * params[Params.SIGMA2]) * exp(-0.5 * (sqr(dx / params[Params.SIGMA1]) + sqr(dy / params[Params.SIGMA2]))) + params[Params.BACKGROUND];
+        return params[Params.INTENSITY] / (2 * PI * params[Params.SIGMA1] * params[Params.SIGMA2]) * exp(-0.5 * (sqr(dx / params[Params.SIGMA1]) + sqr(dy / params[Params.SIGMA2]))) + params[Params.OFFSET];
     }
 
     @Override
@@ -37,7 +37,7 @@ public class EllipticGaussianWAnglePSF extends PSFModel {
         transformed[Params.INTENSITY] = parameters[Params.INTENSITY] * parameters[Params.INTENSITY];
         transformed[Params.SIGMA1] = parameters[Params.SIGMA1] * parameters[Params.SIGMA1];
         transformed[Params.SIGMA2] = parameters[Params.SIGMA2] * parameters[Params.SIGMA2];
-        transformed[Params.BACKGROUND] = parameters[Params.BACKGROUND] * parameters[Params.BACKGROUND];
+        transformed[Params.OFFSET] = parameters[Params.OFFSET] * parameters[Params.OFFSET];
         transformed[Params.ANGLE] = parameters[Params.ANGLE];
         return transformed;
     }
@@ -50,7 +50,7 @@ public class EllipticGaussianWAnglePSF extends PSFModel {
         transformed[Params.INTENSITY] = sqrt(abs(parameters[Params.INTENSITY]));
         transformed[Params.SIGMA1] = sqrt(abs(parameters[Params.SIGMA1]));
         transformed[Params.SIGMA2] = sqrt(abs(parameters[Params.SIGMA2]));
-        transformed[Params.BACKGROUND] = sqrt(abs(parameters[Params.BACKGROUND]));
+        transformed[Params.OFFSET] = sqrt(abs(parameters[Params.OFFSET]));
         transformed[Params.ANGLE] = parameters[Params.ANGLE];
         return transformed;
     }
@@ -93,7 +93,7 @@ public class EllipticGaussianWAnglePSF extends PSFModel {
                     //d()/dsigma2
                     retVal[i][Params.SIGMA2] = transformedPoint[Params.INTENSITY] * expVal * oneDivPISS2 / point[Params.SIGMA2] * (-1 + sqr(second) / sigma2Squared);
                     //d()/dbkg
-                    retVal[i][Params.BACKGROUND] = 2 * point[Params.BACKGROUND];
+                    retVal[i][Params.OFFSET] = 2 * point[Params.OFFSET];
                     //d()/dfi
                     double pom3 = -(cosfiXd - sinfiYd) * (-sinfiXd - cosfiYd) / sigma1Squared - (sinfiXd + cosfiYd) * (cosfiXd - sinfiYd) / sigma2Squared;
                     retVal[i][Params.ANGLE] = 0.5 * transformedPoint[Params.INTENSITY] * pom3 * expVal * oneDivPISS2;
@@ -114,7 +114,7 @@ public class EllipticGaussianWAnglePSF extends PSFModel {
         steps[Params.INTENSITY] = 3000;
         steps[Params.SIGMA1] = 0.1;
         steps[Params.SIGMA2] = 0.1;
-        steps[Params.BACKGROUND] = 10;
+        steps[Params.OFFSET] = 10;
         steps[Params.ANGLE] = 0.1;
         return steps;
     }
@@ -128,13 +128,13 @@ public class EllipticGaussianWAnglePSF extends PSFModel {
         guess[Params.INTENSITY] = (subImage.getMax() - subImage.getMin()) * 2 * PI * defaultSigma * defaultSigma;
         guess[Params.SIGMA1] = defaultSigma;
         guess[Params.SIGMA2] = defaultSigma;
-        guess[Params.BACKGROUND] = subImage.getMin();
+        guess[Params.OFFSET] = subImage.getMin();
         guess[Params.ANGLE] = defaultFi;
         return guess;
     }
 
     @Override
-    public PSFInstance newInstanceFromParams(double[] params) {
-        return new PSFInstance(new Params(new int[] { Params.X, Params.Y, Params.SIGMA1, Params.SIGMA2, Params.INTENSITY, Params.BACKGROUND, Params.ANGLE }, params, true));
+    public Molecule newInstanceFromParams(double[] params) {
+        return new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA1, Params.SIGMA2, Params.INTENSITY, Params.OFFSET, Params.ANGLE }, params, true));
     }
 }

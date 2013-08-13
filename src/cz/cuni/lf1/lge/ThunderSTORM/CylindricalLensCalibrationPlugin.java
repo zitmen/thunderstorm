@@ -1,10 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.SIGMA1;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.SIGMA2;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.ANGLE;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA1;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA2;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_ANGLE;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.CalibrationDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
@@ -13,7 +11,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PolynomialCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.CalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
@@ -147,14 +145,14 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         ip.setRoi(roi);
         FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
         Thresholder.setCurrentImage(fp);
-        Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters(fp,
+        Vector<Molecule> fits = threadLocalEstimatorUI.getImplementation().estimateParameters(fp,
                 Point.applyRoiMask(roi, selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp))));
         framesProcessed.incrementAndGet();
 
-        for (Iterator<PSFInstance> iterator = fits.iterator(); iterator.hasNext();) {
-          PSFInstance psf = iterator.next();
-          double s1 = psf.getParam(SIGMA1);
-          double s2 = psf.getParam(SIGMA2);
+        for (Iterator<Molecule> iterator = fits.iterator(); iterator.hasNext();) {
+          Molecule psf = iterator.next();
+          double s1 = psf.getParam(LABEL_SIGMA1);
+          double s2 = psf.getParam(LABEL_SIGMA2);
           double ratio = s1 / s2;
           if (ratio > 2 || ratio < 0.5) {
             continue;
@@ -162,7 +160,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
           if (ratio < 1.2 && ratio > 0.83) {
             continue;
           }
-          angles.add(psf.getParam(ANGLE));
+          angles.add(psf.getParam(LABEL_ANGLE));
         }
         IJ.showProgress(0.45 * (double) framesProcessed.intValue() / (double) stack.getSize());
         IJ.showStatus("Determining angle: frame " + framesProcessed + " of " + stack.getSize() + "...");
@@ -197,11 +195,11 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         ip.setRoi(roi);
         FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
         Thresholder.setCurrentImage(fp);
-        Vector<PSFInstance> fits = threadLocalEstimatorUI.getImplementation().estimateParameters(fp,
+        Vector<Molecule> fits = threadLocalEstimatorUI.getImplementation().estimateParameters(fp,
                 Point.applyRoiMask(roi, selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp))));
         framesProcessed.incrementAndGet();
 
-        for (PSFInstance fit : fits) {
+        for (Molecule fit : fits) {
           separator.add(fit, i);
         }
         IJ.showProgress(0.45 + 0.45 * (double) framesProcessed.intValue() / (double) stack.getSize());

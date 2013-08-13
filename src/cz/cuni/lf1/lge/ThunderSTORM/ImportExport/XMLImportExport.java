@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
 import java.io.FileInputStream;
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 import javax.xml.stream.XMLEventFactory;
@@ -107,29 +107,47 @@ public class XMLImportExport implements IImportExport {
         //
         // 2. Fill the table by values from the hashmap
         if(molecules != null) {
-            String [] headers = new String[1];
+            double [] values = null;
+            String [] colnames = new String[1];
             int r = 0, nrows = molecules.size();
             for(HashMap<String,Double> mol : molecules) {
-                if(mol.size() != headers.length)
-                    headers = new String[mol.size()];
-                mol.keySet().toArray(headers);
-                if(!rt.columnNamesEqual(headers)) {
-                    throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + PSFInstance.LABEL_ID + "')!");
+                if(mol.size() != colnames.length) {
+                    if(mol.containsKey(MoleculeDescriptor.LABEL_ID)) {
+                        colnames = new String[mol.size()-1];
+                    } else {
+                        colnames = new String[mol.size()-1];
+                    }
+                }
+                int ci = 0;
+                for(String key : mol.keySet()) {
+                    if(MoleculeDescriptor.LABEL_ID.equals(key)) continue;
+                    colnames[ci] = key;
+                    ci++;
+                }
+                if(!rt.columnNamesEqual(colnames)) {
+                    throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + MoleculeDescriptor.LABEL_ID + "')!");
+                }
+                if(rt.isEmpty()) {
+                    rt.setDescriptor(new MoleculeDescriptor(colnames));
+                    if(units != null) {
+                        for(Entry<String,String> col : units.entrySet()) {
+                            rt.setColumnUnits(col.getKey(), Units.fromString(col.getValue()));
+                        }
+                    }
+                }
+                if(values == null) {
+                    values = new double[colnames.length];
                 }
                 //
-                rt.addRow();
-                for(Map.Entry<String,Double> entry : mol.entrySet()) {
-                    if(PSFInstance.LABEL_ID.equals(entry.getKey())) continue;
-                    rt.addValue(entry.getValue().doubleValue(), entry.getKey());
+                for(int c = 0; c < colnames.length; c++) {
+                    if(MoleculeDescriptor.LABEL_ID.equals(colnames[c])) continue;
+                    values[c] = mol.get(colnames[c]).doubleValue();
                     IJ.showProgress((double)(r++) / (double)nrows);
                 }
-            }
-            if(units != null) {
-                for(Entry<String,String> col : units.entrySet()) {
-                    rt.setColumnUnits(col.getKey(), col.getValue());
-                }
+                rt.addRow(values);
             }
         }
+        rt.insertIdColumn();
         rt.copyOriginalToActual();
         rt.setActualState();
     }
@@ -169,7 +187,7 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(unitsStartElement);
             eventWriter.add(end);
             for(int c = 0; c < ncols; c++) {
-                String units = rt.getColumnUnits(columns.elementAt(c));
+                String units = rt.getColumnUnits(columns.elementAt(c)).toString();
                 if((units != null) && !units.trim().isEmpty()) {
                     createNode(eventWriter, columns.elementAt(c), units);
                 }

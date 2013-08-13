@@ -3,8 +3,10 @@ package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import ij.IJ;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -27,37 +29,35 @@ public class JSONImportExport implements IImportExport {
         Vector<HashMap<String,Double>> molecules = gson.fromJson(new FileReader(fp), new TypeToken<Vector<HashMap<String,Double>>>(){}.getType());
 
         String [] colnames = new String[1];
-        String [] colunits = new String[1];
-        Double [] values = new Double[1];
+        Units [] colunits = new Units[1];
+        double [] values = new double[1];
         int r = 0, nrows = molecules.size();
         for(HashMap<String,Double> mol : molecules) {
             if(mol.size() != colnames.length) {
                 colnames = new String[mol.size()];
-                colunits = new String[mol.size()];
-                values = new Double[mol.size()];
+                colunits = new Units[mol.size()];
+                values = new double[mol.size()];
             }
             int c = 0;
             for(String label : mol.keySet().toArray(new String[0])) {
-                String [] tmp = IJResultsTable.parseColumnLabel(label);
-                colnames[c] = tmp[0];
-                colunits[c] = tmp[1];
-                values[c] = mol.get(label);
+                Pair<String,Units> tmp = IJResultsTable.parseColumnLabel(label);
+                if(MoleculeDescriptor.LABEL_ID.equals(tmp.first)) continue;
+                colnames[c] = tmp.first;
+                colunits[c] = tmp.second;
+                values[c] = mol.get(label).doubleValue();
                 c++;
             }
             if(!rt.columnNamesEqual(colnames)) {
-                throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + PSFInstance.LABEL_ID + "')!");
+                throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + MoleculeDescriptor.LABEL_ID + "')!");
+            }
+            if(rt.isEmpty()) {
+                rt.setDescriptor(new MoleculeDescriptor(colnames, colunits));
             }
             //
-            rt.addRow();
-            for(int i = 0; i < colnames.length; i++) {
-                if(PSFInstance.LABEL_ID.equals(colnames[i])) continue;
-                rt.addValue(values[i], colnames[i]);
-                IJ.showProgress((double)(r++) / (double)nrows);
-            }
+            rt.addRow(values);
+            IJ.showProgress((double)(r++) / (double)nrows);
         }
-        for(int c = 0; c < colnames.length; c++) {
-            rt.setColumnUnits(colnames[c], colunits[c]);
-        }
+        rt.insertIdColumn();
         rt.copyOriginalToActual();
         rt.setActualState();
     }

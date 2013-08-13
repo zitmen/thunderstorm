@@ -1,9 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.SIGMA1;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.SIGMA2;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA1;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA2;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class PSFSeparator {
     this.maxDistance = maxDistance * maxDistance; //squared, because i do not do square root when calculating distance
   }
 
-  public synchronized void add(PSFInstance fit, int frame) {
+  public synchronized void add(Molecule fit, int frame) {
     for (Position p : positions) {
       if (p.getDistanceFromCentroid(fit.getX(), fit.getY()) < maxDistance) {
         p.add(fit, frame);
@@ -45,9 +45,9 @@ public class PSFSeparator {
     public double centroidX;
     public double centroidY;
     List<Integer> frames  = new ArrayList<Integer>();
-    List<PSFInstance> fits = new ArrayList<PSFInstance>();
+    List<Molecule> fits = new ArrayList<Molecule>();
 
-    private void add(PSFInstance fit, int frame) {
+    private void add(Molecule fit, int frame) {
       sumX += fit.getX();
       sumY += fit.getY();
       frames.add(frame);
@@ -64,8 +64,8 @@ public class PSFSeparator {
     public double[] getSigma1AsArray() {
       double[] array = new double[frames.size()];
       int i = 0;
-      for (PSFInstance psf : fits) {
-        array[i] = psf.getParam(SIGMA1);
+      for (Molecule psf : fits) {
+        array[i] = psf.getParam(LABEL_SIGMA1);
         i++;
       }
       return array;
@@ -74,8 +74,8 @@ public class PSFSeparator {
     public double[] getSigma2AsArray() {
       double[] array = new double[frames.size()];
       int i = 0;
-      for (PSFInstance psf : fits) {
-        array[i] = psf.getParam(SIGMA2);
+      for (Molecule psf : fits) {
+        array[i] = psf.getParam(LABEL_SIGMA2);
         i++;
       }
       return array;
@@ -84,7 +84,7 @@ public class PSFSeparator {
     public double[] getXAsArray() {
       double[] array = new double[frames.size()];
       int i = 0;
-      for (PSFInstance psf : fits) {
+      for (Molecule psf : fits) {
         array[i] = psf.getX();
         i++;
       }
@@ -94,7 +94,7 @@ public class PSFSeparator {
     public double[] getYAsArray() {
       double[] array = new double[frames.size()];
       int i = 0;
-      for (PSFInstance psf : fits) {
+      for (Molecule psf : fits) {
         array[i] = psf.getY();
         i++;
       }

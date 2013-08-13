@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.min;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sum;
@@ -41,5 +41,5 @@ public interface OneLocationFitter {
         }
     }
 
-    public PSFInstance fit(SubImage img);
+    public Molecule fit(SubImage img);
 }

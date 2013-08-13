@@ -1,8 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import au.com.bytecode.opencsv.CSVReader;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import ij.IJ;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -34,27 +36,31 @@ abstract public class DLMImportExport implements IImportExport {
         if(lines.get(0).length < 2) return; // header + at least 1 record!
         
         String [] colnames = new String[lines.get(0).length];
-        String [] colunits = new String[lines.get(0).length];
+        Units [] colunits = new Units[lines.get(0).length];
+        int c_id = -1;
         for(int c = 0, cm = lines.get(0).length; c < cm; c++) {
-            String [] tmp = IJResultsTable.parseColumnLabel(lines.get(0)[c]);
-            colnames[c] = tmp[0];
-            colunits[c] = tmp[1];
+            Pair<String,Units> tmp = IJResultsTable.parseColumnLabel(lines.get(0)[c]);
+            if(MoleculeDescriptor.LABEL_ID.equals(tmp.first)) { c_id = c; continue; }
+            colnames[c] = tmp.first;
+            colunits[c] = tmp.second;
         }
         if(!rt.columnNamesEqual(colnames)) {
-            throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + PSFInstance.LABEL_ID + "')!");
+            throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + MoleculeDescriptor.LABEL_ID + "')!");
         }
-        
+        if(rt.isEmpty()) {
+            rt.setDescriptor(new MoleculeDescriptor(colnames, colunits));
+        }
+        //
+        double [] values = new double[colnames.length];
         for(int r = 1, rm = lines.size(); r < rm; r++) {
-            rt.addRow();
-            for(int c = 0, cm = lines.get(r).length; c < cm; c++) {
-              if(PSFInstance.LABEL_ID.equals(colnames[c])) continue;
-              rt.addValue(Double.parseDouble(lines.get(r)[c]), colnames[c]);
+            for(int c = 0, cm = values.length; c < cm; c++) {
+                if(c == c_id) continue;
+                values[c] = Double.parseDouble(lines.get(r)[c]);
             }
+            rt.addRow(values);
             IJ.showProgress((double)r / (double)rm);
         }
-        for(int c = 0; c < colnames.length; c++) {
-            rt.setColumnUnits(colnames[c], colunits[c]);
-        }
+        rt.insertIdColumn();
         rt.copyOriginalToActual();
         rt.setActualState();
     }

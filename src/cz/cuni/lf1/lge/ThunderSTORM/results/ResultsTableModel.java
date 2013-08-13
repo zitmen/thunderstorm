@@ -1,175 +1,138 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
-import java.util.HashMap;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
+import cz.cuni.lf1.lge.ThunderSTORM.util.IValue;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import java.util.Vector;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-class ResultsTableModel extends AbstractTableModel {
+class ResultsTableModel extends AbstractTableModel implements Cloneable {
 
     public static final int COLUMN_NOT_FOUND = -1;
-    protected int counter;
-    protected Vector<TableColumn> columns;
-    protected HashMap<String, Integer> colnames;
+    protected Vector<Molecule> rows;
+    protected MoleculeDescriptor columns;
+    private int maxId;
+
+    public ResultsTableModel(ResultsTableModel res) {
+        setModelData(res);
+    }
+    
+    protected final void setModelData(ResultsTableModel res) {
+        this.rows = res.rows;
+        this.columns = res.columns;
+        this.maxId = res.maxId;
+    }
     // -----------------------------------------------------
-
-    public void addColumn(String name, String units) {
-        columns.add(new TableColumn(name, units));
-        colnames.put(name, columns.size() - 1);
-        fireTableStructureChanged();
-    }
-
-    public void addColumn(String name, String units, Vector<Double> data) {
-        columns.add(new TableColumn(name, units, data));
-        colnames.put(name, columns.size() - 1);
-        fireTableStructureChanged();
-    }
-
-    public void setLabel(int column, String new_name, String new_units) {
+    
+    public void setLabel(int column, String new_name, Units new_units) {
+        assert(new_units != null);
+        
         if (new_name != null) {
-            columns.elementAt(column).name = new_name;
+            columns.names.setElementAt(new_name, column);
         }
-        if (new_units != null) {
-            columns.elementAt(column).units = new_units;
-        }
+        columns.units.setElementAt(new_units, column);
+        columns.labels.setElementAt(columns.getLabel(column, true), column);
         fireTableStructureChanged();
     }
 
-    public void setLabel(String name, String new_name, String new_units) {
-        setLabel(colnames.get(name).intValue(), new_name, new_units);
+    public void setLabel(String name, String new_name, Units new_units) {
+        assert(new_units != null);
+        
+        int column = columns.getParamIndex(name);
+        if (new_name != null) {
+            columns.names.setElementAt(new_name, column);
+        }
+        columns.units.setElementAt(new_units, column);
+        columns.getLabel(column, true);
         fireTableStructureChanged();
     }
 
     public void reset() {
-        counter = 0;
+        rows.clear();
         columns.clear();
-        colnames.clear();
-
-        addColumn(PSFInstance.LABEL_ID, null);
+        maxId = 0;
+        try {
+            insertIdColumn();
+        } catch(Exception ex) {
+            assert(false) : "This was supposed to never happen due to the `reset` call!";
+        }
         fireTableStructureChanged();
     }
 
-    public void addValue(Double value, int columnIndex) {
-        if (!getColumnClass(columnIndex).isInstance(value)) {
-            throw new ClassCastException("Class of the object does not match the class of the column!");
-        }
-        columns.elementAt(columnIndex).data.add(value);
-        fireTableCellUpdated(columns.elementAt(columnIndex).data.size() - 1, columnIndex);
-    }
-
-    public void addValue(Double value, String columnName) {
-        if (findColumn(columnName) == COLUMN_NOT_FOUND) {
-            addColumn(columnName, null);
-        }
-        addValue(value, colnames.get(columnName).intValue());
-    }
-
-    public void setValueAt(Double value, int rowIndex, String columnName) {
-        getColumn(columnName).data.set(rowIndex, value);
-        fireTableCellUpdated(rowIndex, findColumn(columnName));
-    }
-
-    public Vector<Double> getColumnAsVector(int columnIndex, int[] indices) {
-        Vector<Double> column = columns.elementAt(columnIndex).data;
-        Vector<Double> res = new Vector<Double>();
-        for (int i = 0; i < indices.length; i++) {
-            res.add(column.elementAt(indices[i]));
-        }
-        return res;
-    }
-
-    public Vector<Double> getColumnAsVector(int columnIndex) {
-        return getColumn(columnIndex).data;
-    }
-
-    public Vector<Double> getColumnAsVector(String columnName) {
-        return getColumn(columnName).data;
-    }
-
-    public Double[] getColumnAsDoubleObjects(int columnIndex) {
-        return getColumn(columnIndex).asDoubleObjectsArray();
-    }
-
     public Double[] getColumnAsDoubleObjects(String columnName) {
-        return getColumn(columnName).asDoubleObjectsArray();
-    }
-
-    public double[] getColumnAsDoubles(int index) {
-        return getColumn(index).asDoubleArray();
-    }
-
-    public double[] getColumnAsDoubles(String heading) {
-        return getColumn(heading).asDoubleArray();
-    }
-
-    public float[] getColumnAsFloats(int index) {
-        return getColumn(index).asFloatArray();
-    }
-
-    public float[] getColumnAsFloats(String heading) {
-        return getColumn(heading).asFloatArray();
-    }
-
-    private TableColumn getColumn(int index) {
-        return columns.get(index);
-    }
-
-    private TableColumn getColumn(String heading) {
-        int idx = findColumn(heading);
-        if (idx != COLUMN_NOT_FOUND) {
-            return getColumn(idx);
-        } else {
-            throw new IllegalArgumentException("Column " + heading + " does not exist.");
+        Double [] column = new Double[rows.size()];
+        int colidx = columns.getParamIndex(columnName);
+        for(int i = 0; i < column.length; i++) {
+            column[i] = rows.elementAt(i).getParamAt(colidx);
         }
+        return column;
+    }
+
+    public double[] getColumnAsDoubles(String columnName) {
+        double [] column = new double[rows.size()];
+        int colidx = columns.getParamIndex(columnName);
+        for(int i = 0; i < column.length; i++) {
+            column[i] = rows.elementAt(i).getParamAt(colidx);
+        }
+        return column;
     }
 
     // -----------------------------------------------------
     public ResultsTableModel() {
-        columns = new Vector<TableColumn>();
-        colnames = new HashMap<String, Integer>();
-
-        counter = 0;
-        addColumn(PSFInstance.LABEL_ID, null);
+        rows = new Vector<Molecule>();
+        columns = new MoleculeDescriptor(new String[] { MoleculeDescriptor.LABEL_ID });
+        maxId = 0;
+    }
+    
+    public int getNewId() {
+        return (maxId += 1);
     }
 
     @Override
     public int getRowCount() {
-        return counter;
+        return rows.size();
     }
 
     @Override
     public int getColumnCount() {
-        return columns.size();
+        return columns.getParamsCount();
     }
 
+    // this is in fact label for column heading, which the TableView asks for this class
     @Override
     public String getColumnName(int columnIndex) {
         return getColumnLabel(columnIndex);
     }
     
+    public String getColumnLabel(int columnIndex) {
+        return columns.getLabel(columnIndex, false);
+    }
+
     // this is ugly, because getColumnName method is used by JTable to recieve
     // label of a column, but IJResultsTable needs to distinguish between
     // names and labels, i.e., label is "name [units]", not just "name"
     public String getColumnRealName(int columnIndex) {
-        return getColumn(columnIndex).name;
+        return columns.getParamNameAt(columnIndex);
     }
     
     public String getColumnLabel(String columnName) {
-        return getColumn(columnName).getLabel();
+        return columns.getLabel(columns.getParamIndex(columnName), false);
     }
     
-    public String getColumnLabel(int columnIndex) {
-        return getColumn(columnIndex).getLabel();
+    public static Pair<String,Units> parseColumnLabel(String columnLabel) {
+        return MoleculeDescriptor.parseColumnLabel(columnLabel);
     }
 
     @Override
     public int findColumn(String columnName) {
-        if (!colnames.containsKey(columnName)) {
+        if(!columns.hasParam(columnName)) {
             return COLUMN_NOT_FOUND;
         }
-        return colnames.get(columnName).intValue();
+        return columns.getParamIndex(columnName);
     }
 
     @Override
@@ -179,62 +142,103 @@ class ResultsTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return (columnIndex > 0); // column id is not editable!
+        //return (columnIndex > 0); // column id is not editable!
+        return false;   // no cell can be edited
+    }
+    
+    Molecule getRow(int index) {
+        return rows.elementAt(index);
     }
 
     @Override
     public Double getValueAt(int rowIndex, int columnIndex) {
-        return getColumn(columnIndex).data.elementAt(rowIndex);
+        return rows.elementAt(rowIndex).values.elementAt(columns.indices.elementAt(columnIndex));
     }
 
-    public Double getValue(int rowIndex, String columnName) {
-        return getColumn(columnName).data.elementAt(rowIndex);
+    public Double getValueAt(int rowIndex, String columnName) {
+        return rows.elementAt(rowIndex).values.elementAt(columns.getParamIndex(columnName));
     }
 
-    public void setColumnUnits(String columnName, String new_units) {
-        getColumn(columnName).units = new_units;
+    public void setColumnUnits(String columnName, Units new_units) {
+        columns.units.setElementAt(new_units, columns.getParamColumn(columnName));
     }
 
-    public void setColumnUnits(int columnIndex, String new_units) {
-        getColumn(columnIndex).units = new_units;
+    public void setColumnUnits(int columnIndex, Units new_units) {
+        columns.units.setElementAt(new_units, columnIndex);
     }
 
-    public String getColumnUnits(String columnName) {
-        return getColumn(columnName).units;
+    public Units getColumnUnits(String columnName) {
+        return columns.units.elementAt(columns.getParamColumn(columnName));
     }
 
-    public String getColumnUnits(int columnIndex) {
-        return getColumn(columnIndex).units;
+    public Units getColumnUnits(int columnIndex) {
+        return columns.units.elementAt(columnIndex);
     }
 
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
-        if (!getColumnClass(columnIndex).isInstance(value)) {
+        if(!getColumnClass(columnIndex).isInstance(value)) {
             throw new ClassCastException("Class of the object does not match the class of the column!");
         }
-        columns.elementAt(columnIndex).data.set(rowIndex, (Double) value);
+        rows.elementAt(rowIndex).setParamAt(columns.indices.elementAt(columnIndex), (Double)value);
         fireTableCellUpdated(rowIndex, columnIndex);
     }
 
-    public synchronized int addRow() {
-        counter++;
-        columns.elementAt(0).data.add(new Double(counter));
-        fireTableRowsInserted(counter - 1, counter - 1);
-        return counter - 1;
+    // Note that if a molecule already has an id included in `values`,
+    // a method with `id` must be called!
+    public synchronized int addRow(double [] values) {
+        return addRow(new Molecule(columns, values));
+    }
+    
+    public synchronized int addRow(Molecule mol) {
+        if(rows.isEmpty()) {    // if the table is empty, use descriptor from the molecule instance
+            columns = mol.descriptor;
+        } else {
+            columns.validateMolecule(mol);
+        }
+        rows.add(mol);
+        int last = rows.size() - 1;
+        fireTableRowsInserted(last, last);
+        return last;
+    }
+    
+    public void setDescriptor(MoleculeDescriptor descriptor) {
+        columns = descriptor;
+        for(Molecule row : rows) {
+            descriptor.validateMolecule(row);
+        }
+        fireTableStructureChanged();
+    }
+    
+    public void insertIdColumn() {
+        maxId = 0;
+        insertColumn(0, MoleculeDescriptor.LABEL_ID, Units.LABEL_UNITLESS, new IValue<Double>(){
+            @Override
+            public Double getValue() {
+                return (double)getNewId();
+            }
+        });
+    }
+    
+    public void addColumn(String name, Units units, IValue<Double> value) {
+        insertColumn(getColumnCount(), name, units, value);
+    }
+    
+    public void insertColumn(int columnIndex, String name, Units units, IValue<Double> value) {
+        for(Molecule row : rows) {
+            row.insertParamAt(columnIndex, name, units, value.getValue().doubleValue());
+        }
+        fireTableStructureChanged();
+        fireTableDataChanged();
     }
 
     public void deleteRow(int row) {
-        for (TableColumn col : columns) {
-            col.data.removeElementAt(row);
-        }
+        rows.removeElementAt(row);
         fireTableRowsDeleted(row, row);
-        counter--;
     }
 
-    public String[] getColumnNames() {
-        String[] names = new String[colnames.size()];
-        colnames.keySet().toArray(names);
-        return names;
+    public Vector<String> getColumnNames() {
+        return columns.names;
     }
 
     public boolean columnExists(int column) {
@@ -246,26 +250,30 @@ class ResultsTableModel extends AbstractTableModel {
     }
 
     public void filterRows(boolean[] keep) {
-        for (TableColumn col : columns) {
-            col.filter(keep);
+        assert(keep.length == rows.size());
+        
+        Vector<Molecule> newRows = new Vector<Molecule>();
+        for(int i = 0; i < keep.length; i++) {
+            if(keep[i]) {
+                newRows.add(rows.elementAt(i));
+            }
         }
-        counter = columns.get(0).data.size();
+        rows = newRows;
         fireTableRowsDeleted(0, keep.length - 1);
     }
 
     @Override
     public ResultsTableModel clone() {
         ResultsTableModel newModel = new ResultsTableModel();
-        newModel.counter = counter;
         TableModelListener[] listeners = listenerList.getListeners(TableModelListener.class);
         newModel.listenerList = new EventListenerList();
         for (int i = 0; i < listeners.length; i++) {
             newModel.listenerList.add(TableModelListener.class, listeners[i]);
         }
-        newModel.colnames = new HashMap<String, Integer>(colnames);
-        newModel.columns = new Vector<TableColumn>(columns.size());
-        for (int i = 0; i < columns.size(); i++) {
-            newModel.columns.add(columns.get(i).clone());
+        newModel.columns = columns.clone();
+        newModel.rows = new Vector<Molecule>(rows.size());
+        for (int i = 0; i < rows.size(); i++) {
+            newModel.rows.add(rows.get(i).clone());
         }
         return newModel;
     }

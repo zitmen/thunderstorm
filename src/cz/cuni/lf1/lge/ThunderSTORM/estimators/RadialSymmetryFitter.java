@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import ij.plugin.filter.Convolver;
@@ -15,7 +15,7 @@ import ij.process.FloatProcessor;
 public class RadialSymmetryFitter implements OneLocationFitter {
 
     @Override
-    public PSFInstance fit(SubImage img) {
+    public Molecule fit(SubImage img) {
         float[] dIdu = computeGradientImage(img, false);
         float[] dIdv = computeGradientImage(img, true);
 
@@ -32,7 +32,7 @@ public class RadialSymmetryFitter implements OneLocationFitter {
 
         double[] coordinates = lsRadialCenterFit(m, yInterceptB, weights);
 
-        return new PSFInstance(new Params(new int[]{PSFModel.Params.X, PSFModel.Params.Y}, coordinates, false));
+        return new Molecule(new Params(new int[]{PSFModel.Params.X, PSFModel.Params.Y}, coordinates, false));
     }
 
     /**

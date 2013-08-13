@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import au.com.bytecode.opencsv.CSVReader;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import ij.process.FloatProcessor;
@@ -62,7 +62,7 @@ public class CSV {
      * 
      * @see PSFModel
      */
-    public static Vector<PSFInstance> csv2psf(String fname, int start_row, int start_col) throws IOException, InvalidObjectException {
+    public static Vector<Molecule> csv2psf(String fname, int start_row, int start_col) throws IOException, InvalidObjectException, Exception {
         CSVReader csvReader = new CSVReader(new FileReader(fname));
         List<String[]> lines = csvReader.readAll();
         csvReader.close();
@@ -70,10 +70,10 @@ public class CSV {
         if(lines.size() < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
         if(lines.get(0).length < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
         
-        Vector<PSFInstance> loc = new Vector<PSFInstance>();
+        Vector<Molecule> loc = new Vector<Molecule>();
         int[] params = new int[]{PSFModel.Params.X, PSFModel.Params.Y, PSFModel.Params.INTENSITY, PSFModel.Params.SIGMA, PSFModel.Params.BACKGROUND};
         for(int r = start_row, rm = lines.size(); r < rm; r++) {
-            loc.add(new PSFInstance(new Params(params, new double[]{
+            loc.add(new Molecule(new Params(params, new double[]{
                 Float.parseFloat(lines.get(r)[start_col+0]),    // x
                 Float.parseFloat(lines.get(r)[start_col+1]),    // y
                 Float.parseFloat(lines.get(r)[start_col+3]),    // I
@@ -101,10 +101,10 @@ public class CSV {
      * 
      * @see Point
      */
-    public static Vector<Point> csv2point(String fname, int start_row, int start_col) throws IOException {
-        Vector<PSFInstance> list = csv2psf(fname, start_row, start_col);
+    public static Vector<Point> csv2point(String fname, int start_row, int start_col) throws IOException, Exception {
+        Vector<Molecule> list = csv2psf(fname, start_row, start_col);
         Vector<Point> points = new Vector<Point>();
-        for(PSFInstance psf : list) {
+        for(Molecule psf : list) {
             points.add(new Point(psf.getX(), psf.getY()));
         }
         return points;

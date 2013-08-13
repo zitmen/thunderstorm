@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
@@ -21,7 +21,7 @@ public class MLEFitter implements OneLocationFitter {
     }
 
     @Override
-    public PSFInstance fit(SubImage subimage) {
+    public Molecule fit(SubImage subimage) {
 
         SimplexOptimizer optimizer = new SimplexOptimizer(1e-10, 1e-10);
         PointValuePair pv;

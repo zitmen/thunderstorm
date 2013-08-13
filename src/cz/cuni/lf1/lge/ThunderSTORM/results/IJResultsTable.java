@@ -1,7 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import java.util.Vector;
 
 /**
@@ -111,68 +114,24 @@ public class IJResultsTable {
         model.setActualState();
     }
 
-    public void addColumn(String name, String units) {
-        model.addColumn(name, units);
-    }
-    
-    public void addColumn(String name) {
-        model.addColumn(name, null);
-    }
-    
-    public void addColumn(String name, String units, Vector<Double> data) {
-        model.addColumn(name, units, data);
-    }
-
-    public void addColumn(String name, Vector<Double> data) {
-        model.addColumn(name, null, data);
-    }
-
-    public void addValue(Double value, int columnIndex) {
-        model.addValue(value, columnIndex);
-    }
-
-    public void addValue(Double value, String columnName) {
-        model.addValue(value, columnName);
-    }
-    
-    public static String [] parseColumnLabel(String columnLabel) {
-        return TableColumn.parseLabel(columnLabel);
-    }
-
-    public Vector<Double> getColumnAsVector(int columnIndex, int[] indices) {
-        return model.getColumnAsVector(columnIndex, indices);
-    }
-
-    public Vector<Double> getColumnAsVector(int columnIndex) {
-        return model.getColumnAsVector(columnIndex);
-    }
-
-    public Vector<Double> getColumnAsVector(String columnName) {
-        return model.getColumnAsVector(columnName);
-    }
-
-    public Double[] getColumnAsDoubleObjects(int columnIndex) {
-        return model.getColumnAsDoubleObjects(columnIndex);
+    public static Pair<String,Units> parseColumnLabel(String columnLabel) {
+        return TripleStateTableModel.parseColumnLabel(columnLabel);
     }
 
     public Double[] getColumnAsDoubleObjects(String columnName) {
         return model.getColumnAsDoubleObjects(columnName);
     }
 
-    public double[] getColumnAsDoubles(int index) {
-        return model.getColumnAsDoubles(index);
-    }
-
     public double[] getColumnAsDoubles(String columnName) {
         return model.getColumnAsDoubles(columnName);
     }
-
-    public float[] getColumnAsFloats(int index) {
-        return model.getColumnAsFloats(index);
+    
+    public int getNewId() {
+        return model.getNewId();
     }
-
-    public float[] getColumnAsFloats(String columnName) {
-        return model.getColumnAsFloats(columnName);
+    
+    public void insertIdColumn() {
+        model.insertIdColumn();
     }
 
     public int getRowCount() {
@@ -191,27 +150,31 @@ public class IJResultsTable {
         return model.getColumnLabel(columnName);
     }
     
-    public String getColumnLabel(int columnIndex) {
-        return model.getColumnLabel(columnIndex);
-    }
-
-    public Double getValueAt(int rowIndex, int columnIndex) {
+    public Double getValue(int rowIndex, int columnIndex) {
         return model.getValueAt(rowIndex, columnIndex);
     }
 
     public Double getValue(int rowIndex, String columnName) {
-        return model.getValue(rowIndex, columnName);
+        return model.getValueAt(rowIndex, columnName);
     }
 
-    public synchronized int addRow() {
-        return model.addRow();
+    public synchronized int addRow(Molecule row) {
+        return model.addRow(row);
+    }
+    
+    public synchronized int addRow(double [] values) {
+        return model.addRow(values);
+    }
+    
+    public void setDescriptor(MoleculeDescriptor descriptor) {
+        model.setDescriptor(descriptor);
     }
 
     public void deleteRow(int row) {
         model.deleteRow(row);
     }
 
-    public String[] getColumnNames() {
+    public Vector<String> getColumnNames() {
         return model.getColumnNames();
     }
 
@@ -219,7 +182,7 @@ public class IJResultsTable {
         if(getRowCount() == 0) return true; // if the table is empty then the colums are assumed to be empty
         int checked = 1;    // ignoring column id
         for(int i = 0; i < names.length; i++) {
-            if(PSFInstance.LABEL_ID.equals(names[i])) {
+            if(MoleculeDescriptor.LABEL_ID.equals(names[i])) {
                 continue;  // ignoring column id
             }
             if(columnExists(names[i])) {
@@ -247,24 +210,32 @@ public class IJResultsTable {
         return model.findColumn(columnName);
     }
     
-    public void setColumnUnits(String columnName, String new_units) {
+    public void setColumnUnits(String columnName, Units new_units) {
         model.setColumnUnits(columnName, new_units);
     }
     
-    public void setColumnUnits(int columnIndex, String new_units) {
+    public void setColumnUnits(int columnIndex, Units new_units) {
         model.setColumnUnits(columnIndex, new_units);
     }
     
-    public String getColumnUnits(String columnName) {
+    public Units getColumnUnits(String columnName) {
         return model.getColumnUnits(columnName);
     }
     
-    public String getColumnUnits(int columnIndex) {
+    public Units getColumnUnits(int columnIndex) {
         return model.getColumnUnits(columnIndex);
+    }
+    
+    public boolean isEmpty() {
+        return model.rows.isEmpty();
+    }
+
+    Vector<Molecule> getData() {
+        return model.rows;
     }
 
     public void setValueAt(Double value, int rowIndex, String columnName) {
-        model.setValueAt(value, rowIndex, columnName);
+        setValueAt(value, rowIndex, findColumn(columnName));
     }
 
     public void setValueAt(Double value, int rowIndex, int columnIndex) {

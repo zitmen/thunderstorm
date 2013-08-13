@@ -25,7 +25,7 @@ public class SymmetricGaussianPSF extends PSFModel {
     @Override
     public double getValue(double[] params, double x, double y) {
         double twoSigmaSquared = params[Params.SIGMA] * params[Params.SIGMA] * 2;
-        return params[Params.BACKGROUND] + params[Params.INTENSITY] / (twoSigmaSquared * PI)
+        return params[Params.OFFSET] + params[Params.INTENSITY] / (twoSigmaSquared * PI)
                 * exp(-((x - params[Params.X]) * (x - params[Params.X]) + (y - params[Params.Y]) * (y - params[Params.Y])) / twoSigmaSquared);
     }
 
@@ -36,7 +36,7 @@ public class SymmetricGaussianPSF extends PSFModel {
         transformed[Params.Y] = parameters[Params.Y];
         transformed[Params.INTENSITY] = parameters[Params.INTENSITY] * parameters[Params.INTENSITY];
         transformed[Params.SIGMA] = parameters[Params.SIGMA] * parameters[Params.SIGMA];
-        transformed[Params.BACKGROUND] = parameters[Params.BACKGROUND] * parameters[Params.BACKGROUND];
+        transformed[Params.OFFSET] = parameters[Params.OFFSET] * parameters[Params.OFFSET];
         return transformed;
     }
 
@@ -47,7 +47,7 @@ public class SymmetricGaussianPSF extends PSFModel {
         transformed[Params.Y] = parameters[Params.Y];
         transformed[Params.INTENSITY] = sqrt(abs(parameters[Params.INTENSITY]));
         transformed[Params.SIGMA] = sqrt(abs(parameters[Params.SIGMA]));
-        transformed[Params.BACKGROUND] = sqrt(abs(parameters[Params.BACKGROUND]));
+        transformed[Params.OFFSET] = sqrt(abs(parameters[Params.OFFSET]));
         return transformed;
     }
 
@@ -79,7 +79,7 @@ public class SymmetricGaussianPSF extends PSFModel {
                     //d()/dsigma
                     retVal[i][Params.SIGMA] = transformedPoint[Params.INTENSITY] * expValDivPISigmaPowEight / point[Params.SIGMA] * (xd * xd + yd * yd - 2 * sigmaSquared);
                     //d()/dbkg
-                    retVal[i][Params.BACKGROUND] = 2 * point[Params.BACKGROUND];
+                    retVal[i][Params.OFFSET] = 2 * point[Params.OFFSET];
                 }
                 //IJ.log("numeric jacobian: " + Arrays.deepToString(SymmetricGaussianPSF.super.getJacobianFunction(xgrid, ygrid).value(point)));
                 //IJ.log("analytic jacobian: " + Arrays.deepToString(retVal));
@@ -96,7 +96,7 @@ public class SymmetricGaussianPSF extends PSFModel {
         steps[Params.Y] = 1;
         steps[Params.INTENSITY] = 3000;
         steps[Params.SIGMA] = 0.1;
-        steps[Params.BACKGROUND] = 10;
+        steps[Params.OFFSET] = 10;
         return steps;
     }
 
@@ -108,12 +108,12 @@ public class SymmetricGaussianPSF extends PSFModel {
         guess[Params.Y] = subImage.detectorY;
         guess[Params.INTENSITY] = (subImage.getMax() - subImage.getMin()) * 2 * PI * defaultSigma * defaultSigma;
         guess[Params.SIGMA] = defaultSigma;
-        guess[Params.BACKGROUND] = subImage.getMin();
+        guess[Params.OFFSET] = subImage.getMin();
         return guess;
     }
 
     @Override
-    public PSFInstance newInstanceFromParams(double[] params) {
-        return new PSFInstance(new Params(new int[] { Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.BACKGROUND }, params, true));
+    public Molecule newInstanceFromParams(double[] params) {
+        return new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.OFFSET }, params, true));
     }
 }

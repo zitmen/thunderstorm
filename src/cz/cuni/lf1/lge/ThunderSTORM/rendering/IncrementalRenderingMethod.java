@@ -1,7 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import ij.ImagePlus;
+import java.util.Vector;
 
 /**
  * Incremental SMLM rendering. Image can be slowly built as new molecule
@@ -20,6 +22,13 @@ public interface IncrementalRenderingMethod extends IModule {
    * implementations). When null default value is used instead.
    */
   public void addToImage(double[] x, double[] y, double[] z, double[] dx);
+  
+  /**
+   * Draws the specified molecules into the image.
+   *
+   * @param fits information about localized molecules
+   */
+  public void addToImage(Vector<Molecule> fits);
 
   /**
    * Returns the image to which points are rendered. Subsequent calls to
