@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import ij.ImagePlus;
 import ij.Macro;
+import ij.Prefs;
 import ij.plugin.frame.Recorder;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -15,7 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public abstract class AbstractRenderingUI implements IRendererUI {
-
+  
   double resolution;
   int sizeX;
   int sizeY;
@@ -28,7 +29,8 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   ImagePlus image;            //must be set in subclass
   private final static double DEFAULT_RESOLUTION = 0.2;
   private final static int DEFAULT_REPAINT_FREQUENCY = 20;
-
+  private static final String DEFAULT_Z_RANGE = "-50:10:50";
+  
   public AbstractRenderingUI() {
   }
 
@@ -52,8 +54,8 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   public JPanel getOptionsPanel() {
     JPanel panel = new JPanel(new GridBagLayout());
 
-    resolutionTextField = new JTextField("" + DEFAULT_RESOLUTION, 20);
-    repaintFrequencyTextField = new JTextField("" + DEFAULT_REPAINT_FREQUENCY, 20);
+    resolutionTextField = new JTextField(Prefs.get("thunderstorm.rendering.resolution", "" + DEFAULT_RESOLUTION), 20);
+    repaintFrequencyTextField = new JTextField(Prefs.get("thunderstorm.rendering.repaint" , "" + DEFAULT_REPAINT_FREQUENCY), 20);
     panel.add(new JLabel("Pixels per one super-resolution pixel:"), GridBagHelper.leftCol());
     panel.add(resolutionTextField, GridBagHelper.rightCol());
 
@@ -68,12 +70,13 @@ public abstract class AbstractRenderingUI implements IRendererUI {
         zRangeTextField.setEnabled(threeDCheckBox.isSelected());
       }
     });
+    threeDCheckBox.setSelected(Prefs.get("thunderstorm.rendering.z", false));
     panel.add(new JLabel("3D:"), GridBagHelper.leftCol());
     panel.add(threeDCheckBox, GridBagHelper.rightCol());
 
     zRangeLabel = new JLabel("Z range (from:step:to) [nm]:");
     panel.add(zRangeLabel, GridBagHelper.leftCol());
-    zRangeTextField = new JTextField("-50:10:50", 20);
+    zRangeTextField = new JTextField(Prefs.get("thunderstorm.rendering.zrange", DEFAULT_Z_RANGE), 20);
     zRangeLabel.setEnabled(threeD);
     zRangeTextField.setEnabled(threeD);
     panel.add(zRangeTextField, GridBagHelper.rightCol());
@@ -90,6 +93,10 @@ public abstract class AbstractRenderingUI implements IRendererUI {
     resolution = Double.parseDouble(resolutionTextField.getText());
     repaintFrequency = Integer.parseInt(repaintFrequencyTextField.getText());
 
+    Prefs.set("thunderstorm.rendering.z", threeD);
+    Prefs.set("thunderstorm.rendering.zrange", zRangeTextField.getText());
+    Prefs.set("thunderstorm.rendering.resolution", "" + resolution);
+    Prefs.set("thunderstorm.rendering.repaint", "" + repaintFrequency);
   }
 
   @Override
@@ -121,6 +128,14 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   @Override
   public IncrementalRenderingMethod getImplementation() {
     return getMethod();
+  }
+
+  @Override
+  public void resetToDefaults() {
+    repaintFrequencyTextField.setText("" + DEFAULT_REPAINT_FREQUENCY);
+    resolutionTextField.setText(""+ DEFAULT_RESOLUTION);
+    threeDCheckBox.setSelected(false);
+    zRangeTextField.setText(DEFAULT_Z_RANGE);
   }
 
   protected abstract IncrementalRenderingMethod getMethod();

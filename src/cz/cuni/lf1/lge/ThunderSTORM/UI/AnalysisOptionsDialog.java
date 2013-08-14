@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
+import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
@@ -10,6 +11,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.Prefs;
 import ij.process.FloatProcessor;
 import java.awt.Color;
 import java.awt.Container;
@@ -45,7 +47,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
   private List<IDetectorUI> allDetectors;
   private List<IEstimatorUI> allEstimators;
   private List<IRendererUI> allRenderers;
-  private JButton preview, ok, cancel;
+  private JButton defaults, preview, ok, cancel;
   private ImagePlus imp;
   private boolean canceled;
   private Semaphore semaphore;    // ensures waiting for a dialog without the dialog being modal!
@@ -75,10 +77,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
    * initially selected in combo box
    */
   public AnalysisOptionsDialog(ImagePlus imp, String title,
-          List<IFilterUI> filters, int default_filter,
-          List<IDetectorUI> detectors, int default_detector,
-          List<IEstimatorUI> estimators, int default_estimator,
-          List<IRendererUI> renderers, int default_renderer) {
+          List<IFilterUI> filters,
+          List<IDetectorUI> detectors,
+          List<IEstimatorUI> estimators,
+          List<IRendererUI> renderers) {
     //
     super(IJ.getInstance(), title);
     //
@@ -91,16 +93,17 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     this.allEstimators = estimators;
     this.allRenderers = renderers;
     //
-    this.activeFilterIndex = default_filter;
-    this.activeDetectorIndex = default_detector;
-    this.activeEstimatorIndex = default_estimator;
-    this.activeRendererIndex = default_renderer;
+    this.activeFilterIndex = Integer.parseInt(Prefs.get("thunderstorm.filters.index", "0"));
+    this.activeDetectorIndex = Integer.parseInt(Prefs.get("thunderstorm.detectors.index", "0"));
+    this.activeEstimatorIndex = Integer.parseInt(Prefs.get("thunderstorm.estimators.index", "0"));
+    this.activeRendererIndex = Integer.parseInt(Prefs.get("thunderstorm.rendering.index", "0"));
     //
-    this.filtersPanel = new CardsPanel<IFilterUI>(filters, default_filter);
-    this.detectorsPanel = new CardsPanel<IDetectorUI>(detectors, default_detector);
-    this.estimatorsPanel = new CardsPanel<IEstimatorUI>(estimators, default_estimator);
-    this.renderersPanel = new CardsPanel<IRendererUI>(renderers, default_renderer);
+    this.filtersPanel = new CardsPanel<IFilterUI>(filters, activeFilterIndex);
+    this.detectorsPanel = new CardsPanel<IDetectorUI>(detectors, activeDetectorIndex);
+    this.estimatorsPanel = new CardsPanel<IEstimatorUI>(estimators, activeEstimatorIndex);
+    this.renderersPanel = new CardsPanel<IRendererUI>(renderers, activeRendererIndex);
     //
+    this.defaults = new JButton("Defaults");
     this.preview = new JButton("Preview");
     this.ok = new JButton("Ok");
     this.cancel = new JButton("Cancel");
@@ -132,11 +135,14 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     pane.add(renderersPanel.getPanel("Renderers: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
     //
+    defaults.addActionListener(this);
     preview.addActionListener(this);
     ok.addActionListener(this);
     cancel.addActionListener(this);
     //
     JPanel buttons = new JPanel();
+    buttons.add(defaults);
+    buttons.add(Box.createHorizontalStrut(30));
     buttons.add(preview);
     buttons.add(Box.createHorizontalStrut(30));
     buttons.add(ok);
@@ -175,6 +181,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         allDetectors.get(activeDetectorIndex).readParameters();
         allEstimators.get(activeEstimatorIndex).readParameters();
         allRenderers.get(activeRendererIndex).readParameters();
+        
+        saveSelectedModuleIndexesToPrefs(activeFilterIndex, activeDetectorIndex, activeEstimatorIndex, activeRendererIndex);
       } catch (Exception ex) {
         IJ.error("Error parsing parameters: " + ex.toString());
         return;
@@ -193,6 +201,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         allDetectors.get(activeDetectorIndex).readParameters();
         allEstimators.get(activeEstimatorIndex).readParameters();
         allRenderers.get(activeRendererIndex).readParameters();
+        
+        saveSelectedModuleIndexesToPrefs(activeFilterIndex, activeDetectorIndex, activeEstimatorIndex, activeRendererIndex);
       } catch (Exception ex) {
         IJ.error("Error parsing parameters: " + ex.toString());
         return;
@@ -225,7 +235,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             checkForInterruption();
             //
             ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
-            RenderingOverlay.showPointsInImage(impPreview, 
+            RenderingOverlay.showPointsInImage(impPreview,
                     PSFInstance.extractParamToArray(results, PSFModel.Params.LABEL_X),
                     PSFInstance.extractParamToArray(results, PSFModel.Params.LABEL_Y),
                     Color.red, RenderingOverlay.MARKER_CROSS);
@@ -238,6 +248,9 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         }
       });
 
+    } else if (e.getActionCommand().equals("Defaults")) {
+      resetModuleUIs(allDetectors, allEstimators, allFilters, allRenderers);
+      resetCardsPanels(detectorsPanel, estimatorsPanel, filtersPanel, renderersPanel);
     } else {
       throw new UnsupportedOperationException("Command '" + e.getActionCommand() + "' is not supported!");
     }
@@ -338,5 +351,35 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 
   public int getRendererIndex() {
     return activeRendererIndex;
+  }
+
+  static void resetModuleUIs(List<? extends IModuleUI>... lists) {
+    for (int i = 0; i < lists.length; i++) {
+      List<? extends IModuleUI> list = lists[i];
+      for (IModuleUI module : list) {
+        module.resetToDefaults();
+      }
+    }
+  }
+
+  static void resetCardsPanels(CardsPanel<?>... panels) {
+    for (int i = 0; i < panels.length; i++) {
+      panels[i].setSelectedItemIndex(0);
+    }
+  }
+
+  static void saveSelectedModuleIndexesToPrefs(int filterIndex, int detectorIndex, int estimatorIndex, int rendererIndex) {
+    if (filterIndex >= 0) {
+      Prefs.set("thunderstorm.filters.index", filterIndex);
+    }
+    if (detectorIndex >= 0) {
+      Prefs.set("thunderstorm.detectors.index", detectorIndex);
+    }
+    if (estimatorIndex >= 0) {
+      Prefs.set("thunderstorm.estimators.index", estimatorIndex);
+    }
+    if (rendererIndex >= 0) {
+      Prefs.set("thunderstorm.rendering.index", rendererIndex);
+    }
   }
 }

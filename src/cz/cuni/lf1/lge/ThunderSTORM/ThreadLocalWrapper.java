@@ -7,7 +7,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import java.util.List;
 import javax.swing.JPanel;
@@ -112,6 +111,11 @@ class ThreadLocalFilterUI implements IFilterUI {
   public IFilter getImplementation() {
     return threadLocalImplementation.get();
   }
+
+  @Override
+  public void resetToDefaults() {
+    filter.resetToDefaults();
+  }
 }
 
 class ThreadLocalDetectorUI implements IDetectorUI {
@@ -147,6 +151,11 @@ class ThreadLocalDetectorUI implements IDetectorUI {
   @Override
   public void readMacroOptions(String options) {
     detector.readMacroOptions(options);
+  }
+
+  @Override
+  public void resetToDefaults() {
+    detector.resetToDefaults();
   }
 
   @Override
@@ -195,6 +204,11 @@ class ThreadLocalEstimatorUI implements IEstimatorUI {
     return threadLocalImplementation.get();
   }
 
+  @Override
+  public void resetToDefaults() {
+    estimator.resetToDefaults();
+  }
+
   public void discardCachedImplementations() {
     threadLocalImplementation = new ThreadLocalModule<IEstimatorUI, IEstimator>(estimator);
   }
@@ -233,6 +247,11 @@ class ThreadLocalRendererUI implements IRendererUI {
   @Override
   public void readMacroOptions(String options) {
     renderer.readMacroOptions(options);
+  }
+
+  @Override
+  public void resetToDefaults() {
+    renderer.resetToDefaults();
   }
 
   @Override

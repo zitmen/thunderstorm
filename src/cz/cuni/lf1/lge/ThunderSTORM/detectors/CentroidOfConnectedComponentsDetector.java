@@ -9,6 +9,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.Macro;
+import ij.Prefs;
 import ij.plugin.frame.Recorder;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
@@ -114,9 +115,9 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
 
   @Override
   public JPanel getOptionsPanel() {
-    thrTextField = new JTextField(DEFAULT_THRESHOLD, 20);
+    thrTextField = new JTextField(Prefs.get("thunderstorm.detectors.centroid.thr", DEFAULT_THRESHOLD), 20);
     upCheckBox = new JCheckBox("upsample");
-    upCheckBox.setSelected(DEFAULT_UPSAMPLE);
+    upCheckBox.setSelected(Prefs.get("thunderstorm.detectors.centroid.upsample", DEFAULT_UPSAMPLE));
     //
     JPanel panel = new JPanel(new GridBagLayout());
     panel.add(new JLabel("Peak intensity threshold: "), GridBagHelper.leftCol());
@@ -130,6 +131,9 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
     threshold = thrTextField.getText();
     upsample = upCheckBox.isSelected();
     Thresholder.parseThreshold(threshold);
+    
+    Prefs.set("thunderstorm.detectors.centroid.thr", threshold);
+    Prefs.set("thunderstorm.detectors.centroid.upsample", upsample);
   }
 
   @Override
@@ -152,5 +156,11 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
     threshold = Macro.getValue(options, "threshold", DEFAULT_THRESHOLD);
     upsample = Boolean.parseBoolean(Macro.getValue(options, "upsample", Boolean.toString(upsample)));
     Thresholder.parseThreshold(threshold);
+  }
+
+  @Override
+  public void resetToDefaults() {
+    upCheckBox.setSelected(DEFAULT_UPSAMPLE);
+    thrTextField.setText(DEFAULT_THRESHOLD);
   }
 }

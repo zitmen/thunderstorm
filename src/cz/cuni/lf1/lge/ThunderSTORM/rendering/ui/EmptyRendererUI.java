@@ -40,4 +40,8 @@ public class EmptyRendererUI implements IRendererUI {
   public IncrementalRenderingMethod getImplementation() {
     return null;
   }
+
+  @Override
+  public void resetToDefaults() {
+  }
 }

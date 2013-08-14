@@ -163,11 +163,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       allEstimators = ThreadLocalWrapper.wrapEstimators(ModuleLoader.getUIModules(IEstimatorUI.class));
       allRenderers = ModuleLoader.getUIModules(IRendererUI.class);
 
-      selectedFilter = 0;
-      selectedDetector = 0;
-      selectedEstimator = 0;
-      selectedRenderer = 0;
-      
       Thresholder.loadFilters(allFilters);
       Thresholder.setActiveFilter(selectedFilter);
       
@@ -187,7 +182,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         return pluginFlags;
       } else {
         // Create and show the dialog
-        AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, allFilters, selectedFilter, allDetectors, selectedDetector, allEstimators, selectedEstimator, allRenderers, selectedRenderer);
+        AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, allFilters, allDetectors, allEstimators, allRenderers);
         dialog.setVisible(true);
         if (dialog.wasCanceled()) {  // This is a blocking call!!
           return DONE;    // cancel

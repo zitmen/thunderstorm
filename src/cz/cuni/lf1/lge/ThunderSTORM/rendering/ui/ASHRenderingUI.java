@@ -4,6 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.Macro;
+import ij.Prefs;
 import ij.plugin.frame.Recorder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,11 +38,11 @@ public class ASHRenderingUI extends AbstractRenderingUI {
   public JPanel getOptionsPanel() {
     JPanel panel = super.getOptionsPanel();
     
-    shiftsTextField = new JTextField(Integer.toString(DEFAULT_SHIFTS), 20);
+    shiftsTextField = new JTextField(Prefs.get("thunderstorm.rendering.ash.shifts",""+DEFAULT_SHIFTS), 20);
     panel.add(new JLabel("Lateral shifts:"), GridBagHelper.leftCol());
     panel.add(shiftsTextField, GridBagHelper.rightCol());
     
-    zShiftsTextField = new JTextField(Integer.toString(DEFAULT_ZSHIFTS, 20));
+    zShiftsTextField = new JTextField(Prefs.get("thunderstorm.rendering.ash.zshifts", ""+DEFAULT_ZSHIFTS), 20);
     zShiftsLabel = new JLabel("Axial shifts:");
     zShiftsLabel.setEnabled(threeD);
     zShiftsTextField.setEnabled(threeD);
@@ -65,6 +66,9 @@ public class ASHRenderingUI extends AbstractRenderingUI {
     if (threeD) {
       zShifts = Integer.parseInt(zShiftsTextField.getText());
     }
+    
+    Prefs.set("thunderstorm.rendering.ash.shifts", ""+ shifts);
+    Prefs.set("thunderstorm.rendering.ash.zshifts", ""+ zShifts);
   }
   
   @Override
@@ -76,6 +80,13 @@ public class ASHRenderingUI extends AbstractRenderingUI {
     if (threeD && zShifts != DEFAULT_ZSHIFTS) {
       Recorder.recordOption("zShifts", Integer.toString(zShifts));
     }
+  }
+
+  @Override
+  public void resetToDefaults() {
+    super.resetToDefaults();
+    shiftsTextField.setText(""+DEFAULT_SHIFTS);
+    zShiftsTextField.setText(""+DEFAULT_ZSHIFTS);
   }
   
   @Override

@@ -109,7 +109,7 @@ public class ResultsDriftCorrection {
             }
           }
         }.execute();
-    } finally {
+    } catch(Throwable ex) {
         applyButton.setEnabled(true);
     }
   }

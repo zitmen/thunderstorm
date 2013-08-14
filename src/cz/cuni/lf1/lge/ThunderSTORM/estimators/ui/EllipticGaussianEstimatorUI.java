@@ -11,6 +11,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstima
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.IJ;
 import ij.Macro;
+import ij.Prefs;
 import ij.plugin.frame.Recorder;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -45,7 +46,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
     JPanel parentPanel = super.getOptionsPanel();
 
     parentPanel.add(new JLabel("Calibration file:"), GridBagHelper.leftCol());
-    calibrationFileTextField = new JTextField();
+    calibrationFileTextField = new JTextField(Prefs.get("thunderstorm.estimators.calibrationpath", ""));
     findCalibrationButton = new JButton("Browse...");
     findCalibrationButton.addActionListener(this);
     JPanel calibrationPanel = new JPanel(new BorderLayout());
@@ -62,6 +63,8 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
   public void readParameters() {
     super.readParameters();
     calibration = loadCalibration(calibrationFileTextField.getText());
+    
+    Prefs.set("thunderstorm.estimators.calibrationpath", calibrationFileTextField.getText());
   }
 
   @Override
