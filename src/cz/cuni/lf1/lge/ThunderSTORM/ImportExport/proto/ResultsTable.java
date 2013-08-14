@@ -175,6 +175,51 @@ public final class ResultsTable {
      */
     com.google.protobuf.ByteString
         getDetectionsBytes();
+
+    // optional string offset = 12;
+    /**
+     * <code>optional string offset = 12;</code>
+     */
+    boolean hasOffset();
+    /**
+     * <code>optional string offset = 12;</code>
+     */
+    java.lang.String getOffset();
+    /**
+     * <code>optional string offset = 12;</code>
+     */
+    com.google.protobuf.ByteString
+        getOffsetBytes();
+
+    // optional string thompson_ccd = 13;
+    /**
+     * <code>optional string thompson_ccd = 13;</code>
+     */
+    boolean hasThompsonCcd();
+    /**
+     * <code>optional string thompson_ccd = 13;</code>
+     */
+    java.lang.String getThompsonCcd();
+    /**
+     * <code>optional string thompson_ccd = 13;</code>
+     */
+    com.google.protobuf.ByteString
+        getThompsonCcdBytes();
+
+    // optional string thompson_emccd = 14;
+    /**
+     * <code>optional string thompson_emccd = 14;</code>
+     */
+    boolean hasThompsonEmccd();
+    /**
+     * <code>optional string thompson_emccd = 14;</code>
+     */
+    java.lang.String getThompsonEmccd();
+    /**
+     * <code>optional string thompson_emccd = 14;</code>
+     */
+    com.google.protobuf.ByteString
+        getThompsonEmccdBytes();
   }
   /**
    * Protobuf type {@code cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units}
@@ -280,6 +325,21 @@ public final class ResultsTable {
             case 90: {
               bitField0_ |= 0x00000400;
               detections_ = input.readBytes();
+              break;
+            }
+            case 98: {
+              bitField0_ |= 0x00000800;
+              offset_ = input.readBytes();
+              break;
+            }
+            case 106: {
+              bitField0_ |= 0x00001000;
+              thompsonCcd_ = input.readBytes();
+              break;
+            }
+            case 114: {
+              bitField0_ |= 0x00002000;
+              thompsonEmccd_ = input.readBytes();
               break;
             }
           }
@@ -795,6 +855,135 @@ public final class ResultsTable {
       }
     }
 
+    // optional string offset = 12;
+    public static final int OFFSET_FIELD_NUMBER = 12;
+    private java.lang.Object offset_;
+    /**
+     * <code>optional string offset = 12;</code>
+     */
+    public boolean hasOffset() {
+      return ((bitField0_ & 0x00000800) == 0x00000800);
+    }
+    /**
+     * <code>optional string offset = 12;</code>
+     */
+    public java.lang.String getOffset() {
+      java.lang.Object ref = offset_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          offset_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string offset = 12;</code>
+     */
+    public com.google.protobuf.ByteString
+        getOffsetBytes() {
+      java.lang.Object ref = offset_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        offset_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string thompson_ccd = 13;
+    public static final int THOMPSON_CCD_FIELD_NUMBER = 13;
+    private java.lang.Object thompsonCcd_;
+    /**
+     * <code>optional string thompson_ccd = 13;</code>
+     */
+    public boolean hasThompsonCcd() {
+      return ((bitField0_ & 0x00001000) == 0x00001000);
+    }
+    /**
+     * <code>optional string thompson_ccd = 13;</code>
+     */
+    public java.lang.String getThompsonCcd() {
+      java.lang.Object ref = thompsonCcd_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          thompsonCcd_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string thompson_ccd = 13;</code>
+     */
+    public com.google.protobuf.ByteString
+        getThompsonCcdBytes() {
+      java.lang.Object ref = thompsonCcd_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        thompsonCcd_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string thompson_emccd = 14;
+    public static final int THOMPSON_EMCCD_FIELD_NUMBER = 14;
+    private java.lang.Object thompsonEmccd_;
+    /**
+     * <code>optional string thompson_emccd = 14;</code>
+     */
+    public boolean hasThompsonEmccd() {
+      return ((bitField0_ & 0x00002000) == 0x00002000);
+    }
+    /**
+     * <code>optional string thompson_emccd = 14;</code>
+     */
+    public java.lang.String getThompsonEmccd() {
+      java.lang.Object ref = thompsonEmccd_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          thompsonEmccd_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string thompson_emccd = 14;</code>
+     */
+    public com.google.protobuf.ByteString
+        getThompsonEmccdBytes() {
+      java.lang.Object ref = thompsonEmccd_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        thompsonEmccd_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
       id_ = "";
       frame_ = "";
@@ -807,6 +996,9 @@ public final class ResultsTable {
       intensity_ = "";
       background_ = "";
       detections_ = "";
+      offset_ = "";
+      thompsonCcd_ = "";
+      thompsonEmccd_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -852,6 +1044,15 @@ public final class ResultsTable {
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         output.writeBytes(11, getDetectionsBytes());
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        output.writeBytes(12, getOffsetBytes());
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        output.writeBytes(13, getThompsonCcdBytes());
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        output.writeBytes(14, getThompsonEmccdBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -905,6 +1106,18 @@ public final class ResultsTable {
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(11, getDetectionsBytes());
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(12, getOffsetBytes());
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(13, getThompsonCcdBytes());
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(14, getThompsonEmccdBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1044,6 +1257,12 @@ public final class ResultsTable {
         bitField0_ = (bitField0_ & ~0x00000200);
         detections_ = "";
         bitField0_ = (bitField0_ & ~0x00000400);
+        offset_ = "";
+        bitField0_ = (bitField0_ & ~0x00000800);
+        thompsonCcd_ = "";
+        bitField0_ = (bitField0_ & ~0x00001000);
+        thompsonEmccd_ = "";
+        bitField0_ = (bitField0_ & ~0x00002000);
         return this;
       }
 
@@ -1116,6 +1335,18 @@ public final class ResultsTable {
           to_bitField0_ |= 0x00000400;
         }
         result.detections_ = detections_;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000800;
+        }
+        result.offset_ = offset_;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00001000;
+        }
+        result.thompsonCcd_ = thompsonCcd_;
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+          to_bitField0_ |= 0x00002000;
+        }
+        result.thompsonEmccd_ = thompsonEmccd_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1185,6 +1416,21 @@ public final class ResultsTable {
         if (other.hasDetections()) {
           bitField0_ |= 0x00000400;
           detections_ = other.detections_;
+          onChanged();
+        }
+        if (other.hasOffset()) {
+          bitField0_ |= 0x00000800;
+          offset_ = other.offset_;
+          onChanged();
+        }
+        if (other.hasThompsonCcd()) {
+          bitField0_ |= 0x00001000;
+          thompsonCcd_ = other.thompsonCcd_;
+          onChanged();
+        }
+        if (other.hasThompsonEmccd()) {
+          bitField0_ |= 0x00002000;
+          thompsonEmccd_ = other.thompsonEmccd_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -2028,6 +2274,228 @@ public final class ResultsTable {
         return this;
       }
 
+      // optional string offset = 12;
+      private java.lang.Object offset_ = "";
+      /**
+       * <code>optional string offset = 12;</code>
+       */
+      public boolean hasOffset() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      /**
+       * <code>optional string offset = 12;</code>
+       */
+      public java.lang.String getOffset() {
+        java.lang.Object ref = offset_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          offset_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string offset = 12;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOffsetBytes() {
+        java.lang.Object ref = offset_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          offset_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string offset = 12;</code>
+       */
+      public Builder setOffset(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000800;
+        offset_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string offset = 12;</code>
+       */
+      public Builder clearOffset() {
+        bitField0_ = (bitField0_ & ~0x00000800);
+        offset_ = getDefaultInstance().getOffset();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string offset = 12;</code>
+       */
+      public Builder setOffsetBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000800;
+        offset_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string thompson_ccd = 13;
+      private java.lang.Object thompsonCcd_ = "";
+      /**
+       * <code>optional string thompson_ccd = 13;</code>
+       */
+      public boolean hasThompsonCcd() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      /**
+       * <code>optional string thompson_ccd = 13;</code>
+       */
+      public java.lang.String getThompsonCcd() {
+        java.lang.Object ref = thompsonCcd_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          thompsonCcd_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string thompson_ccd = 13;</code>
+       */
+      public com.google.protobuf.ByteString
+          getThompsonCcdBytes() {
+        java.lang.Object ref = thompsonCcd_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          thompsonCcd_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string thompson_ccd = 13;</code>
+       */
+      public Builder setThompsonCcd(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00001000;
+        thompsonCcd_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string thompson_ccd = 13;</code>
+       */
+      public Builder clearThompsonCcd() {
+        bitField0_ = (bitField0_ & ~0x00001000);
+        thompsonCcd_ = getDefaultInstance().getThompsonCcd();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string thompson_ccd = 13;</code>
+       */
+      public Builder setThompsonCcdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00001000;
+        thompsonCcd_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string thompson_emccd = 14;
+      private java.lang.Object thompsonEmccd_ = "";
+      /**
+       * <code>optional string thompson_emccd = 14;</code>
+       */
+      public boolean hasThompsonEmccd() {
+        return ((bitField0_ & 0x00002000) == 0x00002000);
+      }
+      /**
+       * <code>optional string thompson_emccd = 14;</code>
+       */
+      public java.lang.String getThompsonEmccd() {
+        java.lang.Object ref = thompsonEmccd_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          thompsonEmccd_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string thompson_emccd = 14;</code>
+       */
+      public com.google.protobuf.ByteString
+          getThompsonEmccdBytes() {
+        java.lang.Object ref = thompsonEmccd_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          thompsonEmccd_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string thompson_emccd = 14;</code>
+       */
+      public Builder setThompsonEmccd(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00002000;
+        thompsonEmccd_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string thompson_emccd = 14;</code>
+       */
+      public Builder clearThompsonEmccd() {
+        bitField0_ = (bitField0_ & ~0x00002000);
+        thompsonEmccd_ = getDefaultInstance().getThompsonEmccd();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string thompson_emccd = 14;</code>
+       */
+      public Builder setThompsonEmccdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00002000;
+        thompsonEmccd_ = value;
+        onChanged();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units)
     }
 
@@ -2151,6 +2619,36 @@ public final class ResultsTable {
      * <code>optional uint32 detections = 11;</code>
      */
     int getDetections();
+
+    // optional double offset = 12;
+    /**
+     * <code>optional double offset = 12;</code>
+     */
+    boolean hasOffset();
+    /**
+     * <code>optional double offset = 12;</code>
+     */
+    double getOffset();
+
+    // optional double thompson_ccd = 13;
+    /**
+     * <code>optional double thompson_ccd = 13;</code>
+     */
+    boolean hasThompsonCcd();
+    /**
+     * <code>optional double thompson_ccd = 13;</code>
+     */
+    double getThompsonCcd();
+
+    // optional double thompson_emccd = 14;
+    /**
+     * <code>optional double thompson_emccd = 14;</code>
+     */
+    boolean hasThompsonEmccd();
+    /**
+     * <code>optional double thompson_emccd = 14;</code>
+     */
+    double getThompsonEmccd();
   }
   /**
    * Protobuf type {@code cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule}
@@ -2256,6 +2754,21 @@ public final class ResultsTable {
             case 88: {
               bitField0_ |= 0x00000400;
               detections_ = input.readUInt32();
+              break;
+            }
+            case 97: {
+              bitField0_ |= 0x00000800;
+              offset_ = input.readDouble();
+              break;
+            }
+            case 105: {
+              bitField0_ |= 0x00001000;
+              thompsonCcd_ = input.readDouble();
+              break;
+            }
+            case 113: {
+              bitField0_ |= 0x00002000;
+              thompsonEmccd_ = input.readDouble();
               break;
             }
           }
@@ -2474,6 +2987,54 @@ public final class ResultsTable {
       return detections_;
     }
 
+    // optional double offset = 12;
+    public static final int OFFSET_FIELD_NUMBER = 12;
+    private double offset_;
+    /**
+     * <code>optional double offset = 12;</code>
+     */
+    public boolean hasOffset() {
+      return ((bitField0_ & 0x00000800) == 0x00000800);
+    }
+    /**
+     * <code>optional double offset = 12;</code>
+     */
+    public double getOffset() {
+      return offset_;
+    }
+
+    // optional double thompson_ccd = 13;
+    public static final int THOMPSON_CCD_FIELD_NUMBER = 13;
+    private double thompsonCcd_;
+    /**
+     * <code>optional double thompson_ccd = 13;</code>
+     */
+    public boolean hasThompsonCcd() {
+      return ((bitField0_ & 0x00001000) == 0x00001000);
+    }
+    /**
+     * <code>optional double thompson_ccd = 13;</code>
+     */
+    public double getThompsonCcd() {
+      return thompsonCcd_;
+    }
+
+    // optional double thompson_emccd = 14;
+    public static final int THOMPSON_EMCCD_FIELD_NUMBER = 14;
+    private double thompsonEmccd_;
+    /**
+     * <code>optional double thompson_emccd = 14;</code>
+     */
+    public boolean hasThompsonEmccd() {
+      return ((bitField0_ & 0x00002000) == 0x00002000);
+    }
+    /**
+     * <code>optional double thompson_emccd = 14;</code>
+     */
+    public double getThompsonEmccd() {
+      return thompsonEmccd_;
+    }
+
     private void initFields() {
       id_ = 0;
       frame_ = 0;
@@ -2486,6 +3047,9 @@ public final class ResultsTable {
       intensity_ = 0D;
       background_ = 0D;
       detections_ = 0;
+      offset_ = 0D;
+      thompsonCcd_ = 0D;
+      thompsonEmccd_ = 0D;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2531,6 +3095,15 @@ public final class ResultsTable {
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         output.writeUInt32(11, detections_);
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        output.writeDouble(12, offset_);
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        output.writeDouble(13, thompsonCcd_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        output.writeDouble(14, thompsonEmccd_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2584,6 +3157,18 @@ public final class ResultsTable {
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(11, detections_);
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(12, offset_);
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(13, thompsonCcd_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(14, thompsonEmccd_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2723,6 +3308,12 @@ public final class ResultsTable {
         bitField0_ = (bitField0_ & ~0x00000200);
         detections_ = 0;
         bitField0_ = (bitField0_ & ~0x00000400);
+        offset_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000800);
+        thompsonCcd_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00001000);
+        thompsonEmccd_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00002000);
         return this;
       }
 
@@ -2795,6 +3386,18 @@ public final class ResultsTable {
           to_bitField0_ |= 0x00000400;
         }
         result.detections_ = detections_;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000800;
+        }
+        result.offset_ = offset_;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00001000;
+        }
+        result.thompsonCcd_ = thompsonCcd_;
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+          to_bitField0_ |= 0x00002000;
+        }
+        result.thompsonEmccd_ = thompsonEmccd_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2843,6 +3446,15 @@ public final class ResultsTable {
         }
         if (other.hasDetections()) {
           setDetections(other.getDetections());
+        }
+        if (other.hasOffset()) {
+          setOffset(other.getOffset());
+        }
+        if (other.hasThompsonCcd()) {
+          setThompsonCcd(other.getThompsonCcd());
+        }
+        if (other.hasThompsonEmccd()) {
+          setThompsonEmccd(other.getThompsonEmccd());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -3230,6 +3842,105 @@ public final class ResultsTable {
       public Builder clearDetections() {
         bitField0_ = (bitField0_ & ~0x00000400);
         detections_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional double offset = 12;
+      private double offset_ ;
+      /**
+       * <code>optional double offset = 12;</code>
+       */
+      public boolean hasOffset() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      /**
+       * <code>optional double offset = 12;</code>
+       */
+      public double getOffset() {
+        return offset_;
+      }
+      /**
+       * <code>optional double offset = 12;</code>
+       */
+      public Builder setOffset(double value) {
+        bitField0_ |= 0x00000800;
+        offset_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional double offset = 12;</code>
+       */
+      public Builder clearOffset() {
+        bitField0_ = (bitField0_ & ~0x00000800);
+        offset_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      // optional double thompson_ccd = 13;
+      private double thompsonCcd_ ;
+      /**
+       * <code>optional double thompson_ccd = 13;</code>
+       */
+      public boolean hasThompsonCcd() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      /**
+       * <code>optional double thompson_ccd = 13;</code>
+       */
+      public double getThompsonCcd() {
+        return thompsonCcd_;
+      }
+      /**
+       * <code>optional double thompson_ccd = 13;</code>
+       */
+      public Builder setThompsonCcd(double value) {
+        bitField0_ |= 0x00001000;
+        thompsonCcd_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional double thompson_ccd = 13;</code>
+       */
+      public Builder clearThompsonCcd() {
+        bitField0_ = (bitField0_ & ~0x00001000);
+        thompsonCcd_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      // optional double thompson_emccd = 14;
+      private double thompsonEmccd_ ;
+      /**
+       * <code>optional double thompson_emccd = 14;</code>
+       */
+      public boolean hasThompsonEmccd() {
+        return ((bitField0_ & 0x00002000) == 0x00002000);
+      }
+      /**
+       * <code>optional double thompson_emccd = 14;</code>
+       */
+      public double getThompsonEmccd() {
+        return thompsonEmccd_;
+      }
+      /**
+       * <code>optional double thompson_emccd = 14;</code>
+       */
+      public Builder setThompsonEmccd(double value) {
+        bitField0_ |= 0x00002000;
+        thompsonEmccd_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional double thompson_emccd = 14;</code>
+       */
+      public Builder clearThompsonEmccd() {
+        bitField0_ = (bitField0_ & ~0x00002000);
+        thompsonEmccd_ = 0D;
         onChanged();
         return this;
       }
@@ -4139,22 +4850,25 @@ public final class ResultsTable {
   static {
     java.lang.String[] descriptorData = {
       "\n\rresults.proto\022/cz.cuni.lf1.lge.Thunder" +
-      "STORM.ImportExport.proto\"\255\001\n\005Units\022\n\n\002id" +
+      "STORM.ImportExport.proto\"\353\001\n\005Units\022\n\n\002id" +
       "\030\001 \001(\t\022\r\n\005frame\030\002 \001(\t\022\t\n\001x\030\003 \001(\t\022\t\n\001y\030\004 " +
       "\001(\t\022\t\n\001z\030\005 \001(\t\022\r\n\005sigma\030\006 \001(\t\022\016\n\006sigma1\030" +
       "\007 \001(\t\022\016\n\006sigma2\030\010 \001(\t\022\021\n\tintensity\030\t \001(\t" +
       "\022\022\n\nbackground\030\n \001(\t\022\022\n\ndetections\030\013 \001(\t" +
-      "\"\260\001\n\010Molecule\022\n\n\002id\030\001 \001(\r\022\r\n\005frame\030\002 \001(\r" +
-      "\022\t\n\001x\030\003 \001(\001\022\t\n\001y\030\004 \001(\001\022\t\n\001z\030\005 \001(\001\022\r\n\005sig" +
-      "ma\030\006 \001(\001\022\016\n\006sigma1\030\007 \001(\001\022\016\n\006sigma2\030\010 \001(\001" +
-      "\022\021\n\tintensity\030\t \001(\001\022\022\n\nbackground\030\n \001(\001\022",
-      "\022\n\ndetections\030\013 \001(\r\"\235\001\n\007Results\022E\n\005units" +
-      "\030\001 \001(\01326.cz.cuni.lf1.lge.ThunderSTORM.Im" +
-      "portExport.proto.Units\022K\n\010molecule\030\002 \003(\013" +
-      "29.cz.cuni.lf1.lge.ThunderSTORM.ImportEx" +
-      "port.proto.MoleculeB?\n/cz.cuni.lf1.lge.T" +
-      "hunderSTORM.ImportExport.protoB\014ResultsT" +
-      "able"
+      "\022\016\n\006offset\030\014 \001(\t\022\024\n\014thompson_ccd\030\r \001(\t\022\026" +
+      "\n\016thompson_emccd\030\016 \001(\t\"\356\001\n\010Molecule\022\n\n\002i" +
+      "d\030\001 \001(\r\022\r\n\005frame\030\002 \001(\r\022\t\n\001x\030\003 \001(\001\022\t\n\001y\030\004" +
+      " \001(\001\022\t\n\001z\030\005 \001(\001\022\r\n\005sigma\030\006 \001(\001\022\016\n\006sigma1",
+      "\030\007 \001(\001\022\016\n\006sigma2\030\010 \001(\001\022\021\n\tintensity\030\t \001(" +
+      "\001\022\022\n\nbackground\030\n \001(\001\022\022\n\ndetections\030\013 \001(" +
+      "\r\022\016\n\006offset\030\014 \001(\001\022\024\n\014thompson_ccd\030\r \001(\001\022" +
+      "\026\n\016thompson_emccd\030\016 \001(\001\"\235\001\n\007Results\022E\n\005u" +
+      "nits\030\001 \001(\01326.cz.cuni.lf1.lge.ThunderSTOR" +
+      "M.ImportExport.proto.Units\022K\n\010molecule\030\002" +
+      " \003(\01329.cz.cuni.lf1.lge.ThunderSTORM.Impo" +
+      "rtExport.proto.MoleculeB?\n/cz.cuni.lf1.l" +
+      "ge.ThunderSTORM.ImportExport.protoB\014Resu" +
+      "ltsTable"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4166,13 +4880,13 @@ public final class ResultsTable {
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_descriptor,
-              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma1", "Sigma2", "Intensity", "Background", "Detections", });
+              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma1", "Sigma2", "Intensity", "Background", "Detections", "Offset", "ThompsonCcd", "ThompsonEmccd", });
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_descriptor,
-              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma1", "Sigma2", "Intensity", "Background", "Detections", });
+              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma1", "Sigma2", "Intensity", "Background", "Detections", "Offset", "ThompsonCcd", "ThompsonEmccd", });
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Results_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Results_fieldAccessorTable = new

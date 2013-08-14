@@ -41,6 +41,9 @@ public class ProtoImportExport implements IImportExport {
             if(mol.hasIntensity()) fields.add(PSFModel.Params.LABEL_INTENSITY);
             if(mol.hasBackground()) fields.add(PSFModel.Params.LABEL_BACKGROUND_VARIANCE);
             if(mol.hasDetections()) fields.add(MoleculeDescriptor.LABEL_DETECTIONS);
+            if(mol.hasOffset()) fields.add(PSFModel.Params.LABEL_OFFSET);
+            if(mol.hasThompsonCcd()) fields.add(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
+            if(mol.hasThompsonEmccd()) fields.add(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
             if(!rt.columnNamesEqual(fields.toArray(new String[0]))) {
                 throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + MoleculeDescriptor.LABEL_ID + "')!");
             }
@@ -64,6 +67,9 @@ public class ProtoImportExport implements IImportExport {
             if(mol.hasIntensity()) { values[i] = mol.getIntensity(); i++; }
             if(mol.hasBackground()) { values[i] = mol.getBackground(); i++; }
             if(mol.hasDetections()) { values[i] = (double)mol.getFrame(); i++; }
+            if(mol.hasOffset()) { values[i] = mol.getOffset(); i++; }
+            if(mol.hasThompsonCcd()) { values[i] = mol.getThompsonCcd(); i++; }
+            if(mol.hasThompsonEmccd()) { values[i] = mol.getThompsonEmccd(); i++; }
             rt.addRow(values);
             
             IJ.showProgress((double)(r++) / (double)nrows);
@@ -110,6 +116,12 @@ public class ProtoImportExport implements IImportExport {
                     units.setBackground(unit);
                 } else if(MoleculeDescriptor.LABEL_DETECTIONS.equals(name)) {
                     units.setDetections(unit);
+                } else if(PSFModel.Params.LABEL_OFFSET.equals(name)) {
+                    units.setOffset(unit);
+                } else if(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON.equals(name)) {
+                    units.setThompsonCcd(unit);
+                } else if(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON.equals(name)) {
+                    units.setThompsonEmccd(unit);
                 } else {
                     throw new IllegalArgumentException("Parameter `" + columns.elementAt(c) + "` is not supported in the current version of protocol buffer!");
                 }
@@ -143,6 +155,12 @@ public class ProtoImportExport implements IImportExport {
                     mol.setBackground(value);
                 } else if(MoleculeDescriptor.LABEL_DETECTIONS.equals(name)) {
                     mol.setDetections((int)value);
+                } else if(PSFModel.Params.LABEL_OFFSET.equals(name)) {
+                    mol.setOffset(value);
+                } else if(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON.equals(name)) {
+                    mol.setThompsonCcd(value);
+                } else if(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON.equals(name)) {
+                    mol.setThompsonEmccd(value);
                 } else {
                     throw new IllegalArgumentException("Parameter `" + columns.elementAt(c) + "` is not supported in the current version of protocol buffer!");
                 }

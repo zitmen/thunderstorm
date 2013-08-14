@@ -15,6 +15,9 @@ message Units {
     optional string intensity = 9;
     optional string background = 10;
     optional string detections = 11;
+	optional string offset = 12;
+	optional string thompson_ccd = 13;
+	optional string thompson_emccd = 14;
 }
 
 message Molecule {
@@ -29,6 +32,9 @@ message Molecule {
     optional double intensity = 9;
     optional double background = 10;
     optional uint32 detections = 11;
+	optional double offset = 12;
+	optional double thompson_ccd = 13;
+	optional double thompson_emccd = 14;
 }
 
 message Results {

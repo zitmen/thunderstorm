@@ -257,9 +257,6 @@ public class MoleculeDescriptor implements Cloneable {
     public static class Fitting {
         public static final String LABEL_CCD_THOMPSON = "d_xy (CCD)";
         public static final String LABEL_EMCCD_THOMPSON = "d_xy (EMCCD)";
-        public static final String LABEL_TOTAL_IMAGE_ENERGY = "total energy";
-        public static final String LABEL_DEGREES_OF_FREEDOM = "degrees of freedom";
-        public static final String LABEL_OBSERVATIONS_COUNT = "count of pixels for fitting";
         
         public static double ccdThompson(double psfSigma2, double psfEnergy, double backgroundVariance, double pixelSize) {
             return ((psfSigma2 + pixelSize*pixelSize/12) / psfEnergy) +
@@ -337,9 +334,6 @@ public class MoleculeDescriptor implements Cloneable {
                 //
                 allUnits.put(Fitting.LABEL_CCD_THOMPSON, Units.LABEL_PIXEL);
                 allUnits.put(Fitting.LABEL_EMCCD_THOMPSON, Units.LABEL_PIXEL);
-                allUnits.put(Fitting.LABEL_TOTAL_IMAGE_ENERGY, Units.LABEL_DIGITAL);
-                allUnits.put(Fitting.LABEL_DEGREES_OF_FREEDOM, Units.LABEL_UNITLESS);
-                allUnits.put(Fitting.LABEL_OBSERVATIONS_COUNT, Units.LABEL_UNITLESS);
             }
             if(allUnits.containsKey(paramName)) {
                 return allUnits.get(paramName);
@@ -378,9 +372,6 @@ public class MoleculeDescriptor implements Cloneable {
             //
             allParams.put(Fitting.LABEL_CCD_THOMPSON, MergingOperations.RECALC);
             allParams.put(Fitting.LABEL_EMCCD_THOMPSON, MergingOperations.RECALC);
-            allParams.put(Fitting.LABEL_TOTAL_IMAGE_ENERGY, MergingOperations.SUM);
-            allParams.put(Fitting.LABEL_DEGREES_OF_FREEDOM, MergingOperations.NONE);
-            allParams.put(Fitting.LABEL_OBSERVATIONS_COUNT, MergingOperations.SUM);
         }
         
         // molecule <-- target
