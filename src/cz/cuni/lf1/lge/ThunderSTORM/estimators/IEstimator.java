@@ -2,7 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
@@ -30,6 +30,6 @@ public interface IEstimator extends IModule{
      * @see Point
      * @see IDetector
      */
-    public Vector<PSFInstance> estimateParameters(FloatProcessor image, Vector<Point> detections);
+    public Vector<Molecule> estimateParameters(FloatProcessor image, Vector<Point> detections);
     
 }

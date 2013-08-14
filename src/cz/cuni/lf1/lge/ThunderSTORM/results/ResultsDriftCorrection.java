@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.drift.CrossCorrelationDriftCorrection;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import ij.ImagePlus;
 import ij.gui.Plot;
@@ -58,17 +58,17 @@ public class ResultsDriftCorrection {
   }
 
   private void runDriftCorrection(final int bins, final double magnification, final boolean showCorrelationImages, final boolean showPlot) throws IllegalArgumentException {
-    if (bins < 2) {
+        if(bins < 2) {
       throw new IllegalArgumentException("Number of images must be greater than 1. Input: " + bins);
     }
-    if (magnification <= 0) {
+        if(magnification <= 0) {
       throw new IllegalArgumentException("Rendering magnification must be greater than 0. Input: " + magnification);
     }
     try {
         applyButton.setEnabled(false);
         final IJResultsTable rt = IJResultsTable.getResultsTable();
         final OperationsHistoryPanel history = rt.getOperationHistoryPanel();
-        if (history.getLastOperation() instanceof DriftCorrectionOperation) {
+            if(history.getLastOperation() instanceof DriftCorrectionOperation) {
           rt.copyUndoToActual();  //replace last operation
           history.removeLastOperation();
         } else {
@@ -89,10 +89,10 @@ public class ResultsDriftCorrection {
             try {
               CrossCorrelationDriftCorrection driftCorrection = get();
               //show plots
-              if (showPlot) {
+                        if(showPlot) {
                 showDriftPlot(driftCorrection);
               }
-              if (showCorrelationImages) {
+                        if(showCorrelationImages) {
                 showCorrelations(driftCorrection);
               }
               //update results table
@@ -100,9 +100,9 @@ public class ResultsDriftCorrection {
               history.addOperation(new DriftCorrectionOperation(magnification, bins, showPlot, showCorrelationImages));
               rt.setStatus("Drift correction applied.");
               rt.showPreview();
-            } catch (InterruptedException ex) {
+                    } catch(InterruptedException ex) {
               GUI.showBalloonTip(applyButton, ex.getMessage());
-            } catch (ExecutionException ex) {
+                    } catch(ExecutionException ex) {
               GUI.showBalloonTip(applyButton, ex.getCause().getMessage());
             } finally {
               applyButton.setEnabled(true);
@@ -116,15 +116,15 @@ public class ResultsDriftCorrection {
 
   void getResultsFromTable() {
     IJResultsTable rt = IJResultsTable.getResultsTable();
-    if (!rt.columnExists(PSFModel.Params.LABEL_X) || !rt.columnExists(PSFModel.Params.LABEL_Y)) {
+        if(!rt.columnExists(PSFModel.Params.LABEL_X) || !rt.columnExists(PSFModel.Params.LABEL_Y)) {
       throw new RuntimeException("Could not find " + PSFModel.Params.LABEL_X + " and " + PSFModel.Params.LABEL_Y + " columns.");
     }
-    if (!rt.columnExists("frame")) {
-      throw new RuntimeException("Could not find \"frame\" column.");
+        if(!rt.columnExists(MoleculeDescriptor.LABEL_FRAME)) {
+            throw new RuntimeException("Could not find \"" + MoleculeDescriptor.LABEL_FRAME + "\" column.");
     }
     x = rt.getColumnAsDoubles(PSFModel.Params.LABEL_X);
     y = rt.getColumnAsDoubles(PSFModel.Params.LABEL_Y);
-    frame = rt.getColumnAsDoubles("frame");
+        frame = rt.getColumnAsDoubles(MoleculeDescriptor.LABEL_FRAME);
   }
 
   static void showDriftPlot(CrossCorrelationDriftCorrection driftCorrection) {
@@ -133,7 +133,7 @@ public class ResultsDriftCorrection {
     double[] grid = new double[frameCount];
     double[] driftX = new double[frameCount];
     double[] driftY = new double[frameCount];
-    for (int i = 0; i < frameCount; i++) {
+        for(int i = 0; i < frameCount; i++) {
       grid[i] = i + minFrame;
       Point2D.Double offset = driftCorrection.getInterpolatedDrift(grid[i]);
       driftX[i] = offset.x;
@@ -156,7 +156,7 @@ public class ResultsDriftCorrection {
     //add center markers
     double[] binDriftsX = driftCorrection.getBinDriftX();
     double[] binDriftsY = driftCorrection.getBinDriftY();
-    for (int i = 1; i < binDriftsX.length; i++) {
+        for(int i = 1; i < binDriftsX.length; i++) {
       RenderingOverlay.showPointsInImageSlice(imp, new double[]{-binDriftsX[i] * driftCorrection.getMagnification() + imp.getWidth() / 2 + 0.5}, new double[]{-binDriftsY[i] + imp.getHeight() / 2 + 0.5}, i, Color.red, RenderingOverlay.MARKER_CROSS);
     }
     imp.show();
@@ -164,8 +164,8 @@ public class ResultsDriftCorrection {
 
   private void applyToResultsTable(CrossCorrelationDriftCorrection driftCorrection) {
     IJResultsTable rt = IJResultsTable.getResultsTable();
-    for (int i = 0; i < rt.getRowCount(); i++) {
-      double frameNumber = rt.getValue(i, "frame");
+        for(int i = 0; i < rt.getRowCount(); i++) {
+            double frameNumber = rt.getValue(i, MoleculeDescriptor.LABEL_FRAME);
       double xVal = rt.getValue(i, PSFModel.Params.LABEL_X);
       double yVal = rt.getValue(i, PSFModel.Params.LABEL_Y);
       Point2D.Double drift = driftCorrection.getInterpolatedDrift(frameNumber);
@@ -200,7 +200,7 @@ public class ResultsDriftCorrection {
 
     @Override
     protected void clicked() {
-      if (uiPanel.getParent() instanceof JTabbedPane) {
+            if(uiPanel.getParent() instanceof JTabbedPane) {
         JTabbedPane tabbedPane = (JTabbedPane) uiPanel.getParent();
         tabbedPane.setSelectedComponent(uiPanel);
       }
@@ -236,27 +236,27 @@ public class ResultsDriftCorrection {
       double magnification;
       try {
         bins = Integer.parseInt(numStepsTextField.getText());
-      } catch (Exception ex) {
+            } catch(Exception ex) {
         GUI.showBalloonTip(numStepsTextField, ex.getMessage());
         return;
       }
       try {
         magnification = Double.parseDouble(magnificationTextField.getText());
-      } catch (Exception ex) {
+            } catch(Exception ex) {
         GUI.showBalloonTip(magnificationTextField, ex.getMessage());
         return;
       }
       //run drift correction
       try {
         runDriftCorrection(bins, magnification, showCorrelationsCheckBox.isSelected(), showDriftPlotCheckBox.isSelected());
-      } catch (Exception ex) {
+            } catch(Exception ex) {
         GUI.showBalloonTip(applyButton, ex.getMessage());
       }
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-      if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            if(e.getKeyCode() == KeyEvent.VK_ENTER) {
         applyButton.doClick();
       }
     }

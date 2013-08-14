@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -18,11 +18,11 @@ import javax.swing.JPanel;
 public class EmptyEstimator implements IEstimator, IEstimatorUI {
 
     @Override
-    public Vector<PSFInstance> estimateParameters(FloatProcessor fp, Vector<Point> detections) {
-        Vector<PSFInstance> locations = new Vector<PSFInstance>();
+    public Vector<Molecule> estimateParameters(FloatProcessor fp, Vector<Point> detections) {
+        Vector<Molecule> locations = new Vector<Molecule>();
 
         for (Point detection : detections) {
-            locations.add(new PSFInstance(new PSFModel.Params(new int[]{PSFModel.Params.X, PSFModel.Params.Y},
+            locations.add(new Molecule(new PSFModel.Params(new int[]{PSFModel.Params.X, PSFModel.Params.Y},
                     new double[]{detection.x.doubleValue(), detection.y.doubleValue()}, false)));
         }
         return locations;

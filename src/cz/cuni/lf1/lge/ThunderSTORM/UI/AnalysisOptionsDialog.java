@@ -2,7 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
@@ -231,13 +231,13 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             checkForInterruption();
             Vector<Point> detections = Point.applyRoiMask(imp.getRoi(), allDetectors.get(activeDetectorIndex).getImplementation().detectMoleculeCandidates(filtered));
             checkForInterruption();
-            Vector<PSFInstance> results = allEstimators.get(activeEstimatorIndex).getImplementation().estimateParameters(fp, detections);
+            Vector<Molecule> results = allEstimators.get(activeEstimatorIndex).getImplementation().estimateParameters(fp, detections);
             checkForInterruption();
             //
             ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
             RenderingOverlay.showPointsInImage(impPreview,
-                    PSFInstance.extractParamToArray(results, PSFModel.Params.LABEL_X),
-                    PSFInstance.extractParamToArray(results, PSFModel.Params.LABEL_Y),
+                    Molecule.extractParamToArray(results, PSFModel.Params.LABEL_X),
+                    Molecule.extractParamToArray(results, PSFModel.Params.LABEL_Y),
                     Color.red, RenderingOverlay.MARKER_CROSS);
             impPreview.show();
           } catch (InterruptedException ex) {

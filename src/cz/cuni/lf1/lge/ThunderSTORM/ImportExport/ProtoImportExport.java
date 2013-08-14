@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Results;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.IJ;
@@ -23,6 +23,7 @@ public class ProtoImportExport implements IImportExport {
         
         Results results = Results.parseFrom(new FileInputStream(fp));
         
+        double [] values = null;
         Vector<String> fields = new Vector<String>();
         int r = 0, nrows = results.getMoleculeCount();
         for(Molecule mol : results.getMoleculeList()) {
@@ -30,7 +31,7 @@ public class ProtoImportExport implements IImportExport {
             // First check if the columns correspond to the fields in the file
             // skip `mol.hasId()`!
             fields.clear();
-            if(mol.hasFrame()) fields.add(PSFInstance.LABEL_FRAME);
+            if(mol.hasFrame()) fields.add(MoleculeDescriptor.LABEL_FRAME);
             if(mol.hasX()) fields.add(PSFModel.Params.LABEL_X);
             if(mol.hasY()) fields.add(PSFModel.Params.LABEL_Y);
             if(mol.hasZ()) fields.add(PSFModel.Params.LABEL_Z);
@@ -38,28 +39,42 @@ public class ProtoImportExport implements IImportExport {
             if(mol.hasSigma1()) fields.add(PSFModel.Params.LABEL_SIGMA1);
             if(mol.hasSigma2()) fields.add(PSFModel.Params.LABEL_SIGMA2);
             if(mol.hasIntensity()) fields.add(PSFModel.Params.LABEL_INTENSITY);
-            if(mol.hasBackground()) fields.add(PSFModel.Params.LABEL_BACKGROUND);
-            if(mol.hasDetections()) fields.add(PSFInstance.LABEL_DETECTIONS);
+            if(mol.hasBackground()) fields.add(PSFModel.Params.LABEL_BACKGROUND_VARIANCE);
+            if(mol.hasDetections()) fields.add(MoleculeDescriptor.LABEL_DETECTIONS);
+            if(mol.hasOffset()) fields.add(PSFModel.Params.LABEL_OFFSET);
+            if(mol.hasThompsonCcd()) fields.add(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
+            if(mol.hasThompsonEmccd()) fields.add(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
             if(!rt.columnNamesEqual(fields.toArray(new String[0]))) {
-                throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + PSFInstance.LABEL_ID + "')!");
+                throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + MoleculeDescriptor.LABEL_ID + "')!");
+            }
+            if(values == null) {
+                values = new double[fields.size()];
+            }
+            if(rt.isEmpty()) {
+                rt.setDescriptor(new MoleculeDescriptor(fields.toArray(new String[0])));
             }
             //
             // Then fill the table
-            rt.addRow();
+            int i = 0;
             //if(mol.hasId()) rt.addValue((double)mol.getId(), PSFInstance.LABEL_ID); // skip! --> ncols = 1
-            if(mol.hasFrame()) rt.addValue((double)mol.getFrame(), PSFInstance.LABEL_FRAME);
-            if(mol.hasX()) rt.addValue(mol.getX(), PSFModel.Params.LABEL_X);
-            if(mol.hasY()) rt.addValue(mol.getY(), PSFModel.Params.LABEL_Y);
-            if(mol.hasZ()) rt.addValue(mol.getZ(), PSFModel.Params.LABEL_Z);
-            if(mol.hasSigma()) rt.addValue(mol.getSigma(), PSFModel.Params.LABEL_SIGMA);
-            if(mol.hasSigma1()) rt.addValue(mol.getSigma1(), PSFModel.Params.LABEL_SIGMA1);
-            if(mol.hasSigma2()) rt.addValue(mol.getSigma2(), PSFModel.Params.LABEL_SIGMA2);
-            if(mol.hasIntensity()) rt.addValue(mol.getIntensity(), PSFModel.Params.LABEL_INTENSITY);
-            if(mol.hasBackground()) rt.addValue(mol.getBackground(), PSFModel.Params.LABEL_BACKGROUND);
-            if(mol.hasDetections()) rt.addValue((double)mol.getFrame(), PSFInstance.LABEL_DETECTIONS);
+            if(mol.hasFrame()) { values[i] = (double)mol.getFrame(); i++; }
+            if(mol.hasX()) { values[i] = mol.getX(); i++; }
+            if(mol.hasY()) { values[i] = mol.getY(); i++; }
+            if(mol.hasZ()) { values[i] = mol.getZ(); i++; }
+            if(mol.hasSigma()) { values[i] = mol.getSigma(); i++; }
+            if(mol.hasSigma1()) { values[i] = mol.getSigma1(); i++; }
+            if(mol.hasSigma2()) { values[i] = mol.getSigma2(); i++; }
+            if(mol.hasIntensity()) { values[i] = mol.getIntensity(); i++; }
+            if(mol.hasBackground()) { values[i] = mol.getBackground(); i++; }
+            if(mol.hasDetections()) { values[i] = (double)mol.getFrame(); i++; }
+            if(mol.hasOffset()) { values[i] = mol.getOffset(); i++; }
+            if(mol.hasThompsonCcd()) { values[i] = mol.getThompsonCcd(); i++; }
+            if(mol.hasThompsonEmccd()) { values[i] = mol.getThompsonEmccd(); i++; }
+            rt.addRow(values);
             
             IJ.showProgress((double)(r++) / (double)nrows);
         }
+        rt.insertIdColumn();
         rt.copyOriginalToActual();
         rt.setActualState();
     }
@@ -77,11 +92,11 @@ public class ProtoImportExport implements IImportExport {
         Units.Builder units = Units.newBuilder();
         for(int c = 0; c < ncols; c++) {
             String name = columns.elementAt(c);
-            String unit = rt.getColumnUnits(name);
+            String unit = rt.getColumnUnits(name).toString();
             if((unit != null) && !unit.trim().isEmpty()) {
-                if(PSFInstance.LABEL_ID.equals(name)) {
+                if(MoleculeDescriptor.LABEL_ID.equals(name)) {
                     units.setId(unit);
-                } else if(PSFInstance.LABEL_FRAME.equals(name)) {
+                } else if(MoleculeDescriptor.LABEL_FRAME.equals(name)) {
                     units.setFrame(unit);
                 } else if(PSFModel.Params.LABEL_X.equals(name)) {
                     units.setX(unit);
@@ -97,10 +112,16 @@ public class ProtoImportExport implements IImportExport {
                     units.setSigma2(unit);
                 } else if(PSFModel.Params.LABEL_INTENSITY.equals(name)) {
                     units.setIntensity(unit);
-                } else if(PSFModel.Params.LABEL_BACKGROUND.equals(name)) {
+                } else if(PSFModel.Params.LABEL_BACKGROUND_VARIANCE.equals(name)) {
                     units.setBackground(unit);
-                } else if(PSFInstance.LABEL_DETECTIONS.equals(name)) {
+                } else if(MoleculeDescriptor.LABEL_DETECTIONS.equals(name)) {
                     units.setDetections(unit);
+                } else if(PSFModel.Params.LABEL_OFFSET.equals(name)) {
+                    units.setOffset(unit);
+                } else if(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON.equals(name)) {
+                    units.setThompsonCcd(unit);
+                } else if(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON.equals(name)) {
+                    units.setThompsonEmccd(unit);
                 } else {
                     throw new IllegalArgumentException("Parameter `" + columns.elementAt(c) + "` is not supported in the current version of protocol buffer!");
                 }
@@ -112,9 +133,9 @@ public class ProtoImportExport implements IImportExport {
             for(int c = 0; c < ncols; c++) {
                 String name = columns.elementAt(c);
                 double value = rt.getValue(r, name);
-                if(PSFInstance.LABEL_ID.equals(name)) {
+                if(MoleculeDescriptor.LABEL_ID.equals(name)) {
                     mol.setId((int)value);
-                } else if(PSFInstance.LABEL_FRAME.equals(name)) {
+                } else if(MoleculeDescriptor.LABEL_FRAME.equals(name)) {
                     mol.setFrame((int)value);
                 } else if(PSFModel.Params.LABEL_X.equals(name)) {
                     mol.setX(value);
@@ -130,10 +151,16 @@ public class ProtoImportExport implements IImportExport {
                     mol.setSigma2(value);
                 } else if(PSFModel.Params.LABEL_INTENSITY.equals(name)) {
                     mol.setIntensity(value);
-                } else if(PSFModel.Params.LABEL_BACKGROUND.equals(name)) {
+                } else if(PSFModel.Params.LABEL_BACKGROUND_VARIANCE.equals(name)) {
                     mol.setBackground(value);
-                } else if(PSFInstance.LABEL_DETECTIONS.equals(name)) {
+                } else if(MoleculeDescriptor.LABEL_DETECTIONS.equals(name)) {
                     mol.setDetections((int)value);
+                } else if(PSFModel.Params.LABEL_OFFSET.equals(name)) {
+                    mol.setOffset(value);
+                } else if(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON.equals(name)) {
+                    mol.setThompsonCcd(value);
+                } else if(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON.equals(name)) {
+                    mol.setThompsonEmccd(value);
                 } else {
                     throw new IllegalArgumentException("Parameter `" + columns.elementAt(c) + "` is not supported in the current version of protocol buffer!");
                 }

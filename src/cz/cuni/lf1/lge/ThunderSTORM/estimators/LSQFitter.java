@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import java.util.Arrays;
 import org.apache.commons.math3.optim.InitialGuess;
@@ -30,7 +30,7 @@ public class LSQFitter implements OneLocationFitter {
      * @param initialGuess for example: {A, x, y, sigma, b}
      */
     @Override
-    public PSFInstance fit(OneLocationFitter.SubImage subimage) {
+    public Molecule fit(OneLocationFitter.SubImage subimage) {
         if (weights == null) {
             weights = new double[subimage.values.length];
             Arrays.fill(weights, 1);

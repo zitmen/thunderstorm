@@ -1,11 +1,16 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_INTENSITY;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_FRAME;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_ID;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.IntegratedGaussian;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
@@ -199,18 +204,15 @@ public class DataGeneratorPlugIn implements PlugIn {
         }
 
         private void fillResults(ImageStack stack, IJResultsTable rt) {
+            rt.setDescriptor(new MoleculeDescriptor(new String[] { LABEL_FRAME, LABEL_X, LABEL_Y, LABEL_INTENSITY, LABEL_SIGMA }));
             for(int f = frame_start, i = 0; f <= frame_end; f++, i++) {
                 processingNewFrame("ThunderSTORM is building the image stack - frame %d out of %d...");
                 stack.addSlice(local_stack.elementAt(i));
-                for(IntegratedGaussian mol : local_table.elementAt(i)) {
-                    rt.addRow();
-                    rt.addValue((double)f+1, "frame");
-                    rt.addValue(mol.x0, PSFModel.Params.LABEL_X);
-                    rt.addValue(mol.y0, PSFModel.Params.LABEL_Y);
-                    rt.addValue(mol.I0, PSFModel.Params.LABEL_INTENSITY);
-                    rt.addValue(mol.sig0, PSFModel.Params.LABEL_SIGMA);
+                for(IntegratedGaussian psf : local_table.elementAt(i)) {
+                    rt.addRow(new double[] { f+1, psf.x0, psf.y0, psf.I0, psf.sig0 });
                 }
             }
+            rt.insertIdColumn();
         }
         
     }

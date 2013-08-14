@@ -2,14 +2,14 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Z;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFInstance;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
@@ -39,7 +39,6 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import java.awt.Color;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -55,8 +54,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     
   private int stackSize;
   private AtomicInteger nProcessed = new AtomicInteger(0);
-  private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING | SUPPORTS_MASKING;
-  private List<PSFInstance>[] results;
+    private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES
+            | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING | SUPPORTS_MASKING;
+    private List<Molecule>[] results;
   private List<IFilterUI> allFilters;
   private List<IDetectorUI> allDetectors;
   private List<IEstimatorUI> allEstimators;
@@ -72,10 +72,11 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   /**
    * Returns flags specifying capabilities of the plugin.
    *
-   * This method is called before an actual analysis and returns flags supported
-   * by the plugin. The method is also called after the processing is finished
-   * to fill the {@code ResultsTable} and to visualize the detections directly
-   * in image stack (a new copy of image stack is created).
+     * This method is called before an actual analysis and returns flags
+     * supported by the plugin. The method is also called after the processing
+     * is finished to fill the {@code ResultsTable} and to visualize the
+     * detections directly in image stack (a new copy of image stack is
+     * created).
    *
    * <strong>The {@code ResultsTable} is always guaranteed to contain columns
    * <i>frame, x, y</i>!</strong> The other parameters are optional and can
@@ -89,44 +90,34 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   public int setup(String command, ImagePlus imp) {
     GUI.setLookAndFeel();
     //
-    if (command.equals("final")) {
+        if(command.equals("final")) {
       IJ.showStatus("ThunderSTORM is generating the results...");
       //
       // Show table with results
       IJResultsTable rt = IJResultsTable.getResultsTable();
-      if (rt == null) {
-        rt = new IJResultsTable();
-        IJResultsTable.setResultsTable(rt);
-      }
       rt.reset();
-      IJResultsTable tableModel = IJResultsTable.getResultsTable();
-      tableModel.setOriginalState();
-      for (int frame = 1; frame <= stackSize; frame++) {
+            rt.setOriginalState();
+            for(int frame = 1; frame <= stackSize; frame++) {
         if(results[frame] != null) {
-          for (PSFInstance psf : results[frame]) {
-            tableModel.addRow();
-            tableModel.addValue((double) frame, PSFInstance.LABEL_FRAME);
-            for (Map.Entry<String, Double> parameter : psf) {
-              tableModel.addValue(parameter.getValue(), parameter.getKey());
-            }
+                    for(Molecule psf : results[frame]) {
+                        psf.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.LABEL_UNITLESS, (double)frame);
+                        rt.addRow(psf);
           }
         }
       }
-      for(String colname : tableModel.getColumnNames()) {
-        tableModel.setColumnUnits(colname, PSFInstance.Units.getUnit(colname));
-      }
-      tableModel.copyOriginalToActual();
-      tableModel.setActualState();
+            rt.insertIdColumn();
+            rt.copyOriginalToActual();
+            rt.setActualState();
       rt.setPreviewRenderer(renderingQueue);
       rt.show();
       //
       // Show detections in the image
       imp.setOverlay(null);
-      for (int frame = 1; frame <= stackSize; frame++) {
-        if(results[frame]!= null){
+            for(int frame = 1; frame <= stackSize; frame++) {
+                if(results[frame] != null) {
           RenderingOverlay.showPointsInImageSlice(imp,
-                  Math.add(PSFInstance.extractParamToArray(results[frame], LABEL_X), roi.getBounds().x),
-                  Math.add(PSFInstance.extractParamToArray(results[frame], LABEL_Y), roi.getBounds().y),
+                            Math.add(Molecule.extractParamToArray(results[frame], LABEL_X), roi.getBounds().x),
+                            Math.add(Molecule.extractParamToArray(results[frame], LABEL_Y), roi.getBounds().y),
                   frame, Color.red, RenderingOverlay.MARKER_CROSS);
         }
       }
@@ -136,7 +127,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       IJ.showProgress(1.0);
       IJ.showStatus("ThunderSTORM finished.");
       return DONE;
-    } else if ("showResultsTable".equals(command)) {
+        } else if("showResultsTable".equals(command)) {
       IJResultsTable.getResultsTable().show();
       return DONE;
     } else {
@@ -166,7 +157,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       Thresholder.loadFilters(allFilters);
       Thresholder.setActiveFilter(selectedFilter);
       
-      if (MacroParser.isRanFromMacro()) {
+            if(MacroParser.isRanFromMacro()) {
         //parse the macro options
         MacroParser parser = new MacroParser(allFilters, allEstimators, allDetectors, allRenderers);
         selectedFilter = parser.getFilterIndex();
@@ -184,7 +175,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         // Create and show the dialog
         AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, allFilters, allDetectors, allEstimators, allRenderers);
         dialog.setVisible(true);
-        if (dialog.wasCanceled()) {  // This is a blocking call!!
+                if(dialog.wasCanceled()) {  // This is a blocking call!!
           return DONE;    // cancel
         }
         selectedFilter = dialog.getFilterIndex();
@@ -201,7 +192,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), renderer.getRepaintFrequency());
         
         //if recording window is open, record parameters of all modules
-        if (Recorder.record) {
+                if(Recorder.record) {
           MacroParser.recordFilterUI(dialog.getFilter());
           MacroParser.recordDetectorUI(dialog.getDetector());
           MacroParser.recordEstimatorUI(dialog.getEstimator());
@@ -209,7 +200,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         }
         return pluginFlags; // ok
       }
-    } catch (Exception ex) {
+        } catch(Exception ex) {
       IJ.handleException(ex);
       return DONE;
     }
@@ -221,7 +212,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
    *
    * Allocation of resources to store the results is done here.
    *
-   * @param nPasses number of passes through the image stack we want to process
+     * @param nPasses number of passes through the image stack we want to
+     * process
    */
   @Override
   public void setNPasses(int nPasses) {
@@ -240,15 +232,15 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
    */
   @Override
   public void run(ImageProcessor ip) {
-    assert(selectedFilter >= 0 && selectedFilter < allFilters.size()) : "Index out of bounds: selectedFilter!";
-    assert(selectedDetector >= 0 && selectedDetector < allDetectors.size()) : "Index out of bounds: selectedDetector!";
-    assert(selectedEstimator >= 0 && selectedEstimator < allEstimators.size()) : "Index out of bounds: selectedEstimator!";
-    assert(selectedRenderer >= 0 && selectedRenderer < allRenderers.size()) : "Index out of bounds: selectedRenderer!";
-    assert(renderingQueue != null) : "Renderer was not selected!";
+        assert (selectedFilter >= 0 && selectedFilter < allFilters.size()) : "Index out of bounds: selectedFilter!";
+        assert (selectedDetector >= 0 && selectedDetector < allDetectors.size()) : "Index out of bounds: selectedDetector!";
+        assert (selectedEstimator >= 0 && selectedEstimator < allEstimators.size()) : "Index out of bounds: selectedEstimator!";
+        assert (selectedRenderer >= 0 && selectedRenderer < allRenderers.size()) : "Index out of bounds: selectedRenderer!";
+        assert (renderingQueue != null) : "Renderer was not selected!";
     //
     ip.setRoi(roi);
     FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
-    Vector<PSFInstance> fits;
+        Vector<Molecule> fits;
     try {
       Thresholder.setCurrentImage(fp);
       FloatProcessor filtered = allFilters.get(selectedFilter).getImplementation().filterImage(fp);
@@ -259,16 +251,12 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       nProcessed.incrementAndGet();
 
       if(fits.size() > 0) {
-        renderingQueue.renderLater(
-                PSFInstance.extractParamToArray(fits, LABEL_X),
-                PSFInstance.extractParamToArray(fits, LABEL_Y),
-                fits.get(0).hasParam(LABEL_Z) ? PSFInstance.extractParamToArray(fits, LABEL_Z) : null,
-                null);
+                renderingQueue.renderLater(fits);
       }
       //
       IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
       IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
-    } catch (Exception ex) {
+        } catch(Exception ex) {
       IJ.handleException(ex);
     }
   }

@@ -75,8 +75,8 @@ public class DensityRendering extends AbstractRendering implements IncrementalRe
                       double aerf = (z - zFrom) - (idz - 1) * zStep;
                       double berf = (z - zFrom) - idz * zStep;
                       double val = 1 / (2 * PI * dx * dx * defaultDZ) * exp(-0.5 * squareDist / (dx * dx)) * defaultDZ * Erf.erf(berf / (Math.sqrt(2) * defaultDZ), aerf / (Math.sqrt(2) * defaultDZ));
-                      ImageProcessor image = slices[idz];
-                      image.setf(idx, idy, (float) val + image.getf(idx, idy));
+                      ImageProcessor img = slices[idz];
+                      img.setf(idx, idy, (float) val + img.getf(idx, idy));
                     }
                   }
                 }
@@ -94,8 +94,8 @@ public class DensityRendering extends AbstractRendering implements IncrementalRe
                 double squareDist = squareDist(idx, idy, x, y);
                 if (squareDist <= (actualRadius * actualRadius)) {
                   double val = 1 / (2 * PI * dx * dx) * exp(-0.5 * squareDist / (dx * dx));
-                  ImageProcessor image = slices[0];
-                  image.setf(idx, idy, (float) val + image.getf(idx, idy));
+                  ImageProcessor img = slices[0];
+                  img.setf(idx, idy, (float) val + img.getf(idx, idy));
                 }
               }
             }
