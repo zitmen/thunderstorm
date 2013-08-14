@@ -79,6 +79,9 @@ public class IJResultsTable {
 
     public synchronized void reset() {
         model.resetAll();
+        tableWindow.setPreviewRenderer(null);
+        tableWindow.getOperationHistoryPanel().removeAllOperations();
+        tableWindow.setStatus(null);
     }
 
     //delegated methods from model

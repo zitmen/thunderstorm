@@ -113,7 +113,7 @@ public class RenderingQueue {
             }
         }
 
-        private double findMaxStackValue(ImagePlus imp) {
+        private static double findMaxStackValue(ImagePlus imp) {
             Object[] stack = imp.getStack().getImageArray();
             double max = 0;
             for(int i = 0; i < stack.length; i++) {
