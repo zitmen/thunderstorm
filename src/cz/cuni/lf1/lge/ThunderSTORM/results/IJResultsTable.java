@@ -183,7 +183,7 @@ public class IJResultsTable {
 
     public boolean columnNamesEqual(String[] names) {
         if(getRowCount() == 0) return true; // if the table is empty then the colums are assumed to be empty
-        int checked = 1;    // ignoring column id
+        int checked = (columnExists(MoleculeDescriptor.LABEL_ID) ? 1 : 0);    // ignoring column id, if it is present in the table
         for(int i = 0; i < names.length; i++) {
             if(MoleculeDescriptor.LABEL_ID.equals(names[i])) {
                 continue;  // ignoring column id

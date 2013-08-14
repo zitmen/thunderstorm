@@ -325,6 +325,7 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(PSFModel.Params.LABEL_SIGMA1, Units.LABEL_PIXEL);
                 allUnits.put(PSFModel.Params.LABEL_SIGMA2, Units.LABEL_PIXEL);
                 allUnits.put(PSFModel.Params.LABEL_INTENSITY, Units.LABEL_DIGITAL);
+                allUnits.put(PSFModel.Params.LABEL_OFFSET, Units.LABEL_DIGITAL);
                 allUnits.put(PSFModel.Params.LABEL_BACKGROUND_VARIANCE, Units.LABEL_DIGITAL);
                 allUnits.put(PSFModel.Params.LABEL_ANGLE, Units.LABEL_DEGREE);
                 //
