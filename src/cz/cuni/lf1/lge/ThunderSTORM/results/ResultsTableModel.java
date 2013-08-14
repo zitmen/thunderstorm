@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
@@ -197,6 +198,9 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
         }
         columns.validateMolecule(mol);
         rows.add(mol);
+        if(mol.hasParam(MoleculeDescriptor.LABEL_ID)) {
+            maxId = (int)max(maxId, mol.getParam(MoleculeDescriptor.LABEL_ID));
+        }
         int last = rows.size() - 1;
         fireTableRowsInserted(last, last);
         return last;
@@ -280,10 +284,11 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
             newModel.listenerList.add(TableModelListener.class, listeners[i]);
         }
         newModel.columns = columns.clone();
-        newModel.rows = new Vector<Molecule>(rows.size());
-        for (int i = 0; i < rows.size(); i++) {
-            newModel.rows.add(rows.get(i).clone());
+        newModel.rows = new Vector<Molecule>();
+        for(int i = 0; i < rows.size(); i++) {
+            newModel.rows.add(rows.elementAt(i).clone(newModel.columns));
         }
+        newModel.maxId = maxId;
         return newModel;
     }
 }

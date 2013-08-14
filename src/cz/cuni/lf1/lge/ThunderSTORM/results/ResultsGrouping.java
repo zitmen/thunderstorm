@@ -181,6 +181,13 @@ class ResultsGrouping {
         }
         frames.matchMolecules(sqr(dist));
         //
+        // Set new IDs for the new "macro" molecules
+        for(Molecule mol : frames.getAllMolecules()) {
+            if(!mol.isSingleMolecule()) {
+                mol.setParam(MoleculeDescriptor.LABEL_ID, model.getNewId());
+            }
+        }
+        //
         model.reset();
         for(Molecule mol : frames.getAllMolecules()) {
             model.addRow(mol);
@@ -208,7 +215,7 @@ class ResultsGrouping {
             int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME);
             // molecule itself has to be added to the list of detections,
             // because the parameters can change during the merging
-            mol.addDetection(mol.clone());
+            mol.addDetection(mol.clone(mol.descriptor));
             mol.addParam(MoleculeDescriptor.LABEL_DETECTIONS, MoleculeDescriptor.Units.UNITLESS, 1);
             //
             if(!detections.containsKey(frame)) {

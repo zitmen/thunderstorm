@@ -8,6 +8,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.mean;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -366,9 +367,9 @@ public class MoleculeDescriptor implements Cloneable {
     public static enum MergingOperations {
         NONE, MIN,  MAX, SUM, MEAN, COUNT, RECALC;
         
-        private static HashMap<String, MergingOperations> allParams = null;
+        public static HashMap<String, MergingOperations> allParams = null;
 
-        private static void init() {
+        public static void init() {
             allParams = new HashMap<String, MergingOperations>();
             allParams.put(PSFModel.Params.LABEL_X, MergingOperations.MEAN);
             allParams.put(PSFModel.Params.LABEL_Y, MergingOperations.MEAN);
@@ -403,7 +404,9 @@ public class MoleculeDescriptor implements Cloneable {
                 case MEAN: molecule.setParam(paramName, mean(Molecule.extractParamToArray(detections, paramName))); break;
                 case COUNT: molecule.setParam(paramName, detections.size()); break;
                 case RECALC:
-                    if(Fitting.LABEL_CCD_THOMPSON.equals(paramName)) {
+                    if(LABEL_ID.equals(paramName)) {
+                        molecule.setParam(paramName, IJResultsTable.getResultsTable().getNewId());
+                    } else if(Fitting.LABEL_CCD_THOMPSON.equals(paramName)) {
                         double psfSigma2, psfEnergy, bkgVar;
                         if(molecule.hasParam(PSFModel.Params.LABEL_SIGMA)) {    // symmetric
                             psfSigma2 = molecule.getParam(PSFModel.Params.LABEL_SIGMA) *

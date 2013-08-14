@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-public final class Molecule implements Cloneable, Comparable<Molecule> {
+public final class Molecule implements Comparable<Molecule> {
 
     public MoleculeDescriptor descriptor;
     public Vector<Molecule> detections;
@@ -133,13 +133,23 @@ public final class Molecule implements Cloneable, Comparable<Molecule> {
     
     @Override
     public Molecule clone() {
+        assert(true) : "Use clone(MoleculeDescriptor) instead!!!";
+        throw new UnsupportedOperationException("Use `Molecule.clone(MoleculeDescriptor)` instead!!!");
+    }
+    
+    /**
+     * Clone the molecule.
+     * 
+     * Caller has to duplicate the descriptor if it is required!
+     */
+    public Molecule clone(MoleculeDescriptor descriptor) {
         Vector<Double> vals = new Vector<Double>();
         for(Double v : values) {
             vals.add(v.doubleValue());
         }
-        Molecule mol = new Molecule(descriptor, vals);  // no need for duplicating the descriptor
+        Molecule mol = new Molecule(descriptor, vals);
         mol.sortedDetections = sortedDetections;
-        mol.detections = new Vector<Molecule>(detections);  // WARNING: this might cause a problem! I can't get reference to the cloned molecules here :(
+        mol.detections = new Vector<Molecule>(detections);
         return mol;
     }
 
@@ -161,7 +171,7 @@ public final class Molecule implements Cloneable, Comparable<Molecule> {
     
     // ======================== [ MERGING ] ===================================
     
-    private void updateParameters() {
+    public void updateParameters() {
         try {
             for(int i = 0, im = descriptor.getParamsCount(); i < im; i++) {
                 MoleculeDescriptor.MergingOperations.merge(this, detections, descriptor.getParamNameAt(i));

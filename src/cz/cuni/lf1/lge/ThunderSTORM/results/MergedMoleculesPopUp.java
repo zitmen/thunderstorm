@@ -15,6 +15,7 @@ import net.java.balloontip.styles.RoundedBalloonStyle;
 
 class MergedMoleculesPopUp {
 
+    // Bug: if row == 0, then the balloon does not show up! This is probably a bug in the BalloonTip library.
     public MergedMoleculesPopUp(JTable parent, int row, int col, Vector<Molecule> molecules) {
         ResultsTableModel model = new ResultsTableModel();
         for(Molecule mol : molecules) {
@@ -29,6 +30,6 @@ class MergedMoleculesPopUp {
         //
         new TablecellBalloonTip(parent, mergedMoleculesTable, row, col,
                 new RoundedBalloonStyle(5, 10, Color.LIGHT_GRAY, Color.BLUE),
-                new RightBelowPositioner(15, 15), BalloonTip.getDefaultCloseButton());
+                new RightBelowPositioner(10, 10), BalloonTip.getDefaultCloseButton());
     }
 }
