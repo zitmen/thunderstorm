@@ -100,6 +100,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             for(int frame = 1; frame <= stackSize; frame++) {
                 if(results[frame] != null) {
                     for(Molecule psf : results[frame]) {
+                        psf.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.LABEL_UNITLESS, (double)frame);
                         rt.addRow(psf);
                     }
                 }
