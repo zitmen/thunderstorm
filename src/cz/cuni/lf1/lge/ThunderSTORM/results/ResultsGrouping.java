@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -179,6 +180,11 @@ class ResultsGrouping {
             frames.InsertMolecule(model.getRow(i));
         }
         frames.matchMolecules(sqr(dist));
+        //
+        model.reset();
+        for(Molecule mol : frames.getAllMolecules()) {
+            model.addRow(mol);
+        }
     }
 
     //
@@ -203,6 +209,7 @@ class ResultsGrouping {
             // molecule itself has to be added to the list of detections,
             // because the parameters can change during the merging
             mol.addDetection(mol.clone());
+            mol.addParam(MoleculeDescriptor.LABEL_DETECTIONS, MoleculeDescriptor.Units.LABEL_UNITLESS, 1);
             //
             if(!detections.containsKey(frame)) {
                 detections.put(frame, new Vector<Molecule>());
@@ -212,6 +219,7 @@ class ResultsGrouping {
         }
 
         public Vector<Molecule> getAllMolecules() {
+            Collections.sort(molecules);
             return molecules;
         }
 

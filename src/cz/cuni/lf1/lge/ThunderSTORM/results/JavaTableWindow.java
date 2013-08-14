@@ -57,7 +57,7 @@ class JavaTableWindow {
         //
         JavaTableWindowListener windowListener = new JavaTableWindowListener(this);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(550, 550));
+        frame.setPreferredSize(new Dimension(550, 750));
         frame.addWindowListener(windowListener);
         frame.addWindowStateListener(windowListener);
         //

@@ -53,7 +53,7 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
 
     public void reset() {
         rows.clear();
-        columns.clear();
+        columns = new MoleculeDescriptor(new String[] { MoleculeDescriptor.LABEL_ID });
         maxId = 0;
         try {
             insertIdColumn();
@@ -61,6 +61,7 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
             assert(false) : "This was supposed to never happen due to the `reset` call!";
         }
         fireTableStructureChanged();
+        fireTableDataChanged();
     }
 
     public Double[] getColumnAsDoubleObjects(String columnName) {
@@ -192,7 +193,7 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
     
     public synchronized int addRow(Molecule mol) {
         if(rows.isEmpty()) {    // if the table is empty, use descriptor from the molecule instance
-            columns = mol.descriptor;
+            setDescriptor(mol.descriptor);
         } else {
             columns.validateMolecule(mol);
         }
@@ -208,6 +209,10 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
             descriptor.validateMolecule(row);
         }
         fireTableStructureChanged();
+    }
+    
+    public MoleculeDescriptor cloneDescriptor() {
+        return columns.clone();
     }
     
     public void insertIdColumn() {

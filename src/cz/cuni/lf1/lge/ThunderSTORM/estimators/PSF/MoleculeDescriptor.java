@@ -159,14 +159,6 @@ public class MoleculeDescriptor implements Cloneable {
         }
     }
     
-    public void clear() {
-        names.clear();
-        units.clear();
-        labels.clear();
-        indices.clear();
-        paramNames.clear();
-    }
-    
     public void addParam(String name, int index, Units unit) throws Exception {
         insertParamAt(getParamsCount(), name, index, unit);
     }
