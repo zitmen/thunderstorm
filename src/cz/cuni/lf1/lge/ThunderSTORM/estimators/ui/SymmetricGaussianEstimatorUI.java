@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.Macro;
+import ij.Prefs;
 import ij.plugin.frame.Recorder;
 import java.awt.GridBagLayout;
 import javax.swing.JComboBox;
@@ -37,9 +38,10 @@ public class SymmetricGaussianEstimatorUI implements IEstimatorUI {
 
   @Override
   public JPanel getOptionsPanel() {
-    fitregsizeTextField = new JTextField(Integer.toString(DEFAULT_FITRAD), 20);
+    fitregsizeTextField = new JTextField(Prefs.get("thunderstorm.estimators.fitregion", "" + DEFAULT_FITRAD), 20);
     methodComboBox = new JComboBox<String>(new String[]{LSQ, MLE});
-    sigmaTextField = new JTextField(Double.toString(DEFAULT_SIGMA));
+    methodComboBox.setSelectedItem(Prefs.get("thunderstorm.estimators.method", LSQ));
+    sigmaTextField = new JTextField(Prefs.get("thunderstorm.estimators.sigma", "" + DEFAULT_SIGMA));
     
     JPanel panel = new JPanel(new GridBagLayout());
     panel.add(new JLabel("Fitting radius [px]:"), GridBagHelper.leftCol());
@@ -57,6 +59,10 @@ public class SymmetricGaussianEstimatorUI implements IEstimatorUI {
     fitradius = Integer.parseInt(fitregsizeTextField.getText());
     method = methodComboBox.getItemAt(methodComboBox.getSelectedIndex());
     sigma = Double.parseDouble(sigmaTextField.getText());
+    
+    Prefs.set("thunderstorm.estimators.fitregion", "" + fitradius);
+    Prefs.set("thunderstorm.estimators.method", method);
+    Prefs.set("thunderstorm.estimators.sigma", "" + sigma);
   }
 
   @Override
@@ -90,5 +96,12 @@ public class SymmetricGaussianEstimatorUI implements IEstimatorUI {
     fitradius = Integer.parseInt(Macro.getValue(options, "fitrad", Integer.toString(DEFAULT_FITRAD)));
     sigma = Double.parseDouble(Macro.getValue(options, "sigma", Double.toString(DEFAULT_SIGMA)));
     method = Macro.getValue(options, "method", LSQ);
+  }
+
+  @Override
+  public void resetToDefaults() {
+    fitregsizeTextField.setText(Integer.toString(DEFAULT_FITRAD));
+    sigmaTextField.setText(Double.toString(DEFAULT_SIGMA));
+    methodComboBox.setSelectedItem(LSQ);
   }
 }

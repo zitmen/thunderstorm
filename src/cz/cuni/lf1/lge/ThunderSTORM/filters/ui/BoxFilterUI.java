@@ -4,6 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.Macro;
+import ij.Prefs;
 import ij.plugin.frame.Recorder;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
@@ -29,7 +30,7 @@ public class BoxFilterUI implements IFilterUI {
   @Override
   public JPanel getOptionsPanel() {
     JPanel panel = new JPanel(new GridBagLayout());
-    sizeTextField = new JTextField(Integer.toString(DEFAULT_SIZE), 20);
+    sizeTextField = new JTextField(Prefs.get("thunderstorm.filters.box.size", ""+DEFAULT_SIZE), 20);
     //
     panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());
     panel.add(sizeTextField, GridBagHelper.rightCol());
@@ -39,6 +40,8 @@ public class BoxFilterUI implements IFilterUI {
   @Override
   public void readParameters() {
     size = Integer.parseInt(sizeTextField.getText());
+    
+    Prefs.set("thunderstorm.filters.box.size", sizeTextField.getText());
   }
 
   @Override
@@ -56,5 +59,10 @@ public class BoxFilterUI implements IFilterUI {
   @Override
   public void readMacroOptions(String options) {
     size = Integer.parseInt(Macro.getValue(options, "size", Integer.toString(DEFAULT_SIZE)));
+  }
+
+  @Override
+  public void resetToDefaults() {
+    sizeTextField.setText("" + DEFAULT_SIZE);
   }
 }

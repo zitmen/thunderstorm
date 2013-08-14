@@ -6,6 +6,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter.BOX;
 import static cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter.CROSS;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.Macro;
+import ij.Prefs;
 import ij.plugin.frame.Recorder;
 import java.awt.GridBagLayout;
 import javax.swing.ButtonGroup;
@@ -39,10 +40,11 @@ public class MedianFilterUI implements IFilterUI {
     patternCrossRadioButton = new JRadioButton("cross");
     btnGroup.add(patternBoxRadioButton);
     btnGroup.add(patternCrossRadioButton);
-    sizeTextField = new JTextField(Integer.toString(DEFAULT_SIZE), 20);
+    sizeTextField = new JTextField(Prefs.get("thunderstorm.filters.median.size", ""+DEFAULT_SIZE), 20);
     //
-    patternBoxRadioButton.setSelected(DEFAULT_PATTERN == BOX);
-    patternCrossRadioButton.setSelected(DEFAULT_PATTERN == CROSS);
+    String patternString = Prefs.get("thunderstorm.filters.median.pattern", DEFAULT_PATTERN == BOX ? "box" : "cross");
+    patternBoxRadioButton.setSelected(patternString.equals("box"));
+    patternCrossRadioButton.setSelected(patternString.equals("cross"));
     //
     JPanel panel = new JPanel(new GridBagLayout());
     panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());
@@ -63,6 +65,9 @@ public class MedianFilterUI implements IFilterUI {
     if (patternCrossRadioButton.isSelected()) {
       pattern = CROSS;
     }
+    
+    Prefs.set("thunderstorm.filters.median.size", "" + size);
+    Prefs.set("thunderstorm.filters.median.pattern", pattern == BOX ? "box" : "cross");
   }
 
   @Override
@@ -85,6 +90,13 @@ public class MedianFilterUI implements IFilterUI {
     size = Integer.parseInt(Macro.getValue(options, "size", Integer.toString(DEFAULT_SIZE)));
     String value = Macro.getValue(options, "pattern", DEFAULT_PATTERN == BOX ? "box" : "cross");
     pattern = value.equals("box") ? BOX : CROSS;
+  }
+
+  @Override
+  public void resetToDefaults() {
+    sizeTextField.setText(Integer.toString(DEFAULT_SIZE));
+    patternBoxRadioButton.setSelected(DEFAULT_PATTERN == BOX);
+    patternCrossRadioButton.setSelected(DEFAULT_PATTERN == CROSS);
   }
   
 }

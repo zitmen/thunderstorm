@@ -123,4 +123,12 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
     CardLayout cl = (CardLayout) (cardsPanel.getLayout());
     cl.show(cardsPanel, (String) evt.getItem());
   }
+  
+  public List<T> getItems(){
+    return items;
+  }
+  
+  public void setSelectedItemIndex(int index){
+    cb.setSelectedIndex(index);
+  }
 }

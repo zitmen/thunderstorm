@@ -55,4 +55,8 @@ public class EmptyEstimator implements IEstimator, IEstimatorUI {
     public IEstimator getImplementation() {
         return this;
     }
+
+    @Override
+    public void resetToDefaults() {
+    }
 }

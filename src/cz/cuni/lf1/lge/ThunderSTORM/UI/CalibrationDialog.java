@@ -8,6 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.Prefs;
 import ij.process.FloatProcessor;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -36,27 +37,27 @@ import javax.swing.JTextField;
  *
  */
 public class CalibrationDialog extends JDialog implements ActionListener {
-  
+
   private CardsPanel<IFilterUI> filters;
   private CardsPanel<IDetectorUI> detectors;
   private CardsPanel<IEstimatorUI> estimators;
-  private JButton preview, ok, cancel, findCalibrationButton;
+  private JButton defaults, preview, ok, cancel, findCalibrationButton;
   private JTextField calibrationFileTextField;
   JTextField fitRegionTextArea;
   private Semaphore semaphore;    // ensures waiting for a dialog without the dialog being modal!
   private int dialogResult = JOptionPane.CLOSED_OPTION;
   ExecutorService previewThredRunner = Executors.newSingleThreadExecutor();
   Future<?> previewFuture = null;
-  
+
   public CalibrationDialog(List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators) {
     super(IJ.getInstance(), "Calibration options");
-    this.filters = new CardsPanel<IFilterUI>(filters, 0);
-    this.detectors = new CardsPanel<IDetectorUI>(detectors, 0);
+    this.filters = new CardsPanel<IFilterUI>(filters, Integer.parseInt(Prefs.get("thunderstorm.filters.index", "0")));
+    this.detectors = new CardsPanel<IDetectorUI>(detectors, Integer.parseInt(Prefs.get("thunderstorm.detectors.index", "0")));
     this.estimators = new CardsPanel<IEstimatorUI>(estimators, 0);
     semaphore = new Semaphore(0);
     addComponentsToPane();
   }
-  
+
   private void addComponentsToPane() {
     Container pane = getContentPane();
     //
@@ -68,14 +69,14 @@ public class CalibrationDialog extends JDialog implements ActionListener {
     componentConstraints.weightx = 1;
     GridBagConstraints lineConstraints = (GridBagConstraints) componentConstraints.clone();
     lineConstraints.insets = new Insets(0, 0, 0, 0);
-    
+
     pane.add(filters.getPanel("Filters: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
     pane.add(detectors.getPanel("Detectors: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
     pane.add(estimators.getPanel("Estimator: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-    
+
     JPanel aditionalOptions = new JPanel(new GridBagLayout());
     aditionalOptions.add(new JLabel("Save to: "), GridBagHelper.leftCol());
     JPanel calibrationPanel = new JPanel(new BorderLayout());
@@ -87,27 +88,31 @@ public class CalibrationDialog extends JDialog implements ActionListener {
     gbc.fill = GridBagConstraints.HORIZONTAL;
     aditionalOptions.add(calibrationPanel, gbc);
     pane.add(aditionalOptions, componentConstraints);
-    
+
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-    
+
+    defaults = new JButton("Defaults");
     preview = new JButton("Preview");
     ok = new JButton("OK");
     cancel = new JButton("Cancel");
+
+    defaults.addActionListener(this);
     preview.addActionListener(this);
     ok.addActionListener(this);
     cancel.addActionListener(this);
     findCalibrationButton.addActionListener(this);
     //
     JPanel buttons = new JPanel();
-    buttons.add(preview);
+    buttons.add(defaults);
     buttons.add(Box.createHorizontalStrut(30));
+    buttons.add(preview);
     buttons.add(ok);
     buttons.add(cancel);
     pane.add(buttons, componentConstraints);
     getRootPane().setDefaultButton(ok);
     pack();
   }
-  
+
   @Override
   public void actionPerformed(ActionEvent e) {
     if ("Preview".equals(e.getActionCommand())) {
@@ -118,6 +123,8 @@ public class CalibrationDialog extends JDialog implements ActionListener {
         filters.getActiveComboBoxItem().readParameters();
         detectors.getActiveComboBoxItem().readParameters();
         estimators.getActiveComboBoxItem().readParameters();
+
+        AnalysisOptionsDialog.saveSelectedModuleIndexesToPrefs(filters.getActiveComboBoxItemIndex(), detectors.getActiveComboBoxItemIndex(), -1, -1);
       } catch (Exception ex) {
         IJ.error("Error parsing parameters: " + ex.toString());
         return;
@@ -137,7 +144,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
             throw new InterruptedException();
           }
         }
-        
+
         @Override
         public void run() {
           try {
@@ -166,7 +173,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
           }
         }
       });
-      
+
     } else if ("Browse...".equals(e.getActionCommand())) {
       JFileChooser fileChooser = new JFileChooser(IJ.getDirectory("image"));
       int userAction = fileChooser.showSaveDialog(null);
@@ -179,6 +186,8 @@ public class CalibrationDialog extends JDialog implements ActionListener {
         filters.getActiveComboBoxItem().readParameters();
         detectors.getActiveComboBoxItem().readParameters();
         estimators.getActiveComboBoxItem().readParameters();
+        
+        AnalysisOptionsDialog.saveSelectedModuleIndexesToPrefs(filters.getActiveComboBoxItemIndex(), detectors.getActiveComboBoxItemIndex(), -1, -1);
         //
         dialogResult = JOptionPane.OK_OPTION;
         dispose();
@@ -188,25 +197,28 @@ public class CalibrationDialog extends JDialog implements ActionListener {
     } else if ("Cancel".equals(e.getActionCommand())) {
       dialogResult = JOptionPane.CANCEL_OPTION;
       dispose();
+    } else if ("Defaults".equals(e.getActionCommand())) {
+      AnalysisOptionsDialog.resetModuleUIs(filters.getItems(), detectors.getItems(), estimators.getItems());
+      AnalysisOptionsDialog.resetCardsPanels(filters, detectors, estimators);
     }
   }
-  
+
   public IFilterUI getActiveFilterUI() {
     return filters.getActiveComboBoxItem();
   }
-  
+
   public IDetectorUI getActiveDetectorUI() {
     return detectors.getActiveComboBoxItem();
   }
-  
+
   public IEstimatorUI getActiveEstimatorUI() {
     return estimators.getActiveComboBoxItem();
   }
-  
+
   public String getSavePath() {
     return calibrationFileTextField.getText();
   }
-  
+
   @Override
   public void dispose() {
     semaphore.release();

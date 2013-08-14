@@ -73,4 +73,8 @@ public final class EmptyFilter implements IFilter, IFilterUI {
   public IFilter clone() {
     return new EmptyFilter();
   }
+
+  @Override
+  public void resetToDefaults() {
+  }
 }

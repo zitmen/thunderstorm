@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.CompoundWaveletFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import ij.Macro;
+import ij.Prefs;
 import ij.plugin.frame.Recorder;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -25,7 +26,7 @@ public class CompoundWaveletFilterUI implements IFilterUI {
   @Override
   public JPanel getOptionsPanel() {
     thirdCheckBox = new JCheckBox("use third plane");
-    thirdCheckBox.setSelected(DEFAULT_THIRD_PLANE);
+    thirdCheckBox.setSelected(Prefs.get("thunderstorm.filters.wave.thirdplane", DEFAULT_THIRD_PLANE));
     //
     JPanel panel = new JPanel();
     panel.add(thirdCheckBox);
@@ -35,6 +36,8 @@ public class CompoundWaveletFilterUI implements IFilterUI {
   @Override
   public void readParameters() {
     third_plane = thirdCheckBox.isSelected();
+    
+    Prefs.set("thunderstorm.filters.wave.thirdplane", third_plane);
   }
 
   @Override
@@ -52,5 +55,10 @@ public class CompoundWaveletFilterUI implements IFilterUI {
   @Override
   public void readMacroOptions(String options) {
     third_plane = Boolean.parseBoolean(Macro.getValue(options, "third_plane", Boolean.toString(DEFAULT_THIRD_PLANE)));
+  }
+
+  @Override
+  public void resetToDefaults() {
+    thirdCheckBox.setSelected(DEFAULT_THIRD_PLANE);
   }
 }

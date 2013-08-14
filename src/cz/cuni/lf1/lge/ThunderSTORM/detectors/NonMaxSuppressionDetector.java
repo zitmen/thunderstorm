@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Morphology;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.Macro;
+import ij.Prefs;
 import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
@@ -77,8 +78,8 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
 
   @Override
   public JPanel getOptionsPanel() {
-    thrTextField = new JTextField(DEFAULT_THRESHOLD, 20);
-    radiusTextField = new JTextField(Integer.toString(DEFAULT_RADIUS), 20);
+    thrTextField = new JTextField(Prefs.getString("thunderstorm.detectors.nonmaxsup.thr", DEFAULT_THRESHOLD), 20);
+    radiusTextField = new JTextField(Integer.toString(Prefs.getInt("thunderstorm.detectors.nonmaxsup.radius", DEFAULT_RADIUS)), 20);
     //
     JPanel panel = new JPanel(new GridBagLayout());
     panel.add(new JLabel("Peak intensity threshold: "), GridBagHelper.leftCol());
@@ -93,6 +94,9 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
     threshold = thrTextField.getText();
     Thresholder.parseThreshold(threshold);
     radius = Integer.parseInt(radiusTextField.getText());
+    
+    Prefs.set("thunderstorm.detectors.nonmaxsup.thr", threshold);
+    Prefs.set("thunderstorm.detectors.nonmaxsup.radius", radius);
   }
 
   @Override
@@ -115,5 +119,11 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
     threshold = Macro.getValue(options, "threshold", DEFAULT_THRESHOLD);
     radius = Integer.parseInt(Macro.getValue(options, "radius", Integer.toString(DEFAULT_RADIUS)));
     Thresholder.parseThreshold(threshold);
+  }
+
+  @Override
+  public void resetToDefaults() {
+    radiusTextField.setText(Integer.toString(DEFAULT_RADIUS));
+    thrTextField.setText(DEFAULT_THRESHOLD);
   }
 }

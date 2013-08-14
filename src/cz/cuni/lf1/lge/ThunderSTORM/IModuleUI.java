@@ -31,7 +31,9 @@ public interface IModuleUI<T extends IModule> {
    * Read the parameters back from the GUI controls after used submited them.
    */
   public void readParameters();
-
+  
+  public void resetToDefaults();
+  
   /**
    * Record the module parameters to the imagej macro recorder. Use
    * {@code Recorder.recordOption(name, value)}. The parameter should not
