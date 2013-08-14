@@ -149,13 +149,23 @@ public class MoleculeDescriptor implements Cloneable {
         assert(i < units.size());
         
         if(rebuild || (labels.size() <= i) || (labels.elementAt(i) == null)) {
-            if(units.elementAt(i) == Units.LABEL_UNITLESS) {
+            if(units.elementAt(i) == Units.UNITLESS) {
                 return names.elementAt(i);
             } else {
                 return names.elementAt(i) + " [" + units.elementAt(i) + "]";
             }
         } else {
             return labels.elementAt(i);
+        }
+    }
+    
+    public void removeParam(String name) {
+        if(hasParam(name)) {
+            int col = getParamColumn(name);
+            indices.removeElementAt(col);
+            names.removeElementAt(col);
+            units.removeElementAt(col);
+            labels.removeElementAt(col);
         }
     }
     
@@ -226,9 +236,21 @@ public class MoleculeDescriptor implements Cloneable {
         int [] clonedIndices = new int[indices.size()];
         Units [] clonedUnits = new Units[units.size()];
         for(int i = 0, im = names.size(); i < im; i++) {
-            clonedNames[i] = new String(names.elementAt(i).toCharArray());  // don't know how else to create a new instance of the string
-            clonedIndices[i] = indices.elementAt(i).intValue();
-            clonedUnits[i] = units.elementAt(i);
+            if(names.elementAt(i) != null) {
+                clonedNames[i] = new String(names.elementAt(i).toCharArray());  // don't know how else to create a new instance of the string
+            } else {
+                clonedNames[i] = null;
+            }
+            if(indices.elementAt(i) != null) {
+                clonedIndices[i] = indices.elementAt(i).intValue();
+            } else {
+                clonedIndices[i] = 0;
+            }
+            if(units.elementAt(i) != null) {
+                clonedUnits[i] = units.elementAt(i);
+            } else {
+                clonedUnits[i] = Units.UNITLESS;
+            }
         }
         return new MoleculeDescriptor(clonedNames, clonedIndices, clonedUnits);
     }
@@ -238,7 +260,7 @@ public class MoleculeDescriptor implements Cloneable {
         
         int start = label.lastIndexOf('['), end = label.lastIndexOf(']');
         if((start < 0) || (end < 0) || (start > end)) {
-            return new Pair<String,Units>(label, Units.LABEL_UNITLESS);
+            return new Pair<String,Units>(label, Units.UNITLESS);
         } else {
             return new Pair<String,Units>(label.substring(0, start).trim(), Units.fromString(label.substring(start+1, end).trim()));
         }
@@ -266,14 +288,14 @@ public class MoleculeDescriptor implements Cloneable {
     public static final String LABEL_DETECTIONS = "detections";
     
     public static enum Units {
-        LABEL_MICROMETER("um"),
-        LABEL_NANOMETER("nm"),
-        LABEL_PIXEL("px"),
-        LABEL_DIGITAL("ADU"),
-        LABEL_PHOTON("photon"),
-        LABEL_DEGREE("deg"),
-        LABEL_RADIAN("rad"),
-        LABEL_UNITLESS("");
+        MICROMETER("um"),
+        NANOMETER("nm"),
+        PIXEL("px"),
+        DIGITAL("ADU"),
+        PHOTON("photon"),
+        DEGREE("deg"),
+        RADIAN("rad"),
+        UNITLESS("");
         
         private String label;
         
@@ -291,47 +313,47 @@ public class MoleculeDescriptor implements Cloneable {
         public static Units fromString(String unit) {
             if (allUnitsNames == null) {
                 allUnitsNames = new HashMap<String, Units>();
-                allUnitsNames.put(Units.LABEL_PIXEL.toString(), Units.LABEL_PIXEL);
-                allUnitsNames.put(Units.LABEL_NANOMETER.toString(), Units.LABEL_NANOMETER);
-                allUnitsNames.put(Units.LABEL_MICROMETER.toString(), Units.LABEL_MICROMETER);
-                allUnitsNames.put(Units.LABEL_DIGITAL.toString(), Units.LABEL_DIGITAL);
-                allUnitsNames.put(Units.LABEL_PHOTON.toString(), Units.LABEL_PHOTON);
-                allUnitsNames.put(Units.LABEL_DEGREE.toString(), Units.LABEL_DEGREE);
-                allUnitsNames.put(Units.LABEL_RADIAN.toString(), Units.LABEL_RADIAN);
-                allUnitsNames.put(Units.LABEL_UNITLESS.toString(), Units.LABEL_UNITLESS);
+                allUnitsNames.put(Units.PIXEL.toString(), Units.PIXEL);
+                allUnitsNames.put(Units.NANOMETER.toString(), Units.NANOMETER);
+                allUnitsNames.put(Units.MICROMETER.toString(), Units.MICROMETER);
+                allUnitsNames.put(Units.DIGITAL.toString(), Units.DIGITAL);
+                allUnitsNames.put(Units.PHOTON.toString(), Units.PHOTON);
+                allUnitsNames.put(Units.DEGREE.toString(), Units.DEGREE);
+                allUnitsNames.put(Units.RADIAN.toString(), Units.RADIAN);
+                allUnitsNames.put(Units.UNITLESS.toString(), Units.UNITLESS);
             }
             if(allUnitsNames.containsKey(unit)) {
                 return allUnitsNames.get(unit);
             } else {
-                return Units.LABEL_UNITLESS;
+                return Units.UNITLESS;
             }
         }
 
         public static Units getDefaultUnit(String paramName) {
             if (allUnits == null) {
                 allUnits = new HashMap<String, Units>();
-                allUnits.put(PSFModel.Params.LABEL_X, Units.LABEL_PIXEL);
-                allUnits.put(PSFModel.Params.LABEL_Y, Units.LABEL_PIXEL);
-                allUnits.put(PSFModel.Params.LABEL_Z, Units.LABEL_NANOMETER);
-                allUnits.put(PSFModel.Params.LABEL_SIGMA, Units.LABEL_PIXEL);
-                allUnits.put(PSFModel.Params.LABEL_SIGMA1, Units.LABEL_PIXEL);
-                allUnits.put(PSFModel.Params.LABEL_SIGMA2, Units.LABEL_PIXEL);
-                allUnits.put(PSFModel.Params.LABEL_INTENSITY, Units.LABEL_DIGITAL);
-                allUnits.put(PSFModel.Params.LABEL_OFFSET, Units.LABEL_DIGITAL);
-                allUnits.put(PSFModel.Params.LABEL_BACKGROUND_VARIANCE, Units.LABEL_DIGITAL);
-                allUnits.put(PSFModel.Params.LABEL_ANGLE, Units.LABEL_DEGREE);
+                allUnits.put(PSFModel.Params.LABEL_X, Units.PIXEL);
+                allUnits.put(PSFModel.Params.LABEL_Y, Units.PIXEL);
+                allUnits.put(PSFModel.Params.LABEL_Z, Units.NANOMETER);
+                allUnits.put(PSFModel.Params.LABEL_SIGMA, Units.PIXEL);
+                allUnits.put(PSFModel.Params.LABEL_SIGMA1, Units.PIXEL);
+                allUnits.put(PSFModel.Params.LABEL_SIGMA2, Units.PIXEL);
+                allUnits.put(PSFModel.Params.LABEL_INTENSITY, Units.DIGITAL);
+                allUnits.put(PSFModel.Params.LABEL_OFFSET, Units.DIGITAL);
+                allUnits.put(PSFModel.Params.LABEL_BACKGROUND_VARIANCE, Units.DIGITAL);
+                allUnits.put(PSFModel.Params.LABEL_ANGLE, Units.DEGREE);
                 //
-                allUnits.put(LABEL_ID, Units.LABEL_UNITLESS);
-                allUnits.put(LABEL_FRAME, Units.LABEL_UNITLESS);
-                allUnits.put(LABEL_DETECTIONS, Units.LABEL_UNITLESS);
+                allUnits.put(LABEL_ID, Units.UNITLESS);
+                allUnits.put(LABEL_FRAME, Units.UNITLESS);
+                allUnits.put(LABEL_DETECTIONS, Units.UNITLESS);
                 //
-                allUnits.put(Fitting.LABEL_CCD_THOMPSON, Units.LABEL_PIXEL);
-                allUnits.put(Fitting.LABEL_EMCCD_THOMPSON, Units.LABEL_PIXEL);
+                allUnits.put(Fitting.LABEL_CCD_THOMPSON, Units.PIXEL);
+                allUnits.put(Fitting.LABEL_EMCCD_THOMPSON, Units.PIXEL);
             }
             if(allUnits.containsKey(paramName)) {
                 return allUnits.get(paramName);
             } else {
-                return Units.LABEL_UNITLESS;
+                return Units.UNITLESS;
             }
         }
         

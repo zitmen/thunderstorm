@@ -194,9 +194,8 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
     public synchronized int addRow(Molecule mol) {
         if(rows.isEmpty()) {    // if the table is empty, use descriptor from the molecule instance
             setDescriptor(mol.descriptor);
-        } else {
-            columns.validateMolecule(mol);
         }
+        columns.validateMolecule(mol);
         rows.add(mol);
         int last = rows.size() - 1;
         fireTableRowsInserted(last, last);
@@ -217,7 +216,7 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
     
     public void insertIdColumn() {
         maxId = 0;
-        insertColumn(0, MoleculeDescriptor.LABEL_ID, Units.LABEL_UNITLESS, new IValue<Double>(){
+        insertColumn(0, MoleculeDescriptor.LABEL_ID, Units.UNITLESS, new IValue<Double>(){
             @Override
             public Double getValue() {
                 return (double)getNewId();
@@ -235,6 +234,11 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
         }
         fireTableStructureChanged();
         fireTableDataChanged();
+    }
+    
+    public void deleteColumn(String name) {
+        columns.removeParam(name);
+        fireTableStructureChanged();
     }
 
     public void deleteRow(int row) {

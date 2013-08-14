@@ -27,6 +27,17 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     private int active_ie = 0;
     private Choice ftype;
     private TextField fpath;
+    private String defaultPath;
+    
+    public ImportExportPlugIn() {
+        super();
+        defaultPath = null;
+    }
+    
+    public ImportExportPlugIn(String path) {
+        super();
+        defaultPath = path;
+    }
     
     @Override
     public void run(String command) {
@@ -47,7 +58,11 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             gd.addChoice("File type", modules, modules[active_ie]);
             ftype = (Choice)gd.getChoices().get(0);
             ftype.addItemListener(this);
-            gd.addFileField("Choose a file", IJ.getDirectory("current") + "results." + suffix[active_ie]);
+            if(defaultPath != null) {
+                gd.addFileField("Choose a file", defaultPath);
+            } else {
+                gd.addFileField("Choose a file", IJ.getDirectory("current") + "results." + suffix[active_ie]);
+            }
             fpath = (TextField)gd.getStringFields().get(0);
             fpath.addTextListener(this);
             gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));

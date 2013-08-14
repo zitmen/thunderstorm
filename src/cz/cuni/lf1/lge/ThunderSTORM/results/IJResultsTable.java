@@ -129,6 +129,10 @@ public class IJResultsTable {
         return model.getColumnAsDoubles(columnName);
     }
     
+    public Molecule getRow(int index) {
+        return model.getRow(index);
+    }
+    
     public int getNewId() {
         return model.getNewId();
     }

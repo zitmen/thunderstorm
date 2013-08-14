@@ -37,7 +37,7 @@ public class CylindricalLensZEstimator implements IEstimator {
     }
 
     private static Molecule appendZ(Molecule mol, double zValue) {
-        mol.insertParamAt(2, LABEL_Z, Units.LABEL_NANOMETER, zValue);   // [0]=>x,[1]=>y,[2]=>z
+        mol.insertParamAt(2, LABEL_Z, Units.NANOMETER, zValue);   // [0]=>x,[1]=>y,[2]=>z
         return mol;
     }
 }

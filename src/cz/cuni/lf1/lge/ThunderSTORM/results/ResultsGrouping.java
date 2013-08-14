@@ -209,7 +209,7 @@ class ResultsGrouping {
             // molecule itself has to be added to the list of detections,
             // because the parameters can change during the merging
             mol.addDetection(mol.clone());
-            mol.addParam(MoleculeDescriptor.LABEL_DETECTIONS, MoleculeDescriptor.Units.LABEL_UNITLESS, 1);
+            mol.addParam(MoleculeDescriptor.LABEL_DETECTIONS, MoleculeDescriptor.Units.UNITLESS, 1);
             //
             if(!detections.containsKey(frame)) {
                 detections.put(frame, new Vector<Molecule>());

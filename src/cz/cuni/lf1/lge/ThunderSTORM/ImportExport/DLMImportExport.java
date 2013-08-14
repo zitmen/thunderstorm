@@ -35,15 +35,20 @@ abstract public class DLMImportExport implements IImportExport {
         if(lines.size() < 1) return;
         if(lines.get(0).length < 2) return; // header + at least 1 record!
         
-        String [] colnames = new String[lines.get(0).length];
-        Units [] colunits = new Units[lines.get(0).length];
+        Vector<Pair<String,Units>> cols = new Vector<Pair<String,Units>>();
         int c_id = -1;
         for(int c = 0, cm = lines.get(0).length; c < cm; c++) {
             Pair<String,Units> tmp = IJResultsTable.parseColumnLabel(lines.get(0)[c]);
             if(MoleculeDescriptor.LABEL_ID.equals(tmp.first)) { c_id = c; continue; }
-            colnames[c] = tmp.first;
-            colunits[c] = tmp.second;
+            cols.add(tmp);
         }
+        String [] colnames = new String[cols.size()];
+        Units [] colunits = new Units[cols.size()];
+        for(int c = 0, cm = cols.size(); c < cm; c++) {
+            colnames[c] = cols.elementAt(c).first;
+            colunits[c] = cols.elementAt(c).second;
+        }
+        //
         if(!rt.columnNamesEqual(colnames)) {
             throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + MoleculeDescriptor.LABEL_ID + "')!");
         }
@@ -53,9 +58,10 @@ abstract public class DLMImportExport implements IImportExport {
         //
         double [] values = new double[colnames.length];
         for(int r = 1, rm = lines.size(); r < rm; r++) {
-            for(int c = 0, cm = values.length; c < cm; c++) {
+            for(int c = 0, ci = 0, cm = lines.get(r).length; c < cm; c++) {
                 if(c == c_id) continue;
-                values[c] = Double.parseDouble(lines.get(r)[c]);
+                values[ci] = Double.parseDouble(lines.get(r)[c]);
+                ci++;
             }
             rt.addRow(values);
             IJ.showProgress((double)r / (double)rm);
