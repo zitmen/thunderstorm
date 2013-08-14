@@ -42,7 +42,7 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
     public void setLabel(String name, String new_name, Units new_units) {
         assert(new_units != null);
         
-        int column = columns.getParamIndex(name);
+        int column = columns.getParamColumn(name);
         if (new_name != null) {
             columns.names.setElementAt(new_name, column);
         }
@@ -120,7 +120,7 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
     }
     
     public String getColumnLabel(String columnName) {
-        return columns.getLabel(columns.getParamIndex(columnName), false);
+        return columns.getLabel(columns.getParamColumn(columnName), false);
     }
     
     public static Pair<String,Units> parseColumnLabel(String columnLabel) {
@@ -132,7 +132,7 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
         if(!columns.hasParam(columnName)) {
             return COLUMN_NOT_FOUND;
         }
-        return columns.getParamIndex(columnName);
+        return columns.getParamColumn(columnName);
     }
 
     @Override

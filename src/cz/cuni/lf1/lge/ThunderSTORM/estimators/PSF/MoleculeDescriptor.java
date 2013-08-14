@@ -196,10 +196,12 @@ public class MoleculeDescriptor implements Cloneable {
         return names.size();
     }
 
+    // While `index` refers to `Molecule.values`, ...
     public int getParamIndex(String param) {
         return paramNames.get(param).index;
     }
     
+    // the `column` refers to everything in `MoleculeDescriptor`.
     public int getParamColumn(String param) {
         return paramNames.get(param).column;
     }
