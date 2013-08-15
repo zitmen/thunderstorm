@@ -1,8 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import cz.cuni.lf1.lge.ThunderSTORM.util.Convolution;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
+import ij.plugin.filter.Convolver;
 import ij.process.FloatProcessor;
 import java.util.HashMap;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.crop;
 
 /**
  * General convolution filter that performs 2D convolution of an input image with
@@ -116,13 +119,22 @@ public class ConvolutionFilter {
 
     public FloatProcessor filterImage(FloatProcessor image) {
         input = image;
+        int padsize = (kernel!= null ? Math.max(kernel.getWidth(), kernel.getHeight()) : kernel_x.getPixelCount()) /2;
+        if(padding_method == Padding.PADDING_NONE){
+            padsize = 0;
+        }
+        FloatProcessor fp = Padding.addBorder(image, padding_method, padsize);
+        Convolver ijConvolver = new Convolver();
         // With non-separable kernels, the complexity is K*K*N,
         if (kernel != null) {
-            result = Convolution.convolve2D(image, kernel, padding_method);
+            ijConvolver.convolve(fp, (float[])kernel.getPixels(), kernel.getWidth(), kernel.getHeight());
+            result = crop(fp, padsize,padsize,image.getWidth(), image.getHeight());
             return result;
         }
         // while with separable kernels of length K, the computational complexity is 2*K*N, where N is number of pixels of the image!
-        result = Convolution.convolve2D(Convolution.convolve2D(image, kernel_y, padding_method), kernel_x, padding_method);
+        ijConvolver.convolve(fp, (float[])kernel_x.getPixels(), kernel_x.getWidth(), kernel_x.getHeight());
+        ijConvolver.convolve(fp, (float[])kernel_y.getPixels(), kernel_y.getWidth(), kernel_y.getHeight());
+        result = crop(fp, padsize,padsize,image.getWidth(), image.getHeight());
         return result;
     }
     
