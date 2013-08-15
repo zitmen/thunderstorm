@@ -4,6 +4,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.NodeFactory.
 import static cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaToken.*;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Node;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Operator;
+import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 
 public class FormulaParser {
 
@@ -148,7 +149,9 @@ public class FormulaParser {
     private Node name() throws FormulaParserException {
         String tok = match(NAME);
         switch(peek()) {
-            case DOT: match(DOT); return getNewVariable(tok, match(NAME));    // object.variable
+            case DOT: 
+                match(DOT); 
+                return tok.equals(Thresholder.getActiveFilter().getFilterVarName()) ? getNewVariable(match(NAME)) : getNewVariable(tok, match(NAME));    // object.variable
             case LPAR: match(LPAR); Node arg = expr(); match(RPAR); return getNewFunction(tok, arg); // function call
         }
         return getNewVariable(tok);   // just a variable (no object)
