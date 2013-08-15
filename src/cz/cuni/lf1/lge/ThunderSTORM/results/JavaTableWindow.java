@@ -349,13 +349,8 @@ class JavaTableWindow {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Units source = rt.getColumnUnits(column);
             Units target = Units.fromString(e.getActionCommand());
-            if(source == target) return;    // nothing to do here
-            // do the conversion for the whole column
-            for(int row = 0, max = rt.getRowCount(); row < max; row++) {
-                rt.setValueAt(source.convertTo(target, rt.getValue(row, column)), row, column);
-            }
+            if(rt.getColumnUnits(column) == target) return;    // nothing to do here
             rt.setColumnUnits(column, target);
         }
     }

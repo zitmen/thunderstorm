@@ -1,6 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
+import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sub;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.var;
@@ -54,9 +56,26 @@ public class LSQFitter implements OneLocationFitter {
                 new Target(subimage.values),
                 new InitialGuess(psfModel.transformParametersInverse(psfModel.getInitialParams(subimage))),
                 new Weight(weights));
+        
+        // estimate background, calculate the Thompson formula, and return an instance of the `Molecule`
         double[] point = pv.getPointRef();
         point[PSFModel.Params.BACKGROUND] = var(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(point)));
-        return psfModel.newInstanceFromParams(psfModel.transformParameters(point));
+        Molecule mol = psfModel.newInstanceFromParams(psfModel.transformParameters(point));
+        try {
+            String paramName;
+            double paramValue;
+            if(CameraSetupPlugIn.isEmCcd) {
+                paramName = MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON;
+                paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
+            } else {
+                paramName = MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON;
+                paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
+            }
+            mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
+        } catch(Exception e) {
+            // ignore...PSF does not fit all the required parameters
+        }
+        return mol;
     }
 
 }

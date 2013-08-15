@@ -218,10 +218,14 @@ public class IJResultsTable {
     }
     
     public void setColumnUnits(String columnName, Units new_units) {
-        model.setColumnUnits(columnName, new_units);
+        setColumnUnits(model.findColumn(columnName), new_units);
     }
     
     public void setColumnUnits(int columnIndex, Units new_units) {
+        Units old_units = getColumnUnits(columnIndex);
+        for(int row = 0, max = getRowCount(); row < max; row++) {
+            setValueAt(old_units.convertTo(new_units, getValue(row, columnIndex)), row, columnIndex);
+        }
         model.setColumnUnits(columnIndex, new_units);
     }
     

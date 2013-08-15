@@ -11,6 +11,12 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.RADIAN;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.DEGREE;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.DIGITAL;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PHOTON;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
@@ -90,6 +96,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   @Override
   public int setup(String command, ImagePlus imp) {
     GUI.setLookAndFeel();
+    CameraSetupPlugIn.loadPreferences();
     //
     if(command.equals("final")) {
       IJ.showStatus("ThunderSTORM is generating the results...");
@@ -106,6 +113,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
           }
         }
       }
+      convertUnitsForDefaultView(rt);
       rt.insertIdColumn();
       rt.copyOriginalToActual();
       rt.setActualState();
@@ -261,4 +269,14 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       IJ.handleException(ex);
     }
   }
+
+    private void convertUnitsForDefaultView(IJResultsTable rt) {
+        for(String colName : rt.getColumnNames()) {
+            switch(rt.getColumnUnits(colName)) {
+                case PIXEL: rt.setColumnUnits(colName, NANOMETER); break;
+                case DIGITAL: rt.setColumnUnits(colName, PHOTON); break;
+                case RADIAN: rt.setColumnUnits(colName, DEGREE); break;
+            }
+        }
+    }
 }
