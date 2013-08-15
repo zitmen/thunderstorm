@@ -42,7 +42,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -52,8 +51,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
 class JavaTableWindow {
@@ -78,7 +75,7 @@ class JavaTableWindow {
         frame = new JFrame("ThunderSTORM: Results");
         frame.setIconImage(IJ.getInstance().getIconImage());
         //
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         frame.setPreferredSize(new Dimension(600, 750));
         //
         model = new TripleStateTableModel();
