@@ -424,7 +424,7 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(PSFModel.Params.LABEL_SIGMA2, Units.PIXEL);
                 allUnits.put(PSFModel.Params.LABEL_INTENSITY, Units.DIGITAL);
                 allUnits.put(PSFModel.Params.LABEL_OFFSET, Units.DIGITAL);
-                allUnits.put(PSFModel.Params.LABEL_BACKGROUND_VARIANCE, Units.DIGITAL);
+                allUnits.put(PSFModel.Params.LABEL_BACKGROUND, Units.DIGITAL);
                 allUnits.put(PSFModel.Params.LABEL_ANGLE, Units.DEGREE);
                 //
                 allUnits.put(LABEL_ID, Units.UNITLESS);
@@ -462,7 +462,7 @@ public class MoleculeDescriptor implements Cloneable {
             allParams.put(PSFModel.Params.LABEL_SIGMA2, MergingOperations.MEAN);
             allParams.put(PSFModel.Params.LABEL_INTENSITY, MergingOperations.SUM);
             allParams.put(PSFModel.Params.LABEL_OFFSET, MergingOperations.MEAN);
-            allParams.put(PSFModel.Params.LABEL_BACKGROUND_VARIANCE, MergingOperations.SUM);
+            allParams.put(PSFModel.Params.LABEL_BACKGROUND, MergingOperations.SUM);
             allParams.put(PSFModel.Params.LABEL_ANGLE, MergingOperations.MEAN);
             //
             allParams.put(LABEL_ID, MergingOperations.MIN);
@@ -501,7 +501,7 @@ public class MoleculeDescriptor implements Cloneable {
                             throw new Exception("Cannot calculate Thompson equation!");
                         }
                         psfEnergy = molecule.getParam(PSFModel.Params.LABEL_INTENSITY);
-                        bkgVar = molecule.getParam(PSFModel.Params.LABEL_BACKGROUND_VARIANCE);
+                        bkgVar = molecule.getParam(PSFModel.Params.LABEL_BACKGROUND);
                         molecule.setParam(paramName, Fitting.ccdThompson(psfSigma2, psfEnergy, bkgVar, CameraSetupPlugIn.pixelSize));
                     } else if(Fitting.LABEL_EMCCD_THOMPSON.equals(paramName)) {
                         double psfSigma2, psfEnergy, bkgStd;
@@ -515,7 +515,7 @@ public class MoleculeDescriptor implements Cloneable {
                             throw new Exception("Cannot calculate Thompson equation!");
                         }
                         psfEnergy = molecule.getParam(PSFModel.Params.LABEL_INTENSITY);
-                        bkgStd = sqrt(molecule.getParam(PSFModel.Params.LABEL_BACKGROUND_VARIANCE));
+                        bkgStd = sqrt(molecule.getParam(PSFModel.Params.LABEL_BACKGROUND));
                         molecule.setParam(paramName, Fitting.emccdThompson(psfSigma2, psfEnergy, bkgStd, CameraSetupPlugIn.pixelSize));
                     } else {
                         throw new IllegalArgumentException("Parameter `" + paramName + "` can't be recalculated.");

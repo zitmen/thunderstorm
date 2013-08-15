@@ -31,7 +31,7 @@ public class SymmetricGaussianPSF extends PSFModel {
 
     @Override
     public double[] transformParameters(double[] parameters) {
-        double[] transformed = new double[parameters.length];
+        double [] transformed = Arrays.copyOf(parameters, parameters.length);
         transformed[Params.X] = parameters[Params.X];
         transformed[Params.Y] = parameters[Params.Y];
         transformed[Params.INTENSITY] = parameters[Params.INTENSITY] * parameters[Params.INTENSITY];
@@ -42,7 +42,7 @@ public class SymmetricGaussianPSF extends PSFModel {
 
     @Override
     public double[] transformParametersInverse(double[] parameters) {
-        double[] transformed = new double[parameters.length];
+        double [] transformed = Arrays.copyOf(parameters, parameters.length);
         transformed[Params.X] = parameters[Params.X];
         transformed[Params.Y] = parameters[Params.Y];
         transformed[Params.INTENSITY] = sqrt(abs(parameters[Params.INTENSITY]));
@@ -114,6 +114,6 @@ public class SymmetricGaussianPSF extends PSFModel {
 
     @Override
     public Molecule newInstanceFromParams(double[] params) {
-        return new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.OFFSET }, params, true));
+        return new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND }, params, true));
     }
 }

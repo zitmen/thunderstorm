@@ -187,6 +187,20 @@ public class Math {
         }
         return (float) sqrt(sumdev / (float) arr.length);
     }
+    
+    /**
+     * Compute the variance of an array of doubles.
+     *
+     * @param arr an array of doubles
+     * @return statistical variance
+     */
+    public static double var(double[] arr) {
+        double sumdev = 0.0, mean = mean(arr);
+        for(int i = 0; i < arr.length; i++) {
+            sumdev += sqr(arr[i] - mean);
+        }
+        return (sumdev / (double)arr.length);
+    }
 
     /**
      * Evaluates the 1D Gaussian function at a given point {@code x} and with a
@@ -342,6 +356,20 @@ public class Math {
         Double[] res = new Double[arr1.length];
         for(int i = 0; i < arr1.length; i++) {
             res[i] = new Double(arr1[i].doubleValue() - arr2[i].doubleValue());
+        }
+        return res;
+    }
+    
+    public static double [] sub(double [] res, double [] arr1, double [] arr2) {
+        if(arr1.length != arr2.length) {
+            throw new FormulaParserException("When subtracting two vectors, both must be of the same size!");
+        }
+        //
+        if((res == null) || (res.length < arr1.length)) {
+            res = new double[arr1.length];
+        }
+        for(int i = 0; i < arr1.length; i++) {
+            res[i] = arr1[i] - arr2[i];
         }
         return res;
     }

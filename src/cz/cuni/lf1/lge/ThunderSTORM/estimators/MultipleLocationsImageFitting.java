@@ -1,6 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sub;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.var;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 import java.util.Vector;
@@ -59,7 +63,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
   }
 
   public void run() {
-
+      
     for (int i = 0; i < locations.size(); i++) {
       int xInt = locations.get(i).x.intValue();
       int yInt = locations.get(i).y.intValue();

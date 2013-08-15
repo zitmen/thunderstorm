@@ -51,7 +51,7 @@ public abstract class PSFModel {
         public static final String LABEL_SIGMA = "sigma";
         public static final String LABEL_INTENSITY = "intensity";
         public static final String LABEL_OFFSET = "offset";
-        public static final String LABEL_BACKGROUND_VARIANCE = "background";
+        public static final String LABEL_BACKGROUND = "background";
         public static final String LABEL_SIGMA1 = "sigma1";
         public static final String LABEL_SIGMA2 = "sigma2";
         public static final String LABEL_ANGLE = "angle";
@@ -66,7 +66,7 @@ public abstract class PSFModel {
             Params.all_names[SIGMA] = LABEL_SIGMA;
             Params.all_names[INTENSITY] = LABEL_INTENSITY;
             Params.all_names[OFFSET] = LABEL_OFFSET;
-            Params.all_names[BACKGROUND] = LABEL_BACKGROUND_VARIANCE;
+            Params.all_names[BACKGROUND] = LABEL_BACKGROUND;
             Params.all_names[SIGMA1] = LABEL_SIGMA1;
             Params.all_names[SIGMA2] = LABEL_SIGMA2;
             Params.all_names[ANGLE] = LABEL_ANGLE;

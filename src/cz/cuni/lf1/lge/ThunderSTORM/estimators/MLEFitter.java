@@ -1,7 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sub;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.var;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
 import org.apache.commons.math3.optim.MaxIter;
@@ -14,15 +17,21 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 public class MLEFitter implements OneLocationFitter {
 
     PSFModel psfModel;
+    double [] fittedModelValues;
     final static int MAX_ITERATIONS = 50000;
 
     public MLEFitter(PSFModel psfModel) {
         this.psfModel = psfModel;
+        this.fittedModelValues = null;
     }
 
     @Override
     public Molecule fit(SubImage subimage) {
 
+        if((fittedModelValues == null) || (fittedModelValues.length < subimage.values.length)) {
+            fittedModelValues = new double[subimage.values.length];
+        }
+        
         SimplexOptimizer optimizer = new SimplexOptimizer(1e-10, 1e-10);
         PointValuePair pv;
 
@@ -33,8 +42,8 @@ public class MLEFitter implements OneLocationFitter {
                 new InitialGuess(psfModel.transformParametersInverse(psfModel.getInitialParams(subimage))),
                 GoalType.MINIMIZE,
                 new NelderMeadSimplex(psfModel.getInitialSimplex()));
-        double[] point = pv.getPointRef();
-        //point[0] = point[0] * Math.sqrt(2 * Math.PI) * point[3] * point[3];
-        return psfModel.newInstanceFromParams(psfModel.transformParameters(point));
+        double[] point = psfModel.transformParameters(pv.getPointRef());
+        point[PSFModel.Params.BACKGROUND] = var(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedModelValues)));
+        return psfModel.newInstanceFromParams(point);
     }
 }

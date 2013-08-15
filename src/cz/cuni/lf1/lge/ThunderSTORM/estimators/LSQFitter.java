@@ -2,6 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sub;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.var;
 import java.util.Arrays;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
@@ -17,11 +19,13 @@ import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquar
 public class LSQFitter implements OneLocationFitter {
 
     private double[] weights;
+    double [] fittedModelValues;
     PSFModel psfModel;
     final static int MAX_ITERATIONS = 3000;
 
     public LSQFitter(PSFModel psfModel) {
         this.psfModel = psfModel;
+        this.fittedModelValues = null;
     }
 
     /**
@@ -34,6 +38,9 @@ public class LSQFitter implements OneLocationFitter {
         if (weights == null) {
             weights = new double[subimage.values.length];
             Arrays.fill(weights, 1);
+        }
+        if((fittedModelValues == null) || (fittedModelValues.length < subimage.values.length)) {
+            fittedModelValues = new double[subimage.values.length];
         }
 
         LevenbergMarquardtOptimizer optimizer = new LevenbergMarquardtOptimizer(new SimplePointChecker(10e-10, 10e-10));
@@ -48,8 +55,8 @@ public class LSQFitter implements OneLocationFitter {
                 new InitialGuess(psfModel.transformParametersInverse(psfModel.getInitialParams(subimage))),
                 new Weight(weights));
         double[] point = pv.getPointRef();
-        //IJ.log("iterations:" + optimizer.getIterations());
+        point[PSFModel.Params.BACKGROUND] = var(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(point)));
         return psfModel.newInstanceFromParams(psfModel.transformParameters(point));
-
     }
+
 }

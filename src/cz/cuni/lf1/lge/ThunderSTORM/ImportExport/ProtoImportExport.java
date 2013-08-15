@@ -39,7 +39,7 @@ public class ProtoImportExport implements IImportExport {
             if(mol.hasSigma1()) fields.add(PSFModel.Params.LABEL_SIGMA1);
             if(mol.hasSigma2()) fields.add(PSFModel.Params.LABEL_SIGMA2);
             if(mol.hasIntensity()) fields.add(PSFModel.Params.LABEL_INTENSITY);
-            if(mol.hasBackground()) fields.add(PSFModel.Params.LABEL_BACKGROUND_VARIANCE);
+            if(mol.hasBackground()) fields.add(PSFModel.Params.LABEL_BACKGROUND);
             if(mol.hasDetections()) fields.add(MoleculeDescriptor.LABEL_DETECTIONS);
             if(mol.hasOffset()) fields.add(PSFModel.Params.LABEL_OFFSET);
             if(mol.hasThompsonCcd()) fields.add(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
@@ -112,7 +112,7 @@ public class ProtoImportExport implements IImportExport {
                     units.setSigma2(unit);
                 } else if(PSFModel.Params.LABEL_INTENSITY.equals(name)) {
                     units.setIntensity(unit);
-                } else if(PSFModel.Params.LABEL_BACKGROUND_VARIANCE.equals(name)) {
+                } else if(PSFModel.Params.LABEL_BACKGROUND.equals(name)) {
                     units.setBackground(unit);
                 } else if(MoleculeDescriptor.LABEL_DETECTIONS.equals(name)) {
                     units.setDetections(unit);
@@ -151,7 +151,7 @@ public class ProtoImportExport implements IImportExport {
                     mol.setSigma2(value);
                 } else if(PSFModel.Params.LABEL_INTENSITY.equals(name)) {
                     mol.setIntensity(value);
-                } else if(PSFModel.Params.LABEL_BACKGROUND_VARIANCE.equals(name)) {
+                } else if(PSFModel.Params.LABEL_BACKGROUND.equals(name)) {
                     mol.setBackground(value);
                 } else if(MoleculeDescriptor.LABEL_DETECTIONS.equals(name)) {
                     mol.setDetections((int)value);
