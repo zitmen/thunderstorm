@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
+import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.genIntSequence;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.min;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
@@ -11,6 +12,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -20,7 +22,7 @@ import java.util.Vector;
  */
 public class MoleculeDescriptor implements Cloneable {
     private HashMap<String, IndexAndColumn> paramNames; // duplicate of arrays `names` and `indices`, but it is much faster in some cases
-    
+
     class IndexAndColumn {
         public int index;
         public int column;
@@ -208,13 +210,14 @@ public class MoleculeDescriptor implements Cloneable {
     public int getParamColumn(String param) {
         return paramNames.get(param).column;
     }
-
-    public double getPixelSize() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    public void setColumnUnits(Units new_units, int columnIndex) {
+        units.setElementAt(new_units, columnIndex);
+        setColumnLabel(columnIndex);
     }
     
-    public double getDigital2Photons() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void setColumnLabel(int columnIndex) {
+        labels.setElementAt(getLabel(columnIndex, true), columnIndex);
     }
 
     public void validateMolecule(Molecule mol) {
@@ -270,8 +273,8 @@ public class MoleculeDescriptor implements Cloneable {
     // ===============================================================
     
     public static class Fitting {
-        public static final String LABEL_CCD_THOMPSON = "d_xy (CCD)";
-        public static final String LABEL_EMCCD_THOMPSON = "d_xy (EMCCD)";
+        public static final String LABEL_CCD_THOMPSON = "uncertainity <xy> (CCD)";
+        public static final String LABEL_EMCCD_THOMPSON = "uncertainity <xy> (EMCCD)";
         
         public static double ccdThompson(double psfSigma2, double psfEnergy, double backgroundVariance, double pixelSize) {
             return ((psfSigma2 + pixelSize*pixelSize/12) / psfEnergy) +
@@ -297,7 +300,7 @@ public class MoleculeDescriptor implements Cloneable {
         DEGREE("deg"),
         RADIAN("rad"),
         UNITLESS("");
-        
+
         private String label;
         
         private Units(String label) {
@@ -308,8 +311,67 @@ public class MoleculeDescriptor implements Cloneable {
             return label;
         }
         
+        public double convertTo(Units target, double value) {
+            switch(this) {
+                case MICROMETER:
+                    switch(target) {
+                        case PIXEL: return CameraSetupPlugIn.nanometersToPixels(1000.0 * value);
+                        case NANOMETER: return 1000.0 * value;
+                        case MICROMETER: return value;
+                    }
+                    break;
+                
+                case NANOMETER:
+                    switch(target) {
+                        case PIXEL: return CameraSetupPlugIn.nanometersToPixels(value);
+                        case NANOMETER: return value;
+                        case MICROMETER: return value / 1000.0;
+                    }
+                    break;
+                    
+                case PIXEL:
+                    switch(target) {
+                        case PIXEL: return value;
+                        case MICROMETER: return CameraSetupPlugIn.pixelsToNanometers(value) / 1000.0;
+                        case NANOMETER: return CameraSetupPlugIn.pixelsToNanometers(value);
+                    }
+                    break;
+                
+                case DIGITAL:
+                    switch(target) {
+                        case PHOTON: return CameraSetupPlugIn.peakEnergyToPhotons(value);
+                        case DIGITAL: return value;
+                    }
+                    break;
+                
+                case PHOTON:
+                    switch(target) {
+                        case PHOTON: return value;
+                        case DIGITAL: return CameraSetupPlugIn.photonsToPeakEnergy(value);
+                    }
+                    break;
+                
+                case DEGREE:
+                    switch(target) {
+                        case DEGREE: return value;
+                        case RADIAN: return value / 180.0 * PI;
+                    }
+                    break;
+                    
+                case RADIAN:
+                    switch(target) {
+                        case DEGREE: return value / PI * 180.0;
+                        case RADIAN: return value;
+                    }
+                    break;
+            }
+            throw new UnsupportedOperationException("Conversion from " + toString() + " to " + target.toString() + " is not allowed!");
+        }
+        
         private static HashMap<String, Units> allUnitsNames = null;
         private static HashMap<String, Units> allUnits = null;
+        private static Vector<Units> [] groups = null;
+        private static EnumMap<Units, Integer> groupMap = null;
         
         public static Units fromString(String unit) {
             if (allUnitsNames == null) {
@@ -328,6 +390,27 @@ public class MoleculeDescriptor implements Cloneable {
             } else {
                 return Units.UNITLESS;
             }
+        }
+        
+        public static Vector<Units> getCompatibleUnits(Units selected) {
+            if((groups == null) || (groupMap == null)) {
+                groups = new Vector[4];
+                groups[0] = new Vector<Units>(Arrays.asList(new Units[] { Units.PIXEL, Units.NANOMETER, Units.MICROMETER }));
+                groups[1] = new Vector<Units>(Arrays.asList(new Units[] { Units.DIGITAL, Units.PHOTON }));
+                groups[2] = new Vector<Units>(Arrays.asList(new Units[] { Units.DEGREE, Units.RADIAN }));
+                groups[3] = new Vector<Units>(Arrays.asList(new Units[] { Units.UNITLESS }));
+                //
+                groupMap = new EnumMap<Units, Integer>(Units.class);
+                groupMap.put(Units.PIXEL, 0);
+                groupMap.put(Units.NANOMETER, 0);
+                groupMap.put(Units.MICROMETER, 0);
+                groupMap.put(Units.DIGITAL, 1);
+                groupMap.put(Units.PHOTON, 1);
+                groupMap.put(Units.DEGREE, 2);
+                groupMap.put(Units.RADIAN, 2);
+                groupMap.put(Units.UNITLESS, 3);
+            }
+            return groups[groupMap.get(selected).intValue()];
         }
 
         public static Units getDefaultUnit(String paramName) {
@@ -419,7 +502,7 @@ public class MoleculeDescriptor implements Cloneable {
                         }
                         psfEnergy = molecule.getParam(PSFModel.Params.LABEL_INTENSITY);
                         bkgVar = molecule.getParam(PSFModel.Params.LABEL_BACKGROUND_VARIANCE);
-                        molecule.setParam(paramName, Fitting.ccdThompson(psfSigma2, psfEnergy, bkgVar, molecule.descriptor.getPixelSize()));
+                        molecule.setParam(paramName, Fitting.ccdThompson(psfSigma2, psfEnergy, bkgVar, CameraSetupPlugIn.pixelSize));
                     } else if(Fitting.LABEL_EMCCD_THOMPSON.equals(paramName)) {
                         double psfSigma2, psfEnergy, bkgStd;
                         if(molecule.hasParam(PSFModel.Params.LABEL_SIGMA)) {    // symmetric
@@ -433,7 +516,7 @@ public class MoleculeDescriptor implements Cloneable {
                         }
                         psfEnergy = molecule.getParam(PSFModel.Params.LABEL_INTENSITY);
                         bkgStd = sqrt(molecule.getParam(PSFModel.Params.LABEL_BACKGROUND_VARIANCE));
-                        molecule.setParam(paramName, Fitting.emccdThompson(psfSigma2, psfEnergy, bkgStd, molecule.descriptor.getPixelSize()));
+                        molecule.setParam(paramName, Fitting.emccdThompson(psfSigma2, psfEnergy, bkgStd, CameraSetupPlugIn.pixelSize));
                     } else {
                         throw new IllegalArgumentException("Parameter `" + paramName + "` can't be recalculated.");
                     }

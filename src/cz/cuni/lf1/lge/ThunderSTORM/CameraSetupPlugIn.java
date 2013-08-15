@@ -5,8 +5,10 @@ import ij.Macro;
 import ij.Prefs;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.Recorder;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 public class CameraSetupPlugIn implements PlugIn {
     
@@ -23,15 +25,15 @@ public class CameraSetupPlugIn implements PlugIn {
             return;
         }
         //
-        GenericDialogPlus gd = new GenericDialogPlus("Camera setup");
-        gd.addStringField("Pixel size [nm]: ", Defaults.PIXEL_SIZE.toString());
-        gd.addStringField("Photoelectrons per A/D count: ", Defaults.PHOTONS_PER_ADU.toString());
-        gd.addStringField("Gain: ", Defaults.GAIN.toString());
-        gd.addStringField("Base level [A/D counts]: ", Defaults.OFFSET.toString());
+        final GenericDialogPlus gd = new GenericDialogPlus("Camera setup");
+        gd.addNumericField("Pixel size [nm]: ", Defaults.PIXEL_SIZE.toDouble(), 1);
+        gd.addNumericField("Photoelectrons per A/D count: ", Defaults.PHOTONS_PER_ADU.toDouble(), 1);
+        gd.addNumericField("Gain: ", Defaults.GAIN.toDouble(), 1);
+        gd.addNumericField("Base level [A/D counts]: ", Defaults.OFFSET.toDouble(), 1);
         gd.addButton("Reset to defaults", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                resetToDefaults();
+                resetToDefaults(gd);
             }
         });
         gd.showDialog();
@@ -116,11 +118,17 @@ public class CameraSetupPlugIn implements PlugIn {
         CameraSetupPlugIn.offset = Double.parseDouble(Macro.getValue(options, "offset", Defaults.OFFSET.toString()));
     }
 
-    public void resetToDefaults() {
+    public void resetToDefaults(GenericDialogPlus gd) {
         CameraSetupPlugIn.pixelSize = Defaults.PIXEL_SIZE.toDouble();
         CameraSetupPlugIn.photons2ADU = Defaults.PHOTONS_PER_ADU.toDouble();
         CameraSetupPlugIn.gain = Defaults.GAIN.toDouble();
         CameraSetupPlugIn.offset = Defaults.OFFSET.toDouble();
+        //
+        Vector<TextField> fields = (Vector<TextField>)gd.getNumericFields();
+        fields.elementAt(0).setText(Defaults.PIXEL_SIZE.toString());
+        fields.elementAt(1).setText(Defaults.PHOTONS_PER_ADU.toString());
+        fields.elementAt(2).setText(Defaults.GAIN.toString());
+        fields.elementAt(3).setText(Defaults.OFFSET.toString());
     }
 
 }

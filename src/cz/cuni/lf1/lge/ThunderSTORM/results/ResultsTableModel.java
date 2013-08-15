@@ -162,11 +162,13 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
     }
 
     public void setColumnUnits(String columnName, Units new_units) {
-        columns.units.setElementAt(new_units, columns.getParamColumn(columnName));
+        columns.setColumnUnits(new_units, columns.getParamColumn(columnName));
+        fireTableStructureChanged();
     }
 
     public void setColumnUnits(int columnIndex, Units new_units) {
-        columns.units.setElementAt(new_units, columnIndex);
+        columns.setColumnUnits(new_units, columnIndex);
+        fireTableStructureChanged();
     }
 
     public Units getColumnUnits(String columnName) {

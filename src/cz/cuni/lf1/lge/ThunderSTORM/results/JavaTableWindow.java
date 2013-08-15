@@ -6,6 +6,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_DETECTIONS;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import ij.Executer;
 import ij.IJ;
@@ -28,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -40,13 +42,18 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
 class JavaTableWindow {
@@ -78,6 +85,14 @@ class JavaTableWindow {
         table = new JTable(model);
         TableRowSorter<TripleStateTableModel> sorter = new TableRowSorter<TripleStateTableModel>(model);
         table.setRowSorter(sorter);
+        table.getTableHeader().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(SwingUtilities.isRightMouseButton(e)) {
+                    new UnitsContextMenu(e, table.columnAtPoint(e.getPoint()));
+                }
+            }
+        });
         table.setDropTarget(new ResultsTableDropTarget());
         JScrollPane tableScrollPane = new JScrollPane(table);
         tableScrollPane.setDropTarget(new ResultsTableDropTarget());
@@ -310,6 +325,39 @@ class JavaTableWindow {
 
     public OperationsHistoryPanel getOperationHistoryPanel() {
         return operationsStackPanel;
+    }
+
+    private class UnitsContextMenu implements ActionListener {
+        
+        private IJResultsTable rt;
+        private int column;
+
+        public UnitsContextMenu(MouseEvent e, int column) {
+            this.column = column;
+            this.rt = IJResultsTable.getResultsTable();
+            Units selected = rt.getColumnUnits(column);
+            //
+            JPopupMenu popup = new JPopupMenu();
+            JRadioButtonMenuItem menuItem;
+            for(Units unit : Units.getCompatibleUnits(selected)) {
+                menuItem = new JRadioButtonMenuItem(unit.getLabel(), unit == selected);
+                menuItem.addActionListener(this);
+                popup.add(menuItem);
+            }
+            popup.show(e.getComponent(), e.getX(), e.getY());
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Units source = rt.getColumnUnits(column);
+            Units target = Units.fromString(e.getActionCommand());
+            if(source == target) return;    // nothing to do here
+            // do the conversion for the whole column
+            for(int row = 0, max = rt.getRowCount(); row < max; row++) {
+                rt.setValueAt(source.convertTo(target, rt.getValue(row, column)), row, column);
+            }
+            rt.setColumnUnits(column, target);
+        }
     }
 
     private class ResultsTableDropTarget extends DropTarget {
