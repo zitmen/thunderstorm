@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
+import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
@@ -8,10 +9,12 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtract;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Prefs;
+import ij.measure.Calibration;
 import ij.process.FloatProcessor;
 import java.awt.Color;
 import java.awt.Container;
@@ -47,7 +50,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
   private List<IDetectorUI> allDetectors;
   private List<IEstimatorUI> allEstimators;
   private List<IRendererUI> allRenderers;
-  private JButton defaults, preview, ok, cancel;
+  private JButton cameraSetup, defaults, preview, ok, cancel;
   private ImagePlus imp;
   private boolean canceled;
   private Semaphore semaphore;    // ensures waiting for a dialog without the dialog being modal!
@@ -76,7 +79,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
    * @param default_estimator {@code estimator[default_estimator]} will be
    * initially selected in combo box
    */
-  public AnalysisOptionsDialog(ImagePlus imp, String title,
+  public AnalysisOptionsDialog(final ImagePlus imp, String title,
           List<IFilterUI> filters,
           List<IDetectorUI> detectors,
           List<IEstimatorUI> estimators,
@@ -87,6 +90,14 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     this.canceled = true;
     //
     this.imp = imp;
+    //
+    this.cameraSetup = new JButton("Camera setup...");
+    this.cameraSetup.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new CameraSetupPlugIn().run(null);
+            }
+    });
     //
     this.allFilters = filters;
     this.allDetectors = detectors;
@@ -126,6 +137,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     GridBagConstraints lineConstraints = (GridBagConstraints) componentConstraints.clone();
     lineConstraints.insets = new Insets(0, 0, 0, 0);
 
+    pane.add(cameraSetup, componentConstraints);
+    pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
     pane.add(filtersPanel.getPanel("Filters: "), componentConstraints);
     pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
     pane.add(detectorsPanel.getPanel("Detectors: "), componentConstraints);
@@ -170,6 +183,11 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     if (e.getActionCommand().equals("Cancel")) {
       closeDialog(true);
     } else if (e.getActionCommand().equals("Ok")) {
+      Calibration cal = new Calibration();
+      cal.setUnit("um");
+      cal.pixelWidth = cal.pixelHeight = CameraSetupPlugIn.pixelSize / 1000.0;
+      imp.setCalibration(cal);
+      //
       activeFilterIndex = filtersPanel.getActiveComboBoxItemIndex();
       activeDetectorIndex = detectorsPanel.getActiveComboBoxItemIndex();
       activeEstimatorIndex = estimatorsPanel.getActiveComboBoxItemIndex();
@@ -225,7 +243,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         public void run() {
           try {
             IJ.showStatus("Creating preview image.");
-            FloatProcessor fp = (FloatProcessor) imp.getProcessor().crop().convertToFloat();
+            FloatProcessor fp = subtract((FloatProcessor)imp.getProcessor().crop().convertToFloat(), (float)CameraSetupPlugIn.offset);
             Thresholder.setCurrentImage(fp);
             FloatProcessor filtered = allFilters.get(activeFilterIndex).getImplementation().filterImage(fp);
             checkForInterruption();

@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtract;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
@@ -90,7 +91,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
   public int setup(String command, ImagePlus imp) {
     GUI.setLookAndFeel();
     //
-        if(command.equals("final")) {
+    if(command.equals("final")) {
       IJ.showStatus("ThunderSTORM is generating the results...");
       //
       // Show table with results
@@ -98,16 +99,16 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       rt.reset();
             rt.setOriginalState();
             for(int frame = 1; frame <= stackSize; frame++) {
-        if(results[frame] != null) {
+                if(results[frame] != null) {
                     for(Molecule psf : results[frame]) {
                         psf.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double)frame);
                         rt.addRow(psf);
           }
         }
       }
-            rt.insertIdColumn();
-            rt.copyOriginalToActual();
-            rt.setActualState();
+      rt.insertIdColumn();
+      rt.copyOriginalToActual();
+      rt.setActualState();
       rt.setPreviewRenderer(renderingQueue);
       rt.show();
       //
@@ -127,7 +128,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       IJ.showProgress(1.0);
       IJ.showStatus("ThunderSTORM finished.");
       return DONE;
-        } else if("showResultsTable".equals(command)) {
+    } else if("showResultsTable".equals(command)) {
       IJResultsTable.getResultsTable().show();
       return DONE;
     } else {
@@ -157,7 +158,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       Thresholder.loadFilters(allFilters);
       Thresholder.setActiveFilter(selectedFilter);
       
-            if(MacroParser.isRanFromMacro()) {
+      if(MacroParser.isRanFromMacro()) {
         //parse the macro options
         MacroParser parser = new MacroParser(allFilters, allEstimators, allDetectors, allRenderers);
         selectedFilter = parser.getFilterIndex();
@@ -192,7 +193,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), renderer.getRepaintFrequency());
         
         //if recording window is open, record parameters of all modules
-                if(Recorder.record) {
+        if(Recorder.record) {
           MacroParser.recordFilterUI(dialog.getFilter());
           MacroParser.recordDetectorUI(dialog.getDetector());
           MacroParser.recordEstimatorUI(dialog.getEstimator());
@@ -239,8 +240,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         assert (renderingQueue != null) : "Renderer was not selected!";
     //
     ip.setRoi(roi);
-    FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
-        Vector<Molecule> fits;
+    FloatProcessor fp = subtract((FloatProcessor)ip.crop().convertToFloat(), (float)CameraSetupPlugIn.offset);
+    Vector<Molecule> fits;
     try {
       Thresholder.setCurrentImage(fp);
       FloatProcessor filtered = allFilters.get(selectedFilter).getImplementation().filterImage(fp);
@@ -251,12 +252,12 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
       nProcessed.incrementAndGet();
 
       if(fits.size() > 0) {
-                renderingQueue.renderLater(fits);
+        renderingQueue.renderLater(fits);
       }
       //
       IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
       IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
-        } catch(Exception ex) {
+    } catch(Exception ex) {
       IJ.handleException(ex);
     }
   }

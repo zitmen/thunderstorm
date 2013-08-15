@@ -5,7 +5,6 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_INTENSITY;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_FRAME;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_ID;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
@@ -25,6 +24,7 @@ import ij.process.ShortProcessor;
 import java.util.Vector;
 import javax.swing.JSeparator;
 
+// TODO: macro, defaults, save preferences
 public class DataGeneratorPlugIn implements PlugIn {
     
     private int width, height, frames, processing_frame;
@@ -151,7 +151,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         ImagePlus imp = IJ.createImage("ThunderSTORM: artificial dataset", "16-bit", width, height, frames);
         imp.setStack(stack);
         Calibration cal = new Calibration();
-        cal.setUnit("micron");
+        cal.setUnit("um");
         cal.pixelWidth = cal.pixelHeight = pixelsize;
         imp.setCalibration(cal);
         imp.show();

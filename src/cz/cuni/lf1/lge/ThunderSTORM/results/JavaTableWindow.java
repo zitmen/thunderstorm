@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_DETECTIONS;
@@ -59,6 +60,7 @@ class JavaTableWindow {
     private JLabel status;
     private RenderingQueue previewRenderer;
     private boolean livePreview;
+    private JButton setCamera;
     private JButton showHist;
     private JButton resetButton;
     private JTabbedPane tabbedPane;
@@ -70,7 +72,7 @@ class JavaTableWindow {
         frame.setIconImage(IJ.getInstance().getIconImage());
         //
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(550, 750));
+        frame.setPreferredSize(new Dimension(600, 750));
         //
         model = new TripleStateTableModel();
         table = new JTable(model);
@@ -141,10 +143,17 @@ class JavaTableWindow {
         //
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+        setCamera = new JButton("Camera setup...");
         showHist = new JButton("Plot histogram...");
         io_import = new JButton("Import...");
         io_export = new JButton("Export...");
         render = new JButton("Render...");
+        setCamera.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new CameraSetupPlugIn().run(null);
+            }
+        });
         showHist.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -181,10 +190,12 @@ class JavaTableWindow {
         preview.setEnabled(false);
         buttons.add(preview);
         buttons.add(Box.createHorizontalGlue());
+        buttons.add(setCamera);
+        buttons.add(Box.createHorizontalStrut(5));
         buttons.add(showHist);
-        buttons.add(Box.createHorizontalStrut(10));
+        buttons.add(Box.createHorizontalStrut(5));
         buttons.add(render);
-        buttons.add(Box.createHorizontalStrut(10));
+        buttons.add(Box.createHorizontalStrut(5));
         buttons.add(io_import);
         buttons.add(Box.createHorizontalStrut(3));
         buttons.add(io_export);
