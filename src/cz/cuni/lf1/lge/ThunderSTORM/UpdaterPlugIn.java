@@ -24,6 +24,7 @@ public class UpdaterPlugIn implements PlugIn {
 
     @Override
     public void run(String arg) {
+        IJ.showStatus("Checking the file access rights...");
         File file = new File(Menus.getPlugInsPath() + "/" + ThunderSTORM.FILE_NAME + ".jar");
         if (!file.exists()) {
             error("File not found: " + file.getPath());
@@ -37,13 +38,14 @@ public class UpdaterPlugIn implements PlugIn {
             error(msg);
             return;
         }
-        String[] list = openUrlAsList(ThunderSTORM.URL + "/list.txt");
+        IJ.showStatus("Looking for new versions...");
+        String[] list = openUrlAsList(ThunderSTORM.URL_DAILY + "/list.txt");
         int count = list.length;
         String[] versions = new String[count];
         String[] urls = new String[count];
         for (int i = 0; i < count; i++) {
             versions[i] = list[i];
-            urls[i] = ThunderSTORM.URL + "/" + ThunderSTORM.FILE_NAME + "-" + versions[i] + ".jar";
+            urls[i] = ThunderSTORM.URL_DAILY + "/" + versions[i] + ".jar";
         }
         int choice = showDialog(versions);
         if (choice == -1) {
@@ -54,8 +56,22 @@ public class UpdaterPlugIn implements PlugIn {
     }
 
     int showDialog(String[] versions) {
+        String newerAvailable = null;
+        Version current = new Version(version());
+        for(String ver : versions) {
+            if(current.compareTo(new Version(ver)) < 0) {
+                newerAvailable = ver;
+                break;
+            }
+        }
+        //
         GenericDialog gd = new GenericDialog("ThunderSTORM Updater");
-        gd.addChoice("Upgrade To:", versions, versions[0]);
+        if(newerAvailable == null) {
+            gd.addMessage("You are running the latest version of ThunderSTORM (" + version() + ").");
+        } else {
+            gd.addMessage("There is a new version of ThunderSTORM available!");
+        }
+        gd.addChoice("Upgrade To:", versions, newerAvailable);
         String msg =
                 "You are currently running version " + version() + ".\n"
                 + " \n"
@@ -93,6 +109,7 @@ public class UpdaterPlugIn implements PlugIn {
             IJ.showProgress(1.0);
         } catch (IOException e) {
             IJ.showStatus("Download failed.");
+            IJ.handleException(e);
             return null;
         }
         return data;
@@ -104,6 +121,7 @@ public class UpdaterPlugIn implements PlugIn {
             out.write(data, 0, data.length);
             out.close();
         } catch (IOException e) {
+            IJ.handleException(e);
         }
     }
 
@@ -126,6 +144,7 @@ public class UpdaterPlugIn implements PlugIn {
             br.close();
         } catch (Exception ex) {
             IJ.showMessage("Error!", "Connection problem! Check you connection to the Internet or your firewall settings.");
+            IJ.handleException(ex);
         }
         String[] lines = new String[v.size()];
         v.copyInto((String[]) lines);
@@ -152,6 +171,37 @@ public class UpdaterPlugIn implements PlugIn {
             IJ.log("Update Menus: " + (System.currentTimeMillis() - start) + " ms");
         } else {
             Menus.updateImageJMenus();
+        }
+    }
+    
+    class Version implements Comparable<Version> {
+        
+        public String version;
+        public String lastStable;
+        public int year;
+        public int month;
+        public int day;
+        public int buildOfTheDay;
+        
+        public Version(String ver) {
+            this.version = ver;
+            String [] tokens = ver.split("-");
+            this.lastStable = tokens[0];
+            this.year = Integer.parseInt(tokens[1]);
+            this.month = Integer.parseInt(tokens[2]);
+            this.day = Integer.parseInt(tokens[3]);
+            this.buildOfTheDay = Integer.parseInt(tokens[4].substring(1));
+        }
+        
+        @Override
+        public int compareTo(Version v) {
+            int cmp = year - v.year;
+            if(cmp != 0) return cmp;
+            cmp = month - v.month;
+            if(cmp != 0) return cmp;
+            cmp = day - v.day;
+            if(cmp != 0) return cmp;
+            return (buildOfTheDay - v.buildOfTheDay);
         }
     }
 }
