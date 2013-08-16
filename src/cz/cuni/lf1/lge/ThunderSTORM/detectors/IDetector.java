@@ -21,4 +21,6 @@ public interface IDetector extends IModule{
      * @see Point
      */
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException;
+    
+    public String getThresholdFormula();
 }

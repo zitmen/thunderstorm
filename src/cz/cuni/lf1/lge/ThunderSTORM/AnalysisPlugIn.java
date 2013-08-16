@@ -12,8 +12,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL_SQUARED;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.RADIAN;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.DEGREE;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER_SQUARED;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.MICROMETER_SQUARED;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.DIGITAL;
@@ -170,16 +168,13 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             allEstimators = ThreadLocalWrapper.wrapEstimators(ModuleLoader.getUIModules(IEstimatorUI.class));
             allRenderers = ModuleLoader.getUIModules(IRendererUI.class);
 
-            Thresholder.loadFilters(allFilters);
-            Thresholder.setActiveFilter(selectedFilter);
-
             if(MacroParser.isRanFromMacro()) {
                 //parse the macro options
                 MacroParser parser = new MacroParser(allFilters, allEstimators, allDetectors, allRenderers);
                 selectedFilter = parser.getFilterIndex();
                 selectedDetector = parser.getDetectorIndex();
                 selectedEstimator = parser.getEstimatorIndex();
-
+                
                 roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
                 IRendererUI rendererPanel = parser.getRendererUI();
                 rendererPanel.setSize(roi.getBounds().width, roi.getBounds().height);
@@ -198,8 +193,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 selectedDetector = dialog.getDetectorIndex();
                 selectedEstimator = dialog.getEstimatorIndex();
                 selectedRenderer = dialog.getRendererIndex();
-                Thresholder.setActiveFilter(selectedFilter);   // !! must be called before any threshold is evaluated !!
-
+                
                 roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
                 IRendererUI renderer = allRenderers.get(selectedRenderer);
                 renderer.setSize(roi.getBounds().width, roi.getBounds().height);
@@ -214,12 +208,21 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                     MacroParser.recordEstimatorUI(dialog.getEstimator());
                     MacroParser.recordRendererUI(dialog.getRenderer());
                 }
-                return pluginFlags; // ok
             }
         } catch(Exception ex) {
             IJ.handleException(ex);
             return DONE;
         }
+        //
+        try {
+            Thresholder.loadFilters(allFilters);
+            Thresholder.setActiveFilter(selectedFilter);   // !! must be called before any threshold is evaluated !!
+            Thresholder.parseThreshold(allDetectors.get(selectedFilter).getImplementation().getThresholdFormula());
+        } catch(Exception ex) {
+            IJ.error("Error parsing threshold formula! " + ex.toString());
+        }
+        //
+        return pluginFlags; // ok
     }
 
     /**
