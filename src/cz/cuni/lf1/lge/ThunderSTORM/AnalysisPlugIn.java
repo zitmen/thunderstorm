@@ -252,6 +252,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         //
         ip.setRoi(roi);
         FloatProcessor fp = subtract((FloatProcessor) ip.crop().convertToFloat(), (float) CameraSetupPlugIn.offset);
+        if(roi != null) {
+            fp.setMask(roi.getMask());
+        }
         Vector<Molecule> fits;
         try {
             Thresholder.setCurrentImage(fp);
@@ -344,6 +347,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             // ignore...PSF does not fit all the required parameters
         }
     }
+
 
     public static void setDefaultColumnsWidth(IJResultsTable rt) {
         rt.setColumnPreferredWidth(MoleculeDescriptor.LABEL_ID, 40);
