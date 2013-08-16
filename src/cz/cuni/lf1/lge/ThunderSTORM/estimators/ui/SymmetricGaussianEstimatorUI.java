@@ -69,11 +69,11 @@ public class SymmetricGaussianEstimatorUI implements IEstimatorUI {
   public IEstimator getImplementation() {
     if(LSQ.equals(method)){
         LSQFitter fitter = new LSQFitter(new SymmetricGaussianPSF(sigma));
-        return new MultipleLocationsImageFitting(fitradius / 2, fitter);
+        return new MultipleLocationsImageFitting(fitradius, fitter);
     }
     if(MLE.equals(method)){
         MLEFitter fitter = new MLEFitter(new SymmetricGaussianPSF(sigma));
-        return new MultipleLocationsImageFitting(fitradius / 2, fitter);
+        return new MultipleLocationsImageFitting(fitradius, fitter);
     }
     throw new IllegalArgumentException("Unknown fitting method: "+ method);
   }

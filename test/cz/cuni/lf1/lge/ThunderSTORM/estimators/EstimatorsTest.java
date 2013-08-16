@@ -12,7 +12,6 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.process.FloatProcessor;
-import java.io.IOException;
 import java.util.Vector;
 import org.junit.Test;
 import static org.junit.Assert.*;
