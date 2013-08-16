@@ -273,11 +273,11 @@ public class MoleculeDescriptor implements Cloneable {
     // ===============================================================
     
     public static class Fitting {
-        public static final String LABEL_CCD_THOMPSON = "uncertainity <xy> (CCD)";
-        public static final String LABEL_EMCCD_THOMPSON = "uncertainity <xy> (EMCCD)";
+        public static final String LABEL_CCD_THOMPSON = "uncertainty_ccd";
+        public static final String LABEL_EMCCD_THOMPSON = "uncertainty_emccd";
         
         public static double ccdThompson(Molecule molecule) throws Exception {
-            double psfSigma2, psfEnergy, bkgVar, pixelSize;
+            double psfSigma2, psfEnergy, bkgStd, pixelSize;
             pixelSize = CameraSetupPlugIn.pixelSize;
             if(molecule.hasParam(PSFModel.Params.LABEL_SIGMA)) {    // symmetric
                 psfSigma2 = molecule.getParam(PSFModel.Params.LABEL_SIGMA) *
@@ -289,10 +289,10 @@ public class MoleculeDescriptor implements Cloneable {
                 throw new Exception("Cannot calculate Thompson equation!");
             }
             psfEnergy = molecule.getParam(PSFModel.Params.LABEL_INTENSITY);
-            bkgVar = molecule.getParam(PSFModel.Params.LABEL_BACKGROUND);
+            bkgStd = molecule.getParam(PSFModel.Params.LABEL_BACKGROUND);
             //
             return ((psfSigma2 + pixelSize*pixelSize/12) / psfEnergy) +
-                    ((8*PI*psfSigma2*psfSigma2*bkgVar) / (pixelSize*pixelSize*psfEnergy*psfEnergy));
+                    ((8*PI*psfSigma2*psfSigma2*bkgStd) / (pixelSize*pixelSize*psfEnergy*psfEnergy));
         }
         
         public static double emccdThompson(Molecule molecule) throws Exception {
@@ -308,7 +308,7 @@ public class MoleculeDescriptor implements Cloneable {
                 throw new Exception("Cannot calculate Thompson equation!");
             }
             psfEnergy = molecule.getParam(PSFModel.Params.LABEL_INTENSITY);
-            bkgStd = sqrt(molecule.getParam(PSFModel.Params.LABEL_BACKGROUND));
+            bkgStd = molecule.getParam(PSFModel.Params.LABEL_BACKGROUND);
             //
             return ((2*psfSigma2 + pixelSize*pixelSize/12) / psfEnergy) +
                     ((8*PI*psfSigma2*psfSigma2*bkgStd) / (pixelSize*pixelSize*psfEnergy*psfEnergy));
@@ -323,6 +323,9 @@ public class MoleculeDescriptor implements Cloneable {
         MICROMETER("um"),
         NANOMETER("nm"),
         PIXEL("px"),
+        MICROMETER_SQUARED("um^2"),
+        NANOMETER_SQUARED("nm^2"),
+        PIXEL_SQUARED("px^2"),
         DIGITAL("ADU"),
         PHOTON("photon"),
         DEGREE("deg"),
@@ -364,6 +367,33 @@ public class MoleculeDescriptor implements Cloneable {
                         case PIXEL: return value;
                         case MICROMETER: return CameraSetupPlugIn.pixelsToNanometers(value) / 1000.0;
                         case NANOMETER: return CameraSetupPlugIn.pixelsToNanometers(value);
+                        case UNITLESS: return value;
+                    }
+                    break;
+                    
+                case MICROMETER_SQUARED:
+                    switch(target) {
+                        case PIXEL_SQUARED: return CameraSetupPlugIn.nanometers2ToPixels2(value * 1000.0 * 1000.0);
+                        case MICROMETER_SQUARED: return value;
+                        case NANOMETER_SQUARED: return value * 1000.0 * 1000.0;
+                        case UNITLESS: return value;
+                    }
+                    break;
+                    
+                case NANOMETER_SQUARED:
+                    switch(target) {
+                        case PIXEL_SQUARED: return CameraSetupPlugIn.nanometers2ToPixels2(value);
+                        case MICROMETER_SQUARED: return value / 1000.0 / 1000.0;
+                        case NANOMETER_SQUARED: return value;
+                        case UNITLESS: return value;
+                    }
+                    break;
+                    
+                case PIXEL_SQUARED:
+                    switch(target) {
+                        case PIXEL_SQUARED: return value;
+                        case MICROMETER_SQUARED: return CameraSetupPlugIn.pixels2ToNanometers2(value) / 1000.0 / 1000.0;
+                        case NANOMETER_SQUARED: return CameraSetupPlugIn.pixels2ToNanometers2(value);
                         case UNITLESS: return value;
                     }
                     break;
@@ -417,6 +447,9 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnitsNames.put(Units.PIXEL.toString(), Units.PIXEL);
                 allUnitsNames.put(Units.NANOMETER.toString(), Units.NANOMETER);
                 allUnitsNames.put(Units.MICROMETER.toString(), Units.MICROMETER);
+                allUnitsNames.put(Units.PIXEL_SQUARED.toString(), Units.PIXEL_SQUARED);
+                allUnitsNames.put(Units.NANOMETER_SQUARED.toString(), Units.NANOMETER_SQUARED);
+                allUnitsNames.put(Units.MICROMETER_SQUARED.toString(), Units.MICROMETER_SQUARED);
                 allUnitsNames.put(Units.DIGITAL.toString(), Units.DIGITAL);
                 allUnitsNames.put(Units.PHOTON.toString(), Units.PHOTON);
                 allUnitsNames.put(Units.DEGREE.toString(), Units.DEGREE);
@@ -432,21 +465,25 @@ public class MoleculeDescriptor implements Cloneable {
         
         public static Vector<Units> getCompatibleUnits(Units selected) {
             if((groups == null) || (groupMap == null)) {
-                groups = new Vector[4];
+                groups = new Vector[5];
                 groups[0] = new Vector<Units>(Arrays.asList(new Units[] { Units.PIXEL, Units.NANOMETER, Units.MICROMETER }));
-                groups[1] = new Vector<Units>(Arrays.asList(new Units[] { Units.DIGITAL, Units.PHOTON }));
-                groups[2] = new Vector<Units>(Arrays.asList(new Units[] { Units.DEGREE, Units.RADIAN }));
-                groups[3] = new Vector<Units>(Arrays.asList(new Units[] { Units.UNITLESS }));
+                groups[1] = new Vector<Units>(Arrays.asList(new Units[] { Units.PIXEL_SQUARED, Units.NANOMETER_SQUARED, Units.MICROMETER_SQUARED }));
+                groups[2] = new Vector<Units>(Arrays.asList(new Units[] { Units.DIGITAL, Units.PHOTON }));
+                groups[3] = new Vector<Units>(Arrays.asList(new Units[] { Units.DEGREE, Units.RADIAN }));
+                groups[4] = new Vector<Units>(Arrays.asList(new Units[] { Units.UNITLESS }));
                 //
                 groupMap = new EnumMap<Units, Integer>(Units.class);
                 groupMap.put(Units.PIXEL, 0);
                 groupMap.put(Units.NANOMETER, 0);
                 groupMap.put(Units.MICROMETER, 0);
-                groupMap.put(Units.DIGITAL, 1);
-                groupMap.put(Units.PHOTON, 1);
-                groupMap.put(Units.DEGREE, 2);
-                groupMap.put(Units.RADIAN, 2);
-                groupMap.put(Units.UNITLESS, 3);
+                groupMap.put(Units.PIXEL_SQUARED, 1);
+                groupMap.put(Units.NANOMETER_SQUARED, 1);
+                groupMap.put(Units.MICROMETER_SQUARED, 1);
+                groupMap.put(Units.DIGITAL, 2);
+                groupMap.put(Units.PHOTON, 2);
+                groupMap.put(Units.DEGREE, 3);
+                groupMap.put(Units.RADIAN, 3);
+                groupMap.put(Units.UNITLESS, 4);
             }
             return groups[groupMap.get(selected).intValue()];
         }
@@ -469,8 +506,8 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(LABEL_FRAME, Units.UNITLESS);
                 allUnits.put(LABEL_DETECTIONS, Units.UNITLESS);
                 //
-                allUnits.put(Fitting.LABEL_CCD_THOMPSON, Units.NANOMETER);
-                allUnits.put(Fitting.LABEL_EMCCD_THOMPSON, Units.NANOMETER);
+                allUnits.put(Fitting.LABEL_CCD_THOMPSON, Units.NANOMETER_SQUARED);
+                allUnits.put(Fitting.LABEL_EMCCD_THOMPSON, Units.NANOMETER_SQUARED);
             }
             if(allUnits.containsKey(paramName)) {
                 return allUnits.get(paramName);

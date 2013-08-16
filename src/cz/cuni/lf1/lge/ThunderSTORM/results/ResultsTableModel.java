@@ -144,8 +144,7 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        //return (columnIndex > 0); // column id is not editable!
-        return false;   // no cell can be edited
+        return (columnIndex > 0); // column id is not editable!
     }
     
     Molecule getRow(int index) {

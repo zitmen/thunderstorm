@@ -63,6 +63,14 @@ public class CameraSetupPlugIn implements PlugIn {
         return nanometers / pixelSize;
     }
     
+    public static double pixels2ToNanometers2(double pixels2) {
+        return pixels2 * pixelSize * pixelSize;
+    }
+    
+    public static double nanometers2ToPixels2(double nanometers2) {
+        return nanometers2 / pixelSize / pixelSize;
+    }
+    
     public static double adCountsToPhotons(double counts) {
         return (counts - offset) * photons2ADU / gain;
     }

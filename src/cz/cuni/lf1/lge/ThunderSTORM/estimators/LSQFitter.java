@@ -1,11 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sub;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.var;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.stddev;
 import java.util.Arrays;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
@@ -59,7 +57,7 @@ public class LSQFitter implements OneLocationFitter {
         
         // estimate background, calculate the Thompson formula, and return an instance of the `Molecule`
         double[] point = pv.getPointRef();
-        point[PSFModel.Params.BACKGROUND] = var(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(point)));
+        point[PSFModel.Params.BACKGROUND] = stddev(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(point)));
         return psfModel.newInstanceFromParams(psfModel.transformParameters(point));
     }
 

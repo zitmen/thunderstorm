@@ -11,12 +11,16 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL_SQUARED;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.RADIAN;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.DEGREE;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER_SQUARED;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.MICROMETER_SQUARED;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.DIGITAL;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.MICROMETER;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PHOTON;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
@@ -283,6 +287,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 case MICROMETER: // this is of course analog unit, but we need all units to be the same
                     rt.setColumnUnits(colName, NANOMETER);
                     break;
+                case PIXEL_SQUARED:
+                case MICROMETER_SQUARED: // this is of course analog unit, but we need all units to be the same
+                    rt.setColumnUnits(colName, NANOMETER_SQUARED);
+                    break;
                 case DIGITAL:
                     rt.setColumnUnits(colName, PHOTON);
                     break;
@@ -296,6 +304,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 case NANOMETER:
                 case MICROMETER:
                     rt.setColumnUnits(colName, PIXEL);
+                    break;
+                case NANOMETER_SQUARED:
+                case MICROMETER_SQUARED:
+                    rt.setColumnUnits(colName, PIXEL_SQUARED);
                     break;
                 case PHOTON:
                     rt.setColumnUnits(colName, DIGITAL);

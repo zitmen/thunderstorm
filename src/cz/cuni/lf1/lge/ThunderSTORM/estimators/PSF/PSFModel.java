@@ -51,7 +51,7 @@ public abstract class PSFModel {
         public static final String LABEL_SIGMA = "sigma";
         public static final String LABEL_INTENSITY = "intensity";
         public static final String LABEL_OFFSET = "offset";
-        public static final String LABEL_BACKGROUND = "background";
+        public static final String LABEL_BACKGROUND = "bkgstd";
         public static final String LABEL_SIGMA1 = "sigma1";
         public static final String LABEL_SIGMA2 = "sigma2";
         public static final String LABEL_ANGLE = "angle";

@@ -189,6 +189,17 @@ public class Math {
     }
     
     /**
+     * Compute the standard deviation of an array of doubles.
+     *
+     * @param arr an array of doubles
+     * @return {@mathjax \sqrt{\frac{1}{arr.length} \sum_{i=0}^{arr.length}{\left(arr[i]
+     * - \mu\right)}}}, where {@mathjax \mu} = {@code mean(arr)}.
+     */
+    public static double stddev(double[] arr) {
+        return sqrt(var(arr));
+    }
+    
+    /**
      * Compute the variance of an array of doubles.
      *
      * @param arr an array of doubles
