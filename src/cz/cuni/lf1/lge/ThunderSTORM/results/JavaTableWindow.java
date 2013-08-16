@@ -338,12 +338,31 @@ class JavaTableWindow {
             Units selected = rt.getColumnUnits(column);
             JPopupMenu popup = new JPopupMenu();
             //
-            if(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON.equals(rt.getColumnName(column))) {
+            if(MoleculeDescriptor.LABEL_ID.equals(rt.getColumnName(column))) {
+                JMenuItem item;
+                item = new JMenuItem("convert all to digital units");
+                item.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        AnalysisPlugIn.convertAllColumnsToDigitalUnits(rt);
+                    }
+                });
+                popup.add(item);
+                item = new JMenuItem("convert all to analog units");
+                item.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        AnalysisPlugIn.convertAllColumnsToAnalogUnits(rt);
+                    }
+                });
+                popup.add(item);
+                popup.add(new JSeparator());
+            } else if(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON.equals(rt.getColumnName(column))) {
                 JMenuItem item = new JMenuItem("recalculate");
                 item.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        AnalysisPlugIn.convertUnitsForDefaultView(rt); // ensure that the units are correct!
+                        AnalysisPlugIn.convertAllColumnsToAnalogUnits(rt); // ensure that the units are correct!
                         AnalysisPlugIn.calculateThompsonFormula(rt);
                     }
                 });
@@ -354,7 +373,7 @@ class JavaTableWindow {
                 item.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        AnalysisPlugIn.convertUnitsForDefaultView(rt); // ensure that the units are correct!
+                        AnalysisPlugIn.convertAllColumnsToAnalogUnits(rt); // ensure that the units are correct!
                         AnalysisPlugIn.calculateThompsonFormula(rt);
                     }
                 });

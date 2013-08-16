@@ -114,7 +114,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                     }
                 }
             }
-            convertUnitsForDefaultView(rt);
+            convertAllColumnsToAnalogUnits(rt);
             calculateThompsonFormula(rt);
             rt.insertIdColumn();
             rt.copyOriginalToActual();
@@ -273,17 +273,29 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         }
     }
 
-    public static void convertUnitsForDefaultView(IJResultsTable rt) {
+    public static void convertAllColumnsToAnalogUnits(IJResultsTable rt) {
         for(String colName : rt.getColumnNames()) {
             switch(rt.getColumnUnits(colName)) {
                 case PIXEL:
+                case MICROMETER: // this is of course analog unit, but we need all units to be the same
                     rt.setColumnUnits(colName, NANOMETER);
                     break;
                 case DIGITAL:
                     rt.setColumnUnits(colName, PHOTON);
                     break;
-                case RADIAN:
-                    rt.setColumnUnits(colName, DEGREE);
+            }
+        }
+    }
+    
+    public static void convertAllColumnsToDigitalUnits(IJResultsTable rt) {
+        for(String colName : rt.getColumnNames()) {
+            switch(rt.getColumnUnits(colName)) {
+                case NANOMETER:
+                case MICROMETER:
+                    rt.setColumnUnits(colName, PIXEL);
+                    break;
+                case PHOTON:
+                    rt.setColumnUnits(colName, DIGITAL);
                     break;
             }
         }
