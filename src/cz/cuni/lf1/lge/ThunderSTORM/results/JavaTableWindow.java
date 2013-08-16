@@ -106,7 +106,8 @@ class JavaTableWindow {
             public void mouseMoved(MouseEvent e) {
                 //
                 IJResultsTable rt = IJResultsTable.getResultsTable();
-                Molecule mol = rt.getRow(table.rowAtPoint(e.getPoint()));
+                int rowIndex = rt.convertViewRowIndexToModel(table.rowAtPoint(e.getPoint()));
+                Molecule mol = rt.getRow(rowIndex);
                 if(mol.hasParam(LABEL_DETECTIONS)) {
                     if(mol.getParam(LABEL_DETECTIONS) > 1) {
                         table.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -122,7 +123,8 @@ class JavaTableWindow {
                 if (e.getClickCount() == 2) {
                     IJResultsTable rt = IJResultsTable.getResultsTable();
                     int row = table.getSelectedRow();
-                    Molecule mol = rt.getRow(row);
+                    int rowIndex = rt.convertViewRowIndexToModel(row);
+                    Molecule mol = rt.getRow(rowIndex);
                     if(mol.hasParam(LABEL_DETECTIONS)) {
                         if(mol.getParam(LABEL_DETECTIONS) > 1) {
                             new MergedMoleculesPopUp(table, row, 0, mol.getDetections());

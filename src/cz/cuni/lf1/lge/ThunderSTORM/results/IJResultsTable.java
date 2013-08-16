@@ -141,6 +141,12 @@ public class IJResultsTable {
         return model.getColumnAsDoubles(columnName);
     }
     
+    // we usually work with model indices, but for example for row sorting
+    // we still need to do the conversion
+    public int convertViewRowIndexToModel(int viewRowIndex) {
+        return tableWindow.getView().convertRowIndexToModel(viewRowIndex);
+    }
+    
     public Molecule getRow(int index) {
         return model.getRow(index);
     }
