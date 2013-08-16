@@ -134,6 +134,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             IJ.showStatus("");
             IJ.handleException(ex);
         }
+        AnalysisPlugIn.setDefaultColumnsWidth(rt);
         rt.show("Results");
         IJ.showProgress(1.0);
     }

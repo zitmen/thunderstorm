@@ -44,14 +44,14 @@ public class CameraSetupPlugIn implements PlugIn {
         gd.showDialog();
         //
         if(!gd.wasCanceled()) {
-            recordOptions();
-            savePreferences();
-            //
             isEmCcd = gd.getNextBoolean();
             pixelSize = gd.getNextNumber();
             photons2ADU = gd.getNextNumber();
             gain = gd.getNextNumber();
             offset = gd.getNextNumber();
+            //
+            savePreferences();
+            recordOptions();
         }
     }
     

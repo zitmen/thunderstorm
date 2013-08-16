@@ -469,8 +469,8 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(LABEL_FRAME, Units.UNITLESS);
                 allUnits.put(LABEL_DETECTIONS, Units.UNITLESS);
                 //
-                allUnits.put(Fitting.LABEL_CCD_THOMPSON, Units.PIXEL);
-                allUnits.put(Fitting.LABEL_EMCCD_THOMPSON, Units.PIXEL);
+                allUnits.put(Fitting.LABEL_CCD_THOMPSON, Units.NANOMETER);
+                allUnits.put(Fitting.LABEL_EMCCD_THOMPSON, Units.NANOMETER);
             }
             if(allUnits.containsKey(paramName)) {
                 return allUnits.get(paramName);

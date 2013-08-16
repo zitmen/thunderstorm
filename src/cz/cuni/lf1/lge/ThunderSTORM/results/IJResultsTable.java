@@ -48,6 +48,7 @@ public class IJResultsTable {
         }
         return resultsTable.tableWindow.isVisible();
     }
+    
     private JavaTableWindow tableWindow;
     private TripleStateTableModel model;
 
@@ -57,6 +58,17 @@ public class IJResultsTable {
     public IJResultsTable() {
         tableWindow = new JavaTableWindow();
         model = tableWindow.getModel();
+    }
+    
+    public void setColumnPreferredWidth(String columnName, int width) {
+        int col = findColumn(columnName);
+        if(col != COLUMN_NOT_FOUND) {
+            setColumnPreferredWidth(col, width);
+        }
+    }
+    
+    public void setColumnPreferredWidth(int columnIndex, int width) {
+        tableWindow.getView().getColumnModel().getColumn(columnIndex).setPreferredWidth(width);
     }
 
     /**
