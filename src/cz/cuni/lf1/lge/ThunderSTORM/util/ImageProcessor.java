@@ -35,6 +35,7 @@ public class ImageProcessor {
         assert (fp1.getHeight() == fp2.getHeight());
 
         FloatProcessor out = new FloatProcessor(fp1.getWidth(), fp1.getHeight());
+        out.setMask(fp1.getMask() != null ? fp1.getMask(): fp2.getMask());
         for (int i = 0, im = fp1.getWidth(); i < im; i++) {
             for (int j = 0, jm = fp1.getHeight(); j < jm; j++) {
                 out.setf(i, j, fp1.getPixelValue(i, j) + fp2.getPixelValue(i, j));
@@ -53,6 +54,7 @@ public class ImageProcessor {
      */
     public static FloatProcessor add(float val, FloatProcessor fp) {
         FloatProcessor out = new FloatProcessor(fp.getWidth(), fp.getHeight());
+        out.setMask(fp.getMask());
         for (int i = 0, im = fp.getWidth(); i < im; i++) {
             for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
                 out.setf(i, j, val + fp.getPixelValue(i, j));
@@ -76,6 +78,7 @@ public class ImageProcessor {
         assert (fp1.getHeight() == fp2.getHeight());
 
         FloatProcessor out = new FloatProcessor(fp1.getWidth(), fp1.getHeight());
+        out.setMask(fp1.getMask() != null ? fp1.getMask(): fp2.getMask());
         for (int i = 0, im = fp1.getWidth(); i < im; i++) {
             for (int j = 0, jm = fp1.getHeight(); j < jm; j++) {
                 out.setf(i, j, fp1.getPixelValue(i, j) - fp2.getPixelValue(i, j));
@@ -94,6 +97,7 @@ public class ImageProcessor {
      */
     public static FloatProcessor subtract(float val, FloatProcessor fp) {
         FloatProcessor out = new FloatProcessor(fp.getWidth(), fp.getHeight());
+        out.setMask(fp.getMask());
         for (int i = 0, im = fp.getWidth(); i < im; i++) {
             for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
                 out.setf(i, j, val - fp.getPixelValue(i, j));
@@ -128,6 +132,7 @@ public class ImageProcessor {
         assert (fp1.getHeight() == fp2.getHeight());
 
         FloatProcessor out = new FloatProcessor(fp1.getWidth(), fp1.getHeight());
+        out.setMask(fp1.getMask() != null ? fp1.getMask(): fp2.getMask());
         for (int i = 0, im = fp1.getWidth(); i < im; i++) {
             for (int j = 0, jm = fp1.getHeight(); j < jm; j++) {
                 out.setf(i, j, fp1.getPixelValue(i, j) * fp2.getPixelValue(i, j));
@@ -146,6 +151,7 @@ public class ImageProcessor {
      */
     public static FloatProcessor multiply(float val, FloatProcessor fp) {
         FloatProcessor out = new FloatProcessor(fp.getWidth(), fp.getHeight());
+        out.setMask(fp.getMask());
         for (int i = 0, im = fp.getWidth(); i < im; i++) {
             for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
                 out.setf(i, j, val * fp.getPixelValue(i, j));
@@ -169,6 +175,7 @@ public class ImageProcessor {
         assert (fp1.getHeight() == fp2.getHeight());
 
         FloatProcessor out = new FloatProcessor(fp1.getWidth(), fp1.getHeight());
+        out.setMask(fp1.getMask() != null ? fp1.getMask(): fp2.getMask());
         for (int i = 0, im = fp1.getWidth(); i < im; i++) {
             for (int j = 0, jm = fp1.getHeight(); j < jm; j++) {
                 out.setf(i, j, fp1.getPixelValue(i, j) / fp2.getPixelValue(i, j));
@@ -187,6 +194,7 @@ public class ImageProcessor {
      */
     public static FloatProcessor divide(float val, FloatProcessor fp) {
         FloatProcessor out = new FloatProcessor(fp.getWidth(), fp.getHeight());
+        out.setMask(fp.getMask());
         for (int i = 0, im = fp.getWidth(); i < im; i++) {
             for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
                 out.setf(i, j, val / fp.getPixelValue(i, j));
@@ -216,6 +224,7 @@ public class ImageProcessor {
      */
     public static FloatProcessor power(FloatProcessor fp, float val) {
         FloatProcessor out = new FloatProcessor(fp.getWidth(), fp.getHeight());
+        out.setMask(fp.getMask());
         for (int i = 0, im = fp.getWidth(); i < im; i++) {
             for (int j = 0, jm = fp.getHeight(); j < jm; j++) {
                 out.setf(i, j, (float)pow((double)fp.getPixelValue(i, j), (double)val));
@@ -324,6 +333,7 @@ public class ImageProcessor {
             throw new IllegalArgumentException("Error during evaluation of `a<b` expression! Both operands must be of the same size!");
         }
         FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        res.setMask(a.getMask() != null ? a.getMask(): b.getMask());
         for(int x = 0; x < a.getWidth(); x++) {
             for(int y = 0; y < a.getHeight(); y++) {
                 res.setf(x, y, ((a.getf(x, y) == b.getf(x, y)) ? 1.0f : 0.0f));
@@ -337,6 +347,7 @@ public class ImageProcessor {
             throw new IllegalArgumentException("Error during evaluation of `a<b` expression! Both operands must be of the same size!");
         }
         FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        res.setMask(a.getMask() != null ? a.getMask(): b.getMask());
         for(int x = 0; x < a.getWidth(); x++) {
             for(int y = 0; y < a.getHeight(); y++) {
                 res.setf(x, y, ((a.getf(x, y) > b.getf(x, y)) ? 1.0f : 0.0f));
@@ -350,6 +361,7 @@ public class ImageProcessor {
             throw new IllegalArgumentException("Error during evaluation of `a<b` expression! Both operands must be of the same size!");
         }
         FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        res.setMask(a.getMask() != null ? a.getMask(): b.getMask());
         for(int x = 0; x < a.getWidth(); x++) {
             for(int y = 0; y < a.getHeight(); y++) {
                 res.setf(x, y, ((a.getf(x, y) < b.getf(x, y)) ? 1.0f : 0.0f));
@@ -361,6 +373,7 @@ public class ImageProcessor {
     public static FloatProcessor relLt(Double val, FloatProcessor mat) {
         float v = val.floatValue();
         FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        res.setMask(mat.getMask());
         for(int x = 0; x < mat.getWidth(); x++) {
             for(int y = 0; y < mat.getHeight(); y++) {
                 res.setf(x, y, ((v < mat.getf(x, y)) ? 1.0f : 0.0f));
@@ -372,6 +385,7 @@ public class ImageProcessor {
     public static FloatProcessor relLt(FloatProcessor mat, Double val) {
         float v = val.floatValue();
         FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        res.setMask(mat.getMask());
         for(int x = 0; x < mat.getWidth(); x++) {
             for(int y = 0; y < mat.getHeight(); y++) {
                 res.setf(x, y, ((mat.getf(x, y) < v) ? 1.0f : 0.0f));
@@ -407,6 +421,7 @@ public class ImageProcessor {
             throw new IllegalArgumentException("Error during evaluation of `a&b` expression! Both operands must be of the same size!");
         }
         FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        res.setMask(a.getMask() != null ? a.getMask(): b.getMask());
         for(int x = 0; x < a.getWidth(); x++) {
             for(int y = 0; y < a.getHeight(); y++) {
                 res.setf(x, y, (((a.getf(x, y) != 0.0f) && (b.getf(x, y) != 0.0f)) ? 1.0f : 0.0f));
@@ -420,6 +435,7 @@ public class ImageProcessor {
             throw new IllegalArgumentException("Error during evaluation of `a|b` expression! Both operands must be of the same size!");
         }
         FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        res.setMask(a.getMask() != null ? a.getMask(): b.getMask());
         for(int x = 0; x < a.getWidth(); x++) {
             for(int y = 0; y < a.getHeight(); y++) {
                 res.setf(x, y, (((a.getf(x, y) != 0.0f) || (b.getf(x, y) != 0.0f)) ? 1.0f : 0.0f));
@@ -431,6 +447,7 @@ public class ImageProcessor {
     public static FloatProcessor relEq(Double val, FloatProcessor mat) {
         float v = val.floatValue();
         FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        res.setMask(mat.getMask());
         for(int x = 0; x < mat.getWidth(); x++) {
             for(int y = 0; y < mat.getHeight(); y++) {
                 res.setf(x, y, ((mat.getf(x, y) == v) ? 1.0f : 0.0f));
@@ -446,11 +463,13 @@ public class ImageProcessor {
     public static FloatProcessor abs(FloatProcessor mat) {
         FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight(), (float [])mat.getPixelsCopy());
         res.abs();
+        res.setMask(mat.getMask());
         return res;
     }
 
     public static FloatProcessor modulo(float val, FloatProcessor mat) {
         FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        res.setMask(mat.getMask());
         float tmp;
         for (int i = 0, im = mat.getWidth(); i < im; i++) {
             for (int j = 0, jm = mat.getHeight(); j < jm; j++) {
@@ -463,6 +482,7 @@ public class ImageProcessor {
 
     public static FloatProcessor modulo(FloatProcessor mat, float val) {
         FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight());
+        res.setMask(mat.getMask());
         float tmp;
         for (int i = 0, im = mat.getWidth(); i < im; i++) {
             for (int j = 0, jm = mat.getHeight(); j < jm; j++) {
@@ -478,6 +498,7 @@ public class ImageProcessor {
             throw new IllegalArgumentException("Error during evaluation of `a%b` expression! Both operands must be of the same size!");
         }
         FloatProcessor res = new FloatProcessor(a.getWidth(), a.getHeight());
+        res.setMask(a.getMask() != null ? a.getMask(): b.getMask());
         float tmp;
         for (int i = 0, im = a.getWidth(); i < im; i++) {
             for (int j = 0, jm = a.getHeight(); j < jm; j++) {

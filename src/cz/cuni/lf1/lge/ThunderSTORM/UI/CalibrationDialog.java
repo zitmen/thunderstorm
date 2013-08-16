@@ -9,6 +9,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Prefs;
+import ij.gui.Roi;
 import ij.process.FloatProcessor;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -150,6 +151,10 @@ public class CalibrationDialog extends JDialog implements ActionListener {
           try {
             IJ.showStatus("Creating preview image.");
             FloatProcessor fp = (FloatProcessor) imp.getProcessor().crop().convertToFloat();
+            Roi roi  = imp.getRoi();
+            if(roi!= null){
+                fp.setMask(roi.getMask());
+            }
             Thresholder.setCurrentImage(fp);
             FloatProcessor filtered = getActiveFilterUI().getImplementation().filterImage(fp);
             checkForInterruption();

@@ -14,6 +14,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Prefs;
+import ij.gui.Roi;
 import ij.measure.Calibration;
 import ij.process.FloatProcessor;
 import java.awt.Color;
@@ -244,6 +245,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
           try {
             IJ.showStatus("Creating preview image.");
             FloatProcessor fp = subtract((FloatProcessor)imp.getProcessor().crop().convertToFloat(), (float)CameraSetupPlugIn.offset);
+            Roi roi  = imp.getRoi();
+            if(roi!= null){
+                fp.setMask(roi.getMask());
+            }
             Thresholder.setCurrentImage(fp);
             FloatProcessor filtered = allFilters.get(activeFilterIndex).getImplementation().filterImage(fp);
             checkForInterruption();
