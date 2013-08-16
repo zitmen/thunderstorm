@@ -95,6 +95,7 @@ class ThreadLocalFilterUI implements IFilterUI {
   @Override
   public void readParameters() {
     filter.readParameters();
+    threadLocalImplementation = new ThreadLocalModule<IFilterUI, IFilter>(filter);
   }
 
   @Override
@@ -105,6 +106,7 @@ class ThreadLocalFilterUI implements IFilterUI {
   @Override
   public void readMacroOptions(String options) {
     filter.readMacroOptions(options);
+    threadLocalImplementation = new ThreadLocalModule<IFilterUI, IFilter>(filter);
   }
 
   @Override
@@ -141,6 +143,7 @@ class ThreadLocalDetectorUI implements IDetectorUI {
   @Override
   public void readParameters() {
     detector.readParameters();
+    threadLocalImplementation = new ThreadLocalModule<IDetectorUI, IDetector>(detector);
   }
 
   @Override
@@ -151,6 +154,7 @@ class ThreadLocalDetectorUI implements IDetectorUI {
   @Override
   public void readMacroOptions(String options) {
     detector.readMacroOptions(options);
+    threadLocalImplementation = new ThreadLocalModule<IDetectorUI, IDetector>(detector);
   }
 
   @Override
@@ -187,6 +191,7 @@ class ThreadLocalEstimatorUI implements IEstimatorUI {
   @Override
   public void readParameters() {
     estimator.readParameters();
+    threadLocalImplementation = new ThreadLocalModule<IEstimatorUI, IEstimator>(estimator);
   }
 
   @Override
@@ -197,6 +202,7 @@ class ThreadLocalEstimatorUI implements IEstimatorUI {
   @Override
   public void readMacroOptions(String options) {
     estimator.readMacroOptions(options);
+    threadLocalImplementation = new ThreadLocalModule<IEstimatorUI, IEstimator>(estimator);
   }
 
   @Override
@@ -237,6 +243,7 @@ class ThreadLocalRendererUI implements IRendererUI {
   @Override
   public void readParameters() {
     renderer.readParameters();
+    threadLocalImplementation = new ThreadLocalModule<IRendererUI, IncrementalRenderingMethod>(renderer);
   }
 
   @Override
@@ -247,6 +254,7 @@ class ThreadLocalRendererUI implements IRendererUI {
   @Override
   public void readMacroOptions(String options) {
     renderer.readMacroOptions(options);
+    threadLocalImplementation = new ThreadLocalModule<IRendererUI, IncrementalRenderingMethod>(renderer);
   }
 
   @Override
