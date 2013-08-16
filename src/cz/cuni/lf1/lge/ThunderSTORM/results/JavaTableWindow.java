@@ -358,7 +358,6 @@ class JavaTableWindow {
                     }
                 });
                 popup.add(item);
-                popup.add(new JSeparator());
             } else if(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON.equals(rt.getColumnName(column))) {
                 JMenuItem item = new JMenuItem("recalculate");
                 item.addActionListener(new ActionListener() {
@@ -385,6 +384,7 @@ class JavaTableWindow {
             //
             JRadioButtonMenuItem menuItem;
             for(Units unit : Units.getCompatibleUnits(selected)) {
+                if(unit == Units.UNITLESS) continue;
                 menuItem = new JRadioButtonMenuItem(unit.getLabel(), unit == selected);
                 menuItem.addActionListener(this);
                 popup.add(menuItem);

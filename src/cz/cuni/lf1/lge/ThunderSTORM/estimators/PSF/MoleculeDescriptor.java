@@ -291,8 +291,9 @@ public class MoleculeDescriptor implements Cloneable {
             psfEnergy = molecule.getParam(PSFModel.Params.LABEL_INTENSITY);
             bkgStd = molecule.getParam(PSFModel.Params.LABEL_BACKGROUND);
             //
-            return ((psfSigma2 + pixelSize*pixelSize/12) / psfEnergy) +
+            double xyVar = ((psfSigma2 + pixelSize*pixelSize/12) / psfEnergy) +
                     ((8*PI*psfSigma2*psfSigma2*bkgStd) / (pixelSize*pixelSize*psfEnergy*psfEnergy));
+            return sqrt(xyVar);
         }
         
         public static double emccdThompson(Molecule molecule) throws Exception {
@@ -310,8 +311,10 @@ public class MoleculeDescriptor implements Cloneable {
             psfEnergy = molecule.getParam(PSFModel.Params.LABEL_INTENSITY);
             bkgStd = molecule.getParam(PSFModel.Params.LABEL_BACKGROUND);
             //
-            return ((2*psfSigma2 + pixelSize*pixelSize/12) / psfEnergy) +
+            double xyVar = ((2*psfSigma2 + pixelSize*pixelSize/12) / psfEnergy) +
                     ((8*PI*psfSigma2*psfSigma2*bkgStd) / (pixelSize*pixelSize*psfEnergy*psfEnergy));
+            //
+            return sqrt(xyVar);
         }
     }
     
@@ -506,8 +509,8 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(LABEL_FRAME, Units.UNITLESS);
                 allUnits.put(LABEL_DETECTIONS, Units.UNITLESS);
                 //
-                allUnits.put(Fitting.LABEL_CCD_THOMPSON, Units.NANOMETER_SQUARED);
-                allUnits.put(Fitting.LABEL_EMCCD_THOMPSON, Units.NANOMETER_SQUARED);
+                allUnits.put(Fitting.LABEL_CCD_THOMPSON, Units.NANOMETER);
+                allUnits.put(Fitting.LABEL_EMCCD_THOMPSON, Units.NANOMETER);
             }
             if(allUnits.containsKey(paramName)) {
                 return allUnits.get(paramName);
