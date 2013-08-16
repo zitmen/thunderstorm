@@ -1,11 +1,13 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_DETECTIONS;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import ij.Executer;
@@ -42,6 +44,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -333,8 +336,32 @@ class JavaTableWindow {
             this.column = column;
             this.rt = IJResultsTable.getResultsTable();
             Units selected = rt.getColumnUnits(column);
-            //
             JPopupMenu popup = new JPopupMenu();
+            //
+            if(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON.equals(rt.getColumnName(column))) {
+                JMenuItem item = new JMenuItem("recalculate");
+                item.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        AnalysisPlugIn.convertUnitsForDefaultView(rt); // ensure that the units are correct!
+                        AnalysisPlugIn.calculateThompsonFormula(rt);
+                    }
+                });
+                popup.add(item);
+                popup.add(new JSeparator());
+            } else if(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON.equals(rt.getColumnName(column))) {
+                JMenuItem item = new JMenuItem("recalculate");
+                item.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        AnalysisPlugIn.convertUnitsForDefaultView(rt); // ensure that the units are correct!
+                        AnalysisPlugIn.calculateThompsonFormula(rt);
+                    }
+                });
+                popup.add(item);
+                popup.add(new JSeparator());
+            }
+            //
             JRadioButtonMenuItem menuItem;
             for(Units unit : Units.getCompatibleUnits(selected)) {
                 menuItem = new JRadioButtonMenuItem(unit.getLabel(), unit == selected);

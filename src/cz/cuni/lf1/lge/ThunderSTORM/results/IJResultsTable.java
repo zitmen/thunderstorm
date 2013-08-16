@@ -192,6 +192,10 @@ public class IJResultsTable {
     public void deleteRow(int row) {
         model.deleteRow(row);
     }
+    
+    public void deleteColumn(String columnName) {
+        model.deleteColumn(columnName);
+    }
 
     public Vector<String> getColumnNames() {
         return model.getColumnNames();
@@ -280,5 +284,9 @@ public class IJResultsTable {
 
     public void setStatus(String text) {
         tableWindow.setStatus(text);
+    }
+
+    public void fireStructureChanged() {
+        model.fireTableStructureChanged();
     }
 }

@@ -290,25 +290,44 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     }
 
     public static void calculateThompsonFormula(IJResultsTable rt) {
+        // Note: even though that the uncertainity can be calculated in pixels,
+        //       we choose to do it in nanometers by default setting
         try {
             String paramName;
             double paramValue;
             Molecule mol;
             if(CameraSetupPlugIn.isEmCcd) {
+                if(rt.columnExists(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
+                    rt.deleteColumn(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
+                }
+                //
+                paramName = MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON;
                 for(int row = 0, max = rt.getRowCount(); row < max; row++) {
                     mol = rt.getRow(row);
-                    paramName = MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON;
                     paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
-                    mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
+                    if(mol.hasParam(paramName)) {
+                        mol.setParam(paramName, paramValue);
+                    } else {
+                        mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
+                    }
                 }
             } else {
+                if(rt.columnExists(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
+                    rt.deleteColumn(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
+                }
+                //
+                paramName = MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON;
                 for(int row = 0, max = rt.getRowCount(); row < max; row++) {
                     mol = rt.getRow(row);
-                    paramName = MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON;
                     paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
-                    mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
+                    if(mol.hasParam(paramName)) {
+                        mol.setParam(paramName, paramValue);
+                    } else {
+                        mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
+                    }
                 }
             }
+            rt.fireStructureChanged();
         } catch(Exception e) {
             // ignore...PSF does not fit all the required parameters
         }

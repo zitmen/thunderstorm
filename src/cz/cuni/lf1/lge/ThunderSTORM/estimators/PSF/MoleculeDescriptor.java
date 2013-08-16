@@ -292,7 +292,7 @@ public class MoleculeDescriptor implements Cloneable {
             bkgVar = molecule.getParam(PSFModel.Params.LABEL_BACKGROUND);
             //
             return ((psfSigma2 + pixelSize*pixelSize/12) / psfEnergy) +
-                    ((8*PI*psfSigma2*psfSigma2*bkgVar) / (pixelSize*pixelSize*psfEnergy));
+                    ((8*PI*psfSigma2*psfSigma2*bkgVar) / (pixelSize*pixelSize*psfEnergy*psfEnergy));
         }
         
         public static double emccdThompson(Molecule molecule) throws Exception {
