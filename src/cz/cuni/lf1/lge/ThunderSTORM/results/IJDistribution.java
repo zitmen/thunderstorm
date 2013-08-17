@@ -3,7 +3,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
-import ij.gui.HistogramWindow;
 import ij.plugin.PlugIn;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -110,7 +109,7 @@ public class IJDistribution implements PlugIn, TextListener {
             }
         }
         stats.histYMax = maxCount;
-        new HistogramWindow(parameter + " Distribution", imp, stats);
+        new IJHistogramWindow(parameter, parameter + " Distribution", imp, stats);
     }
 
     int getIndex(String[] strings) {

@@ -73,6 +73,7 @@ class JavaTableWindow {
     private JTabbedPane tabbedPane;
     private OperationsHistoryPanel operationsStackPanel;
     private final TripleStateTableModel model;
+    private ResultsFilter resultsFilter;
 
     public JavaTableWindow() {
         frame = new JFrame("ThunderSTORM: Results");
@@ -217,8 +218,9 @@ class JavaTableWindow {
         buttons.add(Box.createHorizontalStrut(3));
         buttons.add(io_export);
         //
+        resultsFilter = new ResultsFilter(this, model);
         JPanel grouping = new ResultsGrouping(this, model).createUIPanel();
-        JPanel filter = new ResultsFilter(this, model).createUIPanel();
+        JPanel filter = resultsFilter.createUIPanel();
         JPanel drift = new ResultsDriftCorrection().createUIPanel();
 
         //fill tabbed pane
@@ -323,6 +325,14 @@ class JavaTableWindow {
             text = " ";
         }
         this.status.setText(text);
+    }
+    
+    public String getFilterFormula() {
+        return resultsFilter.getFilterFormula();
+    }
+    
+    public void setFilterFormula(String formula) {
+        resultsFilter.setFilterFormula(formula);
     }
 
     public OperationsHistoryPanel getOperationHistoryPanel() {

@@ -295,4 +295,18 @@ public class IJResultsTable {
     public void fireStructureChanged() {
         model.fireTableStructureChanged();
     }
+
+    void addNewFilter(String paramName, double greaterThan, double lessThan) {
+        String formula = tableWindow.getFilterFormula().trim();
+        StringBuilder sb = new StringBuilder(formula);
+        if(!formula.isEmpty()) {
+            sb.append(" & ");
+        }
+        sb.append("(");
+        sb.append(paramName).append(" > ").append(greaterThan);
+        sb.append(" & ");
+        sb.append(paramName).append(" < ").append(lessThan);
+        sb.append(")");
+        tableWindow.setFilterFormula(sb.toString());
+    }
 }

@@ -36,6 +36,14 @@ class ResultsFilter {
 
   public ResultsFilter() {
   }
+  
+  public void setFilterFormula(String formula) {
+      filterTextField.setText(formula);
+  }
+  
+  public String getFilterFormula() {
+      return filterTextField.getText();
+  }
 
   public JPanel createUIPanel() {
     filterPanel = new JPanel(new GridBagLayout());
