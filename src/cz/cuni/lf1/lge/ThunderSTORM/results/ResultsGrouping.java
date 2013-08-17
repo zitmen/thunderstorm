@@ -78,7 +78,7 @@ class ResultsGrouping {
     }
 
     protected void runGrouping(final double dist) {
-        if(dist == 0) {
+        if(!applyButton.isEnabled() || (dist == 0)) {
             return;
         }
         distanceTextField.setBackground(Color.WHITE);
