@@ -9,7 +9,7 @@ import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
-import javax.swing.JCheckBox;
+import java.awt.Checkbox;
 
 public class CameraSetupPlugIn implements PlugIn {
     
@@ -151,7 +151,7 @@ public class CameraSetupPlugIn implements PlugIn {
         CameraSetupPlugIn.gain = Defaults.GAIN.toDouble();
         CameraSetupPlugIn.offset = Defaults.OFFSET.toDouble();
         //
-        ((JCheckBox)gd.getCheckboxes().elementAt(0)).setSelected(Defaults.EMCCD.toDouble() != 0.0);
+        ((Checkbox)gd.getCheckboxes().elementAt(0)).setState(Defaults.EMCCD.toDouble() != 0.0);
         Vector<TextField> fields = (Vector<TextField>)gd.getNumericFields();
         fields.elementAt(0).setText(Defaults.PIXEL_SIZE.toString());
         fields.elementAt(1).setText(Defaults.PHOTONS_PER_ADU.toString());
