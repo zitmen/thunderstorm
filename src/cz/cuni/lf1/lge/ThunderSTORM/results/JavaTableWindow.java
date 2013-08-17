@@ -9,6 +9,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import ij.Executer;
 import ij.IJ;
@@ -54,6 +55,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicMenuUI;
 import javax.swing.table.TableRowSorter;
 
 class JavaTableWindow {
@@ -90,7 +94,7 @@ class JavaTableWindow {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(SwingUtilities.isRightMouseButton(e)) {
-                    new UnitsContextMenu(e, table.columnAtPoint(e.getPoint()));
+                    new UnitsContextMenu(e, table.convertColumnIndexToModel(table.columnAtPoint(e.getPoint())));
                 }
             }
         });
@@ -219,7 +223,7 @@ class JavaTableWindow {
         buttons.add(io_export);
         //
         resultsFilter = new ResultsFilter(this, model);
-        JPanel grouping = new ResultsGrouping(this, model).createUIPanel();
+        final JPanel grouping = new ResultsGrouping(this, model).createUIPanel();
         JPanel filter = resultsFilter.createUIPanel();
         JPanel drift = new ResultsDriftCorrection().createUIPanel();
 
@@ -406,7 +410,15 @@ class JavaTableWindow {
         public void actionPerformed(ActionEvent e) {
             Units target = Units.fromString(e.getActionCommand());
             if(rt.getColumnUnits(column) == target) return;    // nothing to do here
-            rt.setColumnUnits(column, target);
+            String colName = rt.getColumnName(column);
+            if(PSFModel.Params.LABEL_X.equals(colName) || PSFModel.Params.LABEL_Y.equals(colName)) {
+                // ensure that X and Y are always in same units!
+// TODO: PREVOD MODEL <--> VIEW !!!
+                rt.setColumnUnits(PSFModel.Params.LABEL_X, target);
+                rt.setColumnUnits(PSFModel.Params.LABEL_Y, target);
+            } else {
+                rt.setColumnUnits(column, target);
+            }
         }
     }
 

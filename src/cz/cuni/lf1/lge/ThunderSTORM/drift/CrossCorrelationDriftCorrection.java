@@ -40,13 +40,13 @@ public class CrossCorrelationDriftCorrection {
 
     /**
      *
-     * @param x
-     * @param y
+     * @param x [px]
+     * @param y [px]
      * @param frame
      * @param steps
      * @param renderingMagnification
-     * @param roiWidth - width of the original image or -1 for max(x)
-     * @param roiHeight - height of the original image or -1 for max(y)
+     * @param roiWidth - [px] width of the original image or -1 for max(x)
+     * @param roiHeight - [px] height of the original image or -1 for max(y)
      */
     public CrossCorrelationDriftCorrection(double[] x, double[] y, double[] frame, int steps, double renderingMagnification, int roiWidth, int roiHeight, boolean saveCorrelationImages) {
         this.x = x;
@@ -118,7 +118,8 @@ public class CrossCorrelationDriftCorrection {
         firstImage.transform();
         FHT secondImage;
         for(int i = 1; i < xBinnedByFrame.length; i++) {
-            IJ.showStatus("processing part " + i + " from " + (binCount - 1));
+            IJ.showProgress((double)i / (double)(binCount-1));
+            IJ.showStatus("Processing part " + i + " from " + (binCount - 1) + "...");
             secondImage = new FHT(renderer.getRenderedImage(xBinnedByFrame[i], yBinnedByFrame[i], null, null).getProcessor());
             secondImage.setShowProgress(false);
             //new ImagePlus("render " + i,renderer.getRenderedImage(xBinnedByFrame[i], yBinnedByFrame[i], null, null).getProcessor()).show();
@@ -155,6 +156,7 @@ public class CrossCorrelationDriftCorrection {
         xBinnedByFrame = null;
         yBinnedByFrame = null;
         IJ.showStatus("");
+        IJ.showProgress(1.0);
     }
 
     private void binResultByFrame() {

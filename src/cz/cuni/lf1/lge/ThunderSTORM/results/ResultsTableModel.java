@@ -65,20 +65,34 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
         fireTableDataChanged();
     }
 
-    public Double[] getColumnAsDoubleObjects(String columnName) {
+    public Double[] getColumnAsDoubleObjects(String columnName, Units units) {
         Double [] column = new Double[rows.size()];
         int colidx = columns.getParamIndex(columnName);
-        for(int i = 0; i < column.length; i++) {
-            column[i] = rows.elementAt(i).getParamAt(colidx);
+        if(units == null) {
+            for(int i = 0; i < column.length; i++) {
+                column[i] = rows.elementAt(i).getParamAt(colidx);
+            }
+        } else {
+            Units src = columns.units.elementAt(columns.getParamColumn(columnName));
+            for(int i = 0; i < column.length; i++) {
+                column[i] = src.convertTo(units, rows.elementAt(i).getParamAt(colidx));
+            }
         }
         return column;
     }
 
-    public double[] getColumnAsDoubles(String columnName) {
+    public double[] getColumnAsDoubles(String columnName, Units units) {
         double [] column = new double[rows.size()];
         int colidx = columns.getParamIndex(columnName);
-        for(int i = 0; i < column.length; i++) {
-            column[i] = rows.elementAt(i).getParamAt(colidx);
+        if(units == null) {
+            for(int i = 0; i < column.length; i++) {
+                column[i] = rows.elementAt(i).getParamAt(colidx);
+            }
+        } else {
+            Units src = columns.units.elementAt(columns.getParamColumn(columnName));
+            for(int i = 0; i < column.length; i++) {
+                column[i] = src.convertTo(units, rows.elementAt(i).getParamAt(colidx));
+            }
         }
         return column;
     }

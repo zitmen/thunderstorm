@@ -6,6 +6,7 @@ import ags.utils.dataStructures.trees.thirdGenKD.SquareEuclideanDistanceFunction
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import ij.IJ;
@@ -14,6 +15,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
@@ -38,6 +41,8 @@ class ResultsGrouping {
     private JPanel grouping;
     private JTextField distanceTextField;
     private JButton applyButton;
+    private Units distUnits;
+    private JLabel groupThrLabel;
 
     public ResultsGrouping(JavaTableWindow table, TripleStateTableModel model) {
         this.table = table;
@@ -49,7 +54,7 @@ class ResultsGrouping {
         InputListener listener = new InputListener();
         distanceTextField = new JTextField();
         distanceTextField.addKeyListener(listener);
-        JLabel groupThrLabel = new JLabel("Merge molecules in subsequent frames with mutual lateral distance equal or less than: ", SwingConstants.TRAILING);
+        groupThrLabel = new JLabel("Merge molecules in subsequent frames with mutual lateral distance \u2264 [current units of x,y]: ", SwingConstants.TRAILING);
         groupThrLabel.setLabelFor(distanceTextField);
         applyButton = new JButton("Merge");
         applyButton.addActionListener(listener);

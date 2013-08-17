@@ -1,7 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -213,7 +215,10 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             } else if(fit.hasParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
                 dxVal = fit.getParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
             }
-            drawPoint(fit.getX(), fit.getY(), zVal, dxVal);
+            //
+            Units unitsX = fit.descriptor.units.elementAt(fit.descriptor.getParamColumn(PSFModel.Params.LABEL_X));
+            Units unitsY = fit.descriptor.units.elementAt(fit.descriptor.getParamColumn(PSFModel.Params.LABEL_Y));
+            drawPoint(unitsX.convertTo(PIXEL, fit.getX()), unitsY.convertTo(PIXEL, fit.getY()), zVal, dxVal);
         }
     }
 

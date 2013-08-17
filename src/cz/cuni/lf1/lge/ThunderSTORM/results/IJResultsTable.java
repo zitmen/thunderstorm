@@ -134,17 +134,37 @@ public class IJResultsTable {
     }
 
     public Double[] getColumnAsDoubleObjects(String columnName) {
-        return model.getColumnAsDoubleObjects(columnName);
+        return model.getColumnAsDoubleObjects(columnName, null);
+    }
+    
+    public Double[] getColumnAsDoubleObjects(String columnName, Units units) {
+        return model.getColumnAsDoubleObjects(columnName, units);
     }
 
     public double[] getColumnAsDoubles(String columnName) {
-        return model.getColumnAsDoubles(columnName);
+        return model.getColumnAsDoubles(columnName, null);
+    }
+    
+    public double[] getColumnAsDoubles(String columnName, Units units) {
+        return model.getColumnAsDoubles(columnName, units);
     }
     
     // we usually work with model indices, but for example for row sorting
     // we still need to do the conversion
     public int convertViewRowIndexToModel(int viewRowIndex) {
         return tableWindow.getView().convertRowIndexToModel(viewRowIndex);
+    }
+    
+    public int convertModelRowIndexToView(int modelRowIndex) {
+        return tableWindow.getView().convertRowIndexToView(modelRowIndex);
+    }
+    
+    public int convertViewColumnIndexToModel(int viewColumnIndex) {
+        return tableWindow.getView().convertColumnIndexToModel(viewColumnIndex);
+    }
+    
+    public int convertModelColumnIndexToView(int modelColumnIndex) {
+        return tableWindow.getView().convertColumnIndexToView(modelColumnIndex);
     }
     
     public Molecule getRow(int index) {
