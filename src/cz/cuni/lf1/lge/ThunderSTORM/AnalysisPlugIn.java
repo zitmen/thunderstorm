@@ -1,7 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtract;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
@@ -27,7 +25,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
@@ -123,11 +120,12 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             rt.setActualState();
             rt.setPreviewRenderer(renderingQueue);
             setDefaultColumnsWidth(rt);
+            rt.setAnalyzedImage(imp);
             rt.show();
             //
             // Show detections in the image
             imp.setOverlay(null);
-            RenderingOverlay.showPointsInImage(rt, imp, roi, Color.red, RenderingOverlay.MARKER_CROSS);
+            RenderingOverlay.showPointsInImage(rt, imp, roi.getBounds(), Color.red, RenderingOverlay.MARKER_CROSS);
             renderingQueue.repaintLater();
             //
             // Finished

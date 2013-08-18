@@ -4,8 +4,18 @@ import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.ASHRenderingUI;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.AbstractRenderingUI;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
+import ij.ImagePlus;
+import ij.WindowManager;
 import ij.plugin.PlugIn;
 import java.awt.Choice;
 import java.awt.TextField;
@@ -77,6 +87,18 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 gd.addCheckboxGroup(col_headers.length, 1, col_headers, active_columns);
             } else if("import".equals(command)) {
                 gd.addCheckbox("clear the table of results before import", true);
+                gd.addCheckbox("show rendering preview", true);
+                int [] openedImagesIds = WindowManager.getIDList();
+                if(openedImagesIds != null) {
+                    String [] openedImagesTitles = new String[openedImagesIds.length+1];
+                    openedImagesTitles[0] = "";
+                    for(int i = 0; i < openedImagesIds.length; i++) {
+                        openedImagesTitles[i+1] = WindowManager.getImage(openedImagesIds[i]).getTitle();
+                    }
+                    gd.addMessage("If the input image for the imported results is opened, which one is it?\n"
+                            + " It can be used for overlay preview of detected molecules.");
+                    gd.addChoice("The input image: ", openedImagesTitles, "");
+                }
             }
             gd.showDialog();
             
@@ -93,6 +115,21 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                     exportToFile(filePath, columns);
                 } else if("import".equals(command)) {
                     importFromFile(filePath, gd.getNextBoolean());
+                    IJResultsTable rt = IJResultsTable.getResultsTable();
+                    boolean preview = false;
+                    if(gd.getNextBoolean()) {
+                        preview = true;
+                    }
+                    try {
+                        rt.setAnalyzedImage(WindowManager.getImage(gd.getNextChoice()));
+                    } catch(ArrayIndexOutOfBoundsException ex) {
+                        // no getNextChoice
+                    }
+                    if(preview) {
+                        rt.showPreview();   // shows both rendering and overlay (if the input image has been set)
+                    } else {
+                        rt.repaintAnalyzedImageOverlay();   // shows just the overlay (if the input image has been set)
+                    }
                 }
             }
         } catch (Exception ex) {

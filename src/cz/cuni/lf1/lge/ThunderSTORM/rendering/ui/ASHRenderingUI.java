@@ -22,11 +22,19 @@ public class ASHRenderingUI extends AbstractRenderingUI {
   private static final int DEFAULT_SHIFTS = 2;
   private static final int DEFAULT_ZSHIFTS = 2;
   
+  private void defaultInit() {
+      shifts = DEFAULT_SHIFTS;
+      zShifts = DEFAULT_ZSHIFTS;
+  }
+  
   public ASHRenderingUI() {
+      super();
+      defaultInit();
   }
   
   public ASHRenderingUI(int sizeX, int sizeY) {
     super(sizeX, sizeY);
+    defaultInit();
   }
   
   @Override

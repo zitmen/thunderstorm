@@ -31,10 +31,21 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   private final static int DEFAULT_REPAINT_FREQUENCY = 20;
   private static final String DEFAULT_Z_RANGE = "-50:10:50";
   
+  private void defaultInit() {
+      resolution = DEFAULT_RESOLUTION;
+      repaintFrequency = DEFAULT_REPAINT_FREQUENCY;
+      String [] range = DEFAULT_Z_RANGE.split(":");
+      zFrom = Integer.parseInt(range[0]);
+      zStep = Integer.parseInt(range[1]);
+      zTo = Integer.parseInt(range[2]);
+  }
+  
   public AbstractRenderingUI() {
+      defaultInit();
   }
 
   public AbstractRenderingUI(int sizeX, int sizeY) {
+      defaultInit();
     this.sizeX = sizeX;
     this.sizeY = sizeY;
   }

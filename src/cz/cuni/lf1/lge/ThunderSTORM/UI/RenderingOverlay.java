@@ -11,6 +11,7 @@ import ij.gui.Line;
 import ij.gui.Overlay;
 import ij.gui.Roi;
 import java.awt.Color;
+import java.awt.Rectangle;
 
 /**
  * Overlay for preview of results.
@@ -97,7 +98,7 @@ public class RenderingOverlay {
         return overlay;
     }
 
-    public static void showPointsInImage(IJResultsTable rt, ImagePlus imp, Roi roi, Color c, int markerType) {
+    public static void showPointsInImage(IJResultsTable rt, ImagePlus imp, Rectangle roi, Color c, int markerType) {
         Overlay overlay = imp.getOverlay();
         if(overlay == null) {
             overlay = new Overlay();
@@ -106,13 +107,21 @@ public class RenderingOverlay {
         Units unitsX = rt.getColumnUnits(PSFModel.Params.LABEL_X);
         Units unitsY = rt.getColumnUnits(PSFModel.Params.LABEL_Y);
         Units target = MoleculeDescriptor.Units.PIXEL;
+        if(roi == null) {
+            Roi r = imp.getRoi();
+            if(r != null) {
+                roi = r.getBounds();
+            } else {
+                roi = new Rectangle(0, 0, imp.getWidth(), imp.getHeight());
+            }
+        }
         switch(markerType) {
             case MARKER_CROSS:
                 for(int r = 0, rows = rt.getRowCount(); r < rows; r++) {
                     mol = rt.getRow(r);
                     drawCross((int)mol.getParam(MoleculeDescriptor.LABEL_ID),
-                            unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
-                            unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
+                            roi.x + unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
+                            roi.y + unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
                             (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME),
                             overlay, c);
                 }
@@ -122,8 +131,8 @@ public class RenderingOverlay {
                 for(int r = 0, rows = rt.getRowCount(); r < rows; r++) {
                     mol = rt.getRow(r);
                     drawCircle((int)mol.getParam(MoleculeDescriptor.LABEL_ID),
-                            unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
-                            unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
+                            roi.x + unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
+                            roi.y + unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
                             (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME),
                             overlay, c);
                 }

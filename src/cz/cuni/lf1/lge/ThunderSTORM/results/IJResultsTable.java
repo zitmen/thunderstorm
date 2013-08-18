@@ -1,10 +1,13 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
+import ij.ImagePlus;
+import java.awt.Color;
 import java.util.Vector;
 
 /**
@@ -51,6 +54,7 @@ public class IJResultsTable {
     
     private JavaTableWindow tableWindow;
     private TripleStateTableModel model;
+    private ImagePlus analyzedImage;
 
     /**
      * Constructs an empty ResultsTable with the counter=0 and no columns.
@@ -58,6 +62,17 @@ public class IJResultsTable {
     public IJResultsTable() {
         tableWindow = new JavaTableWindow();
         model = tableWindow.getModel();
+    }
+    
+    public void setAnalyzedImage(ImagePlus imp) {
+        analyzedImage = imp;
+    }
+    
+    public void repaintAnalyzedImageOverlay() {
+        if(analyzedImage != null) {
+            analyzedImage.setOverlay(null);
+            RenderingOverlay.showPointsInImage(this, analyzedImage, null, Color.red, RenderingOverlay.MARKER_CROSS);
+        }
     }
     
     public void setColumnPreferredWidth(String columnName, int width) {

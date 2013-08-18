@@ -10,7 +10,13 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.ASHRenderingUI;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 import ij.Executer;
 import ij.IJ;
 import ij.WindowManager;
@@ -55,9 +61,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicMenuUI;
 import javax.swing.table.TableRowSorter;
 
 class JavaTableWindow {
@@ -268,22 +271,33 @@ class JavaTableWindow {
     }
 
     public void showPreview() {
-        if(livePreview == false || previewRenderer == null) {
+        if(livePreview == false) {
             return;
         }
-        //
         IJResultsTable rt = IJResultsTable.getResultsTable();
         if(!rt.columnExists(LABEL_X) || !rt.columnExists(LABEL_Y)) {
             IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X, LABEL_Y, rt.getColumnNames()));
             return;
         }
         if(rt.isEmpty()) {
-            IJ.error("results were empty");
+            IJ.error("Results were empty.");
             return;
         }
+        //
+        if(previewRenderer == null) {
+            IRendererUI renderer = new ASHRenderingUI();
+            renderer.setSize((int)Math.ceil(max(rt.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL))) + 1,
+                             (int)Math.ceil(max(rt.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL))) + 1);
+            IncrementalRenderingMethod rendererImplementation = renderer.getImplementation();
+            previewRenderer = new RenderingQueue(rendererImplementation,
+                    new RenderingQueue.DefaultRepaintTask(rendererImplementation.getRenderedImage()),
+                            renderer.getRepaintFrequency());
+        }
+        //
         previewRenderer.resetLater();
         previewRenderer.renderLater(rt.getData());
         previewRenderer.repaintLater();
+        rt.repaintAnalyzedImageOverlay();
     }
 
     public TripleStateTableModel getModel() {
