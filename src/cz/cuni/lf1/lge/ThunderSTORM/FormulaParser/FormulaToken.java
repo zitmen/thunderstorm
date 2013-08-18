@@ -15,15 +15,16 @@ class FormulaToken {
     public static final int OP_LT = 9;
     public static final int OP_GT = 10;
     public static final int OP_EQ = 11;
-    public static final int LPAR = 12;
-    public static final int RPAR = 13;
-    public static final int DOT = 14;
-    public static final int NAME = 15;
-    public static final int FLOAT = 16;
+    public static final int OP_NOT = 12;
+    public static final int LPAR = 13;
+    public static final int RPAR = 14;
+    public static final int DOT = 15;
+    public static final int NAME = 16;
+    public static final int FLOAT = 17;
     
     private static final String[] TYPE_NAMES = new String[] {
         "end of input", "+", "-", "*", "/", "%", "^", "&", "|", "<", ">",
-        "=", "(", ")", ".", "a variable", "a number"
+        "=", "!", "(", ")", ".", "a variable", "a number"
     };
 
     static String toString(int type) {

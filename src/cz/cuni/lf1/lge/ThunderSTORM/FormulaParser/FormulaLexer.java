@@ -38,6 +38,7 @@ class FormulaLexer {
                 case '<': token.type = FormulaToken.OP_LT; break;
                 case '>': token.type = FormulaToken.OP_GT; break;
                 case '=': token.type = FormulaToken.OP_EQ; break;
+                case '!': token.type = FormulaToken.OP_NOT; break;
                 case '(': token.type = FormulaToken.LPAR; break;
                 case ')': token.type = FormulaToken.RPAR; break;
                 case '.': token.type = FormulaToken.DOT; break;

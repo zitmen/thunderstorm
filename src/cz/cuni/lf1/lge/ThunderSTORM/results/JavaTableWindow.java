@@ -2,8 +2,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.AnalysisPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_DETECTIONS;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
@@ -80,7 +78,7 @@ class JavaTableWindow {
     private JTabbedPane tabbedPane;
     private OperationsHistoryPanel operationsStackPanel;
     private final TripleStateTableModel model;
-    private ResultsFilter resultsFilter;
+    ResultsFilter resultsFilter;
 
     public JavaTableWindow() {
         frame = new JFrame("ThunderSTORM: Results");
@@ -125,18 +123,25 @@ class JavaTableWindow {
                 table.setCursor(Cursor.getDefaultCursor()); // reset
             }
         });
+        final JavaTableWindow jtw = this;
         table.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    IJResultsTable rt = IJResultsTable.getResultsTable();
-                    int row = table.getSelectedRow();
-                    int rowIndex = rt.convertViewRowIndexToModel(row);
-                    Molecule mol = rt.getRow(rowIndex);
-                    if(mol.hasParam(LABEL_DETECTIONS)) {
-                        if(mol.getParam(LABEL_DETECTIONS) > 1) {
-                            new MergedMoleculesPopUp(table, row, 0, mol.getDetections());
+                if(SwingUtilities.isLeftMouseButton(e)) {
+                    if (e.getClickCount() == 2) {
+                        IJResultsTable rt = IJResultsTable.getResultsTable();
+                        int row = table.getSelectedRow();
+                        int rowIndex = rt.convertViewRowIndexToModel(row);
+                        Molecule mol = rt.getRow(rowIndex);
+                        if(mol.hasParam(LABEL_DETECTIONS)) {
+                            if(mol.getParam(LABEL_DETECTIONS) > 1) {
+                                new MergedMoleculesPopUp(table, row, 0, mol.getDetections());
+                            }
                         }
+                    }
+                } else if(SwingUtilities.isRightMouseButton(e)) {
+                    if(table.getSelectedRowCount() > 0) {
+                        new TableRowsPopUpMenu(e, jtw);
                     }
                 }
             }
@@ -203,7 +208,7 @@ class JavaTableWindow {
                 new Executer("Rendering").run();
             }
         });
-        livePreview = true;
+        livePreview = false;
         preview = new JCheckBox("Preview", livePreview);
         preview.addItemListener(new ItemListener() {
             @Override
@@ -212,7 +217,6 @@ class JavaTableWindow {
                 showPreview();
             }
         });
-        preview.setEnabled(false);
         buttons.add(preview);
         buttons.add(Box.createHorizontalGlue());
         buttons.add(setCamera);
@@ -269,34 +273,38 @@ class JavaTableWindow {
         frame.setContentPane(contentPane);
         frame.pack();
     }
+    
+    public void setLivePreview(boolean enabled) {
+        livePreview = enabled;
+        preview.setSelected(enabled);
+    }
 
     public void showPreview() {
-        if(livePreview == false) {
-            return;
-        }
         IJResultsTable rt = IJResultsTable.getResultsTable();
-        if(!rt.columnExists(LABEL_X) || !rt.columnExists(LABEL_Y)) {
-            IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X, LABEL_Y, rt.getColumnNames()));
-            return;
+        if(livePreview) {
+            if(!rt.columnExists(LABEL_X) || !rt.columnExists(LABEL_Y)) {
+                IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X, LABEL_Y, rt.getColumnNames()));
+                return;
+            }
+            if(rt.isEmpty()) {
+                IJ.error("Results were empty.");
+                return;
+            }
+            //
+            if(previewRenderer == null) {
+                IRendererUI renderer = new ASHRenderingUI();
+                renderer.setSize((int)Math.ceil(max(rt.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL))) + 1,
+                                 (int)Math.ceil(max(rt.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL))) + 1);
+                IncrementalRenderingMethod rendererImplementation = renderer.getImplementation();
+                previewRenderer = new RenderingQueue(rendererImplementation,
+                        new RenderingQueue.DefaultRepaintTask(rendererImplementation.getRenderedImage()),
+                                renderer.getRepaintFrequency());
+            }
+            //
+            previewRenderer.resetLater();
+            previewRenderer.renderLater(rt.getData());
+            previewRenderer.repaintLater();
         }
-        if(rt.isEmpty()) {
-            IJ.error("Results were empty.");
-            return;
-        }
-        //
-        if(previewRenderer == null) {
-            IRendererUI renderer = new ASHRenderingUI();
-            renderer.setSize((int)Math.ceil(max(rt.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL))) + 1,
-                             (int)Math.ceil(max(rt.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL))) + 1);
-            IncrementalRenderingMethod rendererImplementation = renderer.getImplementation();
-            previewRenderer = new RenderingQueue(rendererImplementation,
-                    new RenderingQueue.DefaultRepaintTask(rendererImplementation.getRenderedImage()),
-                            renderer.getRepaintFrequency());
-        }
-        //
-        previewRenderer.resetLater();
-        previewRenderer.renderLater(rt.getData());
-        previewRenderer.repaintLater();
         rt.repaintAnalyzedImageOverlay();
     }
 
@@ -334,7 +342,6 @@ class JavaTableWindow {
     }
 
     public void setPreviewRenderer(RenderingQueue renderer) {
-        preview.setEnabled(renderer != null);
         previewRenderer = renderer;
     }
 

@@ -325,5 +325,33 @@ public class RetVal {
             }
         }
     }
+    
+    public RetVal neq(RetVal b) {
+        if(isValue()) {
+            if(b.isValue()) {   // scalar != scalar
+                return new RetVal(val.doubleValue() != b.val.doubleValue());
+            } else if(b.isVector()) {   // scalar != vector
+                return new RetVal(Math.relNeq(val, b.vec));
+            } else {    // scalar != matrix
+                return new RetVal(ImageProcessor.relNeq(val, b.mat));
+            }
+        } else if(isVector()) {
+            if(b.isValue()) {   // vector != scalar
+                return new RetVal(Math.relNeq(vec, b.val));
+            } else if(b.isVector()) {   // vector != vector
+                return new RetVal(Math.relNeq(vec, b.vec));
+            } else {    // vector != matrix
+                throw new IllegalArgumentException("Operation vector=matrix is not supported!");
+            }
+        } else {
+            if(b.isValue()) {  // matrix != scalar
+                return new RetVal(ImageProcessor.relNeq(mat, b.val));
+            } else if(b.isVector()) {   // matrix != vector
+                throw new IllegalArgumentException("Operation matrix=vector is not supported!");
+            } else {   // matrix != matrix
+                return new RetVal(ImageProcessor.relNeq(mat, b.mat));
+            }
+        }
+    }
 
 }

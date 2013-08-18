@@ -496,6 +496,25 @@ public class Math {
         }
         return res;
     }
+    
+    public static Double[] relNeq(Double[] a, Double[] b) {
+        int len1, len2;
+        if(a.length < b.length) {
+            len1 = a.length;
+            len2 = b.length;
+        } else {
+            len1 = b.length;
+            len2 = a.length;
+        }
+        Double[] res = new Double[len2];
+        for(int i = 0; i < len1; i++) {
+            res[i] = ((a[i].doubleValue() != b[i].doubleValue()) ? 1.0 : 0.0);
+        }
+        for(int i = len1; i < len2; i++) {
+            res[i] = 0.0;
+        }
+        return res;
+    }
 
     public static Double[] relGt(Double[] a, Double[] b) {
         int len1, len2;
@@ -623,6 +642,19 @@ public class Math {
 
     public static Double[] relEq(Double[] vec, Double val) {
         return relEq(val, vec);
+    }
+    
+    public static Double[] relNeq(Double val, Double[] vec) {
+        Double[] res = new Double[vec.length];
+        double v = val.doubleValue();
+        for(int i = 0; i < vec.length; i++) {
+            res[i] = ((v != vec[i].doubleValue()) ? 1.0 : 0.0);
+        }
+        return res;
+    }
+
+    public static Double[] relNeq(Double[] vec, Double val) {
+        return relNeq(val, vec);
     }
 
     public static Double abs(Double val) {

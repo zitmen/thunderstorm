@@ -68,6 +68,10 @@ public class IJResultsTable {
         analyzedImage = imp;
     }
     
+    public ImagePlus getAnalyzedImage() {
+        return analyzedImage;
+    }
+    
     public void repaintAnalyzedImageOverlay() {
         if(analyzedImage != null) {
             analyzedImage.setOverlay(null);
@@ -313,6 +317,10 @@ public class IJResultsTable {
     //delegated methods from window
     public void showPreview() {
         tableWindow.showPreview();
+    }
+    
+    public void setLivePreview(boolean enabled) {
+        tableWindow.setLivePreview(enabled);
     }
 
     public OperationsHistoryPanel getOperationHistoryPanel() {

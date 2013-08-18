@@ -18,6 +18,7 @@ public class Operator extends Node {
     public static final int LT = 13;
     public static final int GT = 14;
     public static final int EQ = 15;
+    public static final int NEQ = 16;
     
     int op;
     Node left = null, right = null;
@@ -38,11 +39,12 @@ public class Operator extends Node {
             case MOD: return left.eval().mod(right.eval());
             case POW: return left.eval().pow(right.eval());
             case AND: return left.eval().and(right.eval());
-            case OR: return left.eval().or(right.eval());
-            case LT: return left.eval().lt(right.eval());
-            case GT: return left.eval().gt(right.eval());
-            case EQ: return left.eval().eq(right.eval());
-            default : throw new UnsupportedOperationException("Unknown operator! Only supported operators are: + - * / ^");
+            case OR : return left.eval().or (right.eval());
+            case LT : return left.eval().lt (right.eval());
+            case GT : return left.eval().gt (right.eval());
+            case EQ : return left.eval().eq (right.eval());
+            case NEQ: return left.eval().neq(right.eval());
+            default : throw new UnsupportedOperationException("Unknown operator! Only supported operators are: + - * / ^ & | < > = !=");
         }
     }
 

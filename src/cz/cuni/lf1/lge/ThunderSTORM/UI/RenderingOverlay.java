@@ -78,7 +78,7 @@ public class RenderingOverlay {
         imp.setOverlay(overlay);
     }
 
-    private static Overlay addPointsToOverlay(double[] xCoord, double[] yCoord, Overlay overlay, int slice, Color c, int markerType) {
+    public static Overlay addPointsToOverlay(double[] xCoord, double[] yCoord, Overlay overlay, int slice, Color c, int markerType) {
         switch(markerType) {
             case MARKER_CROSS:
                 for(int i = 0; i < xCoord.length; i++) {
@@ -88,7 +88,7 @@ public class RenderingOverlay {
 
             case MARKER_CIRCLE:
                 for(int i = 0; i < xCoord.length; i++) {
-                    drawCircle(i + 1, xCoord[i], yCoord[i], slice, overlay, c);
+                    drawCircle(i + 1, xCoord[i], yCoord[i], slice, overlay, c, 1.0);
                 }
                 break;
 
@@ -97,7 +97,7 @@ public class RenderingOverlay {
         }
         return overlay;
     }
-
+    
     public static void showPointsInImage(IJResultsTable rt, ImagePlus imp, Rectangle roi, Color c, int markerType) {
         Overlay overlay = imp.getOverlay();
         if(overlay == null) {
@@ -134,7 +134,7 @@ public class RenderingOverlay {
                             roi.x + unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
                             roi.y + unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
                             (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME),
-                            overlay, c);
+                            overlay, c, 1.0);
                 }
                 break;
 
@@ -144,7 +144,7 @@ public class RenderingOverlay {
         imp.setOverlay(overlay);
     }
 
-    private static void drawCross(int id, double xCoord, double yCoord, int slice, Overlay overlay, Color c) {
+    public static void drawCross(int id, double xCoord, double yCoord, int slice, Overlay overlay, Color c) {
         double halfSize = 1;
         Line horizontalLine = new Line(xCoord - halfSize, yCoord, xCoord + halfSize, yCoord);
         Line verticalLine = new Line(xCoord, yCoord - halfSize, xCoord, yCoord + halfSize);
@@ -160,9 +160,8 @@ public class RenderingOverlay {
         overlay.add(verticalLine);
     }
 
-    private static void drawCircle(int id, double xCoord, double yCoord, int slice, Overlay overlay, Color c) {
-        double halfSize = 1;
-        EllipseRoi ellipse = new EllipseRoi(xCoord - halfSize, yCoord, xCoord + halfSize, yCoord, 1);
+    public static void drawCircle(int id, double xCoord, double yCoord, int slice, Overlay overlay, Color c, double radius) {
+        EllipseRoi ellipse = new EllipseRoi(xCoord - radius, yCoord, xCoord + radius, yCoord, 1);
         ellipse.setName(Integer.toString(id));
         ellipse.setPosition(slice);
         if(c != null) {

@@ -76,12 +76,13 @@ public class FormulaParser {
         return l;
     }
     
-    private Node relExpr() throws FormulaParserException {    // l=r, l<r, l>r
+    private Node relExpr() throws FormulaParserException {    // l=r, l!=r, l<r, l>r
         return relExprTail(addSubExpr());
     }
     
     private Node relExprTail(Node l) throws FormulaParserException {    // l=r, l<r, l>r
         switch(peek()) {
+            case OP_NOT: match(OP_NOT); match(OP_EQ); return relExprTail(getNewOperator(Operator.NEQ, l, addSubExpr()));
             case OP_EQ: match(OP_EQ); return relExprTail(getNewOperator(Operator.EQ, l, addSubExpr()));
             case OP_GT: match(OP_GT); return relExprTail(getNewOperator(Operator.GT, l, addSubExpr()));
             case OP_LT: match(OP_LT); return relExprTail(getNewOperator(Operator.LT, l, addSubExpr()));

@@ -116,20 +116,13 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 } else if("import".equals(command)) {
                     importFromFile(filePath, gd.getNextBoolean());
                     IJResultsTable rt = IJResultsTable.getResultsTable();
-                    boolean preview = false;
-                    if(gd.getNextBoolean()) {
-                        preview = true;
-                    }
+                    rt.setLivePreview(gd.getNextBoolean());
                     try {
                         rt.setAnalyzedImage(WindowManager.getImage(gd.getNextChoice()));
                     } catch(ArrayIndexOutOfBoundsException ex) {
                         // no getNextChoice
                     }
-                    if(preview) {
-                        rt.showPreview();   // shows both rendering and overlay (if the input image has been set)
-                    } else {
-                        rt.repaintAnalyzedImageOverlay();   // shows just the overlay (if the input image has been set)
-                    }
+                    rt.showPreview();
                 }
             }
         } catch (Exception ex) {
