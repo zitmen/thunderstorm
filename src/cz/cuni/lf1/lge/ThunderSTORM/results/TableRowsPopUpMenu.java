@@ -107,9 +107,13 @@ final class TableRowsPopUpMenu implements ActionListener {
                 double yCoord = rect.y + unitsY.convertTo(pixels, rt.getValue(r, PSFModel.Params.LABEL_Y).doubleValue());
                 int slice = rt.getValue(r, MoleculeDescriptor.LABEL_FRAME).intValue();
                 if(rowIndices.contains(r)) {
-                    RenderingOverlay.drawCircle(id, xCoord, yCoord, slice, overlay, Color.GREEN, 2.5);
+                    for(int frame = slice, max = slice + rt.getRow(r).getDetections().size(); frame <= max; frame++) {
+                        RenderingOverlay.drawCircle(id, xCoord, yCoord, frame, overlay, Color.GREEN, 2.5);
+                    }
                 } else {
-                    RenderingOverlay.drawCross(id, xCoord, yCoord, slice, overlay, Color.RED);
+                    for(int frame = slice, max = slice + rt.getRow(r).getDetections().size(); frame <= max; frame++) {
+                        RenderingOverlay.drawCross(id, xCoord, yCoord, frame, overlay, Color.RED);
+                    }
                 }
             }
             IJ.showProgress(1.0);

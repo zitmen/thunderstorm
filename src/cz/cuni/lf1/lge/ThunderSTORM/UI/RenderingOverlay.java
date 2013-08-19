@@ -4,6 +4,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
@@ -88,7 +90,7 @@ public class RenderingOverlay {
 
             case MARKER_CIRCLE:
                 for(int i = 0; i < xCoord.length; i++) {
-                    drawCircle(i + 1, xCoord[i], yCoord[i], slice, overlay, c, 1.0);
+                    drawCircle(i + 1, xCoord[i], yCoord[i], slice, overlay, c, 2.5);
                 }
                 break;
 
@@ -99,6 +101,9 @@ public class RenderingOverlay {
     }
     
     public static void showPointsInImage(IJResultsTable rt, ImagePlus imp, Rectangle roi, Color c, int markerType) {
+        if(rt.isEmpty()) return;
+        if(!rt.columnExists(LABEL_X) || !rt.columnExists(LABEL_Y)) return;
+        //
         Overlay overlay = imp.getOverlay();
         if(overlay == null) {
             overlay = new Overlay();
@@ -119,22 +124,24 @@ public class RenderingOverlay {
             case MARKER_CROSS:
                 for(int r = 0, rows = rt.getRowCount(); r < rows; r++) {
                     mol = rt.getRow(r);
-                    drawCross((int)mol.getParam(MoleculeDescriptor.LABEL_ID),
-                            roi.x + unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
-                            roi.y + unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
-                            (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME),
-                            overlay, c);
+                    for(int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME), max = frame + mol.getDetections().size(); frame <= max; frame++) {
+                        drawCross((int)mol.getParam(MoleculeDescriptor.LABEL_ID),
+                                roi.x + unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
+                                roi.y + unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
+                                frame, overlay, c);
+                    }
                 }
                 break;
 
             case MARKER_CIRCLE:
                 for(int r = 0, rows = rt.getRowCount(); r < rows; r++) {
                     mol = rt.getRow(r);
-                    drawCircle((int)mol.getParam(MoleculeDescriptor.LABEL_ID),
-                            roi.x + unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
-                            roi.y + unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
-                            (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME),
-                            overlay, c, 1.0);
+                    for(int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME), max = frame + mol.getDetections().size(); frame <= max; frame++) {
+                        drawCircle((int)mol.getParam(MoleculeDescriptor.LABEL_ID),
+                                roi.x + unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
+                                roi.y + unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
+                                (int)frame, overlay, c, 2.5);
+                    }
                 }
                 break;
 
