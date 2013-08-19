@@ -25,6 +25,7 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
 
     private int connectivity;
     private String threshold;
+    private float thresholdValue;
     private JTextField thrTextField;
     private JRadioButton conn4RadioButton, conn8RadioButton;
     private final static String DEFAULT_THRESHOLD = "10*std(F)";
@@ -239,8 +240,8 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
      */
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException {
-        float thr = Thresholder.getThreshold(threshold);
-        return ((connectivity == Graph.CONNECTIVITY_4) ? getMax4Candidates(image, thr) : getMax8Candidates(image, thr));
+        thresholdValue = Thresholder.getThreshold(threshold);
+        return ((connectivity == Graph.CONNECTIVITY_4) ? getMax4Candidates(image, thresholdValue) : getMax8Candidates(image, thresholdValue));
     }
 
     @Override
@@ -319,5 +320,10 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
     @Override
     public String getThresholdFormula() {
         return threshold;
+    }
+    
+    @Override
+    public float getThresholdValue() {
+        return thresholdValue;
     }
 }

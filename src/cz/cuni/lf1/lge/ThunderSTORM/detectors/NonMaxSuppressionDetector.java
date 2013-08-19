@@ -24,6 +24,7 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
 
     private int radius;
     private String threshold;
+    private float thresholdValue;
     private JTextField thrTextField;
     private JTextField radiusTextField;
     private final static String DEFAULT_THRESHOLD = "6*std(F)";
@@ -59,12 +60,13 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
         Vector<Point> detections = new Vector<Point>();
         FloatProcessor mx = Morphology.dilateBox(image, radius);
 
-        float imval, mxval, thr = Thresholder.getThreshold(threshold);
+        float imval, mxval;
+        thresholdValue = Thresholder.getThreshold(threshold);
         for(int x = radius / 2, xm = image.getWidth() - radius / 2; x < xm; x++) {
             for(int y = radius / 2, ym = image.getHeight() - radius / 2; y < ym; y++) {
                 imval = image.getf(x, y);
                 mxval = mx.getf(x, y);
-                if((mxval == imval) && (imval >= thr)) {
+                if((mxval == imval) && (imval >= thresholdValue)) {
                     detections.add(new Point(x, y, imval));
                 }
             }
@@ -130,5 +132,10 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
     @Override
     public String getThresholdFormula() {
         return threshold;
+    }
+    
+    @Override
+    public float getThresholdValue() {
+        return thresholdValue;
     }
 }

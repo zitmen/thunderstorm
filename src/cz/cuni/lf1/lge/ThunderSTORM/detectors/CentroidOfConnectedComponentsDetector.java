@@ -31,6 +31,7 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
 
     private boolean upsample;
     private String threshold;
+    private float thresholdValue;
     private JTextField thrTextField;
     private JCheckBox upCheckBox;
     private final static String DEFAULT_THRESHOLD = "std(I-Wave.V1)";
@@ -92,7 +93,8 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException {
         // thresholding first to make the image binary
-        threshold(image, Thresholder.getThreshold(threshold), 0.0f, 255.0f);
+        thresholdValue = Thresholder.getThreshold(threshold);
+        threshold(image, thresholdValue, 0.0f, 255.0f);
         // watershed transform with[out] upscaling
         if(upsample) {
             image.setInterpolationMethod(FloatProcessor.NEAREST_NEIGHBOR);
@@ -173,5 +175,10 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
     @Override
     public String getThresholdFormula() {
         return threshold;
+    }
+
+    @Override
+    public float getThresholdValue() {
+        return thresholdValue;
     }
 }

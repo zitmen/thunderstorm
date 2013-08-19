@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
@@ -16,6 +17,7 @@ import ij.ImagePlus;
 import ij.Prefs;
 import ij.gui.Roi;
 import ij.measure.Calibration;
+import ij.measure.ResultsTable;
 import ij.process.FloatProcessor;
 import java.awt.Color;
 import java.awt.Container;
@@ -258,13 +260,20 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                         }
                         Thresholder.setCurrentImage(fp);
                         FloatProcessor filtered = allFilters.get(activeFilterIndex).getImplementation().filterImage(fp);
+                        new ImagePlus("ThunderSTORM: filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
                         checkForInterruption();
-                        Vector<Point> detections = Point.applyRoiMask(imp.getRoi(), allDetectors.get(activeDetectorIndex).getImplementation().detectMoleculeCandidates(filtered));
+                        IDetector detector = allDetectors.get(activeDetectorIndex).getImplementation();
+                        Vector<Point> detections = Point.applyRoiMask(imp.getRoi(), detector.detectMoleculeCandidates(filtered));
+                        ij.measure.ResultsTable tbl = ij.measure.ResultsTable.getResultsTable();
+                        tbl.reset();
+                        tbl.incrementCounter();
+                        tbl.addValue("Threshold value for frame " + Integer.toString(imp.getSlice()), detector.getThresholdValue());
+                        tbl.show("ThunderSTORM: threshold");
                         checkForInterruption();
                         Vector<Molecule> results = allEstimators.get(activeEstimatorIndex).getImplementation().estimateParameters(fp, detections);
                         checkForInterruption();
                         //
-                        ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
+                        ImagePlus impPreview = new ImagePlus("ThunderSTORM: detections in frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
                         RenderingOverlay.showPointsInImage(impPreview,
                                 Molecule.extractParamToArray(results, PSFModel.Params.LABEL_X),
                                 Molecule.extractParamToArray(results, PSFModel.Params.LABEL_Y),
