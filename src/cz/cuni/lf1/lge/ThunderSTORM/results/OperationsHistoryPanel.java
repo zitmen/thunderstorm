@@ -25,6 +25,14 @@ public class OperationsHistoryPanel extends JPanel {
         historyLabel = new JLabel(OperationsHistoryPanel.LABEL_EMPTY);
         add(historyLabel);
     }
+    
+    List<Operation> getHistory() {
+        List<Operation> history = new ArrayList<Operation>();
+        for(LabelWithCheckbox item : stack) {
+            history.add(item.op);
+        }
+        return history;
+    }
 
     public void addOperation(Operation op) {
         if(!stack.isEmpty() && !stack.get(stack.size() - 1).isChecked()) {
@@ -80,12 +88,12 @@ public class OperationsHistoryPanel extends JPanel {
         }
     }
 
-    private class LabelWithCheckbox extends JPanel {
+    class LabelWithCheckbox extends JPanel {
 
-        JCheckBox chb;
-        JLabel lab;
-        JLabel arrow;
         Operation op;
+        transient JCheckBox chb;
+        transient JLabel lab;
+        transient JLabel arrow;
 
         public LabelWithCheckbox(final Operation op, JLabel arrow) {
             this.op = op;

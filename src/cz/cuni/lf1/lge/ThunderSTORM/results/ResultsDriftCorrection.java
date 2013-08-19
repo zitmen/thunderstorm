@@ -178,8 +178,8 @@ public class ResultsDriftCorrection {
 
         double magnification;
         int numSteps;
-        boolean showDrift;
-        boolean showCorrelations;
+        transient boolean showDrift;
+        transient boolean showCorrelations;
 
         public DriftCorrectionOperation(double magnification, int numSteps, boolean showDrift, boolean showCorrelations) {
             this.magnification = magnification;

@@ -22,13 +22,14 @@ import javax.swing.JTextField;
  */
 public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
 
+    private final String name = "Non-maxima suppression";
     private int radius;
     private String threshold;
-    private float thresholdValue;
-    private JTextField thrTextField;
-    private JTextField radiusTextField;
-    private final static String DEFAULT_THRESHOLD = "6*std(F)";
-    private final static int DEFAULT_RADIUS = 3;
+    private transient float thresholdValue;
+    private transient JTextField thrTextField;
+    private transient JTextField radiusTextField;
+    private transient final static String DEFAULT_THRESHOLD = "6*std(F)";
+    private transient final static int DEFAULT_RADIUS = 3;
 
     public NonMaxSuppressionDetector() throws FormulaParserException {
         this(DEFAULT_RADIUS, DEFAULT_THRESHOLD);
@@ -77,7 +78,7 @@ public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
 
     @Override
     public String getName() {
-        return "Non-maxima suppression";
+        return name;
     }
 
     @Override

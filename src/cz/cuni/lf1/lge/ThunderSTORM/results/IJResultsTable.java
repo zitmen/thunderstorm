@@ -55,6 +55,7 @@ public class IJResultsTable {
     private JavaTableWindow tableWindow;
     private TripleStateTableModel model;
     private ImagePlus analyzedImage;
+    private MeasurementProtocol measurementProtocol;
 
     /**
      * Constructs an empty ResultsTable with the counter=0 and no columns.
@@ -62,6 +63,14 @@ public class IJResultsTable {
     public IJResultsTable() {
         tableWindow = new JavaTableWindow();
         model = tableWindow.getModel();
+    }
+    
+    public void setMeasurementProtocol(MeasurementProtocol protocol) {
+        measurementProtocol = protocol;
+    }
+    
+    public MeasurementProtocol getMeasurementProtocol() {
+        return measurementProtocol;
     }
     
     public void setAnalyzedImage(ImagePlus imp) {

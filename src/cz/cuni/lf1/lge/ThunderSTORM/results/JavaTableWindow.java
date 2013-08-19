@@ -342,6 +342,7 @@ class JavaTableWindow {
     }
 
     public void setPreviewRenderer(RenderingQueue renderer) {
+        livePreview = true;
         previewRenderer = renderer;
     }
 

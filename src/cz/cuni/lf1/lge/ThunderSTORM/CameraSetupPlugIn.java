@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 import java.awt.Checkbox;
+import java.util.HashMap;
 
 public class CameraSetupPlugIn implements PlugIn {
     
@@ -18,6 +19,16 @@ public class CameraSetupPlugIn implements PlugIn {
     public static double gain = Defaults.GAIN.toDouble();
     public static double offset = Defaults.OFFSET.toDouble();
     public static boolean isEmCcd = (Defaults.EMCCD.toDouble() != 0.0);
+
+    public static HashMap<String,Object> exportSettings() {
+        HashMap<String,Object> settings = new HashMap<String,Object>();
+        settings.put("pixelSize", pixelSize);
+        settings.put("photons2ADU", photons2ADU);
+        settings.put("gain", gain);
+        settings.put("offset", offset);
+        settings.put("isEmCcd", isEmCcd);
+        return settings;
+    }
     
     @Override
     public void run(String arg) {

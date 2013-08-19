@@ -17,7 +17,6 @@ import ij.ImagePlus;
 import ij.Prefs;
 import ij.gui.Roi;
 import ij.measure.Calibration;
-import ij.measure.ResultsTable;
 import ij.process.FloatProcessor;
 import java.awt.Color;
 import java.awt.Container;

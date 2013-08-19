@@ -29,13 +29,14 @@ import javax.swing.JTextField;
  */
 public final class CentroidOfConnectedComponentsDetector implements IDetector, IDetectorUI {
 
+    private final String name = "Centroid of connected components";
     private boolean upsample;
     private String threshold;
-    private float thresholdValue;
-    private JTextField thrTextField;
-    private JCheckBox upCheckBox;
-    private final static String DEFAULT_THRESHOLD = "std(I-Wave.V1)";
-    private final static boolean DEFAULT_UPSAMPLE = false;
+    private transient float thresholdValue;
+    private transient JTextField thrTextField;
+    private transient JCheckBox upCheckBox;
+    private transient final static String DEFAULT_THRESHOLD = "std(I-Wave.V1)";
+    private transient final static boolean DEFAULT_UPSAMPLE = false;
 
     public CentroidOfConnectedComponentsDetector() throws FormulaParserException {
         this(DEFAULT_UPSAMPLE, DEFAULT_THRESHOLD);
@@ -120,7 +121,7 @@ public final class CentroidOfConnectedComponentsDetector implements IDetector, I
 
     @Override
     public String getName() {
-        return "Centroid of connected components";
+        return name;
     }
 
     @Override

@@ -24,6 +24,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.MeasurementProtocol;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
@@ -75,6 +76,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     private RenderingQueue renderingQueue;
     private ImagePlus renderedImage;
     private Roi roi;
+    private MeasurementProtocol measurementProtocol;
 
     /**
      * Returns flags specifying capabilities of the plugin.
@@ -120,7 +122,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             rt.setActualState();
             rt.setPreviewRenderer(renderingQueue);
             setDefaultColumnsWidth(rt);
-            rt.setAnalyzedImage(imp);
+            rt.setMeasurementProtocol(measurementProtocol);
             rt.show();
             //
             // Show detections in the image
@@ -172,6 +174,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 IncrementalRenderingMethod method = rendererPanel.getImplementation();
                 renderedImage = (method != null) ? method.getRenderedImage() : null;
                 renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), rendererPanel.getRepaintFrequency());
+                
+                measurementProtocol = new MeasurementProtocol(imp, allFilters.get(selectedFilter), allDetectors.get(selectedDetector), allEstimators.get(selectedEstimator));
+                
                 return pluginFlags;
             } else {
                 // Create and show the dialog
@@ -199,6 +204,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                     MacroParser.recordEstimatorUI(dialog.getEstimator());
                     MacroParser.recordRendererUI(dialog.getRenderer());
                 }
+                
+                measurementProtocol = new MeasurementProtocol(imp, dialog.getFilter(), dialog.getDetector(), dialog.getEstimator());
             }
         } catch(Exception ex) {
             IJ.handleException(ex);

@@ -132,7 +132,7 @@ class ResultsFilter {
         }
     }
 
-    public class FilteringOperation extends OperationsHistoryPanel.Operation {
+    class FilteringOperation extends OperationsHistoryPanel.Operation {
 
         String filterText;
 

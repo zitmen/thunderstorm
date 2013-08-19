@@ -23,13 +23,14 @@ import javax.swing.JTextField;
  */
 public class LocalMaximaDetector implements IDetector, IDetectorUI {
 
+    private final String name = "Search for local maxima";
     private int connectivity;
     private String threshold;
-    private float thresholdValue;
-    private JTextField thrTextField;
-    private JRadioButton conn4RadioButton, conn8RadioButton;
-    private final static String DEFAULT_THRESHOLD = "10*std(F)";
-    private final static int DEFAULT_CONNECTIVITY = Graph.CONNECTIVITY_8;
+    private transient float thresholdValue;
+    private transient JTextField thrTextField;
+    private transient JRadioButton conn4RadioButton, conn8RadioButton;
+    private transient final static String DEFAULT_THRESHOLD = "10*std(F)";
+    private transient final static int DEFAULT_CONNECTIVITY = Graph.CONNECTIVITY_8;
 
     private boolean isMax4Thr(FloatProcessor image, float thr, int x, int y, float local, boolean w, boolean e, boolean n, boolean s) {
         if(local < thr) {
@@ -246,7 +247,7 @@ public class LocalMaximaDetector implements IDetector, IDetectorUI {
 
     @Override
     public String getName() {
-        return "Search for local maxima";
+        return name;
     }
 
     @Override

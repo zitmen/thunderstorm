@@ -26,91 +26,88 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.yaml.snakeyaml.Yaml;
 
-/**
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
- */
 public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI implements ActionListener {
 
-  JTextField calibrationFileTextField;
-  JButton findCalibrationButton;
-  CylindricalLensCalibration calibration;
+    private final String name = "3D Cylindrical lens estimator";
+    CylindricalLensCalibration calibration;
+    transient JButton findCalibrationButton;
+    transient JTextField calibrationFileTextField;
 
-  @Override
-  public String getName() {
-    return "3D Cylindrical lens estimator";
-  }
-
-  @Override
-  public JPanel getOptionsPanel() {
-    JPanel parentPanel = super.getOptionsPanel();
-
-    parentPanel.add(new JLabel("Calibration file:"), GridBagHelper.leftCol());
-    calibrationFileTextField = new JTextField(Prefs.get("thunderstorm.estimators.calibrationpath", ""));
-    findCalibrationButton = new JButton("Browse...");
-    findCalibrationButton.addActionListener(this);
-    JPanel calibrationPanel = new JPanel(new BorderLayout());
-    calibrationPanel.add(calibrationFileTextField, BorderLayout.CENTER);
-    calibrationPanel.add(findCalibrationButton, BorderLayout.EAST);
-    GridBagConstraints gbc = GridBagHelper.rightCol();
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    parentPanel.add(calibrationPanel, gbc);
-
-    return parentPanel;
-  }
-
-  @Override
-  public void readParameters() {
-    super.readParameters();
-    calibration = loadCalibration(calibrationFileTextField.getText());
-    
-    Prefs.set("thunderstorm.estimators.calibrationpath", calibrationFileTextField.getText());
-  }
-
-  @Override
-  public IEstimator getImplementation() {
-    if (LSQ.equals(method)) {
-      LSQFitter fitter = new LSQFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
-      return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
+    @Override
+    public String getName() {
+        return name;
     }
-    if (MLE.equals(method)) {
-      MLEFitter fitter = new MLEFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
-      return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
+
+    @Override
+    public JPanel getOptionsPanel() {
+        JPanel parentPanel = super.getOptionsPanel();
+
+        parentPanel.add(new JLabel("Calibration file:"), GridBagHelper.leftCol());
+        calibrationFileTextField = new JTextField(Prefs.get("thunderstorm.estimators.calibrationpath", ""));
+        findCalibrationButton = new JButton("Browse...");
+        findCalibrationButton.addActionListener(this);
+        JPanel calibrationPanel = new JPanel(new BorderLayout());
+        calibrationPanel.add(calibrationFileTextField, BorderLayout.CENTER);
+        calibrationPanel.add(findCalibrationButton, BorderLayout.EAST);
+        GridBagConstraints gbc = GridBagHelper.rightCol();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        parentPanel.add(calibrationPanel, gbc);
+
+        return parentPanel;
     }
-    throw new IllegalArgumentException("Unknown fitting method: " + method);
 
-  }
+    @Override
+    public void readParameters() {
+        super.readParameters();
+        calibration = loadCalibration(calibrationFileTextField.getText());
 
-  @Override
-  public void recordOptions() {
-    super.recordOptions();
-    Recorder.recordOption("calibrationfile", calibrationFileTextField.getText().replace("\\", "\\\\"));
-  }
-
-  @Override
-  public void readMacroOptions(String options) {
-    super.readMacroOptions(options);
-    calibration = loadCalibration(Macro.getValue(options, "calibrationfile", ""));
-  }
-
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    JFileChooser fileChooser = new JFileChooser(IJ.getDirectory("image"));
-    int userAction = fileChooser.showOpenDialog(null);
-    if (userAction == JFileChooser.APPROVE_OPTION) {
-      calibrationFileTextField.setText(fileChooser.getSelectedFile().getPath());
+        Prefs.set("thunderstorm.estimators.calibrationpath", calibrationFileTextField.getText());
     }
-  }
 
-  private CylindricalLensCalibration loadCalibration(String calibrationFilePath) {
-    try {
-      Yaml yaml = new Yaml();
-      Object loaded = yaml.load(new FileReader(calibrationFilePath));
-      return (CylindricalLensCalibration) loaded;
-    } catch (FileNotFoundException ex) {
-      throw new RuntimeException("Could not read calibration file.", ex);
-    } catch (ClassCastException ex) {
-      throw new RuntimeException("Could not parse calibration file.", ex);
+    @Override
+    public IEstimator getImplementation() {
+        if(LSQ.equals(method)) {
+            LSQFitter fitter = new LSQFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
+            return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
+        }
+        if(MLE.equals(method)) {
+            MLEFitter fitter = new MLEFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
+            return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
+        }
+        throw new IllegalArgumentException("Unknown fitting method: " + method);
+
     }
-  }
+
+    @Override
+    public void recordOptions() {
+        super.recordOptions();
+        Recorder.recordOption("calibrationfile", calibrationFileTextField.getText().replace("\\", "\\\\"));
+    }
+
+    @Override
+    public void readMacroOptions(String options) {
+        super.readMacroOptions(options);
+        calibration = loadCalibration(Macro.getValue(options, "calibrationfile", ""));
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JFileChooser fileChooser = new JFileChooser(IJ.getDirectory("image"));
+        int userAction = fileChooser.showOpenDialog(null);
+        if(userAction == JFileChooser.APPROVE_OPTION) {
+            calibrationFileTextField.setText(fileChooser.getSelectedFile().getPath());
+        }
+    }
+
+    private CylindricalLensCalibration loadCalibration(String calibrationFilePath) {
+        try {
+            Yaml yaml = new Yaml();
+            Object loaded = yaml.load(new FileReader(calibrationFilePath));
+            return (CylindricalLensCalibration) loaded;
+        } catch(FileNotFoundException ex) {
+            throw new RuntimeException("Could not read calibration file.", ex);
+        } catch(ClassCastException ex) {
+            throw new RuntimeException("Could not parse calibration file.", ex);
+        }
+    }
 }

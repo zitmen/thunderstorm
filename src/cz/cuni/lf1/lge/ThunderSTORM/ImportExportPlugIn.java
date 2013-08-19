@@ -4,17 +4,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.ASHRenderingUI;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.AbstractRenderingUI;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
-import ij.ImagePlus;
 import ij.WindowManager;
 import ij.plugin.PlugIn;
 import java.awt.Choice;
@@ -79,6 +70,9 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             //
             String [] col_headers = null;
             if("export".equals(command)) {
+                if(IJResultsTable.getResultsTable().getMeasurementProtocol() != null) {
+                    gd.addCheckbox("export measurement protocol", true);
+                }
                 gd.addMessage("Columns to export:");
                 IJResultsTable rt = IJResultsTable.getResultsTable();
                 col_headers = rt.getColumnNames().toArray(new String[0]);
@@ -106,6 +100,11 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 active_ie = gd.getNextChoiceIndex();
                 String filePath = gd.getNextString();
                 if("export".equals(command)) {
+                    if(IJResultsTable.getResultsTable().getMeasurementProtocol() != null) {
+                        if(gd.getNextBoolean()) {
+                            IJResultsTable.getResultsTable().getMeasurementProtocol().export(getProtocolFilePath(filePath));
+                        }
+                    }
                     Vector<String> columns = new Vector<String>();
                     for(int i = 0; i < col_headers.length; i++) {
                         if(gd.getNextBoolean() == true) {
@@ -196,6 +195,15 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 ftype.select(i);
                 break;
             }
+        }
+    }
+
+    private String getProtocolFilePath(String fpath) {
+        int dotpos = fpath.lastIndexOf('.');
+        if(dotpos < 0) {
+            return fpath + "-protocol.txt";
+        } else {
+            return fpath.substring(0, dotpos-1) + "-protocol.txt";
         }
     }
 

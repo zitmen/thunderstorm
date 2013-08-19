@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import java.util.HashMap;
 import javax.swing.JPanel;
 
 /**
@@ -33,7 +34,7 @@ public interface IModuleUI<T extends IModule> {
   public void readParameters();
   
   public void resetToDefaults();
-  
+    
   /**
    * Record the module parameters to the imagej macro recorder. Use
    * {@code Recorder.recordOption(name, value)}. The parameter should not
