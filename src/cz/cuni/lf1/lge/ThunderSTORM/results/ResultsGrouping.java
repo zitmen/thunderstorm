@@ -133,6 +133,7 @@ class ResultsGrouping {
 
     class MergingOperation extends OperationsHistoryPanel.Operation {
 
+        final String name = "Merging";
         double threshold;
 
         public MergingOperation(double threshold) {
@@ -141,7 +142,7 @@ class ResultsGrouping {
 
         @Override
         protected String getName() {
-            return "Merging";
+            return name;
         }
 
         @Override

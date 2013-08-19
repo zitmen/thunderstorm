@@ -47,6 +47,7 @@ public class UpdaterPlugIn implements PlugIn {
             versions[i] = list[i];
             urls[i] = ThunderSTORM.URL_DAILY + "/" + versions[i] + ".jar";
         }
+        IJ.showStatus("");
         int choice = showDialog(versions);
         if (choice == -1) {
             return;

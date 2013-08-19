@@ -4,6 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.drift.CrossCorrelationDriftCorrection;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import ij.ImagePlus;
 import ij.gui.Plot;
@@ -164,18 +165,21 @@ public class ResultsDriftCorrection {
 
     private void applyToResultsTable(CrossCorrelationDriftCorrection driftCorrection) {
         IJResultsTable rt = IJResultsTable.getResultsTable();
+        Units unitsX = rt.getColumnUnits(PSFModel.Params.LABEL_X);
+        Units unitsY = rt.getColumnUnits(PSFModel.Params.LABEL_Y);
         for(int i = 0; i < rt.getRowCount(); i++) {
             double frameNumber = rt.getValue(i, MoleculeDescriptor.LABEL_FRAME);
             double xVal = rt.getValue(i, PSFModel.Params.LABEL_X);
             double yVal = rt.getValue(i, PSFModel.Params.LABEL_Y);
             Point2D.Double drift = driftCorrection.getInterpolatedDrift(frameNumber);
-            rt.setValueAt(xVal - drift.x, i, PSFModel.Params.LABEL_X);
-            rt.setValueAt(yVal - drift.y, i, PSFModel.Params.LABEL_Y);
+            rt.setValueAt(xVal - Units.PIXEL.convertTo(unitsX, drift.x), i, PSFModel.Params.LABEL_X);
+            rt.setValueAt(yVal - Units.PIXEL.convertTo(unitsY, drift.y), i, PSFModel.Params.LABEL_Y);
         }
     }
 
     class DriftCorrectionOperation extends OperationsHistoryPanel.Operation {
 
+        final String name = "Drift";
         double magnification;
         int numSteps;
         transient boolean showDrift;
@@ -190,7 +194,7 @@ public class ResultsDriftCorrection {
 
         @Override
         protected String getName() {
-            return "Drift";
+            return name;
         }
 
         @Override

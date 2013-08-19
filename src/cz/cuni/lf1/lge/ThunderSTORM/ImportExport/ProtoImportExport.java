@@ -2,7 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Results;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Molecule;
-import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
@@ -52,6 +52,7 @@ public class ProtoImportExport implements IImportExport {
             }
             if(rt.isEmpty()) {
                 rt.setDescriptor(new MoleculeDescriptor(fields.toArray(new String[0])));
+                setUnits(rt, results);
             }
             //
             // Then fill the table
@@ -89,7 +90,7 @@ public class ProtoImportExport implements IImportExport {
         int ncols = columns.size(), nrows = rt.getRowCount();
         
         Results.Builder results = Results.newBuilder();
-        Units.Builder units = Units.newBuilder();
+        cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.Builder units = cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.newBuilder();
         for(int c = 0; c < ncols; c++) {
             String name = columns.elementAt(c);
             String unit = rt.getColumnUnits(name).toString();
@@ -182,6 +183,25 @@ public class ProtoImportExport implements IImportExport {
     @Override
     public String getSuffix() {
         return "gpb";
+    }
+
+    private void setUnits(IJResultsTable rt, Results results) {
+        if(results.hasUnits()) {
+            cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units u = results.getUnits();
+            if(u.hasFrame()) rt.setColumnUnits(MoleculeDescriptor.LABEL_FRAME, Units.fromString(u.getFrame()));
+            if(u.hasX()) rt.setColumnUnits(PSFModel.Params.LABEL_X, Units.fromString(u.getX()));
+            if(u.hasY()) rt.setColumnUnits(PSFModel.Params.LABEL_Y, Units.fromString(u.getY()));
+            if(u.hasZ()) rt.setColumnUnits(PSFModel.Params.LABEL_Z, Units.fromString(u.getZ()));
+            if(u.hasSigma()) rt.setColumnUnits(PSFModel.Params.LABEL_SIGMA, Units.fromString(u.getSigma()));
+            if(u.hasSigma1()) rt.setColumnUnits(PSFModel.Params.LABEL_SIGMA1, Units.fromString(u.getSigma1()));
+            if(u.hasSigma2()) rt.setColumnUnits(PSFModel.Params.LABEL_SIGMA2, Units.fromString(u.getSigma2()));
+            if(u.hasIntensity()) rt.setColumnUnits(PSFModel.Params.LABEL_INTENSITY, Units.fromString(u.getIntensity()));
+            if(u.hasBackground()) rt.setColumnUnits(PSFModel.Params.LABEL_BACKGROUND, Units.fromString(u.getBackground()));
+            if(u.hasDetections()) rt.setColumnUnits(MoleculeDescriptor.LABEL_DETECTIONS, Units.fromString(u.getDetections()));
+            if(u.hasOffset()) rt.setColumnUnits(PSFModel.Params.LABEL_OFFSET, Units.fromString(u.getOffset()));
+            if(u.hasThompsonCcd()) rt.setColumnUnits(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON, Units.fromString(u.getThompsonCcd()));
+            if(u.hasThompsonEmccd()) rt.setColumnUnits(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON, Units.fromString(u.getThompsonEmccd()));
+        }
     }
 
 }

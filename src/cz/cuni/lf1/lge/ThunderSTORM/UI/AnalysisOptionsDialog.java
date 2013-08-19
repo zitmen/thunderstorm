@@ -267,7 +267,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                         tbl.reset();
                         tbl.incrementCounter();
                         tbl.addValue("Threshold value for frame " + Integer.toString(imp.getSlice()), detector.getThresholdValue());
-                        tbl.show("ThunderSTORM: threshold");
+                        tbl.show("Results");
                         checkForInterruption();
                         Vector<Molecule> results = allEstimators.get(activeEstimatorIndex).getImplementation().estimateParameters(fp, detections);
                         checkForInterruption();

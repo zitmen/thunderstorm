@@ -122,6 +122,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             rt.setActualState();
             rt.setPreviewRenderer(renderingQueue);
             setDefaultColumnsWidth(rt);
+            rt.setAnalyzedImage(imp);
             rt.setMeasurementProtocol(measurementProtocol);
             rt.show();
             //

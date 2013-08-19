@@ -203,7 +203,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         if(dotpos < 0) {
             return fpath + "-protocol.txt";
         } else {
-            return fpath.substring(0, dotpos-1) + "-protocol.txt";
+            return fpath.substring(0, dotpos) + "-protocol.txt";
         }
     }
 

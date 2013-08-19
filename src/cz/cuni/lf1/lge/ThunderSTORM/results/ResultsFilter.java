@@ -134,6 +134,7 @@ class ResultsFilter {
 
     class FilteringOperation extends OperationsHistoryPanel.Operation {
 
+        final String name = "Filtering";
         String filterText;
 
         public FilteringOperation(String filterText) {
@@ -142,7 +143,7 @@ class ResultsFilter {
 
         @Override
         protected String getName() {
-            return "Filtering";
+            return name;
         }
 
         @Override
