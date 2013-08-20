@@ -47,7 +47,7 @@ public class DataGenerator {
         for(int x = 0, w = img.getWidth(); x < w; x++)
             for(int y = 0, h = img.getHeight(); y < h; y++)
                 img.setf(x, y, (float)rand.nextUniform(bkg.from, bkg.to, true));
-        IFilter filter = new BoxFilter((int)(((double)Math.min(width, width))/4.0));
+        IFilter filter = new BoxFilter(1+2*(int)(((double)Math.min(width, width))/8.0));
         return filter.filterImage(img);
     }
     
