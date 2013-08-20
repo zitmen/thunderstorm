@@ -216,7 +216,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         try {
             Thresholder.loadFilters(allFilters);
             Thresholder.setActiveFilter(selectedFilter);   // !! must be called before any threshold is evaluated !!
-            Thresholder.parseThreshold(allDetectors.get(selectedFilter).getImplementation().getThresholdFormula());
+            Thresholder.parseThreshold(allDetectors.get(selectedDetector).getImplementation().getThresholdFormula());
         } catch(Exception ex) {
             IJ.error("Error parsing threshold formula! " + ex.toString());
         }
