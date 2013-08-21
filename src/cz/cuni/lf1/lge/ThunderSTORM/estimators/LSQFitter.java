@@ -21,7 +21,7 @@ public class LSQFitter implements OneLocationFitter {
     private double[] weights;
     double [] fittedModelValues;
     PSFModel psfModel;
-    final static int MAX_ITERATIONS = 3000;
+    final static int MAX_ITERATIONS = 1000;
 
     public LSQFitter(PSFModel psfModel) {
         this.psfModel = psfModel;

@@ -8,6 +8,7 @@ import static org.apache.commons.math3.util.FastMath.abs;
 import static org.apache.commons.math3.util.FastMath.exp;
 import static org.apache.commons.math3.util.FastMath.sqrt;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
+import org.apache.commons.math3.analysis.MultivariateVectorFunction;
 
 /**
  * Representation of 2D symmetric Gaussian PSF model.
@@ -23,8 +24,9 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
 
     @Override
     public double getValue(double[] params, double x, double y) {
+        params = transformParameters(params);
         //integration by mathematica 9
-        //Integrate[b + J/(2*Pi*s^2)*E^(-1/2*((x - x0)^2/(s^2) + (y - y0)^2/(s^2))), {x, ax - 1/2,  ax + 1/2}, {y, ay - 1/2, ay + 1/2}]
+        //Integrate[ b^2 + J^2/(2*Pi*s^2) *E^(-1/2*((x - x0)^2/(s^2) + (y - y0)^2/(s^2))), {x, ax - 1/2, ax + 1/2}, {y, ay - 1/2, ay + 1/2}]
         double sqrt2s = sqrt(2) * params[Params.SIGMA];
         double dx = x - params[Params.X];
         double dy = y - params[Params.Y];
@@ -38,9 +40,9 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
         double[] transformed = Arrays.copyOf(parameters, parameters.length);
         transformed[Params.X] = parameters[Params.X];
         transformed[Params.Y] = parameters[Params.Y];
-        transformed[Params.INTENSITY] = parameters[Params.INTENSITY];
+        transformed[Params.INTENSITY] = parameters[Params.INTENSITY] * parameters[Params.INTENSITY];
         transformed[Params.SIGMA] = parameters[Params.SIGMA];
-        transformed[Params.OFFSET] = parameters[Params.OFFSET];
+        transformed[Params.OFFSET] = parameters[Params.OFFSET] * parameters[Params.OFFSET];
         return transformed;
     }
 
@@ -49,9 +51,9 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
         double[] transformed = Arrays.copyOf(parameters, parameters.length);
         transformed[Params.X] = parameters[Params.X];
         transformed[Params.Y] = parameters[Params.Y];
-        transformed[Params.INTENSITY] = parameters[Params.INTENSITY];
+        transformed[Params.INTENSITY] = sqrt(abs(parameters[Params.INTENSITY]));
         transformed[Params.SIGMA] = parameters[Params.SIGMA];
-        transformed[Params.OFFSET] = parameters[Params.OFFSET];
+        transformed[Params.OFFSET] = sqrt(abs(parameters[Params.OFFSET]));
         return transformed;
     }
 
@@ -60,7 +62,7 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
         return new MultivariateMatrixFunction() {
             @Override
             //gradients by mathematica 9
-            //Grad[b + (1/4)*J*(Erf[(1/2 + ax - x0)/(Sqrt[2]*s)]-Erf[(-(1/2) + ax - x0)/(Sqrt[2]*s)])* (Erf[(1/2 + ay - y0)/(Sqrt[2]*s)] - Erf[(-1/2 + ay - y0)/(Sqrt[2]*s)]), {b, J, s, x0, y0}]
+            //Grad[b^2 + (1/4)*J^2*(Erf[(1/2 + ax - x0)/(Sqrt[2]*s)] - Erf[(-(1/2) + ax - x0)/(Sqrt[2]*s)])* (Erf[(1/2 + ay - y0)/(Sqrt[2]*s)] - Erf[(-(1/2) + ay - y0)/(Sqrt[2]*s)]), {b, J, s, x0, y0}]
             public double[][] value(double[] point) throws IllegalArgumentException {
                 double[] transformedPoint = transformParameters(point);
                 double sigma = transformedPoint[Params.SIGMA];
@@ -68,9 +70,8 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
                 double sqrt2s = sqrt(2) * sigma;
                 double[][] retVal = new double[xgrid.length][transformedPoint.length];
 
+                assert (isRegular(xgrid, ygrid));
                 int edge = (int) sqrt(xgrid.length);
-                assert (edge * edge == xgrid.length);
-                int idx = 0;
 
                 double[] errDiffXs = new double[edge];
                 double[] expDiffSXs = new double[edge];
@@ -87,8 +88,9 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
                     expDiffXs[i] = (expminus - expplus) / sigma;
                 }
 
+                int idx = 0;
                 for(int i = 0; i < edge; i++) {
-                    double dy = ygrid[i*edge] - transformedPoint[Params.Y];
+                    double dy = ygrid[i * edge] - transformedPoint[Params.Y];
                     double dyPlusHalf = dy + 0.5;
                     double dyMinusHalf = dy - 0.5;
                     double errDiffY = erf((dyPlusHalf) / sqrt2s) - erf((dyMinusHalf) / sqrt2s);
@@ -99,17 +101,66 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
                     double expDiffY = (expminus - expplus) / sigma;
                     for(int j = 0; j < edge; j++) {
                         double errDiffX = errDiffXs[j];
-                        retVal[idx][Params.INTENSITY] = 0.25 * errDiffX * errDiffY;
+                        retVal[idx][Params.INTENSITY] = 0.5 * point[Params.INTENSITY] * errDiffX * errDiffY;
                         retVal[idx][Params.SIGMA] = 0.25 * transformedPoint[Params.INTENSITY] * (errDiffX * expDiffSY + errDiffY * expDiffSXs[j]);
                         retVal[idx][Params.X] = 0.25 * transformedPoint[Params.INTENSITY] * errDiffY * expDiffXs[j];
                         retVal[idx][Params.Y] = 0.25 * transformedPoint[Params.INTENSITY] * errDiffX * expDiffY;
-                        retVal[idx][Params.OFFSET] = 1;
+                        retVal[idx][Params.OFFSET] = 2 * point[Params.OFFSET];
                         idx++;
                     }
                 }
 
 //                IJ.log("numeric jacobian: " + Arrays.deepToString(IntegratedSymmetricGaussianPSF.super.getJacobianFunction(xgrid, ygrid).value(point)));
 //                IJ.log("analytic jacobian: " + Arrays.deepToString(retVal));
+                return retVal;
+            }
+        };
+    }
+
+    /**
+     * Value function overriden for speed. When calculating for the whole
+     * subimage, some values can be reused. But can only be used for a square
+     * grid where xgrid values are same in each column and ygrid values are the
+     * same in each row.
+     *
+     * @param xgrid
+     * @param ygrid
+     * @return
+     */
+    @Override
+    public MultivariateVectorFunction getValueFunction(final int[] xgrid, final int[] ygrid) {
+        return new MultivariateVectorFunction() {
+            @Override
+            public double[] value(final double[] point) throws IllegalArgumentException {
+                double[] transformedPoint = transformParameters(point);
+                double sigma = transformedPoint[Params.SIGMA];
+                double sqrt2s = sqrt(2) * sigma;
+                double[] retVal = new double[xgrid.length];
+
+                assert (isRegular(xgrid, ygrid));
+                int edge = (int) sqrt(xgrid.length);
+
+                double[] errDiffXs = new double[edge];
+                for(int i = 0; i < errDiffXs.length; i++) {
+                    double dx = xgrid[i] - transformedPoint[Params.X];
+                    double dxPlusHalf = dx + 0.5;
+                    double dxMinusHalf = dx - 0.5;
+                    errDiffXs[i] = erf((dxPlusHalf) / sqrt2s) - erf((dxMinusHalf) / sqrt2s);
+                }
+
+                int idx = 0;
+                for(int i = 0; i < edge; i++) {
+                    double dy = ygrid[i * edge] - transformedPoint[Params.Y];
+                    double dyPlusHalf = dy + 0.5;
+                    double dyMinusHalf = dy - 0.5;
+                    double errDiffY = erf((dyPlusHalf) / sqrt2s) - erf((dyMinusHalf) / sqrt2s);
+
+                    for(int j = 0; j < edge; j++) {
+                        double errDiffX = errDiffXs[j];
+                        retVal[idx] = transformedPoint[Params.OFFSET] + 0.25 * transformedPoint[Params.INTENSITY] * errDiffX * errDiffY;
+                        idx++;
+                    }
+                }
                 return retVal;
             }
         };
@@ -142,7 +193,6 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
     @Override
     public Molecule newInstanceFromParams(double[] params) {
         params[Params.SIGMA] = abs(params[Params.SIGMA]);
-//        params[Params.INTENSITY] = params[Params.INTENSITY]/(2*PI*params[Params.SIGMA]*params[Params.SIGMA]);
         return new Molecule(new Params(new int[]{Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND}, params, true));
     }
 
@@ -181,5 +231,53 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
         } else {
             return -ans;
         }
+    }
+
+    /**
+     * Checks whether the grid is regular (xgrid values are the same in each row
+     * and ygrid values are the same in each column).
+     * <p/>
+     * Example of regular grid:
+     * <pre>
+     * xgrid:
+     * 0 0 0
+     * 1 1 1
+     * 2 2 2
+     *
+     * ygrid:
+     * 0 1 2
+     * 0 1 2
+     * 0 1 2
+     * </pre>
+     *
+     */
+    private static boolean isRegular(int[] xgrid, int[] ygrid) {
+        int edge = (int) sqrt(xgrid.length);
+        if(edge * edge != xgrid.length) {
+            return false;
+        }
+        if(xgrid.length != ygrid.length) {
+            return false;
+        }
+
+        for(int i = 0; i < edge; i++) {
+            int prevValue = xgrid[i * edge];
+            for(int j = 0; j < 0; j++) {
+                if(xgrid[i * edge + j] != prevValue) {
+                    return false;
+                }
+            }
+        }
+
+        for(int i = 0; i < edge; i++) {
+            int prevValue = ygrid[i];
+            for(int j = 0; j < 0; j++) {
+                if(ygrid[i + j * edge] != prevValue) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

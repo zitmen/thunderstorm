@@ -211,15 +211,15 @@ public abstract class PSFModel {
     }
 
     public MultivariateFunction getLikelihoodFunction(final int[] xgrid, final int[] ygrid, final double[] imageValues) {
+        final MultivariateVectorFunction valueFunction = this.getValueFunction(xgrid, ygrid);
         return new MultivariateFunction() {
             @Override
             public double value(double[] point) {
-                double[] newPoint = transformParameters(point);
 
-
+                double[] expectedValues = valueFunction.value(point);
                 double logLikelihood = 0;
-                for (int i = 0; i < xgrid.length; i++) {
-                    double expectedValue = getValue(newPoint, xgrid[i], ygrid[i]);
+                for (int i = 0; i < expectedValues.length; i++) {
+                    double expectedValue = expectedValues[i];
                     double log = log(expectedValue);
                     if (log < -1e6) {
                         log = -1e6;
