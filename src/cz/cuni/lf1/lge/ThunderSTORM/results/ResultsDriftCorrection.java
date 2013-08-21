@@ -26,6 +26,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.min;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 
 public class ResultsDriftCorrection {
 
@@ -141,6 +143,7 @@ public class ResultsDriftCorrection {
             driftY[i] = offset.y;
         }
         Plot plot = new Plot("drift", "frame", "drift [px]", grid, driftX);
+        plot.setLimits(minFrame, driftCorrection.getMaxFrame(), Math.min(min(driftX),min(driftY)), Math.max(max(driftX),max(driftY)));
         plot.setColor(Color.blue);
         plot.addPoints(driftCorrection.getBinCenters(), driftCorrection.getBinDriftX(), Plot.CROSS);
         plot.addLabel(0.05, 0.8, "x drift");
