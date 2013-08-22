@@ -50,6 +50,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         GUI.setLookAndFeel();
         //
         String[] commands = command.split(";");
+        if(commands.length != 2) throw new IllegalArgumentException("Malformatted argument for Import/Export plug-in!");
         //
         try {
             ie = ModuleLoader.getModules(IImportExport.class);

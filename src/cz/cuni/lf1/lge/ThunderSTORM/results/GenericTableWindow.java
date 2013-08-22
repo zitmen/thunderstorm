@@ -55,9 +55,9 @@ class GenericTableWindow {
                 tableHeaderMouseClicked(e);
             }
         });
-        table.setDropTarget(new ResultsTableDropTarget());
+        table.setDropTarget(new TableDropTarget());
         tableScrollPane = new JScrollPane(table);
-        tableScrollPane.setDropTarget(new ResultsTableDropTarget());
+        tableScrollPane.setDropTarget(new TableDropTarget());
         table.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -213,7 +213,7 @@ class GenericTableWindow {
         }
     }
 
-    private class ResultsTableDropTarget extends DropTarget {
+    private class TableDropTarget extends DropTarget {
 
         @Override
         public synchronized void drop(DropTargetDropEvent dtde) {
@@ -228,8 +228,12 @@ class GenericTableWindow {
                 return;
             }
             File f = (File)fileList.get(0);
-            new ImportExportPlugIn(f.getAbsolutePath()).run("import");
+            dropFile(f);
         }
+    }
+    
+    protected void dropFile(File f) {
+        new ImportExportPlugIn(f.getAbsolutePath()).run(ImportExportPlugIn.IMPORT + IJResultsTable.IDENTIFIER);
     }
     
     protected void tableHeaderMouseClicked(MouseEvent e) {

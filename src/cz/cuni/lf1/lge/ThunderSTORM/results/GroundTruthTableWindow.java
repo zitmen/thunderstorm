@@ -6,6 +6,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -60,6 +61,11 @@ class GroundTruthTableWindow extends GenericTableWindow implements ActionListene
         } else if(e.getSource() == io_export) {
             new ImportExportPlugIn().run(ImportExportPlugIn.EXPORT + ";" + IJGroundTruthTable.IDENTIFIER);
         }
+    }
+
+    @Override
+    protected void dropFile(File f) {
+        new ImportExportPlugIn(f.getAbsolutePath()).run(ImportExportPlugIn.IMPORT + ";" + IJGroundTruthTable.IDENTIFIER);
     }
 
 }

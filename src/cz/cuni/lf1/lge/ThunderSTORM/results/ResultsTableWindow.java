@@ -27,6 +27,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -261,6 +262,11 @@ class ResultsTableWindow extends GenericTableWindow {
             }
         }
         table.setCursor(Cursor.getDefaultCursor()); // reset
+    }
+
+    @Override
+    protected void dropFile(File f) {
+        new ImportExportPlugIn(f.getAbsolutePath()).run(ImportExportPlugIn.IMPORT + ";" + IJResultsTable.IDENTIFIER);
     }
 
 }
