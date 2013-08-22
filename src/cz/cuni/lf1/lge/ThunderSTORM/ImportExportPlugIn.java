@@ -4,6 +4,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.WindowManager;
@@ -22,34 +24,39 @@ import javax.swing.JSeparator;
 
 public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
 
-    private String [] modules = null;
-    private String [] suffix = null;
+    public static final String IMPORT = "import";
+    public static final String EXPORT = "export";
+    
+    private String[] modules = null;
+    private String[] suffix = null;
     private Vector<IImportExport> ie = null;
     private int active_ie = 0;
     private Choice ftype;
     private TextField fpath;
     private String defaultPath;
-    
+
     public ImportExportPlugIn() {
         super();
-        defaultPath = null;
+        this.defaultPath = null;
     }
-    
+
     public ImportExportPlugIn(String path) {
         super();
-        defaultPath = path;
+        this.defaultPath = path;
     }
-    
+
     @Override
     public void run(String command) {
         GUI.setLookAndFeel();
         //
+        String[] commands = command.split(";");
+        //
         try {
             ie = ModuleLoader.getModules(IImportExport.class);
-            
+
             // Create and show the dialog
-            GenericDialogPlus gd = new GenericDialogPlus(command);
-            
+            GenericDialogPlus gd = new GenericDialogPlus(commands[0] + " " + commands[1]);
+
             modules = new String[ie.size()];
             suffix = new String[ie.size()];
             for(int i = 0; i < modules.length; i++) {
@@ -57,115 +64,37 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 suffix[i] = ie.elementAt(i).getSuffix();
             }
             gd.addChoice("File type", modules, modules[active_ie]);
-            ftype = (Choice)gd.getChoices().get(0);
+            ftype = (Choice) gd.getChoices().get(0);
             ftype.addItemListener(this);
             if(defaultPath != null) {
                 gd.addFileField("Choose a file", defaultPath);
             } else {
-                gd.addFileField("Choose a file", IJ.getDirectory("current") + "results." + suffix[active_ie]);
+                gd.addFileField("Choose a file", IJ.getDirectory("current") + commands[1] + "." + suffix[active_ie]);
             }
-            fpath = (TextField)gd.getStringFields().get(0);
+            fpath = (TextField) gd.getStringFields().get(0);
             fpath.addTextListener(this);
             gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
             //
-            String [] col_headers = null;
-            if("export".equals(command)) {
-                if(IJResultsTable.getResultsTable().getMeasurementProtocol() != null) {
-                    gd.addCheckbox("export measurement protocol", true);
-                }
-                gd.addMessage("Columns to export:");
-                IJResultsTable rt = IJResultsTable.getResultsTable();
-                col_headers = rt.getColumnNames().toArray(new String[0]);
-                boolean [] active_columns = new boolean[col_headers.length];
-                Arrays.fill(active_columns, true); active_columns[rt.findColumn(MoleculeDescriptor.LABEL_ID)] = false;
-                gd.addCheckboxGroup(col_headers.length, 1, col_headers, active_columns);
-            } else if("import".equals(command)) {
-                gd.addCheckbox("clear the table of results before import", true);
-                gd.addCheckbox("show rendering preview", true);
-                int [] openedImagesIds = WindowManager.getIDList();
-                if(openedImagesIds != null) {
-                    String [] openedImagesTitles = new String[openedImagesIds.length+1];
-                    openedImagesTitles[0] = "";
-                    for(int i = 0; i < openedImagesIds.length; i++) {
-                        openedImagesTitles[i+1] = WindowManager.getImage(openedImagesIds[i]).getTitle();
-                    }
-                    gd.addMessage("If the input image for the imported results is opened, which one is it?\n"
-                            + " It can be used for overlay preview of detected molecules.");
-                    gd.addChoice("The input image: ", openedImagesTitles, "");
-                }
+            String[] col_headers = null;
+            if(EXPORT.equals(commands[0])) {
+                col_headers = fillExportPane(commands[1], gd);
+            } else if(IMPORT.equals(commands[0])) {
+                fillImportPane(commands[1], gd);
             }
             gd.showDialog();
-            
+
             if(!gd.wasCanceled()) {
                 active_ie = gd.getNextChoiceIndex();
                 String filePath = gd.getNextString();
-                if("export".equals(command)) {
-                    if(IJResultsTable.getResultsTable().getMeasurementProtocol() != null) {
-                        if(gd.getNextBoolean()) {
-                            IJResultsTable.getResultsTable().getMeasurementProtocol().export(getProtocolFilePath(filePath));
-                        }
-                    }
-                    Vector<String> columns = new Vector<String>();
-                    for(int i = 0; i < col_headers.length; i++) {
-                        if(gd.getNextBoolean() == true) {
-                            columns.add(col_headers[i]);
-                        }
-                    }
-                    exportToFile(filePath, columns);
-                } else if("import".equals(command)) {
-                    importFromFile(filePath, gd.getNextBoolean());
-                    IJResultsTable rt = IJResultsTable.getResultsTable();
-                    rt.setLivePreview(gd.getNextBoolean());
-                    try {
-                        rt.setAnalyzedImage(WindowManager.getImage(gd.getNextChoice()));
-                    } catch(ArrayIndexOutOfBoundsException ex) {
-                        // no getNextChoice
-                    }
-                    rt.showPreview();
+                if(EXPORT.equals(commands[0])) {
+                    runExport(commands[1], gd, filePath, col_headers);
+                } else if(IMPORT.equals(commands[0])) {
+                    runImport(commands[1], gd, filePath);
                 }
             }
-        } catch (Exception ex) {
-            IJ.handleException(ex);
-        }
-    }
-    
-    private void exportToFile(String fpath, Vector<String> columns) {
-        IJ.showStatus("ThunderSTORM is exporting your results...");
-        IJ.showProgress(0.0);
-        try {
-            IImportExport exporter = ie.elementAt(active_ie);
-            exporter.exportToFile(fpath, IJResultsTable.getResultsTable(), columns);
-            IJ.showStatus("ThunderSTORM has exported your results.");
-        } catch(IOException ex) {
-            IJ.showStatus("");
-            IJ.showMessage("Exception", ex.getMessage());
         } catch(Exception ex) {
-            IJ.showStatus("");
             IJ.handleException(ex);
         }
-        IJ.showProgress(1.0);
-    }
-    
-    private void importFromFile(String fpath, boolean reset_first) {
-        IJResultsTable rt = IJResultsTable.getResultsTable();
-        IJ.showStatus("ThunderSTORM is importing your file...");
-        IJ.showProgress(0.0);
-        try {
-            if(reset_first) rt.reset();
-            rt.setOriginalState();
-            IImportExport importer = ie.elementAt(active_ie);
-            importer.importFromFile(fpath, rt);
-            IJ.showStatus("ThunderSTORM has imported your file.");
-        } catch(IOException ex) {
-            IJ.showStatus("");
-            IJ.showMessage("Exception", ex.getMessage());
-        } catch(Exception ex) {
-            IJ.showStatus("");
-            IJ.handleException(ex);
-        }
-        AnalysisPlugIn.setDefaultColumnsWidth(rt);
-        rt.show("Results");
-        IJ.showProgress(1.0);
     }
 
     @Override
@@ -186,9 +115,13 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     @Override
     public void textValueChanged(TextEvent e) {
         String fname = new File(fpath.getText()).getName().trim();
-        if(fname.isEmpty()) return;
+        if(fname.isEmpty()) {
+            return;
+        }
         int dotpos = fname.lastIndexOf('.');
-        if(dotpos < 0) return;
+        if(dotpos < 0) {
+            return;
+        }
         String type = fname.substring(dotpos + 1).trim();
         for(int i = 0; i < suffix.length; i++) {
             if(type.equals(suffix[i])) {
@@ -207,4 +140,130 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         }
     }
 
+    private String[] fillExportPane(String cmd, GenericDialogPlus gd) {
+        String[] col_headers;
+        GenericTable table;
+        if(IJGroundTruthTable.IDENTIFIER.equals(cmd)) {
+            table = IJGroundTruthTable.getGroundTruthTable();
+        } else {
+            if(IJResultsTable.getResultsTable().getMeasurementProtocol() != null) {
+                gd.addCheckbox("export measurement protocol", true);
+            }
+            table = IJResultsTable.getResultsTable();
+        }
+        //
+        gd.addMessage("Columns to export:");
+        col_headers = (String[])table.getColumnNames().toArray(new String[0]);
+        boolean[] active_columns = new boolean[col_headers.length];
+        Arrays.fill(active_columns, true);
+        int colId = table.findColumn(MoleculeDescriptor.LABEL_ID);
+        if(colId >= 0) {
+            active_columns[colId] = false;
+        }
+        gd.addCheckboxGroup(col_headers.length, 1, col_headers, active_columns);
+        //
+        return col_headers;
+    }
+
+    private void fillImportPane(String cmd, GenericDialogPlus gd) {
+        gd.addCheckbox("clear the `" + cmd + "` table of before import", true);
+        if(IJResultsTable.IDENTIFIER.equals(cmd)) {
+            gd.addCheckbox("show rendering preview", true);
+            int[] openedImagesIds = WindowManager.getIDList();
+            if(openedImagesIds != null) {
+                String[] openedImagesTitles = new String[openedImagesIds.length + 1];
+                openedImagesTitles[0] = "";
+                for(int i = 0; i < openedImagesIds.length; i++) {
+                    openedImagesTitles[i + 1] = WindowManager.getImage(openedImagesIds[i]).getTitle();
+                }
+                gd.addMessage("If the input image for the imported results is opened, which one is it?\n"
+                        + " It can be used for overlay preview of detected molecules.");
+                gd.addChoice("The input image: ", openedImagesTitles, "");
+            }
+        }
+    }
+
+    private void runExport(String cmd, GenericDialogPlus gd, String filePath, String[] col_headers) {
+        if(IJGroundTruthTable.IDENTIFIER.equals(cmd)) {
+            Vector<String> columns = new Vector<String>();
+            for(int i = 0; i < col_headers.length; i++) {
+                if(gd.getNextBoolean() == true) {
+                    columns.add(col_headers[i]);
+                }
+            }
+            exportToFile(IJGroundTruthTable.getGroundTruthTable(), filePath, columns);
+        } else {    // IJResultsTable
+            IJResultsTable rt = IJResultsTable.getResultsTable();
+            if(rt.getMeasurementProtocol() != null) {
+                if(gd.getNextBoolean()) {
+                    rt.getMeasurementProtocol().export(getProtocolFilePath(filePath));
+                }
+            }
+            Vector<String> columns = new Vector<String>();
+            for(int i = 0; i < col_headers.length; i++) {
+                if(gd.getNextBoolean() == true) {
+                    columns.add(col_headers[i]);
+                }
+            }
+            exportToFile(rt, filePath, columns);
+        }
+    }
+
+    private void runImport(String cmd, GenericDialogPlus gd, String filePath) {
+        if(IJGroundTruthTable.IDENTIFIER.equals(cmd)) {
+            importFromFile(IJGroundTruthTable.getGroundTruthTable(), filePath, gd.getNextBoolean());
+        } else {    // IJResultsTable
+            IJResultsTable rt = IJResultsTable.getResultsTable();
+            importFromFile(rt, filePath, gd.getNextBoolean());
+            rt.setLivePreview(gd.getNextBoolean());
+            try {
+                rt.setAnalyzedImage(WindowManager.getImage(gd.getNextChoice()));
+            } catch(ArrayIndexOutOfBoundsException ex) {
+                // no getNextChoice
+            }
+            rt.showPreview();
+        }
+    }
+    
+    private void exportToFile(GenericTable table, String fpath, Vector<String> columns) {
+        IJ.showStatus("ThunderSTORM is exporting your results...");
+        IJ.showProgress(0.0);
+        try {
+            IImportExport exporter = ie.elementAt(active_ie);
+            exporter.exportToFile(fpath, table, columns);
+            IJ.showStatus("ThunderSTORM has exported your results.");
+        } catch(IOException ex) {
+            IJ.showStatus("");
+            IJ.showMessage("Exception", ex.getMessage());
+        } catch(Exception ex) {
+            IJ.showStatus("");
+            IJ.handleException(ex);
+        }
+        IJ.showProgress(1.0);
+    }
+
+    private void importFromFile(GenericTable table, String fpath, boolean reset_first) {
+        IJ.showStatus("ThunderSTORM is importing your file...");
+        IJ.showProgress(0.0);
+        try {
+            if(reset_first) {
+                table.reset();
+            }
+            table.setOriginalState();
+            IImportExport importer = ie.elementAt(active_ie);
+            importer.importFromFile(fpath, table);
+            IJ.showStatus("ThunderSTORM has imported your file.");
+        } catch(IOException ex) {
+            IJ.showStatus("");
+            IJ.showMessage("Exception", ex.getMessage());
+        } catch(Exception ex) {
+            IJ.showStatus("");
+            IJ.handleException(ex);
+        }
+        if(table instanceof IJResultsTable) {
+            AnalysisPlugIn.setDefaultColumnsWidth((IJResultsTable)table);
+        }
+        table.show();
+        IJ.showProgress(1.0);
+    }
 }

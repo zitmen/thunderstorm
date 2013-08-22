@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
@@ -21,6 +22,11 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
     @Override
     public void run(String command) {
         GUI.setLookAndFeel();
+        //
+        if("showGroundTruthTable".equals(command)) {
+            IJGroundTruthTable.getGroundTruthTable().show();
+            return;
+        }
         //
         try {
             // Create and show the dialog

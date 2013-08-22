@@ -9,14 +9,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL_SQUARED;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER_SQUARED;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.MICROMETER_SQUARED;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.DIGITAL;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.MICROMETER;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PHOTON;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
@@ -115,8 +107,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                     }
                 }
             }
-            convertAllColumnsToAnalogUnits(rt);
-            calculateThompsonFormula(rt);
+            rt.convertAllColumnsToAnalogUnits();
+            rt.calculateThompsonFormula();
             rt.insertIdColumn();
             rt.copyOriginalToActual();
             rt.setActualState();
@@ -281,87 +273,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             IJ.handleException(ex);
         }
     }
-
-    public static void convertAllColumnsToAnalogUnits(IJResultsTable rt) {
-        for(String colName : rt.getColumnNames()) {
-            switch(rt.getColumnUnits(colName)) {
-                case PIXEL:
-                case MICROMETER: // this is of course analog unit, but we need all units to be the same
-                    rt.setColumnUnits(colName, NANOMETER);
-                    break;
-                case PIXEL_SQUARED:
-                case MICROMETER_SQUARED: // this is of course analog unit, but we need all units to be the same
-                    rt.setColumnUnits(colName, NANOMETER_SQUARED);
-                    break;
-                case DIGITAL:
-                    rt.setColumnUnits(colName, PHOTON);
-                    break;
-            }
-        }
-    }
-    
-    public static void convertAllColumnsToDigitalUnits(IJResultsTable rt) {
-        for(String colName : rt.getColumnNames()) {
-            switch(rt.getColumnUnits(colName)) {
-                case NANOMETER:
-                case MICROMETER:
-                    rt.setColumnUnits(colName, PIXEL);
-                    break;
-                case NANOMETER_SQUARED:
-                case MICROMETER_SQUARED:
-                    rt.setColumnUnits(colName, PIXEL_SQUARED);
-                    break;
-                case PHOTON:
-                    rt.setColumnUnits(colName, DIGITAL);
-                    break;
-            }
-        }
-    }
-
-    public static void calculateThompsonFormula(IJResultsTable rt) {
-        // Note: even though that the uncertainity can be calculated in pixels,
-        //       we choose to do it in nanometers by default setting
-        try {
-            String paramName;
-            double paramValue;
-            Molecule mol;
-            if(CameraSetupPlugIn.isEmCcd) {
-                if(rt.columnExists(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
-                    rt.deleteColumn(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
-                }
-                //
-                paramName = MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON;
-                for(int row = 0, max = rt.getRowCount(); row < max; row++) {
-                    mol = rt.getRow(row);
-                    paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
-                    if(mol.hasParam(paramName)) {
-                        mol.setParam(paramName, paramValue);
-                    } else {
-                        mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
-                    }
-                }
-            } else {
-                if(rt.columnExists(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
-                    rt.deleteColumn(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
-                }
-                //
-                paramName = MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON;
-                for(int row = 0, max = rt.getRowCount(); row < max; row++) {
-                    mol = rt.getRow(row);
-                    paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
-                    if(mol.hasParam(paramName)) {
-                        mol.setParam(paramName, paramValue);
-                    } else {
-                        mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
-                    }
-                }
-            }
-            rt.fireStructureChanged();
-        } catch(Exception e) {
-            // ignore...PSF does not fit all the required parameters
-        }
-    }
-
 
     public static void setDefaultColumnsWidth(IJResultsTable rt) {
         rt.setColumnPreferredWidth(MoleculeDescriptor.LABEL_ID, 40);

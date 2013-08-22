@@ -33,15 +33,20 @@ public class IJDistribution implements PlugIn, TextListener {
 
     @Override
     public void run(String arg) {
-        IJResultsTable rt = IJResultsTable.getResultsTable();
-        int count = rt.getRowCount();
+        GenericTable table;
+        if("ground-truth".equals(arg)) {
+            table = IJGroundTruthTable.getGroundTruthTable();
+        } else {
+            table = IJResultsTable.getResultsTable();
+        }
+        int count = table.getRowCount();
         if(count == 0) {
-            IJ.error("ThunderSTORM: Distribution", "The \"ThunderSTORM: Results\" table is empty");
+            IJ.error("ThunderSTORM: Distribution", "The \"" + table.getFrameTitle() + "\" table is empty");
             return;
         }
         //IJ.log(head);
 
-        String[] strings = rt.getColumnNames().toArray(new String[0]);
+        String[] strings = (String[])table.getColumnNames().toArray(new String[0]);
 
         defaultNBins = "" + nBins;
         defaultRange = range;
@@ -80,8 +85,8 @@ public class IJDistribution implements PlugIn, TextListener {
             }
         }
         double[] data;
-        if(rt.columnExists(parameter)) {
-            data = rt.getColumnAsDoubles(parameter);
+        if(table.columnExists(parameter)) {
+            data = table.getColumnAsDoubles(parameter);
         } else {
             IJ.error("Distribution", "No available results: \"" + parameter + "\"");
             return;

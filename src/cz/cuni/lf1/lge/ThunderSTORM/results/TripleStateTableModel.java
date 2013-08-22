@@ -2,13 +2,13 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import java.util.EnumMap;
 
-class TripleStateTableModel extends ResultsTableModel {
+class TripleStateTableModel extends GenericTableModel {
 
     public static enum StateName {
         ORIGINAL, UNDO, ACTUAL;
     }
 
-    EnumMap<StateName, ResultsTableModel> savedStates = new EnumMap<StateName, ResultsTableModel>(StateName.class);
+    EnumMap<StateName, GenericTableModel> savedStates = new EnumMap<StateName, GenericTableModel>(StateName.class);
     StateName selectedState;
 
     TripleStateTableModel() {
@@ -73,7 +73,7 @@ class TripleStateTableModel extends ResultsTableModel {
         if(selectedState == StateName.UNDO || selectedState == StateName.ACTUAL) {
             saveSelectedState();
         }
-        ResultsTableModel pom = savedStates.get(StateName.UNDO);
+        GenericTableModel pom = savedStates.get(StateName.UNDO);
         savedStates.put(StateName.UNDO, savedStates.get(StateName.ACTUAL));
         savedStates.put(StateName.ACTUAL, pom);
         if(selectedState == StateName.UNDO || selectedState == StateName.ACTUAL) {
@@ -104,7 +104,7 @@ class TripleStateTableModel extends ResultsTableModel {
     }
 
     private void saveSelectedState() {
-        savedStates.put(selectedState, new ResultsTableModel(this));
+        savedStates.put(selectedState, new GenericTableModel(this));
     }
 
     public void setOriginalState() {

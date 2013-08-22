@@ -2,7 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
-import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import ij.IJ;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -31,8 +31,8 @@ public class XMLImportExport implements IImportExport {
     static final String UNITS = "units";
     
     @Override
-    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
-        assert(rt != null);
+    public void importFromFile(String fp, GenericTable table) throws IOException {
+        assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
@@ -124,14 +124,14 @@ public class XMLImportExport implements IImportExport {
                     colnames[ci] = key;
                     ci++;
                 }
-                if(!rt.columnNamesEqual(colnames)) {
+                if(!table.columnNamesEqual(colnames)) {
                     throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + MoleculeDescriptor.LABEL_ID + "')!");
                 }
-                if(rt.isEmpty()) {
-                    rt.setDescriptor(new MoleculeDescriptor(colnames));
+                if(table.isEmpty()) {
+                    table.setDescriptor(new MoleculeDescriptor(colnames));
                     if(units != null) {
                         for(Entry<String,String> col : units.entrySet()) {
-                            rt.setColumnUnits(col.getKey(), Units.fromString(col.getValue()));
+                            table.setColumnUnits(col.getKey(), Units.fromString(col.getValue()));
                         }
                     }
                 }
@@ -144,17 +144,17 @@ public class XMLImportExport implements IImportExport {
                     values[c] = mol.get(colnames[c]).doubleValue();
                     IJ.showProgress((double)(r++) / (double)nrows);
                 }
-                rt.addRow(values);
+                table.addRow(values);
             }
         }
-        rt.insertIdColumn();
-        rt.copyOriginalToActual();
-        rt.setActualState();
+        table.insertIdColumn();
+        table.copyOriginalToActual();
+        table.setActualState();
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws IOException {
-        assert(rt != null);
+    public void exportToFile(String fp, GenericTable table, Vector<String> columns) throws IOException {
+        assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
@@ -179,7 +179,7 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(resultsStartElement);
             eventWriter.add(end);
             
-            int ncols = columns.size(), nrows = rt.getRowCount();
+            int ncols = columns.size(), nrows = table.getRowCount();
             
             // Write columns headers with units
             StartElement unitsStartElement = eventFactory.createStartElement("", "", UNITS);
@@ -187,7 +187,7 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(unitsStartElement);
             eventWriter.add(end);
             for(int c = 0; c < ncols; c++) {
-                String units = rt.getColumnUnits(columns.elementAt(c)).toString();
+                String units = table.getColumnUnits(columns.elementAt(c)).toString();
                 if((units != null) && !units.trim().isEmpty()) {
                     createNode(eventWriter, columns.elementAt(c), units);
                 }
@@ -204,7 +204,7 @@ public class XMLImportExport implements IImportExport {
                 eventWriter.add(end);
 
                 for(int c = 0; c < ncols; c++) {
-                    createNode(eventWriter, columns.elementAt(c), Double.toString((Double)rt.getValue(r,columns.elementAt(c))));
+                    createNode(eventWriter, columns.elementAt(c), Double.toString((Double)table.getValue(r,columns.elementAt(c))));
                 }
                 
                 eventWriter.add(tab);

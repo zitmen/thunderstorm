@@ -1,9 +1,18 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.DIGITAL;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.MICROMETER;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.MICROMETER_SQUARED;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER_SQUARED;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PHOTON;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL_SQUARED;
 import cz.cuni.lf1.lge.ThunderSTORM.util.IValue;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import java.util.Vector;
@@ -11,18 +20,18 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-class ResultsTableModel extends AbstractTableModel implements Cloneable {
+class GenericTableModel extends AbstractTableModel implements Cloneable {
 
     public static final int COLUMN_NOT_FOUND = -1;
     protected Vector<Molecule> rows;
     protected MoleculeDescriptor columns;
     private int maxId;
 
-    public ResultsTableModel(ResultsTableModel res) {
+    public GenericTableModel(GenericTableModel res) {
         setModelData(res);
     }
     
-    protected final void setModelData(ResultsTableModel res) {
+    protected final void setModelData(GenericTableModel res) {
         this.rows = res.rows;
         this.columns = res.columns;
         this.maxId = res.maxId;
@@ -98,7 +107,7 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
     }
 
     // -----------------------------------------------------
-    public ResultsTableModel() {
+    public GenericTableModel() {
         rows = new Vector<Molecule>();
         columns = new MoleculeDescriptor(new String[] { MoleculeDescriptor.LABEL_ID });
         maxId = 0;
@@ -291,8 +300,8 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
     }
 
     @Override
-    public ResultsTableModel clone() {
-        ResultsTableModel newModel = new ResultsTableModel();
+    public GenericTableModel clone() {
+        GenericTableModel newModel = new GenericTableModel();
         TableModelListener[] listeners = listenerList.getListeners(TableModelListener.class);
         newModel.listenerList = new EventListenerList();
         for (int i = 0; i < listeners.length; i++) {
@@ -305,5 +314,87 @@ class ResultsTableModel extends AbstractTableModel implements Cloneable {
         }
         newModel.maxId = maxId;
         return newModel;
+    }
+    
+    // ------------------------------------------------------------------------
+    
+    public void convertAllColumnsToAnalogUnits() {
+        for(String colName : getColumnNames()) {
+            switch(getColumnUnits(colName)) {
+                case PIXEL:
+                case MICROMETER: // this is of course analog unit, but we need all units to be the same
+                    setColumnUnits(colName, NANOMETER);
+                    break;
+                case PIXEL_SQUARED:
+                case MICROMETER_SQUARED: // this is of course analog unit, but we need all units to be the same
+                    setColumnUnits(colName, NANOMETER_SQUARED);
+                    break;
+                case DIGITAL:
+                    setColumnUnits(colName, PHOTON);
+                    break;
+            }
+        }
+    }
+    
+    public void convertAllColumnsToDigitalUnits() {
+        for(String colName : getColumnNames()) {
+            switch(getColumnUnits(colName)) {
+                case NANOMETER:
+                case MICROMETER:
+                    setColumnUnits(colName, PIXEL);
+                    break;
+                case NANOMETER_SQUARED:
+                case MICROMETER_SQUARED:
+                    setColumnUnits(colName, PIXEL_SQUARED);
+                    break;
+                case PHOTON:
+                    setColumnUnits(colName, DIGITAL);
+                    break;
+            }
+        }
+    }
+
+    public void calculateThompsonFormula() {
+        // Note: even though that the uncertainity can be calculated in pixels,
+        //       we choose to do it in nanometers by default setting
+        try {
+            String paramName;
+            double paramValue;
+            Molecule mol;
+            if(CameraSetupPlugIn.isEmCcd) {
+                if(columnExists(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
+                    deleteColumn(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
+                }
+                //
+                paramName = MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON;
+                for(int row = 0, max = getRowCount(); row < max; row++) {
+                    mol = getRow(row);
+                    paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
+                    if(mol.hasParam(paramName)) {
+                        mol.setParam(paramName, paramValue);
+                    } else {
+                        mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
+                    }
+                }
+            } else {
+                if(columnExists(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
+                    deleteColumn(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
+                }
+                //
+                paramName = MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON;
+                for(int row = 0, max = getRowCount(); row < max; row++) {
+                    mol = getRow(row);
+                    paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
+                    if(mol.hasParam(paramName)) {
+                        mol.setParam(paramName, paramValue);
+                    } else {
+                        mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
+                    }
+                }
+            }
+            fireTableStructureChanged();
+        } catch(Exception e) {
+            // ignore...PSF does not fit all the required parameters
+        }
     }
 }

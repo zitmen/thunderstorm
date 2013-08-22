@@ -27,10 +27,10 @@ class ResultsFilter {
     private JPanel filterPanel;
     private JTextField filterTextField;
     private JButton applyButton;
-    private JavaTableWindow table;
+    private ResultsTableWindow table;
     private TripleStateTableModel model;
 
-    public ResultsFilter(JavaTableWindow table, TripleStateTableModel model) {
+    public ResultsFilter(ResultsTableWindow table, TripleStateTableModel model) {
         this.table = table;
         this.model = model;
     }
@@ -113,7 +113,7 @@ class ResultsFilter {
         }
     }
 
-    static void applyToModel(ResultsTableModel model, String text) {
+    static void applyToModel(GenericTableModel model, String text) {
         boolean[] results = new boolean[model.getRowCount()];
         if(text.isEmpty()) {
             Arrays.fill(results, true);
