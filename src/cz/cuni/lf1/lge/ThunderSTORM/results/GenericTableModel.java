@@ -184,11 +184,14 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
     }
 
     public void setColumnUnits(String columnName, Units new_units) {
-        columns.setColumnUnits(new_units, columns.getParamColumn(columnName));
-        fireTableStructureChanged();
+        setColumnUnits(columns.getParamColumn(columnName), new_units);
     }
 
     public void setColumnUnits(int columnIndex, Units new_units) {
+        MoleculeDescriptor.Units old_units = getColumnUnits(columnIndex);
+        for(int row = 0, max = getRowCount(); row < max; row++) {
+            setValueAt(old_units.convertTo(new_units, getValueAt(row, columnIndex)), row, columnIndex);
+        }
         columns.setColumnUnits(new_units, columnIndex);
         fireTableStructureChanged();
     }

@@ -26,10 +26,6 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
     
     private static IJResultsTable resultsTable = null;
 
-    /**
-     * Returns the ResultsTable used by the Measure command. This table must be
-     * displayed in the "Results" window.
-     */
     public synchronized static IJResultsTable getResultsTable() {
         if (resultsTable == null) {
             setResultsTable(new IJResultsTable());

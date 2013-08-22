@@ -7,10 +7,6 @@ public class IJGroundTruthTable extends GenericTable<GroundTruthTableWindow> {
     
     private static IJGroundTruthTable gtTable = null;
 
-    /**
-     * Returns the ResultsTable used by the Measure command. This table must be
-     * displayed in the "Results" window.
-     */
     public synchronized static IJGroundTruthTable getGroundTruthTable() {
         if (gtTable == null) {
             setGroundTruthTable(new IJGroundTruthTable());

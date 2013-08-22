@@ -6,6 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJPerformanceTable;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.WindowManager;
@@ -146,6 +147,8 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         GenericTable table;
         if(IJGroundTruthTable.IDENTIFIER.equals(cmd)) {
             table = IJGroundTruthTable.getGroundTruthTable();
+        } else if(IJPerformanceTable.IDENTIFIER.equals(cmd)) {
+            table = IJPerformanceTable.getPerformanceTable();
         } else {
             if(IJResultsTable.getResultsTable().getMeasurementProtocol() != null) {
                 gd.addCheckbox("export measurement protocol", true);
@@ -185,14 +188,11 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     }
 
     private void runExport(String cmd, GenericDialogPlus gd, String filePath, String[] col_headers) {
+        GenericTable table;
         if(IJGroundTruthTable.IDENTIFIER.equals(cmd)) {
-            Vector<String> columns = new Vector<String>();
-            for(int i = 0; i < col_headers.length; i++) {
-                if(gd.getNextBoolean() == true) {
-                    columns.add(col_headers[i]);
-                }
-            }
-            exportToFile(IJGroundTruthTable.getGroundTruthTable(), filePath, columns);
+            table = IJGroundTruthTable.getGroundTruthTable();
+        } else if(IJPerformanceTable.IDENTIFIER.equals(cmd)) {
+            table = IJPerformanceTable.getPerformanceTable();
         } else {    // IJResultsTable
             IJResultsTable rt = IJResultsTable.getResultsTable();
             if(rt.getMeasurementProtocol() != null) {
@@ -200,19 +200,23 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                     rt.getMeasurementProtocol().export(getProtocolFilePath(filePath));
                 }
             }
-            Vector<String> columns = new Vector<String>();
-            for(int i = 0; i < col_headers.length; i++) {
-                if(gd.getNextBoolean() == true) {
-                    columns.add(col_headers[i]);
-                }
-            }
-            exportToFile(rt, filePath, columns);
+            table = rt;
         }
+        //
+        Vector<String> columns = new Vector<String>();
+        for(int i = 0; i < col_headers.length; i++) {
+            if(gd.getNextBoolean() == true) {
+                columns.add(col_headers[i]);
+            }
+        }
+        exportToFile(table, filePath, columns);
     }
 
     private void runImport(String cmd, GenericDialogPlus gd, String filePath) {
         if(IJGroundTruthTable.IDENTIFIER.equals(cmd)) {
             importFromFile(IJGroundTruthTable.getGroundTruthTable(), filePath, gd.getNextBoolean());
+        } else if(IJPerformanceTable.IDENTIFIER.equals(cmd)) {
+            importFromFile(IJPerformanceTable.getPerformanceTable(), filePath, gd.getNextBoolean());
         } else {    // IJResultsTable
             IJResultsTable rt = IJResultsTable.getResultsTable();
             importFromFile(rt, filePath, gd.getNextBoolean());

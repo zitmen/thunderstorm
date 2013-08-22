@@ -223,10 +223,6 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
     }
     
     public void setColumnUnits(int columnIndex, MoleculeDescriptor.Units new_units) {
-        MoleculeDescriptor.Units old_units = getColumnUnits(columnIndex);
-        for(int row = 0, max = getRowCount(); row < max; row++) {
-            setValueAt(old_units.convertTo(new_units, getValue(row, columnIndex)), row, columnIndex);
-        }
         model.setColumnUnits(columnIndex, new_units);
     }
     
