@@ -106,6 +106,8 @@ class ResultsFilter {
                     }
                 }
             }.execute();
+            
+            TableHandlerPlugin.recordFilter(filterText);
         } catch(Exception ex) {
             IJ.handleException(ex);
             filterTextField.setBackground(new Color(255, 200, 200));

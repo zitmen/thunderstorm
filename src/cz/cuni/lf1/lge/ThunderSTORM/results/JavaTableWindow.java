@@ -79,6 +79,8 @@ class JavaTableWindow {
     private OperationsHistoryPanel operationsStackPanel;
     private final TripleStateTableModel model;
     ResultsFilter resultsFilter;
+    ResultsGrouping resultsGrouping;
+    ResultsDriftCorrection resultsDriftCorrection;
 
     public JavaTableWindow() {
         frame = new JFrame("ThunderSTORM: Results");
@@ -230,9 +232,11 @@ class JavaTableWindow {
         buttons.add(io_export);
         //
         resultsFilter = new ResultsFilter(this, model);
-        final JPanel grouping = new ResultsGrouping(this, model).createUIPanel();
+        resultsGrouping = new ResultsGrouping(this, model);
+        resultsDriftCorrection = new ResultsDriftCorrection();
+        JPanel grouping = resultsGrouping.createUIPanel();
         JPanel filter = resultsFilter.createUIPanel();
-        JPanel drift = new ResultsDriftCorrection().createUIPanel();
+        JPanel drift = resultsDriftCorrection.createUIPanel();
 
         //fill tabbed pane
         tabbedPane = new JTabbedPane();
@@ -251,6 +255,7 @@ class JavaTableWindow {
                 operationsStackPanel.removeAllOperations();
                 setStatus("Results reset.");
                 showPreview();
+                TableHandlerPlugin.recordReset();
             }
         });
         historyPane.add(operationsStackPanel, new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
@@ -352,6 +357,18 @@ class JavaTableWindow {
             text = " ";
         }
         this.status.setText(text);
+    }
+    
+    public ResultsFilter getFilter(){
+        return resultsFilter;
+    }
+    
+    public ResultsGrouping getGrouping(){
+        return resultsGrouping;
+    }
+    
+    public ResultsDriftCorrection getDriftCorrection(){
+        return resultsDriftCorrection;
     }
     
     public String getFilterFormula() {

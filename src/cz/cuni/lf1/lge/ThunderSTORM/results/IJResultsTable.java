@@ -348,6 +348,18 @@ public class IJResultsTable {
         model.fireTableStructureChanged();
     }
 
+    ResultsFilter getFilter() {
+        return tableWindow.getFilter();
+    }
+
+    ResultsGrouping getGrouping() {
+        return tableWindow.getGrouping();
+    }
+
+    ResultsDriftCorrection getDriftCorrection() {
+        return tableWindow.getDriftCorrection();
+    }
+
     void addNewFilter(String paramName, double greaterThan, double lessThan) {
         String formula = tableWindow.getFilterFormula().trim();
         StringBuilder sb = new StringBuilder(formula);
