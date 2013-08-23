@@ -17,7 +17,7 @@ class MergedMoleculesPopUp {
 
     // Bug: if row == 0, then the balloon does not show up! This is probably a bug in the BalloonTip library.
     public MergedMoleculesPopUp(JTable parent, int row, int col, Vector<Molecule> molecules) {
-        ResultsTableModel model = new ResultsTableModel();
+        GenericTableModel model = new GenericTableModel();
         for(Molecule mol : molecules) {
             model.addRow(mol);
         }

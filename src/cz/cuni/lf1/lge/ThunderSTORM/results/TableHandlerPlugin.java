@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import cz.cuni.lf1.lge.ThunderSTORM.results.OperationsHistoryPanel.Operation;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import ij.IJ;
 import ij.Macro;
 import ij.plugin.PlugIn;
@@ -15,6 +15,7 @@ public class TableHandlerPlugin implements PlugIn {
         try {
             IJResultsTable resultsTable = IJResultsTable.getResultsTable();
             if("show".equals(action)) {
+                GUI.setLookAndFeel();
                 resultsTable.show();
             } else if("drift".equals(action)) {
                 int steps = Integer.parseInt(Macro.getValue(options, "steps", "5"));

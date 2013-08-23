@@ -34,7 +34,7 @@ import javax.swing.SwingWorker;
 
 class ResultsGrouping {
 
-    private JavaTableWindow table;
+    private ResultsTableWindow table;
     private TripleStateTableModel model;
     private JPanel grouping;
     private JTextField distanceTextField;
@@ -42,7 +42,7 @@ class ResultsGrouping {
     private Units distUnits;
     private JLabel groupThrLabel;
 
-    public ResultsGrouping(JavaTableWindow table, TripleStateTableModel model) {
+    public ResultsGrouping(ResultsTableWindow table, TripleStateTableModel model) {
         this.table = table;
         this.model = model;
     }
@@ -175,7 +175,7 @@ class ResultsGrouping {
         }
     }
 
-    public static void applyToModel(ResultsTableModel model, double dist) {
+    public static void applyToModel(GenericTableModel model, double dist) {
         if(!model.columnExists(PSFModel.Params.LABEL_X) || !model.columnExists(PSFModel.Params.LABEL_Y)) {
             throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y, model.getColumnNames()));
         }

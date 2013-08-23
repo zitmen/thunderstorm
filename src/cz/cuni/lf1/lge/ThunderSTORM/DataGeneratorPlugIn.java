@@ -10,7 +10,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.IntegratedGaussian;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import fiji.util.gui.GenericDialogPlus;
@@ -92,8 +92,8 @@ public class DataGeneratorPlugIn implements PlugIn {
         IJ.showStatus("ThunderSTORM is generating your image sequence...");
         IJ.showProgress(0.0);            
         //
-        IJResultsTable rt = IJResultsTable.getResultsTable();
-        rt.reset();
+        IJGroundTruthTable gt = IJGroundTruthTable.getGroundTruthTable();
+        gt.reset();
         ImageStack stack = new ImageStack(width, height);
         FloatProcessor bkg = new DataGenerator().generateBackground(width, height, drift, bkg_range);
         //
@@ -141,12 +141,12 @@ public class DataGeneratorPlugIn implements PlugIn {
             }
         }
         processing_frame = 0;
-        rt.setOriginalState();
+        gt.setOriginalState();
         for(int c = 0; c < cores; c++) {
-            generators[c].fillResults(stack, rt);   // and generate stack and table of ground-truth data
+            generators[c].fillResults(stack, gt);   // and generate stack and table of ground-truth data
         }
-        rt.copyOriginalToActual();
-        rt.setActualState();
+        gt.copyOriginalToActual();
+        gt.setActualState();
         //
         ImagePlus imp = IJ.createImage("ThunderSTORM: artificial dataset", "16-bit", width, height, frames);
         imp.setStack(stack);
@@ -155,7 +155,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         cal.pixelWidth = cal.pixelHeight = pixelsize;
         imp.setCalibration(cal);
         imp.show();
-        rt.show("Ground-truth parameters");
+        gt.show();
         //
         IJ.showProgress(1.0);
         IJ.showStatus("ThunderSTORM has finished generating your image sequence.");
@@ -203,16 +203,16 @@ public class DataGeneratorPlugIn implements PlugIn {
             }
         }
 
-        private void fillResults(ImageStack stack, IJResultsTable rt) {
-            rt.setDescriptor(new MoleculeDescriptor(new String[] { LABEL_FRAME, LABEL_X, LABEL_Y, LABEL_INTENSITY, LABEL_SIGMA }));
+        private void fillResults(ImageStack stack, IJGroundTruthTable gt) {
+            gt.setDescriptor(new MoleculeDescriptor(new String[] { LABEL_FRAME, LABEL_X, LABEL_Y, LABEL_INTENSITY, LABEL_SIGMA }));
             for(int f = frame_start, i = 0; f <= frame_end; f++, i++) {
                 processingNewFrame("ThunderSTORM is building the image stack - frame %d out of %d...");
                 stack.addSlice(local_stack.elementAt(i));
                 for(IntegratedGaussian psf : local_table.elementAt(i)) {
-                    rt.addRow(new double[] { f+1, psf.x0, psf.y0, psf.I0, psf.sig0 });
+                    gt.addRow(new double[] { f+1, psf.x0, psf.y0, psf.I0, psf.sig0 });
                 }
             }
-            rt.insertIdColumn();
+            gt.insertIdColumn();
         }
         
     }

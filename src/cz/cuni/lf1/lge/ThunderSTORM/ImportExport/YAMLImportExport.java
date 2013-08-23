@@ -2,7 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
-import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import ij.IJ;
 import java.io.BufferedWriter;
@@ -18,8 +18,8 @@ import org.yaml.snakeyaml.Yaml;
 public class YAMLImportExport implements IImportExport {
 
     @Override
-    public void importFromFile(String fp, IJResultsTable rt) throws IOException {
-        assert(rt != null);
+    public void importFromFile(String fp, GenericTable table) throws IOException {
+        assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         
@@ -38,42 +38,42 @@ public class YAMLImportExport implements IImportExport {
             }
             int c = 0;
             for(String label : mol.keySet().toArray(new String[0])) {
-                Pair<String,Units> tmp = IJResultsTable.parseColumnLabel(label);
+                Pair<String,Units> tmp = GenericTable.parseColumnLabel(label);
                 if(MoleculeDescriptor.LABEL_ID.equals(tmp.first)) continue;
                 colnames[c] = tmp.first;
                 colunits[c] = tmp.second;
                 values[c] = mol.get(label).doubleValue();
                 c++;
             }
-            if(!rt.columnNamesEqual(colnames)) {
+            if(!table.columnNamesEqual(colnames)) {
                 throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + MoleculeDescriptor.LABEL_ID + "')!");
             }
-            if(rt.isEmpty()) {
-                rt.setDescriptor(new MoleculeDescriptor(colnames, colunits));
+            if(table.isEmpty()) {
+                table.setDescriptor(new MoleculeDescriptor(colnames, colunits));
             }
             //
-            rt.addRow(values);
+            table.addRow(values);
             IJ.showProgress((double)(r++) / (double)nrows);
         }
-        rt.insertIdColumn();
-        rt.copyOriginalToActual();
-        rt.setActualState();
+        table.insertIdColumn();
+        table.copyOriginalToActual();
+        table.setActualState();
     }
 
     @Override
-    public void exportToFile(String fp, IJResultsTable rt, Vector<String> columns) throws IOException {
-        assert(rt != null);
+    public void exportToFile(String fp, GenericTable table, Vector<String> columns) throws IOException {
+        assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         assert(columns != null);
         
-        int ncols = columns.size(), nrows = rt.getRowCount();
+        int ncols = columns.size(), nrows = table.getRowCount();
         
         ArrayList<HashMap<String, Double>> results = new ArrayList<HashMap<String,Double>>();
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(rt.getColumnLabel(columns.elementAt(c)), rt.getValue(r, columns.elementAt(c)));
+                molecule.put(table.getColumnLabel(columns.elementAt(c)), table.getValue(r, columns.elementAt(c)));
             results.add(molecule);
             IJ.showProgress((double)r / (double)nrows);
         }

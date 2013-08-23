@@ -24,14 +24,14 @@ import javax.swing.SwingWorker;
 final class TableRowsPopUpMenu implements ActionListener {
     
     private IJResultsTable rt;
-    private JavaTableWindow tableWindow;
-    private ResultsTableModel tableModel;
+    private ResultsTableWindow tableWindow;
+    private GenericTableModel tableModel;
     private JTable jtable;
     private JMenuItem highlightMoleculeMenuItem;
     private JMenuItem deleteMoleculeMenuItem;
     private JMenuItem mergedMoleculesMenuItem;
 
-    public TableRowsPopUpMenu(MouseEvent evt, JavaTableWindow table) {
+    public TableRowsPopUpMenu(MouseEvent evt, ResultsTableWindow table) {
         tableWindow = table;
         tableModel = table.getModel();
         jtable = table.getView();
@@ -52,7 +52,7 @@ final class TableRowsPopUpMenu implements ActionListener {
         popup.add(deleteMoleculeMenuItem);
         if(jtable.getSelectedRowCount() == 1) {
             int rowIndex = jtable.convertRowIndexToModel(jtable.getSelectedRow());
-            if(tableModel.findColumn(MoleculeDescriptor.LABEL_DETECTIONS) != ResultsTableModel.COLUMN_NOT_FOUND) {
+            if(tableModel.findColumn(MoleculeDescriptor.LABEL_DETECTIONS) != GenericTableModel.COLUMN_NOT_FOUND) {
                 if(tableModel.getValueAt(rowIndex, MoleculeDescriptor.LABEL_DETECTIONS) > 1) {
                     popup.add(mergedMoleculesMenuItem);
                 }
@@ -136,7 +136,7 @@ final class TableRowsPopUpMenu implements ActionListener {
         for(int r = 0, rm = rowIds.size(); r < rm; r++) {
             if(r > 0) sb.append("&");
             start = rowIds.get(r);
-            if((r+1) < rm) {
+            if((r+1) >= rm) {
                 sb.append("(id!=").append(start).append(")");
             } else {
                 end = rowIds.get(r+1);
