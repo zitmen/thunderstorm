@@ -106,6 +106,18 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
         tableWindow.setStatus(text);
     }
 
+    ResultsFilter getFilter() {
+        return tableWindow.getFilter();
+    }
+
+    ResultsGrouping getGrouping() {
+        return tableWindow.getGrouping();
+    }
+
+    ResultsDriftCorrection getDriftCorrection() {
+        return tableWindow.getDriftCorrection();
+    }
+
     void addNewFilter(String paramName, double greaterThan, double lessThan) {
         String formula = tableWindow.getFilterFormula().trim();
         StringBuilder sb = new StringBuilder(formula);

@@ -133,6 +133,10 @@ public class CrossCorrelationDriftCorrection {
             if(saveCorrelationImages) {
                 correlationImages.addSlice(crossCorrelationImage);
             }
+            
+//            GaussianBlur blur = new GaussianBlur();
+//            blur.blurFloat(crossCorrelationImage, magnification/2, magnification/2, 0.01);
+            
             //new ImagePlus("crossCorrelation " + i, crossCorrelationImage.duplicate()).show();
             //find maxima
             Point2D.Double maximumCoords = findMaxima(crossCorrelationImage);

@@ -122,7 +122,8 @@ class ResultsGrouping {
                     }
                 }
             }.execute();
-
+            
+            TableHandlerPlugin.recordMerging(dist);
         } catch(Exception ex) {
             IJ.handleException(ex);
             distanceTextField.setBackground(new Color(255, 200, 200));

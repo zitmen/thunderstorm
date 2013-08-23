@@ -25,7 +25,7 @@ public class OperationsHistoryPanel extends JPanel {
         historyLabel = new JLabel(OperationsHistoryPanel.LABEL_EMPTY);
         add(historyLabel);
     }
-    
+
     List<Operation> getHistory() {
         List<Operation> history = new ArrayList<Operation>();
         for(LabelWithCheckbox item : stack) {
@@ -88,6 +88,15 @@ public class OperationsHistoryPanel extends JPanel {
         }
     }
 
+    public void undoOrRedoLastOperation() {
+        if(!stack.isEmpty()) {
+            JCheckBox chb = stack.get(stack.size() - 1).chb;
+            if(chb != null) {
+                chb.doClick();
+            }
+        }
+    }
+
     class LabelWithCheckbox extends JPanel {
 
         Operation op;
@@ -123,6 +132,7 @@ public class OperationsHistoryPanel extends JPanel {
                         } else {
                             op.undo();
                         }
+                        TableHandlerPlugin.recordUndoOrRedo();
                     }
                 });
                 add(chb);

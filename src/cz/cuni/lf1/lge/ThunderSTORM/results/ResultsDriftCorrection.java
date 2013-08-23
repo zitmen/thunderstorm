@@ -60,7 +60,7 @@ public class ResultsDriftCorrection {
         return uiPanel;
     }
 
-    private void runDriftCorrection(final int bins, final double magnification, final boolean showCorrelationImages, final boolean showPlot) throws IllegalArgumentException {
+    public void runDriftCorrection(final int bins, final double magnification, final boolean showCorrelationImages, final boolean showPlot) throws IllegalArgumentException {
         if(bins < 2) {
             throw new IllegalArgumentException("Number of images must be greater than 1. Input: " + bins);
         }
@@ -112,6 +112,8 @@ public class ResultsDriftCorrection {
                     }
                 }
             }.execute();
+            
+            TableHandlerPlugin.recordDrift(bins, magnification, showCorrelationImages, showPlot);
         } catch(Throwable ex) {
             applyButton.setEnabled(true);
         }

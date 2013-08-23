@@ -55,6 +55,8 @@ class ResultsTableWindow extends GenericTableWindow {
     private JTabbedPane tabbedPane;
     private OperationsHistoryPanel operationsStackPanel;
     ResultsFilter resultsFilter;
+    ResultsGrouping resultsGrouping;
+    ResultsDriftCorrection resultsDriftCorrection;
     
     public ResultsTableWindow(String frameTitle) {
         super(frameTitle);
@@ -127,9 +129,11 @@ class ResultsTableWindow extends GenericTableWindow {
         buttons.add(io_export);
         //
         resultsFilter = new ResultsFilter(this, model);
-        final JPanel grouping = new ResultsGrouping(this, model).createUIPanel();
+        resultsGrouping = new ResultsGrouping(this, model);
+        resultsDriftCorrection = new ResultsDriftCorrection();
+        JPanel grouping = resultsGrouping.createUIPanel();
         JPanel filter = resultsFilter.createUIPanel();
-        JPanel drift = new ResultsDriftCorrection().createUIPanel();
+        JPanel drift = resultsDriftCorrection.createUIPanel();
 
         //fill tabbed pane
         tabbedPane = new JTabbedPane();
@@ -148,6 +152,7 @@ class ResultsTableWindow extends GenericTableWindow {
                 operationsStackPanel.removeAllOperations();
                 setStatus("Results reset.");
                 showPreview();
+                TableHandlerPlugin.recordReset();
             }
         });
         historyPane.add(operationsStackPanel, new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
@@ -230,6 +235,18 @@ class ResultsTableWindow extends GenericTableWindow {
         return operationsStackPanel;
     }
 
+    public ResultsFilter getFilter(){
+        return resultsFilter;
+    }
+    
+    public ResultsGrouping getGrouping(){
+        return resultsGrouping;
+    }
+    
+    public ResultsDriftCorrection getDriftCorrection(){
+        return resultsDriftCorrection;
+    }
+    
     @Override
     protected void tableMouseClicked(MouseEvent e) {
         if(SwingUtilities.isLeftMouseButton(e)) {
