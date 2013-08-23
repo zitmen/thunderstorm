@@ -39,7 +39,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
             IJ.error("Requires `" + IJResultsTable.IDENTIFIER + "` and `" + IJGroundTruthTable.IDENTIFIER + "` windows open!");
             return;
         }
-        if(IJResultsTable.getResultsTable().isEmpty() || !IJGroundTruthTable.getGroundTruthTable().isEmpty()) {
+        if(IJResultsTable.getResultsTable().isEmpty() || IJGroundTruthTable.getGroundTruthTable().isEmpty()) {
             IJ.error("Neither `" + IJResultsTable.IDENTIFIER + "` or `" + IJGroundTruthTable.IDENTIFIER + "` table can't be empty!");
             return;
         }
@@ -147,7 +147,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         //
         ResultsTable rt = ResultsTable.getResultsTable();
         rt.incrementCounter();
-        rt.addValue("Distance radius [" + distUnits.getLabel()+ "]", dist2Tol);
+        rt.addValue("Distance radius [" + distUnits.getLabel()+ "]", sqrt(dist2Tol));
         rt.addValue("# of TP", tp);
         rt.addValue("# of FP", fp);
         rt.addValue("# of FN", fn);
