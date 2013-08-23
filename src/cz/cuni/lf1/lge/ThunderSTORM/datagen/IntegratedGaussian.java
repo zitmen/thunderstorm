@@ -1,12 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.datagen;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.exp;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import ij.process.FloatProcessor;
 import java.awt.Rectangle;
+import java.util.HashMap;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import static org.apache.commons.math3.special.Erf.erf;
 import static org.apache.commons.math3.util.FastMath.log;
@@ -22,6 +20,8 @@ public class IntegratedGaussian {
         I0 = rand.nextUniform(energy.from, energy.to);
         fwhm0 = rand.nextUniform(fwhm.from, fwhm.to);
         sig0 = fwhm0 / FWHM_factor;
+        //
+        dExyTLMap.get().clear();
     }
 
     public void moveXY(double dx, double dy) {
@@ -43,14 +43,38 @@ public class IntegratedGaussian {
             }
         }
     }
+    
+    // -----------------
+    private static final double sqrt2 = sqrt(2);
+    private static final ThreadLocal<HashMap<Double,Double>> dExyTLMap = new ThreadLocal<HashMap<Double,Double>>() {
+        @Override
+        protected synchronized HashMap<Double,Double> initialValue() {
+            return new HashMap<Double,Double>();
+        }
+    };
 
     private double evalAtPixel(double x, double y) {
-        return I0/2/PI/sqr(sig0) * exp(-(sqr(x-x0)+sqr(y-y0))/2/sqr(sig0));
-        //return I0 * dExy(x, x0) * dExy(y, y0);
+        HashMap<Double,Double> dExyValues = dExyTLMap.get();
+        //
+        double dEx;
+        if(dExyValues.containsKey(x-x0)) {
+            dEx = dExyValues.get(x-x0);
+        } else {
+            dEx = dExy(x, x0);
+            dExyValues.put(x-x0, dEx);
+        }
+        double dEy;
+        if(dExyValues.containsKey(y-y0)) {
+            dEy = dExyValues.get(y-y0);
+        } else {
+            dEy = dExy(y, y0);
+            dExyValues.put(y-y0, dEy);
+        }
+        return I0 * dEx * dEy;
     }
 
     private double dExy(double xy, double xy0) {   // `xy`, because the same equation applies for `x` and `y`
-        return 0.5*erf((xy-xy0+0.5) / (2*sqr(sig0))) - 0.5*erf((xy-xy0-0.5) / (2*sqr(sig0)));
+        return 0.5*erf((xy-xy0+0.5) / (sqrt2*sig0)) - 0.5*erf((xy-xy0-0.5) / (sqrt2*sig0));
     }
     
 }

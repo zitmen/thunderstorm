@@ -21,6 +21,7 @@ import ij.measure.Calibration;
 import ij.plugin.PlugIn;
 import ij.process.FloatProcessor;
 import ij.process.ShortProcessor;
+import java.util.Arrays;
 import java.util.Vector;
 import javax.swing.JSeparator;
 
@@ -44,11 +45,11 @@ public class DataGeneratorPlugIn implements PlugIn {
             gd.addNumericField("Width [px]: ", 256, 0);
             gd.addNumericField("Height [px]: ", 256, 0);
             gd.addNumericField("Frames: ", 1000, 0);
-            gd.addNumericField("Pixel width [um]: ", 0.1, 1);
+            gd.addNumericField("Pixel width [um]: ", 0.8, 1);
             gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
-            gd.addNumericField("Density [mol/um^2]: ", 1, 1);
-            gd.addStringField("Emitter FWHM range [px]: ", "1.8:4");
-            gd.addStringField("Emitter energy range [digital units]: ", "1500:2000");
+            gd.addNumericField("Density [mol/um^2]: ", 0.01, 1);
+            gd.addStringField("Emitter FWHM range [px]: ", "1.5:2.5");
+            gd.addStringField("Emitter energy range [digital units]: ", "30000:60000"); // ~ (1000-2000) [photons]
             gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
             gd.addStringField("Background intensity range [digital units]: ", "100:120");
             gd.addMessage("Read-out:");
@@ -194,8 +195,21 @@ public class DataGeneratorPlugIn implements PlugIn {
                     return;
                 }
                 processingNewFrame("ThunderSTORM is generating frame %d out of %d...");
-                FloatProcessor add_noise = datagen.generatePoissonNoise(width, height, add_poisson_var);
-                FloatProcessor mul_noise = datagen.generateGaussianNoise(width, height, mul_gauss_mean, mul_gauss_var);
+                FloatProcessor add_noise, mul_noise;
+                if(add_poisson_var > 0) {
+                    add_noise = datagen.generatePoissonNoise(width, height, add_poisson_var);
+                } else {
+                    float [] data = new float[width*height];
+                    Arrays.fill(data, 0f);
+                    add_noise = new FloatProcessor(width, height, data);
+                }
+                if(mul_gauss_var > 0) {
+                    mul_noise = datagen.generateGaussianNoise(width, height, mul_gauss_mean, mul_gauss_var);
+                } else {
+                    float [] data = new float[width*height];
+                    Arrays.fill(data, (float)mul_gauss_mean);
+                    mul_noise = new FloatProcessor(width, height, data);
+                }
                 Vector<IntegratedGaussian> molecules = datagen.generateMolecules(width, height, mask, pixelsize, density, energy_range, fwhm_range);
                 ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, bkg, add_noise, mul_noise);
                 local_stack.add(slice);

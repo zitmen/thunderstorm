@@ -139,7 +139,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
             fn += (double)matchers[i].FN.size();
             TP.addAll(matchers[i].TP);
         }
-        double jaccard = tp / (fp + fn);
+        double jaccard = tp / (tp + fp + fn);
         double precision = tp / (tp + fp);
         double recall = tp / (tp + fn);
         double F1 = 2 * precision * recall / (precision + recall);
