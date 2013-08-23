@@ -39,7 +39,6 @@ class ResultsGrouping {
     private JPanel grouping;
     private JTextField distanceTextField;
     private JButton applyButton;
-    private Units distUnits;
     private JLabel groupThrLabel;
 
     public ResultsGrouping(ResultsTableWindow table, TripleStateTableModel model) {

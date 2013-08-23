@@ -1,6 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.PerformanceEvaluationPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -17,6 +19,8 @@ class GroundTruthTableWindow extends GenericTableWindow implements ActionListene
     private JButton io_import;
     private JButton io_export;
     private JButton showHist;
+    private JButton rendering;
+    private JButton evaluation;
     
     public GroundTruthTableWindow(String frameTitle) {
         super(frameTitle);
@@ -24,16 +28,24 @@ class GroundTruthTableWindow extends GenericTableWindow implements ActionListene
     
     @Override
     protected void packFrame() {
-        frame.setPreferredSize(new Dimension(400, 500));
+        frame.setPreferredSize(new Dimension(550, 600));
         //
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+        evaluation = new JButton("Performance evaluation...");
+        rendering = new JButton("Render...");
         showHist = new JButton("Plot histogram...");
         io_import = new JButton("Import...");
         io_export = new JButton("Export...");
+        evaluation.addActionListener(this);
+        rendering.addActionListener(this);
         showHist.addActionListener(this);
         io_import.addActionListener(this);
         io_export.addActionListener(this);
+        //
+        buttons.add(evaluation);
+        buttons.add(Box.createHorizontalStrut(5));
+        buttons.add(rendering);
         buttons.add(Box.createHorizontalStrut(5));
         buttons.add(showHist);
         buttons.add(Box.createHorizontalStrut(5));
@@ -54,7 +66,11 @@ class GroundTruthTableWindow extends GenericTableWindow implements ActionListene
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == showHist) {
+        if(e.getSource() == evaluation) {
+            new PerformanceEvaluationPlugIn().run(null);
+        } else if(e.getSource() == rendering) {
+            new RenderingPlugIn().run(IJGroundTruthTable.IDENTIFIER);
+        } else if(e.getSource() == showHist) {
             new IJDistribution().run(IJGroundTruthTable.IDENTIFIER);
         } else if(e.getSource() == io_import) {
             new ImportExportPlugIn().run(ImportExportPlugIn.IMPORT + ";" + IJGroundTruthTable.IDENTIFIER);

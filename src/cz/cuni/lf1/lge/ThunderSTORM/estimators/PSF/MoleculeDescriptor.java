@@ -321,6 +321,8 @@ public class MoleculeDescriptor implements Cloneable {
     public static final String LABEL_ID = "id";
     public static final String LABEL_FRAME = "frame";
     public static final String LABEL_DETECTIONS = "detections";
+    public static final String LABEL_GROUND_TRUTH_ID = "gt-id";
+    public static final String LABEL_DISTANCE_TO_GROUND_TRUTH = "gt-distance";
     
     public static enum Units {
         MICROMETER("um"),
@@ -508,6 +510,8 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(LABEL_ID, Units.UNITLESS);
                 allUnits.put(LABEL_FRAME, Units.UNITLESS);
                 allUnits.put(LABEL_DETECTIONS, Units.UNITLESS);
+                allUnits.put(LABEL_GROUND_TRUTH_ID, Units.UNITLESS);
+                allUnits.put(LABEL_DISTANCE_TO_GROUND_TRUTH, Units.NANOMETER);
                 //
                 allUnits.put(Fitting.LABEL_CCD_THOMPSON, Units.NANOMETER);
                 allUnits.put(Fitting.LABEL_EMCCD_THOMPSON, Units.NANOMETER);

@@ -103,6 +103,10 @@ public final class Molecule implements Comparable<Molecule> {
         return getParam(Params.LABEL_X);
     }
     
+    public double getX(Units unit) {
+        return descriptor.units.elementAt(descriptor.getParamColumn(Params.LABEL_X)).convertTo(unit, getX());
+    }
+    
     public void setX(double value) {
         setParam(Params.LABEL_X, value);
     }
@@ -111,8 +115,36 @@ public final class Molecule implements Comparable<Molecule> {
         return getParam(Params.LABEL_Y);
     }
     
+    public double getY(Units unit) {
+        return descriptor.units.elementAt(descriptor.getParamColumn(Params.LABEL_Y)).convertTo(unit, getY());
+    }
+    
     public void setY(double value) {
         setParam(Params.LABEL_Y, value);
+    }
+    
+    public double getZ() {
+        if(hasParam(Params.LABEL_Z)) {
+            return getParam(Params.LABEL_Z);
+        } else {
+            return 0.0;
+        }
+    }
+    
+    public double getZ(Units unit) {
+        if(hasParam(Params.LABEL_Z)) {
+            return descriptor.units.elementAt(descriptor.getParamColumn(Params.LABEL_Z)).convertTo(unit, getParam(Params.LABEL_Z));
+        } else {
+            return 0.0;
+        }
+    }
+    
+    public void setZ(double value) {
+        if(hasParam(Params.LABEL_Z)) {
+            setParam(Params.LABEL_Z, value);
+        } else {
+            addParam(Params.LABEL_Z, Units.getDefaultUnit(Params.LABEL_Z), value);
+        }
     }
 
     @Override
@@ -185,6 +217,18 @@ public final class Molecule implements Comparable<Molecule> {
     public double dist2xy(Molecule mol) {
         return (sqr(mol.getX() - getX()) + sqr(mol.getY() - getY()));
     }
+    
+    public double dist2xy(Molecule mol, Units units) {
+        return (sqr(mol.getX(units) - getX(units)) + sqr(mol.getY(units) - getY(units)));
+    }
+    
+    public double dist2xyz(Molecule mol) {
+        return (sqr(mol.getX() - getX()) + sqr(mol.getY() - getY()));
+    }
+    
+    public double dist2xyz(Molecule mol, Units units) {
+        return (sqr(mol.getX(units) - getX(units)) + sqr(mol.getY(units) - getY(units)) + sqr(mol.getZ(units) - getZ(units)));
+    }
 
     public void addDetection(Molecule mol) {
         if(mol.detections.isEmpty()) {
@@ -220,6 +264,24 @@ public final class Molecule implements Comparable<Molecule> {
         } else {
             return (int)(frame - molFrame);
         }
+    }
+    
+    // ================================================================
+    //       Ground-truth testing
+    // ================================================================
+    
+    private DetectionStatus status = DetectionStatus.UNSPECIFIED;
+    
+    public void setStatus(DetectionStatus status) {
+        this.status = status;
+    }
+    
+    public DetectionStatus getStatus() {
+        return status;
+    }
+    
+    public static enum DetectionStatus {
+        UNSPECIFIED, TRUE_POSITIVE, FALSE_POSITIVE, FALSE_NEGATIVE;
     }
 
 }

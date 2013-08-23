@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_DETECTIONS;
@@ -101,7 +102,7 @@ class ResultsTableWindow extends GenericTableWindow {
         render.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new Executer("Rendering").run();
+                new RenderingPlugIn().run(IJResultsTable.IDENTIFIER);
             }
         });
         livePreview = false;

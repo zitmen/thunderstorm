@@ -173,6 +173,10 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
     public void setDescriptor(MoleculeDescriptor descriptor) {
         model.setDescriptor(descriptor);
     }
+    
+    public MoleculeDescriptor getDescriptor() {
+        return model.columns;
+    }
 
     public void deleteRow(int row) {
         model.deleteRow(row);
@@ -252,6 +256,10 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
 
     public void fireStructureChanged() {
         model.fireTableStructureChanged();
+    }
+    
+    public void fireDataChanged() {
+        model.fireTableDataChanged();
     }
 
     public abstract String getFrameTitle();

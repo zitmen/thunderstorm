@@ -1,11 +1,16 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule.DetectionStatus.FALSE_NEGATIVE;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule.DetectionStatus.FALSE_POSITIVE;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import ij.IJ;
 import ij.WindowManager;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -23,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -30,12 +36,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 class GenericTableWindow {
 
     protected JFrame frame;
-    protected JTable table;
+    protected ColoredTable table;
     protected final TripleStateTableModel model;
     protected JScrollPane tableScrollPane;
 
@@ -45,7 +53,7 @@ class GenericTableWindow {
         frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         //
         model = new TripleStateTableModel();
-        table = new JTable(model);
+        table = new ColoredTable(model);
         TableRowSorter<TripleStateTableModel> sorter = new TableRowSorter<TripleStateTableModel>(model);
         table.setRowSorter(sorter);
         //
@@ -96,7 +104,7 @@ class GenericTableWindow {
             }
         });
     }
-    
+
     protected void packFrame() {
         Container contentPane = frame.getContentPane();
         contentPane.add(tableScrollPane);
@@ -138,7 +146,7 @@ class GenericTableWindow {
     }
 
     private class UnitsContextMenu implements ActionListener {
-        
+
         private int column;
 
         public UnitsContextMenu(MouseEvent e, int column) {
@@ -190,7 +198,9 @@ class GenericTableWindow {
             //
             JRadioButtonMenuItem menuItem;
             for(Units unit : Units.getCompatibleUnits(selected)) {
-                if(unit == Units.UNITLESS) continue;
+                if(unit == Units.UNITLESS) {
+                    continue;
+                }
                 menuItem = new JRadioButtonMenuItem(unit.getLabel(), unit == selected);
                 menuItem.addActionListener(this);
                 popup.add(menuItem);
@@ -201,7 +211,9 @@ class GenericTableWindow {
         @Override
         public void actionPerformed(ActionEvent e) {
             Units target = Units.fromString(e.getActionCommand());
-            if(model.getColumnUnits(column) == target) return;    // nothing to do here
+            if(model.getColumnUnits(column) == target) {
+                return;    // nothing to do here
+            }
             String colName = model.getColumnName(column);
             if(PSFModel.Params.LABEL_X.equals(colName) || PSFModel.Params.LABEL_Y.equals(colName)) {
                 // ensure that X and Y are always in same units!
@@ -221,39 +233,39 @@ class GenericTableWindow {
             Transferable t = dtde.getTransferable();
             List fileList;
             try {
-                fileList = (List)t.getTransferData(DataFlavor.javaFileListFlavor);
+                fileList = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
             } catch(UnsupportedFlavorException ex) {
                 return;
             } catch(IOException ex) {
                 return;
             }
-            File f = (File)fileList.get(0);
+            File f = (File) fileList.get(0);
             dropFile(f);
         }
     }
-    
+
     protected void dropFile(File f) {
         new ImportExportPlugIn(f.getAbsolutePath()).run(ImportExportPlugIn.IMPORT + IJResultsTable.IDENTIFIER);
     }
-    
+
     protected void tableHeaderMouseClicked(MouseEvent e) {
         if(SwingUtilities.isRightMouseButton(e)) {
             new UnitsContextMenu(e, table.convertColumnIndexToModel(table.columnAtPoint(e.getPoint())));
         }
     }
-    
+
     protected void tableMouseDragged(MouseEvent e) {
         //
     }
-    
+
     protected void tableMouseMoved(MouseEvent e) {
         //
     }
-    
+
     protected void tableMouseClicked(MouseEvent e) {
         //
     }
-    
+
     protected void tableMousePressed(MouseEvent e) {
         //
     }
@@ -268,5 +280,43 @@ class GenericTableWindow {
 
     protected void tableMouseExited(MouseEvent e) {
         //
+    }
+
+    // =============================================================
+    public class ColoredTable extends JTable {
+
+        public final Color LIGHT_ORANGE = new Color(255, 222, 200);
+        public final Color LIGHT_RED = new Color(255, 222, 222);
+        public final Color LIGHT_GREEN = new Color(222, 255, 222);
+        
+        public ColoredTable(TableModel dm) {
+            super(dm);
+        }
+        
+        @Override
+        public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+            final Component c = super.prepareRenderer(renderer, row, column);
+            if(!isCellSelected(row, column)) {
+                c.setBackground(null);
+                Molecule mol = ((GenericTableModel)super.getModel()).getRow(convertRowIndexToModel(row));
+                switch(mol.getStatus()) {
+                    case FALSE_POSITIVE:
+                        c.setBackground(LIGHT_RED);
+                        break;
+
+                    case FALSE_NEGATIVE:
+                        c.setBackground(LIGHT_ORANGE);
+                        break;
+                        
+                    case TRUE_POSITIVE:
+                        c.setBackground(LIGHT_GREEN);
+                        break;
+
+                    default:
+                        c.setBackground(Color.WHITE);
+                }
+            }
+            return c;
+        }
     }
 }

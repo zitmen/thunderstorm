@@ -12,6 +12,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
+import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.IJ;
 import ij.Macro;
@@ -35,24 +37,36 @@ public class RenderingPlugIn implements PlugIn {
     public void run(String string) {
         GUI.setLookAndFeel();
         //
-        IJResultsTable rt = IJResultsTable.getResultsTable();
-        if(!IJResultsTable.isResultsWindow()) {
-            IJ.error("Requires Results window open");
-            return;
+        boolean preview = false;
+        GenericTable table;
+        if(IJGroundTruthTable.IDENTIFIER.equals(string)) {
+            if(!IJGroundTruthTable.isGroundTruthWindow()) {
+                IJ.error("Requires `" + IJGroundTruthTable.IDENTIFIER + "` window open!");
+                return;
+            }
+            table = IJGroundTruthTable.getGroundTruthTable();
+        } else {
+            if(!IJResultsTable.isResultsWindow()) {
+                IJ.error("Requires `" + IJResultsTable.IDENTIFIER + "` window open!");
+                return;
+            }
+            table = IJResultsTable.getResultsTable();
+            preview = true;
         }
-        if(!rt.columnExists(LABEL_X) || !rt.columnExists(LABEL_Y)) {
-            IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X, LABEL_Y, rt.getColumnNames()));
+        //
+        if(!table.columnExists(LABEL_X) || !table.columnExists(LABEL_Y)) {
+            IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X, LABEL_Y, table.getColumnNames()));
             return;
         }
 
-        double[] xpos = rt.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL);
-        double[] ypos = rt.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL);
+        double[] xpos = table.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL);
+        double[] ypos = table.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL);
         if(xpos == null || ypos == null) {
             IJ.error("results were null");
             return;
         }
-        double[] z = rt.columnExists(LABEL_Z) ? rt.getColumnAsDoubles(LABEL_Z) : null;
-        double[] dx = rt.columnExists("dx") ? rt.getColumnAsDoubles("dx", MoleculeDescriptor.Units.RADIAN) : null;
+        double[] z = table.columnExists(LABEL_Z) ? table.getColumnAsDoubles(LABEL_Z) : null;
+        double[] dx = table.columnExists("dx") ? table.getColumnAsDoubles("dx", MoleculeDescriptor.Units.RADIAN) : null;
 
         List<IRendererUI> knownRenderers = ModuleLoader.getUIModules(IRendererUI.class);
         //do not show EmptyRenderer
@@ -72,7 +86,7 @@ public class RenderingPlugIn implements PlugIn {
             sizeX = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imwidth", "0"));
             sizeY = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imheight", "0"));
         } else {
-            RenderingDialog dialog = new RenderingDialog(knownRenderers, (int) Math.ceil(max(xpos)) + 1, (int) Math.ceil(max(ypos)) + 1);
+            RenderingDialog dialog = new RenderingDialog(preview, knownRenderers, (int) Math.ceil(max(xpos)) + 1, (int) Math.ceil(max(ypos)) + 1);
             dialog.setVisible(true);
             if(dialog.result == RenderingDialog.DialogResult.CANCELLED) {
                 return;
@@ -90,8 +104,8 @@ public class RenderingPlugIn implements PlugIn {
 
         if(setAsPreview) {
             RenderingQueue queue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(method.getRenderedImage()), selectedRendererUI.getRepaintFrequency());
-            rt.setPreviewRenderer(queue);
-            rt.showPreview();
+            ((IJResultsTable)table).setPreviewRenderer(queue);
+            ((IJResultsTable)table).showPreview();
         } else {
             if(Recorder.record) {
                 Recorder.recordOption("imwidth", Integer.toString(sizeX));
@@ -126,14 +140,16 @@ class RenderingDialog extends JDialog {
     JTextField sizeXTextField;
     JTextField sizeYTextField;
     int sizeX, sizeY;
+    boolean enablePreview;
 
     enum DialogResult {
 
         CANCELLED, OK, PREVIEW;
     }
 
-    public RenderingDialog(List<IRendererUI> knownRenderers, int sizeX, int sizeY) {
+    public RenderingDialog(boolean preview, List<IRendererUI> knownRenderers, int sizeX, int sizeY) {
         super(IJ.getInstance(), "Rendering options", true);
+        this.enablePreview = preview;
         this.cardsPanel = new CardsPanel<IRendererUI>(knownRenderers, 0);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
@@ -161,19 +177,6 @@ class RenderingDialog extends JDialog {
         sizePanel.add(sizeYTextField, GridBagHelper.rightCol());
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        previewButton = new JButton("Use for preview");
-        previewButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    validateFields();
-                    result = DialogResult.PREVIEW;
-                    dispose();
-                } catch(Exception ex) {
-                    IJ.showMessage(ex.toString());
-                }
-            }
-        });
         okButton = new JButton("OK");
         okButton.addActionListener(new ActionListener() {
             @Override
@@ -196,7 +199,22 @@ class RenderingDialog extends JDialog {
                 dispose();
             }
         });
-        buttonsPanel.add(previewButton);
+        if(enablePreview) {
+            previewButton = new JButton("Use for preview");
+            previewButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        validateFields();
+                        result = DialogResult.PREVIEW;
+                        dispose();
+                    } catch(Exception ex) {
+                        IJ.showMessage(ex.toString());
+                    }
+                }
+            });
+            buttonsPanel.add(previewButton);
+        }
         buttonsPanel.add(okButton);
         buttonsPanel.add(cancelButton);
 
