@@ -11,7 +11,7 @@ import static org.apache.commons.math3.util.FastMath.log;
 
 public class IntegratedGaussian {
         
-    public static final double FWHM_factor = sqrt(2*log(2));
+    public static final double FWHM_factor = 2*sqrt(2*log(2));
     public double x0, y0, I0, sig0, fwhm0;
 
     public IntegratedGaussian(RandomDataGenerator rand, double x, double y, Range energy, Range fwhm) {
