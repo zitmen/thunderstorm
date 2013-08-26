@@ -1,9 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
 import ij.process.ImageProcessor;
-import static java.lang.Math.PI;
 import static java.lang.Math.ceil;
-import static java.lang.Math.exp;
 import org.apache.commons.math3.special.Erf;
 
 /**
@@ -12,100 +10,95 @@ import org.apache.commons.math3.special.Erf;
  */
 public class DensityRendering extends AbstractRendering implements IncrementalRenderingMethod {
 
-  protected int radius;
+    protected int radius;
 
-  private DensityRendering(Builder builder) {
-    super(builder);
-    this.radius = builder.radius;
-  }
+    private DensityRendering(Builder builder) {
+        super(builder);
+        this.radius = builder.radius;
+    }
 
-  public static class Builder extends AbstractBuilder<Builder, DensityRendering> {
+    public static class Builder extends AbstractBuilder<Builder, DensityRendering> {
 
-    protected int radius = -1;
+        protected int radius = -1;
 
-    /**
-     * The radius around the rendered point where pixels are updated (in
-     * pixels). When not set, the value 3*dx (in pixels)is used.
-     *
-     * @param pixels
-     */
-    public Builder radius(int pixels) {
-      if (radius <= 0) {
-        throw new IllegalArgumentException("Radius must be positive. Passed value = " + pixels);
-      }
-      this.radius = pixels;
-      return this;
+        /**
+         * The radius around the rendered point where pixels are updated (in
+         * pixels). When not set, the value 3*dx (in pixels)is used.
+         *
+         * @param pixels
+         */
+        public Builder radius(int pixels) {
+            if(radius <= 0) {
+                throw new IllegalArgumentException("Radius must be positive. Passed value = " + pixels);
+            }
+            this.radius = pixels;
+            return this;
+        }
+
+        @Override
+        public DensityRendering build() {
+            super.validate();
+            return new DensityRendering(this);
+        }
     }
 
     @Override
-    public DensityRendering build() {
-      super.validate();
-      return new DensityRendering(this);
-    }
-  }
+    protected void drawPoint(double x, double y, double z, double dx) {
+        final int MAXRADIUS = 20;
+        if(isInBounds(x, y)) {
+            x = (x - xmin) / resolution;
+            y = (y - ymin) / resolution;
+            dx = dx / resolution;
+            int u = (int) x;
+            int v = (int) y;
+            int actualRadius = (this.radius < 0) ? (int) Math.min(ceil(dx * 3),MAXRADIUS) : this.radius;
+            double sqrt2dx = Math.sqrt(2) * dx;
 
-  @Override
-  protected void drawPoint(double x, double y, double z, double dx) {
+            int w = threeDimensions ? ((int) ((z - zFrom) / zStep)) : 0;
+            int affectedImages = Math.max((int) (3 * defaultDZ / zStep), 1);
+            for(int idz = w - affectedImages; idz <= w + affectedImages; idz++) {
+                if(idz >= 0 && idz < zSlices) {
 
-    if (isInBounds(x, y)) {
-      x = (x - xmin) / resolution;
-      y = (y - ymin) / resolution;
-      dx = dx / resolution;
-      int u = (int) x;
-      int v = (int) y;
-      int actualRadius = (this.radius < 0) ? (int) ceil(dx * 3) : this.radius;
-      
-      if (threeDimensions) {
-        int w = threeDimensions ? ((int) ((z - zFrom) / zStep)) : 0;
-        int affectedImages = (int) (3 * defaultDZ / zStep);
-        for (int idz = w - affectedImages; idz < w + affectedImages; idz++) {
-          if (idz >= 0 && idz < zSlices) {
+                    for(int idx = u - actualRadius; idx <= u + actualRadius; idx++) {
+                        if(idx >= 0 && idx < imSizeX) {
 
-            for (int idx = u - actualRadius; idx < u + actualRadius; idx++) {
-              if (idx >= 0 && idx < imSizeX) {
+                            for(int idy = v - actualRadius; idy <= v + actualRadius; idy++) {
+                                if(idy >= 0 && idy < imSizeY) {
 
-                for (int idy = v - actualRadius; idy < v + actualRadius; idy++) {
-                  if (idy >= 0 && idy < imSizeY) {
+                                    double difx = idx - x;
+                                    double dify = idy - y;
 
-                    double squareDist = squareDist(idx, idy, x, y);
-                    if (squareDist <= (actualRadius * actualRadius)) {
-                      //3D gaussian blob integrated in z 
-                      //mathematica function for definite integral:
-                      //Integrate[(1/Sqrt[(2 Pi)^3 *s1^2* s2^2* s3^2]) * E^(-1/2*((x - x0)^2/(s1^2) + (y - y0)^2/(s2^2) + (z - z0)^2/(s3^2))), {z, a, b}]
-                      double aerf = (z - zFrom) - (idz - 1) * zStep;
-                      double berf = (z - zFrom) - idz * zStep;
-                      double val = 1 / (2 * PI * dx * dx * defaultDZ) * exp(-0.5 * squareDist / (dx * dx)) * defaultDZ * Erf.erf(berf / (Math.sqrt(2) * defaultDZ), aerf / (Math.sqrt(2) * defaultDZ));
-                      ImageProcessor img = slices[idz];
-                      img.setf(idx, idy, (float) val + img.getf(idx, idy));
+                                    //3D gaussian blob integrated in z 
+                                    //mathematica function for definite integral:
+                                    //Integrate[(1/Sqrt[(2 Pi)^3 *s1^2* s2^2* s3^2]) * E^(-1/2*((x - x0)^2/(s1^2) + (y - y0)^2/(s2^2) + (z - z0)^2/(s3^2))), {z, a, b}]
+
+                                    double zerfdif;
+                                    if(threeDimensions) {
+                                        double aerf = (z - zFrom) - (idz - 1) * zStep;
+                                        double berf = (z - zFrom) - idz * zStep;
+                                        zerfdif = (-Erf.erf(berf / (Math.sqrt(2) * defaultDZ)) + Erf.erf(aerf / (Math.sqrt(2) * defaultDZ)));
+                                    } else {
+                                        zerfdif = 2;
+                                    }
+
+                                    double val = 0.125
+                                            * (Erf.erf((difx) / sqrt2dx) - Erf.erf((difx + 1) / sqrt2dx))
+                                            * (Erf.erf((dify) / sqrt2dx) - Erf.erf((dify + 1) / sqrt2dx))
+                                            * zerfdif;
+                                    ImageProcessor img = slices[idz];
+                                    img.setf(idx, idy, (float) val + img.getf(idx, idy));
+
+                                }
+                            }
+                        }
                     }
-                  }
                 }
-              }
             }
-          }
-        }
-      } else {
-        for (int idx = u - actualRadius; idx < u + actualRadius; idx++) {
-          if (idx >= 0 && idx < imSizeX) {
 
-            for (int idy = v - actualRadius; idy < v + actualRadius; idy++) {
-              if (idy >= 0 && idy < imSizeY) {
-
-                double squareDist = squareDist(idx, idy, x, y);
-                if (squareDist <= (actualRadius * actualRadius)) {
-                  double val = 1 / (2 * PI * dx * dx) * exp(-0.5 * squareDist / (dx * dx));
-                  ImageProcessor img = slices[0];
-                  img.setf(idx, idy, (float) val + img.getf(idx, idy));
-                }
-              }
-            }
-          }
         }
-      }
     }
-  }
 
-  private double squareDist(double x1, double y1, double x2, double y2) {
-    return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
-  }
+    private double squareDist(double x1, double y1, double x2, double y2) {
+        return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+    }
 }
