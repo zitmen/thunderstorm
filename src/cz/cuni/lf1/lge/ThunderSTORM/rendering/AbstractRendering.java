@@ -210,10 +210,15 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             Molecule fit = fits.elementAt(i);
             double zVal = fit.hasParam(PSFModel.Params.LABEL_Z) ? fit.getParam(PSFModel.Params.LABEL_Z) : 0;
             double dxVal = defaultDX;
+            Units unitsDX;
             if(fit.hasParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
                 dxVal = fit.getParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
+                unitsDX = fit.descriptor.units.elementAt(fit.descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON));
+                dxVal = unitsDX.convertTo(PIXEL, dxVal);
             } else if(fit.hasParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
                 dxVal = fit.getParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
+                unitsDX = fit.descriptor.units.elementAt(fit.descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON));
+                dxVal = unitsDX.convertTo(PIXEL, dxVal);
             }
             //
             Units unitsX = fit.descriptor.units.elementAt(fit.descriptor.getParamColumn(PSFModel.Params.LABEL_X));
