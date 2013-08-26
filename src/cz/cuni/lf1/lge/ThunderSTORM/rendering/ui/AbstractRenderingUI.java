@@ -73,6 +73,7 @@ public abstract class AbstractRenderingUI implements IRendererUI {
     panel.add(new JLabel("Repaint frequency [frames]:"), GridBagHelper.leftCol());
     panel.add(repaintFrequencyTextField, GridBagHelper.rightCol());
 
+    threeD = Prefs.get("thunderstorm.rendering.z", false);
     threeDCheckBox = new JCheckBox("", threeD);
     threeDCheckBox.addActionListener(new ActionListener() {
       @Override
@@ -81,7 +82,6 @@ public abstract class AbstractRenderingUI implements IRendererUI {
         zRangeTextField.setEnabled(threeDCheckBox.isSelected());
       }
     });
-    threeDCheckBox.setSelected(Prefs.get("thunderstorm.rendering.z", false));
     panel.add(new JLabel("3D:"), GridBagHelper.leftCol());
     panel.add(threeDCheckBox, GridBagHelper.rightCol());
 
