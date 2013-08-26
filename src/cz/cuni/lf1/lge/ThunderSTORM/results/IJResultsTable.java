@@ -23,11 +23,10 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
 
     public static final String TITLE = "ThunderSTORM: results";
     public static final String IDENTIFIER = "results";
-    
     private static IJResultsTable resultsTable = null;
 
     public synchronized static IJResultsTable getResultsTable() {
-        if (resultsTable == null) {
+        if(resultsTable == null) {
             setResultsTable(new IJResultsTable());
         }
         return resultsTable;
@@ -38,12 +37,11 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
     }
 
     public static boolean isResultsWindow() {
-        if (resultsTable == null) {
+        if(resultsTable == null) {
             return false;
         }
         return resultsTable.tableWindow.isVisible();
     }
-    
     private ImagePlus analyzedImage;
     private MeasurementProtocol measurementProtocol = null;
 
@@ -53,30 +51,30 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
     public IJResultsTable() {
         super(new ResultsTableWindow(IJResultsTable.TITLE));
     }
-    
+
     public void setMeasurementProtocol(MeasurementProtocol protocol) {
         measurementProtocol = protocol;
     }
-    
+
     public MeasurementProtocol getMeasurementProtocol() {
         return measurementProtocol;
     }
-    
+
     public void setAnalyzedImage(ImagePlus imp) {
         analyzedImage = imp;
     }
-    
+
     public ImagePlus getAnalyzedImage() {
         return analyzedImage;
     }
-    
+
     public void repaintAnalyzedImageOverlay() {
         if(analyzedImage != null) {
             analyzedImage.setOverlay(null);
             RenderingOverlay.showPointsInImage(this, analyzedImage, null, Color.red, RenderingOverlay.MARKER_CROSS);
         }
     }
-    
+
     @Override
     public void reset() {
         super.reset();
@@ -89,7 +87,7 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
     public void showPreview() {
         tableWindow.showPreview();
     }
-    
+
     public void setLivePreview(boolean enabled) {
         tableWindow.setLivePreview(enabled);
     }
@@ -116,6 +114,10 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
 
     ResultsDriftCorrection getDriftCorrection() {
         return tableWindow.getDriftCorrection();
+    }
+
+    ResultsStageOffset getStageOffset() {
+        return tableWindow.getStageOffset();
     }
 
     void addNewFilter(String paramName, double greaterThan, double lessThan) {

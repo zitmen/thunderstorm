@@ -39,7 +39,15 @@ public class TableHandlerPlugin implements PlugIn {
                 resultsTable.showPreview();
             } else if("undo-redo".equals(action)) {
                 resultsTable.getOperationHistoryPanel().undoOrRedoLastOperation();
-            } 
+            } else if("offset".equals(action)){
+                int framesPerStagePosition = Integer.parseInt(Macro.getValue(options, "framesPerStagePos", "0"));
+                int stagePositions = Integer.parseInt(Macro.getValue(options, "stagePositions", "0"));
+                double stageStep = Double.parseDouble(Macro.getValue(options, "stageStep", "0"));
+                double firstPositionOffset = Double.parseDouble(Macro.getValue(options, "firstPosOffset", "0"));
+                
+                resultsTable.getStageOffset().runAddStageOffset(framesPerStagePosition, stagePositions, stageStep, firstPositionOffset);
+            }
+            
         } catch(Exception e) {
             IJ.handleException(e);
         }
@@ -47,7 +55,7 @@ public class TableHandlerPlugin implements PlugIn {
 
     public static void recordFilter(String formula) {
         if(Recorder.record) {
-            Recorder.setCommand("Show results");
+            Recorder.setCommand("Show results table");
             Recorder.recordOption("action", "filter");
             Recorder.recordOption("formula", formula);
             Recorder.saveCommand();
@@ -56,7 +64,7 @@ public class TableHandlerPlugin implements PlugIn {
 
     public static void recordDrift(int steps, double magnification, boolean showCorrelations, boolean showDrift) {
         if(Recorder.record) {
-            Recorder.setCommand("Show results");
+            Recorder.setCommand("Show results table");
             Recorder.recordOption("action", "drift");
             Recorder.recordOption("steps", steps + "");
             Recorder.recordOption("magnification", magnification + "");
@@ -68,16 +76,28 @@ public class TableHandlerPlugin implements PlugIn {
 
     public static void recordMerging(double dist) {
         if(Recorder.record) {
-            Recorder.setCommand("Show results");
+            Recorder.setCommand("Show results table");
             Recorder.recordOption("action", "merge");
             Recorder.recordOption("dist", dist + "");
             Recorder.saveCommand();
         }
     }
 
+    public static void recordStageOffset(int framesPerStagePosition, int stagePositions, double stageStep, double firstPositionOffset) {
+        if(Recorder.record) {
+            Recorder.setCommand("Show results table");
+            Recorder.recordOption("action", "offset");
+            Recorder.recordOption("framesPerStagePos", framesPerStagePosition + "");
+            Recorder.recordOption("stagePositions", stagePositions + "");
+            Recorder.recordOption("stageStep", stageStep + "");
+            Recorder.recordOption("firstPosOffset", firstPositionOffset + "");
+            Recorder.saveCommand();
+        }
+    }
+
     public static void recordReset() {
         if(Recorder.record) {
-            Recorder.setCommand("Show results");
+            Recorder.setCommand("Show results table");
             Recorder.recordOption("action", "reset");
             Recorder.saveCommand();
         }
@@ -85,7 +105,7 @@ public class TableHandlerPlugin implements PlugIn {
 
     public static void recordUndoOrRedo() {
         if(Recorder.record) {
-            Recorder.setCommand("Show results");
+            Recorder.setCommand("Show results table");
             Recorder.recordOption("action", "undo-redo");
             Recorder.saveCommand();
         }

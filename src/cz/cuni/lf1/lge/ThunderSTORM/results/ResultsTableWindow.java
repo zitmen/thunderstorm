@@ -57,6 +57,7 @@ class ResultsTableWindow extends GenericTableWindow {
     ResultsFilter resultsFilter;
     ResultsGrouping resultsGrouping;
     ResultsDriftCorrection resultsDriftCorrection;
+    ResultsStageOffset resultsStageOffset;
     
     public ResultsTableWindow(String frameTitle) {
         super(frameTitle);
@@ -131,15 +132,18 @@ class ResultsTableWindow extends GenericTableWindow {
         resultsFilter = new ResultsFilter(this, model);
         resultsGrouping = new ResultsGrouping(this, model);
         resultsDriftCorrection = new ResultsDriftCorrection();
+        resultsStageOffset = new ResultsStageOffset(this, model);
         JPanel grouping = resultsGrouping.createUIPanel();
         JPanel filter = resultsFilter.createUIPanel();
         JPanel drift = resultsDriftCorrection.createUIPanel();
+        JPanel offset = resultsStageOffset.createUIPanel();
 
         //fill tabbed pane
         tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("filter", filter);
-        tabbedPane.addTab("merging", grouping);
-        tabbedPane.addTab("drift correction", drift);
+        tabbedPane.addTab("Filter", filter);
+        tabbedPane.addTab("Merging", grouping);
+        tabbedPane.addTab("Drift correction", drift);
+        tabbedPane.addTab("Stage offset", offset);
 
         //history pane
         JPanel historyPane = new JPanel(new GridBagLayout());
@@ -245,6 +249,10 @@ class ResultsTableWindow extends GenericTableWindow {
     
     public ResultsDriftCorrection getDriftCorrection(){
         return resultsDriftCorrection;
+    }
+    
+    public ResultsStageOffset getStageOffset(){
+        return resultsStageOffset;
     }
     
     @Override
