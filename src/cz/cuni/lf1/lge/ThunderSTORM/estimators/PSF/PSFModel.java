@@ -41,13 +41,15 @@ public abstract class PSFModel {
         public static final int ANGLE = 7;
         public static final int SIGMA1 = 8;
         public static final int SIGMA2 = 9;
-        public static final int PARAMS_LENGTH = 10;  // <stop>
+        public static final int Z_REL = 10;
+        public static final int PARAMS_LENGTH = 11;  // <stop>
         
         private static String [] all_names = null;
         
         public static final String LABEL_X = "x";
         public static final String LABEL_Y = "y";
         public static final String LABEL_Z = "z";
+        public static final String LABEL_Z_REL = "z_rel";
         public static final String LABEL_SIGMA = "sigma";
         public static final String LABEL_INTENSITY = "intensity";
         public static final String LABEL_OFFSET = "offset";
@@ -63,6 +65,7 @@ public abstract class PSFModel {
             Params.all_names[X] = LABEL_X;
             Params.all_names[Y] = LABEL_Y;
             Params.all_names[Z] = LABEL_Z;
+            Params.all_names[Z_REL] = LABEL_Z_REL;
             Params.all_names[SIGMA] = LABEL_SIGMA;
             Params.all_names[INTENSITY] = LABEL_INTENSITY;
             Params.all_names[OFFSET] = LABEL_OFFSET;

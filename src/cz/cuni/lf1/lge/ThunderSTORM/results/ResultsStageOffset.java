@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.IValue;
 import ij.IJ;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -129,14 +130,17 @@ class ResultsStageOffset {
             throw new RuntimeException(String.format("Z and frame columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFModel.Params.LABEL_Z, MoleculeDescriptor.LABEL_FRAME, model.getColumnNames()));
         }
         //
+        int zColumn = model.findColumn(PSFModel.Params.LABEL_Z);
+        model.setLabel(zColumn, PSFModel.Params.LABEL_Z_REL, MoleculeDescriptor.Units.NANOMETER);
+        //
         Vector<Molecule> molecules = IJResultsTable.getResultsTable().getData();
         for(Molecule molecule : molecules) {
-            double z = molecule.getParam(PSFModel.Params.LABEL_Z);
+            double z = molecule.getParam(PSFModel.Params.LABEL_Z_REL);
             int frame = (int) molecule.getParam(MoleculeDescriptor.LABEL_FRAME);
-
             double newZ = (((frame-1) / framesPerStagePosition) % stagePositions) * stageStep + firstPositionOffset + z;
-            molecule.setParam(PSFModel.Params.LABEL_Z, newZ);
+            molecule.insertParamAt(zColumn, PSFModel.Params.LABEL_Z, MoleculeDescriptor.Units.NANOMETER, newZ);
         }
+        model.fireTableStructureChanged();
         model.fireTableDataChanged();
         table.showPreview();
     }

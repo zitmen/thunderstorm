@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -154,7 +153,7 @@ class GenericTableWindow {
             Units selected = model.getColumnUnits(column);
             JPopupMenu popup = new JPopupMenu();
             //
-            if(MoleculeDescriptor.LABEL_ID.equals(model.getColumnName(column))) {
+            if(MoleculeDescriptor.LABEL_ID.equals(model.getColumnRealName(column))) {
                 JMenuItem item;
                 item = new JMenuItem("convert all to digital units");
                 item.addActionListener(new ActionListener() {
@@ -172,7 +171,7 @@ class GenericTableWindow {
                     }
                 });
                 popup.add(item);
-            } else if(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON.equals(model.getColumnName(column))) {
+            } else if(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON.equals(model.getColumnRealName(column))) {
                 JMenuItem item = new JMenuItem("recalculate");
                 item.addActionListener(new ActionListener() {
                     @Override
@@ -183,7 +182,7 @@ class GenericTableWindow {
                 });
                 popup.add(item);
                 popup.add(new JSeparator());
-            } else if(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON.equals(model.getColumnName(column))) {
+            } else if(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON.equals(model.getColumnRealName(column))) {
                 JMenuItem item = new JMenuItem("recalculate");
                 item.addActionListener(new ActionListener() {
                     @Override
@@ -201,6 +200,12 @@ class GenericTableWindow {
                 if(unit == Units.UNITLESS) {
                     continue;
                 }
+                if((PSFModel.Params.LABEL_Z.equals(model.getColumnRealName(column))) ||
+                        (PSFModel.Params.LABEL_Z_REL.equals(model.getColumnRealName(column)))) {
+                    if(unit == Units.PIXEL) {
+                        continue;   // z-position can't be converted to pixels
+                    }
+                }
                 menuItem = new JRadioButtonMenuItem(unit.getLabel(), unit == selected);
                 menuItem.addActionListener(this);
                 popup.add(menuItem);
@@ -214,7 +219,7 @@ class GenericTableWindow {
             if(model.getColumnUnits(column) == target) {
                 return;    // nothing to do here
             }
-            String colName = model.getColumnName(column);
+            String colName = model.getColumnRealName(column);
             if(PSFModel.Params.LABEL_X.equals(colName) || PSFModel.Params.LABEL_Y.equals(colName)) {
                 // ensure that X and Y are always in same units!
                 model.setColumnUnits(PSFModel.Params.LABEL_X, target);

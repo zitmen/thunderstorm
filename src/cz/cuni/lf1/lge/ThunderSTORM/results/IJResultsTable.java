@@ -143,12 +143,4 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
     public String getTableIdentifier() {
         return IJResultsTable.IDENTIFIER;
     }
-
-    public void convertAllColumnsToAnalogUnits() {
-        model.convertAllColumnsToAnalogUnits();
-    }
-
-    public void calculateThompsonFormula() {
-        model.convertAllColumnsToAnalogUnits();
-    }
 }

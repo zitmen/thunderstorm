@@ -261,6 +261,18 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
     public void fireDataChanged() {
         model.fireTableDataChanged();
     }
+    
+    public void convertAllColumnsToAnalogUnits() {
+        model.convertAllColumnsToAnalogUnits();
+    }
+    
+    public void convertAllColumnsToDigitalUnits() {
+        model.convertAllColumnsToDigitalUnits();
+    }
+
+    public void calculateThompsonFormula() {
+        model.calculateThompsonFormula();
+    }
 
     public abstract String getFrameTitle();
     public abstract String getTableIdentifier();

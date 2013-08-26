@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import ij.IJ;
 import ij.Macro;
@@ -10,12 +11,15 @@ public class TableHandlerPlugin implements PlugIn {
 
     @Override
     public void run(String arg) {
+        GUI.setLookAndFeel();
+        CameraSetupPlugIn.loadPreferences();
+        //
+        //
         String options = Macro.getOptions();
         String action = options == null ? "show" : Macro.getValue(options, "action", "show");
         try {
             IJResultsTable resultsTable = IJResultsTable.getResultsTable();
             if("show".equals(action)) {
-                GUI.setLookAndFeel();
                 resultsTable.show();
             } else if("drift".equals(action)) {
                 int steps = Integer.parseInt(Macro.getValue(options, "steps", "5"));

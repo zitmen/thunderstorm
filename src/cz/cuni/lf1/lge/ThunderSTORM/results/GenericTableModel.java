@@ -42,7 +42,7 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
         assert(new_units != null);
         
         if (new_name != null) {
-            columns.names.setElementAt(new_name, column);
+            columns.setColumnName(column, new_name);
         }
         columns.units.setElementAt(new_units, column);
         columns.labels.setElementAt(columns.getLabel(column, true), column);

@@ -23,6 +23,14 @@ import java.util.Vector;
 public class MoleculeDescriptor implements Cloneable {
     private HashMap<String, IndexAndColumn> paramNames; // duplicate of arrays `names` and `indices`, but it is much faster in some cases
 
+    public void setColumnName(int column, String newName) {
+        String oldName = names.get(column);
+        names.setElementAt(newName, column);
+        paramNames.put(newName, paramNames.get(oldName));
+        paramNames.remove(oldName);
+        buildLabels();
+    }
+
     class IndexAndColumn {
         public int index;
         public int column;
