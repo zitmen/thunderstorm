@@ -19,7 +19,7 @@ public class DensityRenderingUI extends AbstractRenderingUI {
   private JLabel dzLabel;
   private double dx, dz;
   private static final double DEFAULT_DX = 0.2;
-  private static final double DEFAULT_DZ = 2;
+  private static final double DEFAULT_DZ = 100;
 
   public DensityRenderingUI() {
   }

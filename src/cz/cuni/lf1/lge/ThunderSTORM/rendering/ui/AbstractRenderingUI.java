@@ -29,7 +29,7 @@ public abstract class AbstractRenderingUI implements IRendererUI {
   ImagePlus image;            //must be set in subclass
   private final static double DEFAULT_RESOLUTION = 0.2;
   private final static int DEFAULT_REPAINT_FREQUENCY = 20;
-  private static final String DEFAULT_Z_RANGE = "-50:10:50";
+  private static final String DEFAULT_Z_RANGE = "-500:100:500";
   
   private void defaultInit() {
       resolution = DEFAULT_RESOLUTION;
