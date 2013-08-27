@@ -39,6 +39,15 @@ public interface OneLocationFitter {
         public double getSum() {
             return sum(values);
         }
+        
+        // note: the function changes the input array!
+        public double [] subtract(double [] values) {
+            assert(this.values.length == values.length);
+            for(int i = 0; i < values.length; i++) {
+                values[i] = this.values[i] - values[i];
+            }
+            return values;
+        }
     }
 
     public Molecule fit(SubImage img);

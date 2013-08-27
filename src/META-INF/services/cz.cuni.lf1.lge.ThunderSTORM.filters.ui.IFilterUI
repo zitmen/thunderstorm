@@ -1,7 +1,8 @@
 cz.cuni.lf1.lge.ThunderSTORM.filters.ui.CompoundWaveletFilterUI
 cz.cuni.lf1.lge.ThunderSTORM.filters.ui.BoxFilterUI
-cz.cuni.lf1.lge.ThunderSTORM.filters.ui.DifferenceOfGaussiansFilterUI
-cz.cuni.lf1.lge.ThunderSTORM.filters.EmptyFilter
+cz.cuni.lf1.lge.ThunderSTORM.filters.ui.DifferenceOfBoxFiltersUI
 cz.cuni.lf1.lge.ThunderSTORM.filters.ui.GaussianFilterUI
 cz.cuni.lf1.lge.ThunderSTORM.filters.ui.LoweredGaussianFilterUI
+cz.cuni.lf1.lge.ThunderSTORM.filters.ui.DifferenceOfGaussiansFilterUI
 cz.cuni.lf1.lge.ThunderSTORM.filters.ui.MedianFilterUI
+cz.cuni.lf1.lge.ThunderSTORM.filters.EmptyFilter

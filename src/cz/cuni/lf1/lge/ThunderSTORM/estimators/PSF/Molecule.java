@@ -251,7 +251,7 @@ public final class Molecule implements Comparable<Molecule> {
     }
 
     public boolean isSingleMolecule() {
-        return (detections.size() == 1);
+        return (detections.size() <= 1);
     }
 
     @Override

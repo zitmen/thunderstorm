@@ -1,6 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.min;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtract;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.add;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
@@ -250,6 +252,11 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         //
         ip.setRoi(roi);
         FloatProcessor fp = subtract((FloatProcessor) ip.crop().convertToFloat(), (float) CameraSetupPlugIn.offset);
+        float minVal = min((float[])fp.getPixels());
+        if(minVal < 0) {
+            IJ.log("Camera base level is set higher than values in the image!");
+            fp = add(-minVal, fp);
+        }
         if(roi != null) {
             fp.setMask(roi.getMask());
         }

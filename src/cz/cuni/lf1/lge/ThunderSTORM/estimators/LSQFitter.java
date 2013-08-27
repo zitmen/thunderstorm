@@ -4,6 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sub;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.stddev;
+import ij.IJ;
 import java.util.Arrays;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
@@ -20,12 +21,23 @@ public class LSQFitter implements OneLocationFitter {
 
     private double[] weights;
     double [] fittedModelValues;
+    double[] fittedParameters;
     PSFModel psfModel;
     final static int MAX_ITERATIONS = 1000;
+    private int maxIter;    // after `maxIter` iterations the algorithm converges
 
     public LSQFitter(PSFModel psfModel) {
         this.psfModel = psfModel;
         this.fittedModelValues = null;
+        this.fittedParameters = null;
+        this.maxIter = MAX_ITERATIONS + 1;    // throws an exception after `MAX_ITERATIONS` iterations
+    }
+    
+    public LSQFitter(PSFModel psfModel, int maxIter) {
+        this.psfModel = psfModel;
+        this.fittedModelValues = null;
+        this.fittedParameters = null;
+        this.maxIter = maxIter;
     }
 
     /**
@@ -43,7 +55,7 @@ public class LSQFitter implements OneLocationFitter {
             fittedModelValues = new double[subimage.values.length];
         }
 
-        LevenbergMarquardtOptimizer optimizer = new LevenbergMarquardtOptimizer(new SimplePointChecker(10e-10, 10e-10));
+        LevenbergMarquardtOptimizer optimizer = new LevenbergMarquardtOptimizer(new SimplePointChecker(10e-10, 10e-10, maxIter));
         PointVectorValuePair pv;
 
         pv = optimizer.optimize(
@@ -55,10 +67,10 @@ public class LSQFitter implements OneLocationFitter {
                 new InitialGuess(psfModel.transformParametersInverse(psfModel.getInitialParams(subimage))),
                 new Weight(weights));
         
-        // estimate background, calculate the Thompson formula, and return an instance of the `Molecule`
-        double[] point = pv.getPointRef();
-        point[PSFModel.Params.BACKGROUND] = stddev(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(point)));
-        return psfModel.newInstanceFromParams(psfModel.transformParameters(point));
+        // estimate background and return an instance of the `Molecule`
+        fittedParameters = pv.getPointRef();
+        fittedParameters[PSFModel.Params.BACKGROUND] = stddev(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
+        return psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters));
     }
 
 }

@@ -4,3 +4,4 @@ cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EllipticGaussianEstimatorUI
 cz.cuni.lf1.lge.ThunderSTORM.estimators.EmptyEstimator
 cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.CalibrationEstimatorUI
 cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.RadialSymmetryEstimatorUI
+cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.CrowdedFieldEstimatorUI

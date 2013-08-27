@@ -54,6 +54,16 @@ public class Math {
     public static double exp(double x) {
         return org.apache.commons.math3.util.FastMath.exp(x);
     }
+    
+    /**
+     * Natural logarithm.
+     *
+     * @param x a value
+     * @return {@mathjax \mathrm{log}(x)}
+     */
+    public static double log(double x) {
+        return org.apache.commons.math3.util.FastMath.log(x);
+    }
 
     /**
      * Get the smallest whole number larger than x.
@@ -263,6 +273,16 @@ public class Math {
 
     public static double min(double[] array) {
         double min = array[0];
+        for(int i = 0; i < array.length; i++) {
+            if(array[i] < min) {
+                min = array[i];
+            }
+        }
+        return min;
+    }
+    
+    public static float min(float[] array) {
+        float min = array[0];
         for(int i = 0; i < array.length; i++) {
             if(array[i] < min) {
                 min = array[i];

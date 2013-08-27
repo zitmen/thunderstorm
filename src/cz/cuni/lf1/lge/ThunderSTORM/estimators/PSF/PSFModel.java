@@ -1,13 +1,14 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.log;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
-import static org.apache.commons.math3.util.FastMath.log;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Representation of PSFModel model.
@@ -21,10 +22,10 @@ import static org.apache.commons.math3.util.FastMath.log;
 public abstract class PSFModel {
 
     /**
-     * This class allows to maintain the variables inside of the PSF,
-     * keeps their order in check just by changing the ids, and
-     * makes the conversion between names and indices into the `params` array.
-     * 
+     * This class allows to maintain the variables inside of the PSF, keeps
+     * their order in check just by changing the ids, and makes the conversion
+     * between names and indices into the `params` array.
+     *
      * If a PSF doesn't use any of the parameters, it can be simply ignored.
      * Allocating few extra bytes doesn't hurt the speed much and it simplifies
      * the code a bit.
@@ -43,9 +44,7 @@ public abstract class PSFModel {
         public static final int SIGMA2 = 9;
         public static final int Z_REL = 10;
         public static final int PARAMS_LENGTH = 11;  // <stop>
-        
-        private static String [] all_names = null;
-        
+        private static String[] all_names = null;
         public static final String LABEL_X = "x";
         public static final String LABEL_Y = "y";
         public static final String LABEL_Z = "z";
@@ -74,22 +73,20 @@ public abstract class PSFModel {
             Params.all_names[SIGMA2] = LABEL_SIGMA2;
             Params.all_names[ANGLE] = LABEL_ANGLE;
         }
-        
         // these arrays can be used for "communicating" with the PSF classes
         // from outside world without need of any additonal information about
         // the implementation of PSF
-        public int [] indices;
-        public String [] names;
-        public double [] values;
-        
+        public int[] indices;
+        public String[] names;
+        public double[] values;
         private HashSet<Integer> params_int;
-        private HashMap<String,Integer> params_str;
-        
+        private HashMap<String, Integer> params_str;
+
         // if fullVector == true, then values are of length = PARAMS_LENGTH,
         // otherwise they are as long as variables.length
-        public Params(int [] variables, double [] values, boolean fullVector) {
-            assert(variables != null);
-            assert(values != null);
+        public Params(int[] variables, double[] values, boolean fullVector) {
+            assert (variables != null);
+            assert (values != null);
             //
             if(Params.all_names == null) {  // init
                 initNames();
@@ -97,7 +94,7 @@ public abstract class PSFModel {
             this.indices = variables;
             this.names = new String[indices.length];
             this.params_int = new HashSet<Integer>();
-            this.params_str = new HashMap<String,Integer>();
+            this.params_str = new HashMap<String, Integer>();
             if(fullVector) {
                 this.values = values;
             } else {
@@ -113,7 +110,7 @@ public abstract class PSFModel {
                 }
             }
         }
-        
+
         public boolean hasParam(int param) {
             return params_int.contains(param);
         }
@@ -123,37 +120,51 @@ public abstract class PSFModel {
         }
 
         public double getParam(int param) {
-            if(!hasParam(param)) throw new IllegalArgumentException("Parameter does not exist!");
+            if(!hasParam(param)) {
+                throw new IllegalArgumentException("Parameter does not exist!");
+            }
             return values[param];
         }
 
         public void setParam(int param, double value) {
-            if(!hasParam(param)) throw new IllegalArgumentException("Parameter does not exist!");
+            if(!hasParam(param)) {
+                throw new IllegalArgumentException("Parameter does not exist!");
+            }
             values[param] = value;
         }
 
         public double getParamAt(int i) {
-            if(i < 0 || i >= indices.length) throw new ArrayIndexOutOfBoundsException("Parameter index is out of bouds!");
+            if(i < 0 || i >= indices.length) {
+                throw new ArrayIndexOutOfBoundsException("Parameter index is out of bouds!");
+            }
             return values[indices[i]];
         }
 
         public void setParamAt(int i, double value) {
-            if(i < 0 || i >= indices.length) throw new ArrayIndexOutOfBoundsException("Parameter index is out of bouds!");
+            if(i < 0 || i >= indices.length) {
+                throw new ArrayIndexOutOfBoundsException("Parameter index is out of bouds!");
+            }
             values[indices[i]] = value;
         }
 
         public String getParamNameAt(int i) {
-            if(i < 0 || i >= indices.length) throw new ArrayIndexOutOfBoundsException("Parameter index is out of bouds!");
+            if(i < 0 || i >= indices.length) {
+                throw new ArrayIndexOutOfBoundsException("Parameter index is out of bouds!");
+            }
             return names[i];
         }
 
         public void setParam(String name, double value) {
-            if(!hasParam(name)) throw new IllegalArgumentException("Parameter `" + name + "` does not exist!");
+            if(!hasParam(name)) {
+                throw new IllegalArgumentException("Parameter `" + name + "` does not exist!");
+            }
             values[params_str.get(name).intValue()] = value;
         }
 
         public double getParam(String name) {
-            if(!hasParam(name)) throw new IllegalArgumentException("Parameter `" + name + "` does not exist!");
+            if(!hasParam(name)) {
+                throw new IllegalArgumentException("Parameter `" + name + "` does not exist!");
+            }
             return values[params_str.get(name).intValue()];
         }
 
@@ -161,7 +172,7 @@ public abstract class PSFModel {
             return indices.length;
         }
     }
-    
+
     public double[] transformParameters(double[] params) {
         return params;
     }
@@ -178,7 +189,7 @@ public abstract class PSFModel {
             public double[] value(double[] params) throws IllegalArgumentException {
                 double[] transformedParams = transformParameters(params);
                 double[] retVal = new double[xgrid.length];
-                for (int i = 0; i < xgrid.length; i++) {
+                for(int i = 0; i < xgrid.length; i++) {
                     retVal[i] = getValue(transformedParams, xgrid[i], ygrid[i]);
                 }
                 return retVal;
@@ -199,12 +210,12 @@ public abstract class PSFModel {
             public double[][] value(double[] point) throws IllegalArgumentException {
                 double[][] retVal = new double[xgrid.length][point.length];
 
-                for (int i = 0; i < point.length; i++) {
+                for(int i = 0; i < point.length; i++) {
                     double[] newPoint = point.clone();
                     newPoint[i] = newPoint[i] + step;
                     double[] f1 = valueFunction.value(newPoint);
                     double[] f2 = valueFunction.value(point);
-                    for (int j = 0; j < f1.length; j++) {
+                    for(int j = 0; j < f1.length; j++) {
                         retVal[j][i] = (f1[j] - f2[j]) / step;
                     }
                 }
@@ -221,10 +232,10 @@ public abstract class PSFModel {
 
                 double[] expectedValues = valueFunction.value(point);
                 double logLikelihood = 0;
-                for (int i = 0; i < expectedValues.length; i++) {
+                for(int i = 0; i < expectedValues.length; i++) {
                     double expectedValue = expectedValues[i];
                     double log = log(expectedValue);
-                    if (log < -1e6) {
+                    if(log < -1e6) {
                         log = -1e6;
                     }
                     logLikelihood += expectedValue - imageValues[i] * log;
@@ -236,6 +247,15 @@ public abstract class PSFModel {
         };
     }
 
+    public double getPerasonsChiSquared(final int[] xgrid, final int[] ygrid, final double[] imageValues, double[] point) {
+        double[] expectedValues = getValueFunction(xgrid, ygrid).value(point);
+        double chi2 = 0;
+        for(int i = 0; i < expectedValues.length; i++) {
+            chi2 += sqr(imageValues[i] - expectedValues[i]) / expectedValues[i];
+        }
+        return chi2;
+    }
+
     /**
      * first step of nelder-mead simplex algorithm. Used in mle estimator.
      */
@@ -243,5 +263,5 @@ public abstract class PSFModel {
 
     public abstract double[] getInitialParams(OneLocationFitter.SubImage subImage);
 
-    public abstract Molecule newInstanceFromParams(double [] params);
+    public abstract Molecule newInstanceFromParams(double[] params);
 }
