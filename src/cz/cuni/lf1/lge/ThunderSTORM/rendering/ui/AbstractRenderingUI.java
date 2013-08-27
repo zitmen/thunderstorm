@@ -147,6 +147,7 @@ public abstract class AbstractRenderingUI implements IRendererUI {
     resolutionTextField.setText(""+ DEFAULT_RESOLUTION);
     threeDCheckBox.setSelected(false);
     zRangeTextField.setText(DEFAULT_Z_RANGE);
+    zRangeTextField.setEnabled(false);
   }
 
   protected abstract IncrementalRenderingMethod getMethod();
