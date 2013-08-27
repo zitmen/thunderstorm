@@ -19,7 +19,7 @@ public class DensityRenderingUI extends AbstractRenderingUI {
   private JLabel dzLabel;
   private double dx, dz;
   private static final double DEFAULT_DX = 0.2;
-  private static final double DEFAULT_DZ = 2;
+  private static final double DEFAULT_DZ = 100;
 
   public DensityRenderingUI() {
   }
@@ -32,11 +32,11 @@ public class DensityRenderingUI extends AbstractRenderingUI {
   public JPanel getOptionsPanel() {
     JPanel panel = super.getOptionsPanel();
 
-    panel.add(new JLabel("Lateral resolution [???]:"), GridBagHelper.leftCol());
+    panel.add(new JLabel("Lateral resolution [px]:"), GridBagHelper.leftCol());
     dxTextField = new JTextField(Prefs.get("thunderstorm.rendering.density.dx", "" + DEFAULT_DX), 20);
     panel.add(dxTextField, GridBagHelper.rightCol());
 
-    dzLabel = new JLabel("Axial resolution [???]:");
+    dzLabel = new JLabel("Axial resolution [nm]:");
     panel.add(dzLabel, GridBagHelper.leftCol());
     dzTextField = new JTextField(Prefs.get("thunderstorm.rendering.density.dz", "" + DEFAULT_DZ), 20);
     panel.add(dzTextField, GridBagHelper.rightCol());

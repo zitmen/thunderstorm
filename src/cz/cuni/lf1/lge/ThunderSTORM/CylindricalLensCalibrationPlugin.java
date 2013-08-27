@@ -61,6 +61,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
   IDetectorUI selectedDetectorUI;
   CalibrationEstimatorUI calibrationEstimatorUI;
   String savePath;
+  double stageStep;
   ImagePlus imp;
   Roi roi;
 
@@ -93,6 +94,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         selectedDetectorUI = parser.getDetectorUI();
         parser.getEstimatorUI();
         savePath = Macro.getValue(Macro.getOptions(), "saveto", null);
+        stageStep = Double.parseDouble(Macro.getValue(Macro.getOptions(), "stageStep", "10"));
       } else {
         //show dialog
         try {
@@ -109,6 +111,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         selectedFilterUI = dialog.getActiveFilterUI();
         selectedDetectorUI = dialog.getActiveDetectorUI();
         savePath = dialog.getSavePath();
+        stageStep = dialog.getStageStep();
 
         //if recording window is open, record parameters
         if (Recorder.record) {
@@ -116,6 +119,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
           MacroParser.recordDetectorUI(selectedDetectorUI);
           MacroParser.recordEstimatorUI(calibrationEstimatorUI);
           Recorder.recordOption("saveto", savePath.replace("\\", "\\\\"));
+          Recorder.recordOption("stageStep", stageStep + "");
         }
       }
 
@@ -268,11 +272,12 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
       throw new RuntimeException("Could not fit a parabola in any location.");
     }
 
+    
     drawSigmaPlots(sigma1Quadratics, sigma2Quadratics);
     //average the parameters of the fitted polynomials for each bead
     avgSigma1Polynom = bootstrapMeanEstimationArray(sigma1Quadratics, 100, sigma1Quadratics.size());
     avgSigma2Polynom = bootstrapMeanEstimationArray(sigma2Quadratics, 100, sigma2Quadratics.size());
-
+    convertToNm();
 //    sb.append(String.format("a1 = %f;\n", avgSigma1Polynom[1]));
 //    sb.append(String.format("a2 = %f;\n", avgSigma2Polynom[1]));
 //    sb.append(String.format("b1 = %f;\n", avgSigma1Polynom[2]));
@@ -428,4 +433,12 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     }
 
   }
+
+    private void convertToNm() {
+        avgSigma1Polynom[0] *=stageStep;
+        avgSigma1Polynom[1] /= stageStep*stageStep;
+        
+        avgSigma2Polynom[0] *=stageStep;
+        avgSigma2Polynom[1] /=stageStep*stageStep;
+    }
 }
