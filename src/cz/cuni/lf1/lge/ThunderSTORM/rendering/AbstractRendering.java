@@ -206,23 +206,28 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
 
     @Override
     public void addToImage(Vector<Molecule> fits) {
+        if(fits.isEmpty()) {
+            return;
+        }
+        MoleculeDescriptor descriptor = fits.get(0).descriptor;
+        Units unitsDX = null;
+        int dxIndex = -1;
+        if(descriptor.hasParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
+            dxIndex = descriptor.getParamIndex(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
+            unitsDX = descriptor.units.elementAt(descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON));
+        } else if(descriptor.hasParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
+            dxIndex = descriptor.getParamIndex(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
+            unitsDX = descriptor.units.elementAt(descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON));
+        }
+        Units unitsX = descriptor.units.elementAt(descriptor.getParamColumn(PSFModel.Params.LABEL_X));
+        Units unitsY = descriptor.units.elementAt(descriptor.getParamColumn(PSFModel.Params.LABEL_Y));
+
         for(int i = 0, im = fits.size(); i < im; i++) {
             Molecule fit = fits.elementAt(i);
             double zVal = fit.hasParam(PSFModel.Params.LABEL_Z) ? fit.getParam(PSFModel.Params.LABEL_Z) : 0;
-            double dxVal = defaultDX;
-            Units unitsDX;
-            if(fit.hasParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
-                dxVal = fit.getParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
-                unitsDX = fit.descriptor.units.elementAt(fit.descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON));
-                dxVal = unitsDX.convertTo(PIXEL, dxVal);
-            } else if(fit.hasParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
-                dxVal = fit.getParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
-                unitsDX = fit.descriptor.units.elementAt(fit.descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON));
-                dxVal = unitsDX.convertTo(PIXEL, dxVal);
-            }
+            double dxVal = dxIndex < 0 ? defaultDX : unitsDX.convertTo(PIXEL, fit.getParamAt(dxIndex));
+
             //
-            Units unitsX = fit.descriptor.units.elementAt(fit.descriptor.getParamColumn(PSFModel.Params.LABEL_X));
-            Units unitsY = fit.descriptor.units.elementAt(fit.descriptor.getParamColumn(PSFModel.Params.LABEL_Y));
             drawPoint(unitsX.convertTo(PIXEL, fit.getX()), unitsY.convertTo(PIXEL, fit.getY()), zVal, dxVal);
         }
     }
