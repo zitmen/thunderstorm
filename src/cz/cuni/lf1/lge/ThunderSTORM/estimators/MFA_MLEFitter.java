@@ -31,7 +31,7 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
                 fittedParams = fitter.fittedParameters;
                 logLikPrev = logLik;
                 logLik = model.getLikelihoodFunction(subimage.xgrid, subimage.ygrid, subimage.values).value(fittedParams);
-                pValue = new ChiSquaredDistribution(subimage.values.length - (2 * n + 1)).density(2 * (logLikPrev - logLik));
+                pValue = new ChiSquaredDistribution(model.getDoF() - modelPrev.getDoF()).density(2 * (logLikPrev - logLik));
                 if(n > 1) {
                     if(Double.isNaN(pValue) || (pValue > pValueThr)) {
                         model = modelPrev;

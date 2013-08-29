@@ -280,4 +280,9 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
 
         return true;
     }
+
+    @Override
+    public double getDoF() {
+        return 5;
+    }
 }

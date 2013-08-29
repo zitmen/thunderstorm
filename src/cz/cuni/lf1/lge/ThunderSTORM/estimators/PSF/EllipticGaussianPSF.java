@@ -129,4 +129,9 @@ public class EllipticGaussianPSF extends PSFModel {
     public Molecule newInstanceFromParams(double[] params) {
         return new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA1, Params.SIGMA2, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND }, params, true));
     }
+
+    @Override
+    public double getDoF() {
+        return 6;
+    }
 }
