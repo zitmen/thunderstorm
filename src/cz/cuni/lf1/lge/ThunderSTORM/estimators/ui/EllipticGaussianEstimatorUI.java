@@ -26,13 +26,18 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.yaml.snakeyaml.Yaml;
 
-public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI implements ActionListener {
+public class EllipticGaussianEstimatorUI implements IEstimatorUI, ActionListener {
 
     private final String name = "3D Cylindrical lens estimator";
     CylindricalLensCalibration calibration;
     transient JButton findCalibrationButton;
     transient JTextField calibrationFileTextField;
+    transient SymmetricGaussianEstimatorUI symGaussEst; // reusing some of the methods
 
+    public EllipticGaussianEstimatorUI() {
+        symGaussEst = new SymmetricGaussianEstimatorUI();
+    }
+    
     @Override
     public String getName() {
         return name;
@@ -40,7 +45,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
 
     @Override
     public JPanel getOptionsPanel() {
-        JPanel parentPanel = super.getOptionsPanel();
+        JPanel parentPanel = symGaussEst.getOptionsPanel();
 
         parentPanel.add(new JLabel("Calibration file:"), GridBagHelper.leftCol());
         calibrationFileTextField = new JTextField(Prefs.get("thunderstorm.estimators.calibrationpath", ""));
@@ -58,7 +63,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
 
     @Override
     public void readParameters() {
-        super.readParameters();
+        symGaussEst.readParameters();
         calibration = loadCalibration(calibrationFileTextField.getText());
 
         Prefs.set("thunderstorm.estimators.calibrationpath", calibrationFileTextField.getText());
@@ -66,27 +71,27 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
 
     @Override
     public IEstimator getImplementation() {
-        if(LSQ.equals(method)) {
-            LSQFitter fitter = new LSQFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
-            return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
+        if(SymmetricGaussianEstimatorUI.LSQ.equals(symGaussEst.method)) {
+            LSQFitter fitter = new LSQFitter(new EllipticGaussianPSF(symGaussEst.sigma, Math.toRadians(calibration.getAngle())));
+            return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(symGaussEst.fitradius, fitter));
         }
-        if(MLE.equals(method)) {
-            MLEFitter fitter = new MLEFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
-            return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
+        if(SymmetricGaussianEstimatorUI.MLE.equals(symGaussEst.method)) {
+            MLEFitter fitter = new MLEFitter(new EllipticGaussianPSF(symGaussEst.sigma, Math.toRadians(calibration.getAngle())));
+            return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(symGaussEst.fitradius, fitter));
         }
-        throw new IllegalArgumentException("Unknown fitting method: " + method);
+        throw new IllegalArgumentException("Unknown fitting method: " + symGaussEst.method);
 
     }
 
     @Override
     public void recordOptions() {
-        super.recordOptions();
+        symGaussEst.recordOptions();
         Recorder.recordOption("calibrationfile", calibrationFileTextField.getText().replace("\\", "\\\\"));
     }
 
     @Override
     public void readMacroOptions(String options) {
-        super.readMacroOptions(options);
+        symGaussEst.readMacroOptions(options);
         calibration = loadCalibration(Macro.getValue(options, "calibrationfile", ""));
     }
 
@@ -109,5 +114,10 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
         } catch(ClassCastException ex) {
             throw new RuntimeException("Could not parse calibration file.", ex);
         }
+    }
+
+    @Override
+    public void resetToDefaults() {
+        symGaussEst.resetToDefaults();
     }
 }
