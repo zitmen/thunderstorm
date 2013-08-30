@@ -157,6 +157,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         //
         JPanel buttons = new JPanel();
         buttons.add(defaults);
+        buttons.add(Help.createHelpButton("help"));
+        buttons.add(Help.createHelpButton("help"));
         buttons.add(Box.createHorizontalStrut(30));
         buttons.add(preview);
         buttons.add(Box.createHorizontalStrut(30));
