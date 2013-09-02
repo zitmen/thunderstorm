@@ -182,6 +182,7 @@ public abstract class PSFModel {
     }
 
     abstract public double getValue(double[] params, double x, double y);
+    abstract public double getDoF();    // degrees of freedom
 
     public MultivariateVectorFunction getValueFunction(final int[] xgrid, final int[] ygrid) {
         return new MultivariateVectorFunction() {
@@ -247,7 +248,7 @@ public abstract class PSFModel {
         };
     }
 
-    public double getPerasonsChiSquared(final int[] xgrid, final int[] ygrid, final double[] imageValues, double[] point) {
+    public double getChiSquared(final int[] xgrid, final int[] ygrid, final double[] imageValues, double[] point) {
         double[] expectedValues = getValueFunction(xgrid, ygrid).value(point);
         double chi2 = 0;
         for(int i = 0; i < expectedValues.length; i++) {

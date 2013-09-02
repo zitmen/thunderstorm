@@ -6,7 +6,6 @@ import ags.utils.dataStructures.trees.thirdGenKD.SquareEuclideanDistanceFunction
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import ij.IJ;
@@ -238,6 +237,8 @@ class ResultsGrouping {
          * The method matches molecules at the same positions
          * lasting for more than just 1 frame.
          * 
+         * The method works in 3D, thus calculating distance
+         * {@mathjax (x_1-x_2)^2+(y_1-y_2)^2+(z_1-z_2)^2}.
          * Note: this method makes changes into `detections`!
          */
         public void matchMolecules(double dist2_thr) {
@@ -253,13 +254,13 @@ class ResultsGrouping {
                 boolean[] selected = new boolean[fr1mol.size()];
                 Arrays.fill(selected, false);
                 //
-                KdTree<Molecule> tree = new KdTree<Molecule>(2);
+                KdTree<Molecule> tree = new KdTree<Molecule>(3);
                 for(Molecule mol : fr2mol) {
-                    tree.addPoint(new double[]{mol.getX(), mol.getY()}, mol);
+                    tree.addPoint(new double[]{mol.getX(), mol.getY(), mol.getZ()}, mol);
                 }
                 for(int si = 0, sim = fr1mol.size(); si < sim; si++) {
                     Molecule mol = fr1mol.get(si);
-                    nn_mol = tree.findNearestNeighbors(new double[]{mol.getX(), mol.getY()}, 1, dist_fn);
+                    nn_mol = tree.findNearestNeighbors(new double[]{mol.getX(), mol.getY(), mol.getZ()}, 1, dist_fn);
                     if(nn_mol.getMaxKey() < dist2_thr) {
                         nn_mol.getMax().addDetection(mol);
                         selected[si] = true;

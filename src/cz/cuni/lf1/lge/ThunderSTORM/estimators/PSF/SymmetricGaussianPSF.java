@@ -116,4 +116,9 @@ public class SymmetricGaussianPSF extends PSFModel {
     public Molecule newInstanceFromParams(double[] params) {
         return new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND }, params, true));
     }
+
+    @Override
+    public double getDoF() {
+        return 5;
+    }
 }

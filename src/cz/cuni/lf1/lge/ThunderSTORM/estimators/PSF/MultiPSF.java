@@ -176,4 +176,9 @@ public class MultiPSF extends PSFModel {
         }
         return macroMol;
     }
+
+    @Override
+    public double getDoF() {
+        return nmol * psf.getDoF();
+    }
 }

@@ -30,8 +30,8 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
                 mol = fitter.fit(subimage);
                 fittedParams = fitter.fittedParameters;
                 chi2Prev = chi2;
-                chi2 = model.getPerasonsChiSquared(subimage.xgrid, subimage.ygrid, subimage.values, fittedParams);
-                pValue = new FDistribution(1, subimage.values.length - (2 * n + 1)).density((chi2Prev - chi2) / (chi2 / subimage.values.length - (2 * n + 1)));
+                chi2 = model.getChiSquared(subimage.xgrid, subimage.ygrid, subimage.values, fittedParams);
+                pValue = new FDistribution(1, subimage.values.length - (model.getDoF() + 1)).density((chi2Prev - chi2) / (chi2 / subimage.values.length - (model.getDoF() + 1)));
                 if(n > 1) {
                     if(Double.isNaN(pValue) || (pValue > pValueThr)) {
                         model = modelPrev;

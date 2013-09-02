@@ -18,10 +18,10 @@ public class MultipleLocationsImageFitting implements IEstimator {
     Vector<Molecule> results;
     final OneLocationFitter fitter;
 
-    public MultipleLocationsImageFitting(int subimageSize, OneLocationFitter fitter) {
-        this.subimageSize = subimageSize;
+    public MultipleLocationsImageFitting(int fittingRadius, OneLocationFitter fitter) {
+        this.subimageSize = fittingRadius;
         this.fitter = fitter;
-        bigSubImageSize = 2 * subimageSize + 1;
+        bigSubImageSize = 2 * fittingRadius + 1;
         subimageData = new double[bigSubImageSize * bigSubImageSize];
         initializeGrid();
     }
