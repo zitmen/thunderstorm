@@ -24,6 +24,6 @@ public class Help {
     }
 
     public static URL getUrl(String name) {
-        return IJ.getClassLoader().getResource("resources/help/" + name + ".html");
+        return IJ.getClassLoader().getResource("resources/help/" + name.replace('.','/') + ".html");
     }
 }

@@ -21,7 +21,7 @@ import javax.swing.JTextField;
 /**
  * Detection of local maxima points.
  */
-public class LocalMaximaDetector implements IDetector, IDetectorUI {
+public class LocalMaximaDetector extends IDetectorUI implements IDetector {
 
     private final String name = "Search for local maxima";
     private int connectivity;

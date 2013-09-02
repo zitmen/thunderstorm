@@ -128,6 +128,9 @@ public class CalibrationDialog extends JDialog implements ActionListener {
                 filters.getActiveComboBoxItem().readParameters();
                 detectors.getActiveComboBoxItem().readParameters();
                 estimators.getActiveComboBoxItem().readParameters();
+                filters.getActiveComboBoxItem().resetThreadLocal();
+                detectors.getActiveComboBoxItem().resetThreadLocal();
+                estimators.getActiveComboBoxItem().resetThreadLocal();
                 stageStep = Double.parseDouble(stageStepTextField.getText());
 
                 Prefs.set("thunderstorm.calibration.step", stageStepTextField.getText());
@@ -162,9 +165,9 @@ public class CalibrationDialog extends JDialog implements ActionListener {
                             fp.setMask(roi.getMask());
                         }
                         Thresholder.setCurrentImage(fp);
-                        FloatProcessor filtered = getActiveFilterUI().getImplementation().filterImage(fp);
+                        FloatProcessor filtered = getActiveFilterUI().getThreadLocalImplementation().filterImage(fp);
                         checkForInterruption();
-                        List<Point> detections = Point.applyRoiMask(imp.getRoi(), getActiveDetectorUI().getImplementation().detectMoleculeCandidates(filtered));
+                        List<Point> detections = Point.applyRoiMask(imp.getRoi(), getActiveDetectorUI().getThreadLocalImplementation().detectMoleculeCandidates(filtered));
                         checkForInterruption();
                         //
                         double[] xCoord = new double[detections.size()];

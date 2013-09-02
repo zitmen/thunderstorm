@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class RadialSymmetryEstimatorUI implements IEstimatorUI {
+public class RadialSymmetryEstimatorUI extends IEstimatorUI {
 
     private final String name = "Radial symmetry estimator";
     protected int fitradius;

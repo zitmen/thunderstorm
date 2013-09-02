@@ -221,6 +221,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                 allDetectors.get(activeDetectorIndex).readParameters();
                 allEstimators.get(activeEstimatorIndex).readParameters();
                 allRenderers.get(activeRendererIndex).readParameters();
+                allFilters.get(activeFilterIndex).resetThreadLocal();
+                allDetectors.get(activeDetectorIndex).resetThreadLocal();
+                allEstimators.get(activeEstimatorIndex).resetThreadLocal();
+                allRenderers.get(activeRendererIndex).resetThreadLocal();
 
                 saveSelectedModuleIndexesToPrefs(activeFilterIndex, activeDetectorIndex, activeEstimatorIndex, activeRendererIndex);
             } catch(Exception ex) {
@@ -231,7 +235,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             try {
                 Thresholder.loadFilters(allFilters);
                 Thresholder.setActiveFilter(activeFilterIndex);   // !! must be called before any threshold is evaluated !!
-                Thresholder.parseThreshold(allDetectors.get(activeDetectorIndex).getImplementation().getThresholdFormula());
+                Thresholder.parseThreshold(allDetectors.get(activeDetectorIndex).getThreadLocalImplementation().getThresholdFormula());
             } catch(Exception ex) {
                 IJ.error("Error parsing threshold formula! " + ex.toString());
             }
@@ -260,10 +264,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                             fp.setMask(roi.getMask());
                         }
                         Thresholder.setCurrentImage(fp);
-                        FloatProcessor filtered = allFilters.get(activeFilterIndex).getImplementation().filterImage(fp);
+                        FloatProcessor filtered = allFilters.get(activeFilterIndex).getThreadLocalImplementation().filterImage(fp);
                         new ImagePlus("ThunderSTORM: filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
                         checkForInterruption();
-                        IDetector detector = allDetectors.get(activeDetectorIndex).getImplementation();
+                        IDetector detector = allDetectors.get(activeDetectorIndex).getThreadLocalImplementation();
                         Vector<Point> detections = Point.applyRoiMask(imp.getRoi(), detector.detectMoleculeCandidates(filtered));
                         ij.measure.ResultsTable tbl = ij.measure.ResultsTable.getResultsTable();
                         tbl.reset();
@@ -271,7 +275,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                         tbl.addValue("Threshold value for frame " + Integer.toString(imp.getSlice()), detector.getThresholdValue());
                         tbl.show("Results");
                         checkForInterruption();
-                        Vector<Molecule> results = allEstimators.get(activeEstimatorIndex).getImplementation().estimateParameters(fp, detections);
+                        Vector<Molecule> results = allEstimators.get(activeEstimatorIndex).getThreadLocalImplementation().estimateParameters(fp, detections);
                         checkForInterruption();
                         //
                         ImagePlus impPreview = new ImagePlus("ThunderSTORM: detections in frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());

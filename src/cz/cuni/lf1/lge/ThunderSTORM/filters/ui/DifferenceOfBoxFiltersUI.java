@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class DifferenceOfBoxFiltersUI implements IFilterUI {
+public class DifferenceOfBoxFiltersUI extends IFilterUI {
 
     private final String name = "Difference of box (mean) filters";
     private int size1;

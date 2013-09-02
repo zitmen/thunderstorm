@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class GaussianFilterUI implements IFilterUI {
+public class GaussianFilterUI extends IFilterUI {
 
     private final String name = "Gaussian blur";
     private int size;

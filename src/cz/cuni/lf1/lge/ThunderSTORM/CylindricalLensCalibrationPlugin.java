@@ -81,8 +81,8 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     try {
       //load modules
       calibrationEstimatorUI = new CalibrationEstimatorUI();
-      List<IFilterUI> filters = ThreadLocalWrapper.wrapFilters(ModuleLoader.getUIModules(IFilterUI.class));
-      List<IDetectorUI> detectors = ThreadLocalWrapper.wrapDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
+      List<IFilterUI> filters = ModuleLoader.getUIModules(IFilterUI.class);
+      List<IDetectorUI> detectors = ModuleLoader.getUIModules(IDetectorUI.class);
       List<IEstimatorUI> estimators = Arrays.asList(new IEstimatorUI[]{calibrationEstimatorUI}); // only one estimator can be used
       Thresholder.loadFilters(filters);
 
@@ -141,7 +141,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     final List<Double> angles = Collections.synchronizedList(new ArrayList());
     final ImageStack stack = IJ.getImage().getStack();
     final AtomicInteger framesProcessed = new AtomicInteger(0);
-    final IEstimatorUI threadLocalEstimatorUI = ThreadLocalWrapper.wrap(calibrationEstimatorUI);
+    final IEstimatorUI threadLocalEstimatorUI = calibrationEstimatorUI;
     Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
       @Override
       public void run(int i) {
@@ -149,8 +149,8 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         ip.setRoi(roi);
         FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
         Thresholder.setCurrentImage(fp);
-        Vector<Molecule> fits = threadLocalEstimatorUI.getImplementation().estimateParameters(fp,
-                Point.applyRoiMask(roi, selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp))));
+        Vector<Molecule> fits = threadLocalEstimatorUI.getThreadLocalImplementation().estimateParameters(fp,
+                Point.applyRoiMask(roi, selectedDetectorUI.getThreadLocalImplementation().detectMoleculeCandidates(selectedFilterUI.getThreadLocalImplementation().filterImage(fp))));
         framesProcessed.incrementAndGet();
 
         for (Iterator<Molecule> iterator = fits.iterator(); iterator.hasNext();) {
@@ -185,7 +185,8 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
 
   private void fitQuadraticPolynomial() {
     calibrationEstimatorUI.setAngle(angle);
-    final IEstimatorUI threadLocalEstimatorUI = ThreadLocalWrapper.wrap(calibrationEstimatorUI); //create new ThreadLocal wrapper because the underlying estimator was changed
+    calibrationEstimatorUI.resetThreadLocal();
+    final IEstimatorUI threadLocalEstimatorUI = calibrationEstimatorUI; //create new ThreadLocal wrapper because the underlying estimator was changed
     //fit stack again with fixed angle
     final PSFSeparator separator = new PSFSeparator(calibrationEstimatorUI.getFitradius() / 3);
     final ImageStack stack = imp.getStack();
@@ -199,8 +200,8 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         ip.setRoi(roi);
         FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
         Thresholder.setCurrentImage(fp);
-        Vector<Molecule> fits = threadLocalEstimatorUI.getImplementation().estimateParameters(fp,
-                Point.applyRoiMask(roi, selectedDetectorUI.getImplementation().detectMoleculeCandidates(selectedFilterUI.getImplementation().filterImage(fp))));
+        Vector<Molecule> fits = threadLocalEstimatorUI.getThreadLocalImplementation().estimateParameters(fp,
+                Point.applyRoiMask(roi, selectedDetectorUI.getThreadLocalImplementation().detectMoleculeCandidates(selectedFilterUI.getThreadLocalImplementation().filterImage(fp))));
         framesProcessed.incrementAndGet();
 
         for (Molecule fit : fits) {

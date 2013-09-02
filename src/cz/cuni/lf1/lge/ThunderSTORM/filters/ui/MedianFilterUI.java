@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-public class MedianFilterUI implements IFilterUI {
+public class MedianFilterUI extends IFilterUI {
 
     private final String name = "Median filter";
     private int size;

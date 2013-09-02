@@ -21,7 +21,7 @@ import javax.swing.JTextField;
  * Detect pixels with its intensity equal or greater then a threshold and also
  * with its value not changed after a morphological dilation is performed.
  */
-public final class NonMaxSuppressionDetector implements IDetector, IDetectorUI {
+public final class NonMaxSuppressionDetector extends  IDetectorUI implements IDetector {
 
     private final String name = "Non-maxima suppression";
     private int radius;

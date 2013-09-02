@@ -108,7 +108,7 @@ public class MacroParser {
     }
   }
 
-  public <T extends IModuleUI> int getModuleIndex(List<T> knownModules, String moduleKey) {
+  public <T extends IModuleUI<?>> int getModuleIndex(List<T> knownModules, String moduleKey) {
     String moduleName = Macro.getValue(options, moduleKey, null);
     if (moduleName == null) {
       throw new MacroException("No module specified: " + moduleKey);

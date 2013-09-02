@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class CrowdedFieldEstimatorUI implements IEstimatorUI {
+public class CrowdedFieldEstimatorUI extends IEstimatorUI {
     
     private final String name = "Milti-emitter analysis";
     protected int fitradius;

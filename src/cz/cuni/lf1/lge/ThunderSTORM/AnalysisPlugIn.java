@@ -151,9 +151,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
         try {
             // load modules
-            allFilters = ThreadLocalWrapper.wrapFilters(ModuleLoader.getUIModules(IFilterUI.class));
-            allDetectors = ThreadLocalWrapper.wrapDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
-            allEstimators = ThreadLocalWrapper.wrapEstimators(ModuleLoader.getUIModules(IEstimatorUI.class));
+            allFilters = ModuleLoader.getUIModules(IFilterUI.class);
+            allDetectors = ModuleLoader.getUIModules(IDetectorUI.class);
+            allEstimators = ModuleLoader.getUIModules(IEstimatorUI.class);
             allRenderers = ModuleLoader.getUIModules(IRendererUI.class);
 
             if(MacroParser.isRanFromMacro()) {
@@ -210,7 +210,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         try {
             Thresholder.loadFilters(allFilters);
             Thresholder.setActiveFilter(selectedFilter);   // !! must be called before any threshold is evaluated !!
-            Thresholder.parseThreshold(allDetectors.get(selectedDetector).getImplementation().getThresholdFormula());
+            Thresholder.parseThreshold(allDetectors.get(selectedDetector).getThreadLocalImplementation().getThresholdFormula());
         } catch(Exception ex) {
             IJ.error("Error parsing threshold formula! " + ex.toString());
         }
@@ -263,10 +263,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         Vector<Molecule> fits;
         try {
             Thresholder.setCurrentImage(fp);
-            FloatProcessor filtered = allFilters.get(selectedFilter).getImplementation().filterImage(fp);
-            IDetector detector = allDetectors.get(selectedDetector).getImplementation();
+            FloatProcessor filtered = allFilters.get(selectedFilter).getThreadLocalImplementation().filterImage(fp);
+            IDetector detector = allDetectors.get(selectedDetector).getThreadLocalImplementation();
             Vector<Point> detections = detector.detectMoleculeCandidates(filtered);
-            fits = allEstimators.get(selectedEstimator).getImplementation().estimateParameters(fp, Point.applyRoiMask(roi, detections));
+            fits = allEstimators.get(selectedEstimator).getThreadLocalImplementation().estimateParameters(fp, Point.applyRoiMask(roi, detections));
             results[ip.getSliceNumber()] = fits;
             nProcessed.incrementAndGet();
 

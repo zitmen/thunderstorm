@@ -1,7 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import ij.IJ;
+import ij.plugin.BrowserLauncher;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Window;
@@ -10,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -20,11 +23,14 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 public class HelpButton extends JButton {
 
     private static JFrame textWindow = constructFrame();
     private JScrollPane content;
+    private JEditorPane editor;
     private static final int WINDOW_WIDTH = 400;
     private static final int WINDOW_HEIGHT = 400;
     URL url;
@@ -41,7 +47,7 @@ public class HelpButton extends JButton {
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         this.url = helpUrl;
         addActionListener(new HelpButtonActionListener());
-        content = createTextWindowContent(helpUrl);
+        createTextWindowContent(helpUrl);
     }
 
     private static JFrame constructFrame() {
@@ -56,14 +62,31 @@ public class HelpButton extends JButton {
         return frame;
     }
 
-    private JScrollPane createTextWindowContent(URL url) {
+    private void createTextWindowContent(URL url) {
         try {
-            JEditorPane editor = new JEditorPane(url);
+            editor = new JEditorPane(url);
             Border border = BorderFactory.createEtchedBorder(EtchedBorder.RAISED);
             editor.setBorder(border);
+            editor.setEditable(false);
+            editor.addHyperlinkListener(new HyperlinkListener() {
+                @Override
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                        try {
+                            if("jar".equals(e.getURL().getProtocol())) {
+                                editor.setPage(e.getURL());
+                            } else {
+                                BrowserLauncher.openURL(e.getURL().toString());
+                            }
+                        } catch(Exception e1) {
+                            IJ.handleException(e1);
+                        }
+                    }
+                }
+            });
             JScrollPane scrollPane = new JScrollPane(editor);
             scrollPane.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
-            return scrollPane;
+            content = scrollPane;
         } catch(IOException ex) {
             IJ.handleException(ex);
             throw new RuntimeException(ex);
@@ -74,9 +97,10 @@ public class HelpButton extends JButton {
      * show the content in the static window, sizes and positions the window
      * accordingly
      */
-    private void showInTextWindow(JScrollPane content) {
+    private void showInTextWindow(JScrollPane content) throws IOException {
         textWindow.setVisible(false);
         textWindow.getContentPane().removeAll();
+        editor.setPage(url);
         textWindow.getContentPane().add(content);
 
         Window ancestor = SwingUtilities.getWindowAncestor(this);
@@ -89,13 +113,19 @@ public class HelpButton extends JButton {
         }
         textWindow.pack();
         textWindow.setVisible(true);
+
+
     }
 
     class HelpButtonActionListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            showInTextWindow(content);
+            try {
+                showInTextWindow(content);
+            } catch(IOException ex) {
+                IJ.handleException(ex);
+            }
         }
     }
 }
