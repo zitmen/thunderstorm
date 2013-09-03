@@ -196,6 +196,6 @@ public class MultiPSF extends PSFModel {
 
     @Override
     public double getDoF() {
-        return nmol * psf.getDoF();
+        return psf.getDoF() + (nmol-1)*(psf.getDoF()-2);    // both intensity and offset are estimated for all molecules as a single parameter (see method `fixParams`)
     }
 }
