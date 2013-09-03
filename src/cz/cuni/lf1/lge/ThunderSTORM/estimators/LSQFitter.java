@@ -4,7 +4,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sub;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.stddev;
-import ij.IJ;
 import java.util.Arrays;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;

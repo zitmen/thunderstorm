@@ -28,8 +28,21 @@ public class MultiPSF extends PSFModel {
         this.n_1_params = n_1_params;
     }
     
+    private double [] fixParams(double [] params) {
+        // values of Intensity and offset must be the same for each `multi`-molecule
+        double I = params[Params.INTENSITY];
+        double off = params[Params.OFFSET];
+        for(int base = 0; base < params.length; base += Params.PARAMS_LENGTH) {
+            params[base+Params.INTENSITY] = I;
+            params[base+Params.OFFSET] = off;
+        }
+        return params;
+    }
+    
     @Override
     public double getValue(double[] params, double x, double y) {
+        fixParams(params);
+        //
         double value = 0.0;
         for(int i = 0; i < nmol; i++) {
             double [] tmp = Arrays.copyOfRange(params, i*Params.PARAMS_LENGTH, (i+1)*Params.PARAMS_LENGTH);
@@ -45,7 +58,7 @@ public class MultiPSF extends PSFModel {
             double [] tmp = Arrays.copyOfRange(params, i*Params.PARAMS_LENGTH, (i+1)*Params.PARAMS_LENGTH);
             System.arraycopy(psf.transformParameters(tmp), 0, transformed, i*Params.PARAMS_LENGTH, Params.PARAMS_LENGTH);
         }
-        return transformed;
+        return transformed;  // values of Intensity and offset must be the same for each `multi`-molecule
     }
 
     @Override
@@ -63,6 +76,8 @@ public class MultiPSF extends PSFModel {
         return new MultivariateMatrixFunction() {
             @Override
             public double[][] value(double[] point) throws IllegalArgumentException {
+                fixParams(point);
+                //
                 double[][] retVal = new double[xgrid.length][point.length];
                 for(int i = 0; i < nmol; i++) {
                     double [] tmp = Arrays.copyOfRange(point, i*Params.PARAMS_LENGTH, (i+1)*Params.PARAMS_LENGTH);
@@ -92,7 +107,9 @@ public class MultiPSF extends PSFModel {
     public MultivariateVectorFunction getValueFunction(final int[] xgrid, final int[] ygrid) {
         return new MultivariateVectorFunction() {
             @Override
-            public double[] value(final double[] point) throws IllegalArgumentException {
+            public double[] value(double[] point) throws IllegalArgumentException {
+                fixParams(point);
+                //
                 double[] retVal = new double[xgrid.length];
                 Arrays.fill(retVal, 0.0);
                 for(int i = 0; i < nmol; i++) {

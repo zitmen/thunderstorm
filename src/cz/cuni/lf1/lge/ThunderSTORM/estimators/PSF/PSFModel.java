@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.log;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
@@ -239,7 +240,7 @@ public abstract class PSFModel {
                     if(log < -1e6) {
                         log = -1e6;
                     }
-                    logLikelihood += expectedValue - imageValues[i] * log;
+                    logLikelihood += imageValues[i] * log - expectedValue;
                 }
 //        IJ.log("likelihood:" + logLikelihood);
 //        IJ.log("point: " + Arrays.toString(point));

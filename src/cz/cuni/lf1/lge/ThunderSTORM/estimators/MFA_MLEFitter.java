@@ -20,7 +20,7 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
         Molecule mol;
         double[] fittedParams = null;
         MultiPSF model = null, modelPrev;
-        double logLik = 0.0, logLikPrev, pValue;
+        double logLik = 0.0, logLikPrev, pValue, prevDoF = 0.0;
         if(maxN > 1) {
             // model selection - how many molecules?
             for(int n = 1; n <= maxN; n++) {
@@ -31,13 +31,14 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
                 fittedParams = fitter.fittedParameters;
                 logLikPrev = logLik;
                 logLik = model.getLikelihoodFunction(subimage.xgrid, subimage.ygrid, subimage.values).value(fittedParams);
-                pValue = new ChiSquaredDistribution(model.getDoF() - modelPrev.getDoF()).density(2 * (logLikPrev - logLik));
+                pValue = 1.0 - new ChiSquaredDistribution(model.getDoF() - prevDoF).cumulativeProbability(2 * (logLikPrev - logLik));
                 if(n > 1) {
-                    if(Double.isNaN(pValue) || (pValue > pValueThr)) {
+                    if(Double.isNaN(pValue) || (pValue > pValueThr) || isOutOfRegion(mol, ((double)subimage.size) / 2.0)) {
                         model = modelPrev;
                         break;
                     }
                 }
+                prevDoF = model.getDoF();
             }
         } else {
             model = new MultiPSF(1, defaultSigma, basePsfModel, null);

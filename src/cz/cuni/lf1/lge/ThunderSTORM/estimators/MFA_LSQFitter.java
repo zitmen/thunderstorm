@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.abs;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MultiPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
@@ -20,7 +21,7 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
         Molecule mol;
         double[] fittedParams = null;
         MultiPSF model = null, modelPrev;
-        double chi2 = 0.0, chi2Prev, pValue;
+        double chi2 = 0.0, chi2Prev, pValue, prevDoF = 0.0;
         if(maxN > 1) {
             // model selection - how many molecules?
             for(int n = 1; n <= maxN; n++) {
@@ -31,13 +32,14 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
                 fittedParams = fitter.fittedParameters;
                 chi2Prev = chi2;
                 chi2 = model.getChiSquared(subimage.xgrid, subimage.ygrid, subimage.values, fittedParams);
-                pValue = new FDistribution(1, subimage.values.length - (model.getDoF() + 1)).density((chi2Prev - chi2) / (chi2 / subimage.values.length - (model.getDoF() + 1)));
+                pValue = 1.0 - new FDistribution(model.getDoF() - prevDoF, subimage.values.length - (model.getDoF() + 1)).cumulativeProbability((chi2Prev - chi2) / (chi2 / (double)(subimage.values.length - model.getDoF() - 1)));
                 if(n > 1) {
-                    if(Double.isNaN(pValue) || (pValue > pValueThr)) {
+                    if(Double.isNaN(pValue) || (pValue > pValueThr) || isOutOfRegion(mol, ((double)subimage.size) / 2.0)) {
                         model = modelPrev;
                         break;
                     }
                 }
+                prevDoF = model.getDoF();
             }
         } else {
             model = new MultiPSF(1, defaultSigma, basePsfModel, null);
@@ -53,6 +55,6 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
                 m.setParam(PSFModel.Params.LABEL_BACKGROUND, bkg);
             }
         }
-        return eliminateBadFits(mol, ((double) subimage.size) / 2.0 - defaultSigma / 2.0);
+        return eliminateBadFits(mol, ((double)subimage.size) / 2.0 - defaultSigma / 2.0);
     }
 }
