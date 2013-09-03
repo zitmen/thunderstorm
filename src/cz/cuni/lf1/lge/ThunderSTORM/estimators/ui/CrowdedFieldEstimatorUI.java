@@ -35,7 +35,8 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
     }
     
     public JPanel getOptionsPanel(JPanel panel) {
-        isEnabledCheckbox = new JCheckBox("enable", Boolean.parseBoolean(Prefs.get("thunderstorm.estimators.dense.mfa.enabled", Boolean.toString(DEFAULT_ENABLED))));
+        enabled = Boolean.parseBoolean(Prefs.get("thunderstorm.estimators.dense.mfa.enabled", Boolean.toString(DEFAULT_ENABLED)));
+        isEnabledCheckbox = new JCheckBox("enable", enabled);
         isEnabledCheckbox.addActionListener(this);
         nMaxTextField = new JTextField(Prefs.get("thunderstorm.estimators.dense.mfa.nmax", "" + DEFAULT_NMAX));
         nMaxTextField.setEnabled(enabled);
