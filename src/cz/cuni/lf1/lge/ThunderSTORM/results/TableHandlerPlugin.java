@@ -36,6 +36,8 @@ public class TableHandlerPlugin implements PlugIn {
                 String formula = Macro.getValue(options, "formula", "");
 
                 resultsTable.getFilter().runFilter(formula);
+            } else if("duplicates".equals(action)) {
+                resultsTable.getDuplicatesFilter().runFilter();
             } else if("reset".equals(action)) {
                 resultsTable.copyOriginalToActual();
                 resultsTable.getOperationHistoryPanel().removeAllOperations();
@@ -62,6 +64,14 @@ public class TableHandlerPlugin implements PlugIn {
             Recorder.setCommand("Show results table");
             Recorder.recordOption("action", "filter");
             Recorder.recordOption("formula", formula);
+            Recorder.saveCommand();
+        }
+    }
+    
+    public static void recordRemoveDuplicates() {
+        if(Recorder.record) {
+            Recorder.setCommand("Show results table");
+            Recorder.recordOption("action", "duplicates");
             Recorder.saveCommand();
         }
     }

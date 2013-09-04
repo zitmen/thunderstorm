@@ -13,7 +13,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.ASHRenderingUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
-import ij.Executer;
 import ij.IJ;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -55,6 +54,7 @@ class ResultsTableWindow extends GenericTableWindow {
     private JTabbedPane tabbedPane;
     private OperationsHistoryPanel operationsStackPanel;
     ResultsFilter resultsFilter;
+    DuplicatesFilter removeDuplicates;
     ResultsGrouping resultsGrouping;
     ResultsDriftCorrection resultsDriftCorrection;
     ResultsStageOffset resultsStageOffset;
@@ -130,10 +130,12 @@ class ResultsTableWindow extends GenericTableWindow {
         buttons.add(io_export);
         //
         resultsFilter = new ResultsFilter(this, model);
+        removeDuplicates = new DuplicatesFilter(this, model);
         resultsGrouping = new ResultsGrouping(this, model);
         resultsDriftCorrection = new ResultsDriftCorrection();
         resultsStageOffset = new ResultsStageOffset(this, model);
         JPanel grouping = resultsGrouping.createUIPanel();
+        JPanel duplicates = removeDuplicates.createUIPanel();
         JPanel filter = resultsFilter.createUIPanel();
         JPanel drift = resultsDriftCorrection.createUIPanel();
         JPanel offset = resultsStageOffset.createUIPanel();
@@ -141,6 +143,7 @@ class ResultsTableWindow extends GenericTableWindow {
         //fill tabbed pane
         tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Filter", filter);
+        tabbedPane.addTab("Remove duplicates", duplicates);
         tabbedPane.addTab("Merging", grouping);
         tabbedPane.addTab("Drift correction", drift);
         tabbedPane.addTab("Stage offset", offset);
@@ -241,6 +244,10 @@ class ResultsTableWindow extends GenericTableWindow {
 
     public ResultsFilter getFilter(){
         return resultsFilter;
+    }
+    
+    public DuplicatesFilter getDuplicatesFilter() {
+        return removeDuplicates;
     }
     
     public ResultsGrouping getGrouping(){

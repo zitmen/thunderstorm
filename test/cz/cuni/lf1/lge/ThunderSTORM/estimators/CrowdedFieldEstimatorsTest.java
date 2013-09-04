@@ -11,6 +11,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA1;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
@@ -98,24 +99,13 @@ public class CrowdedFieldEstimatorsTest {
             System.out.println(fit.toString());
             assertEquals(mol, fit.detections.size());
             Vector<Molecule> detections = fit.getDetections();
-            Collections.sort(detections, new MoleculeXYComparator());
+            Collections.sort(detections, new MoleculeXYZComparator());
             for(int i = 0; i < mol; i++) {
                 assertEquals(groundTruth[i][0], detections.elementAt(i).getX(), tol[mol-1][0]);
                 assertEquals(groundTruth[i][1], detections.elementAt(i).getY(), tol[mol-1][0]);
                 assertEquals(groundTruth[i][2], detections.elementAt(i).getParam(LABEL_INTENSITY), tol[mol-1][1]);
                 assertEquals(groundTruth[i][3], detections.elementAt(i).getParam(LABEL_OFFSET), tol[mol-1][1]);
                 assertEquals(groundTruth[i][4], detections.elementAt(i).getParam(fit.hasParam(LABEL_SIGMA) ? LABEL_SIGMA : LABEL_SIGMA1), tol[mol-1][2]);
-            }
-        }
-    }
-    
-    class MoleculeXYComparator implements Comparator<Molecule> {
-        @Override
-        public int compare(Molecule m1, Molecule m2) {
-            if(m1.getX() == m2.getX()) {
-                return ((m1.getY() - m2.getY()) > 0 ? +1 : -1);
-            } else {
-                return ((m1.getX() - m2.getX()) > 0 ? +1 : -1);
             }
         }
     }

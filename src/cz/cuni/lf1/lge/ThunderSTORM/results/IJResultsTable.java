@@ -107,6 +107,10 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
     ResultsFilter getFilter() {
         return tableWindow.getFilter();
     }
+    
+    DuplicatesFilter getDuplicatesFilter() {
+        return tableWindow.getDuplicatesFilter();
+    }
 
     ResultsGrouping getGrouping() {
         return tableWindow.getGrouping();
