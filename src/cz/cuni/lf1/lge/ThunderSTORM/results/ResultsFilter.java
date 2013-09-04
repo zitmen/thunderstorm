@@ -135,7 +135,7 @@ class ResultsFilter {
             model.filterRows(results);
         }
     }
-
+    
     class FilteringOperation extends OperationsHistoryPanel.Operation {
 
         final String name = "Filtering";

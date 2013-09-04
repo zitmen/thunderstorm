@@ -88,12 +88,12 @@ public class EstimatorsTest {
         //
     }
 
-    private void convertXYToNanoMeters(Molecule fit, double px2nm) {
+    static void convertXYToNanoMeters(Molecule fit, double px2nm) {
         fit.setX(fit.getX() * px2nm);
         fit.setY(fit.getY() * px2nm);
     }
 
-    class Pair {
+    static class Pair {
 
         Point detection;
         Molecule fit;
@@ -106,7 +106,7 @@ public class EstimatorsTest {
         }
     }
 
-    private Vector<Pair> pairFitsAndDetections2GroundTruths(Vector<Point> detections, Vector<Molecule> fits, Vector<Molecule> ground_truth) {
+    static Vector<Pair> pairFitsAndDetections2GroundTruths(Vector<Point> detections, Vector<Molecule> fits, Vector<Molecule> ground_truth) {
         assertNotNull(fits);
         assertNotNull(detections);
         assertNotNull(ground_truth);
@@ -134,11 +134,11 @@ public class EstimatorsTest {
         return pairs;
     }
 
-    private double dist2(Point detection, Molecule ground_truth) {
+    static double dist2(Point detection, Molecule ground_truth) {
         return sqr(detection.x.doubleValue() - ground_truth.getX()) + sqr(detection.y.doubleValue() - ground_truth.getY());
     }
 
-    private double dist2(Molecule fit, Molecule ground_truth) {
+    static double dist2(Molecule fit, Molecule ground_truth) {
         return sqr(fit.getX() - ground_truth.getY()) + sqr(fit.getX() - ground_truth.getY());
     }
 }

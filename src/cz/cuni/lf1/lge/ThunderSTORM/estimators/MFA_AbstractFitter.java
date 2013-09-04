@@ -30,4 +30,13 @@ abstract public class MFA_AbstractFitter implements OneLocationFitter {
         mol.detections = detections;
         return mol;
     }
+    
+    protected boolean isOutOfRegion(Molecule mol, double maxXY) {
+        for(Molecule m : mol.detections) {
+            if((abs(m.getX()) > maxXY) || (abs(m.getY()) > maxXY)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -9,6 +9,10 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstima
 
 public class IntSymmetricGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
 
+    public IntSymmetricGaussianEstimatorUI() {
+        super();
+    }
+    
     @Override
     public String getName() {
         return "Integrated 2D Gaussian";
@@ -17,13 +21,21 @@ public class IntSymmetricGaussianEstimatorUI extends SymmetricGaussianEstimatorU
     @Override
     public IEstimator getImplementation() {
         if(LSQ.equals(method)) {
-            LSQFitter fitter = new LSQFitter(new IntegratedSymmetricGaussianPSF(sigma));
-            return new MultipleLocationsImageFitting(fitradius, fitter);
+            if(crowdedField.isEnabled()) {
+                return crowdedField.getLSQImplementation(new IntegratedSymmetricGaussianPSF(sigma), sigma, fitradius);
+            } else {
+                LSQFitter fitter = new LSQFitter(new IntegratedSymmetricGaussianPSF(sigma));
+                return new MultipleLocationsImageFitting(fitradius, fitter);
+            }
         }
         if(MLE.equals(method)) {
-            MLEFitter fitter = new MLEFitter(new IntegratedSymmetricGaussianPSF(sigma));
-            return new MultipleLocationsImageFitting(fitradius, fitter);
+            if(crowdedField.isEnabled()) {
+                return crowdedField.getMLEImplementation(new IntegratedSymmetricGaussianPSF(sigma), sigma, fitradius);
+            } else {
+                MLEFitter fitter = new MLEFitter(new IntegratedSymmetricGaussianPSF(sigma));
+                return new MultipleLocationsImageFitting(fitradius, fitter);
+            }
         }
-        throw new IllegalArgumentException("Unknown fitting method: " + method); //To change body of generated methods, choose Tools | Templates.
+        throw new IllegalArgumentException("Unknown fitting method: " + method);
     }
 }

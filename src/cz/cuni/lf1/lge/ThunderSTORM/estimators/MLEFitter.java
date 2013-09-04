@@ -4,7 +4,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sub;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.stddev;
-import ij.IJ;
 import java.util.Comparator;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.exception.MathUnsupportedOperationException;
@@ -60,7 +59,7 @@ public class MLEFitter implements OneLocationFitter {
                 new MaxIter(MAX_ITERATIONS),
                 new ObjectiveFunction(psfModel.getLikelihoodFunction(subimage.xgrid, subimage.ygrid, subimage.values)),
                 new InitialGuess(psfModel.transformParametersInverse(psfModel.getInitialParams(subimage))),
-                GoalType.MINIMIZE,
+                GoalType.MAXIMIZE,
                 new NelderMeadSimplex(psfModel.getInitialSimplex()));
 
         // estimate background and return an instance of the `Molecule`
