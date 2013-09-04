@@ -1,11 +1,13 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.drift.CrossCorrelationDriftCorrection;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.ImagePlus;
 import ij.gui.Plot;
 import java.awt.Color;
@@ -56,6 +58,7 @@ public class ResultsDriftCorrection {
         uiPanel.add(magnificationTextField, new GridBagConstraints(1, 1, 1, 1, 0.25, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 20), 0, 0));
         uiPanel.add(showDriftPlotCheckBox, new GridBagConstraints(2, 0, 1, 1, 0.25, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
         uiPanel.add(showCorrelationsCheckBox, new GridBagConstraints(2, 1, 1, 1, 0.25, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+        uiPanel.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(3, 0).anchor(GridBagConstraints.LINE_END).build());
         uiPanel.add(applyButton, new GridBagConstraints(3, 1, 1, 1, 0, 0, GridBagConstraints.BASELINE, 0, new Insets(0, 0, 0, 0), 0, 0));
         return uiPanel;
     }

@@ -1,5 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable.setResultsTable;
+import java.lang.reflect.InvocationTargetException;
+import javax.swing.SwingUtilities;
+
 public class IJGroundTruthTable extends GenericTable<GroundTruthTableWindow> {
 
     public static final String TITLE = "ThunderSTORM: ground-truth";
@@ -9,7 +13,22 @@ public class IJGroundTruthTable extends GenericTable<GroundTruthTableWindow> {
 
     public synchronized static IJGroundTruthTable getGroundTruthTable() {
         if (gtTable == null) {
-            setGroundTruthTable(new IJGroundTruthTable());
+            if(SwingUtilities.isEventDispatchThread()) {
+                setGroundTruthTable(new IJGroundTruthTable());
+            } else {
+                try {
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        @Override
+                        public void run() {
+                            setGroundTruthTable(new IJGroundTruthTable());
+                        }
+                    });
+                } catch(InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                } catch(InvocationTargetException ex) {
+                    throw new RuntimeException(ex.getCause());
+                }
+            }
         }
         return gtTable;
     }

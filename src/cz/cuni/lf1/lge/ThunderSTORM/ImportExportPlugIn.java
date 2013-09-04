@@ -3,6 +3,8 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.HelpButton;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
@@ -18,6 +20,7 @@ import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Vector;
 import javax.swing.JSeparator;
@@ -82,6 +85,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             } else if(IMPORT.equals(commands[0])) {
                 fillImportPane(commands[1], gd);
             }
+            gd.add(Help.createHelpButton("help"));
             gd.showDialog();
 
             if(!gd.wasCanceled()) {

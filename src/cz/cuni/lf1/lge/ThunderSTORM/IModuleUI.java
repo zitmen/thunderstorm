@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import java.util.HashMap;
 import javax.swing.JPanel;
 
 /**

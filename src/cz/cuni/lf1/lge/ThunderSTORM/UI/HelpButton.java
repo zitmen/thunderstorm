@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.UI;
 import ij.IJ;
 import ij.plugin.BrowserLauncher;
 import java.awt.Cursor;
-import java.awt.Desktop;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Window;
@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -59,6 +58,7 @@ public class HelpButton extends JButton {
             }
         });
         frame.setType(Window.Type.UTILITY);
+        frame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE); //for use within modal dialog
         return frame;
     }
 

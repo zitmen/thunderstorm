@@ -25,6 +25,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -157,8 +159,6 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         //
         JPanel buttons = new JPanel();
         buttons.add(defaults);
-        buttons.add(Help.createHelpButton("help"));
-        buttons.add(Help.createHelpButton("help"));
         buttons.add(Box.createHorizontalStrut(30));
         buttons.add(preview);
         buttons.add(Box.createHorizontalStrut(30));

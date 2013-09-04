@@ -4,6 +4,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import ij.ImagePlus;
 import java.awt.Color;
+import java.lang.reflect.InvocationTargetException;
+import javax.swing.SwingUtilities;
 
 /**
  * Class similar to ImageJ's ResultsTable class containing some of the most
@@ -27,7 +29,22 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
 
     public synchronized static IJResultsTable getResultsTable() {
         if(resultsTable == null) {
-            setResultsTable(new IJResultsTable());
+            if(SwingUtilities.isEventDispatchThread()) {
+                setResultsTable(new IJResultsTable());
+            } else {
+                try {
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        @Override
+                        public void run() {
+                            setResultsTable(new IJResultsTable());
+                        }
+                    });
+                } catch(InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                } catch(InvocationTargetException ex) {
+                    throw new RuntimeException(ex.getCause());
+                }
+            }
         }
         return resultsTable;
     }
