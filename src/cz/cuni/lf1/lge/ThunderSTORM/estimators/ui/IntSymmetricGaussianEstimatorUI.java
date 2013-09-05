@@ -11,11 +11,12 @@ public class IntSymmetricGaussianEstimatorUI extends SymmetricGaussianEstimatorU
 
     public IntSymmetricGaussianEstimatorUI() {
         super();
+        name = "Integrated 2D Gaussian";
     }
-    
+
     @Override
     public String getName() {
-        return "Integrated 2D Gaussian";
+        return name;
     }
 
     @Override

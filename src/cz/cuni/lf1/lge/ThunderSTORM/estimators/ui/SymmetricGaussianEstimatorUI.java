@@ -19,7 +19,7 @@ import javax.swing.JTextField;
 
 public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
 
-    private final String name = "2D Gaussian estimator";
+    protected String name = "2D Gaussian estimator";
     protected int fitradius;
     protected String method;
     protected double sigma;

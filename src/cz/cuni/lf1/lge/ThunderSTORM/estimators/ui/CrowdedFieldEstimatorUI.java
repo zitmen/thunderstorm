@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class CrowdedFieldEstimatorUI implements ActionListener {
-    
+
     private final String name = "Multi-emitter fitting analysis";
     protected int nmax;
     protected double pvalue;
@@ -29,11 +29,11 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
     protected transient boolean DEFAULT_ENABLED = false;
     protected transient int DEFAULT_NMAX = 5;
     protected transient double DEFAULT_PVALUE = 1e-6;
-    
+
     public boolean isEnabled() {
         return enabled;
     }
-    
+
     public JPanel getOptionsPanel(JPanel panel) {
         enabled = Boolean.parseBoolean(Prefs.get("thunderstorm.estimators.dense.mfa.enabled", Boolean.toString(DEFAULT_ENABLED)));
         isEnabledCheckbox = new JCheckBox("enable", enabled);
@@ -55,35 +55,40 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
 
     public void readParameters() {
         enabled = isEnabledCheckbox.isSelected();
-        nmax = Integer.parseInt(nMaxTextField.getText());
-        pvalue = Double.parseDouble(pValueTextField.getText());
-
         Prefs.set("thunderstorm.estimators.dense.mfa.enabled", Boolean.toString(enabled));
-        Prefs.set("thunderstorm.estimators.dense.mfa.nmax", "" + nmax);
-        Prefs.set("thunderstorm.estimators.dense.mfa.pvalue", "" + pvalue);
+        
+        if(enabled) {
+            nmax = Integer.parseInt(nMaxTextField.getText());
+            pvalue = Double.parseDouble(pValueTextField.getText());
+            Prefs.set("thunderstorm.estimators.dense.mfa.nmax", "" + nmax);
+            Prefs.set("thunderstorm.estimators.dense.mfa.pvalue", "" + pvalue);
+        }
+        
     }
 
     public void recordOptions() {
         if(enabled != DEFAULT_ENABLED) {
             Recorder.recordOption("enabled", Boolean.toString(enabled));
         }
-        if(nmax != DEFAULT_NMAX) {
+        if(nmax != DEFAULT_NMAX && enabled) {
             Recorder.recordOption("nmax", Integer.toString(nmax));
         }
-        if(pvalue != DEFAULT_PVALUE) {
+        if(pvalue != DEFAULT_PVALUE && enabled) {
             Recorder.recordOption("pvalue", Double.toString(pvalue));
         }
     }
 
     public void readMacroOptions(String options) {
         enabled = Boolean.parseBoolean(Macro.getValue(options, "enabled", Boolean.toString(DEFAULT_ENABLED)));
-        nmax = Integer.parseInt(Macro.getValue(options, "nmax", Integer.toString(DEFAULT_NMAX)));
-        pvalue = Double.parseDouble(Macro.getValue(options, "pvalue", Double.toString(DEFAULT_PVALUE)));
+        if(enabled) {
+            nmax = Integer.parseInt(Macro.getValue(options, "nmax", Integer.toString(DEFAULT_NMAX)));
+            pvalue = Double.parseDouble(Macro.getValue(options, "pvalue", Double.toString(DEFAULT_PVALUE)));
+        }
     }
 
     public void resetToDefaults() {
         isEnabledCheckbox.setSelected(DEFAULT_ENABLED);
-        nMaxTextField.setText(Double.toString(DEFAULT_NMAX));
+        nMaxTextField.setText(Integer.toString(DEFAULT_NMAX));
         pValueTextField.setText(Double.toString(DEFAULT_PVALUE));
     }
 
@@ -104,5 +109,4 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
             pValueTextField.setEnabled(isEnabledCheckbox.isSelected());
         }
     }
-
 }
