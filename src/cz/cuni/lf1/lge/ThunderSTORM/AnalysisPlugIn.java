@@ -40,9 +40,11 @@ import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import java.awt.Color;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.swing.SwingUtilities;
 
 /**
  * ThunderSTORM Analysis plugin.
@@ -71,6 +73,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     private ImagePlus renderedImage;
     private Roi roi;
     private MeasurementProtocol measurementProtocol;
+    private AnalysisOptionsDialog dialog;
 
     /**
      * Returns flags specifying capabilities of the plugin.
@@ -148,12 +151,12 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
      * @return
      */
     @Override
-    public int showDialog(ImagePlus imp, String command, PlugInFilterRunner pfr) {
+    public int showDialog(final ImagePlus imp, final String command, PlugInFilterRunner pfr) {
         try {
             // load modules
-            allFilters = ThreadLocalWrapper.wrapFilters(ModuleLoader.getUIModules(IFilterUI.class));
-            allDetectors = ThreadLocalWrapper.wrapDetectors(ModuleLoader.getUIModules(IDetectorUI.class));
-            allEstimators = ThreadLocalWrapper.wrapEstimators(ModuleLoader.getUIModules(IEstimatorUI.class));
+            allFilters = ModuleLoader.getUIModules(IFilterUI.class);
+            allDetectors = ModuleLoader.getUIModules(IDetectorUI.class);
+            allEstimators = ModuleLoader.getUIModules(IEstimatorUI.class);
             allRenderers = ModuleLoader.getUIModules(IRendererUI.class);
 
             if(MacroParser.isRanFromMacro()) {
@@ -162,21 +165,31 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 selectedFilter = parser.getFilterIndex();
                 selectedDetector = parser.getDetectorIndex();
                 selectedEstimator = parser.getEstimatorIndex();
-                
+
                 roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
                 IRendererUI rendererPanel = parser.getRendererUI();
                 rendererPanel.setSize(roi.getBounds().width, roi.getBounds().height);
                 IncrementalRenderingMethod method = rendererPanel.getImplementation();
                 renderedImage = (method != null) ? method.getRenderedImage() : null;
                 renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), rendererPanel.getRepaintFrequency());
-                
+
                 measurementProtocol = new MeasurementProtocol(imp, allFilters.get(selectedFilter), allDetectors.get(selectedDetector), allEstimators.get(selectedEstimator));
-                
+
                 return pluginFlags;
             } else {
                 // Create and show the dialog
-                AnalysisOptionsDialog dialog = new AnalysisOptionsDialog(imp, command, allFilters, allDetectors, allEstimators, allRenderers);
-                dialog.setVisible(true);
+                try {
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialog = new AnalysisOptionsDialog(imp, command, allFilters, allDetectors, allEstimators, allRenderers);
+                            dialog.setVisible(true);
+                        }
+                    });
+                } catch(InvocationTargetException e) {
+                    throw e.getCause();
+                }
+
                 if(dialog.wasCanceled()) {  // This is a blocking call!!
                     return DONE;    // cancel
                 }
@@ -184,7 +197,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 selectedDetector = dialog.getDetectorIndex();
                 selectedEstimator = dialog.getEstimatorIndex();
                 selectedRenderer = dialog.getRendererIndex();
-                
+
                 roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
                 IRendererUI renderer = allRenderers.get(selectedRenderer);
                 renderer.setSize(roi.getBounds().width, roi.getBounds().height);
@@ -199,10 +212,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                     MacroParser.recordEstimatorUI(dialog.getEstimator());
                     MacroParser.recordRendererUI(dialog.getRenderer());
                 }
-                
+
                 measurementProtocol = new MeasurementProtocol(imp, dialog.getFilter(), dialog.getDetector(), dialog.getEstimator());
             }
-        } catch(Exception ex) {
+        } catch(Throwable ex) {
             IJ.handleException(ex);
             return DONE;
         }
@@ -210,7 +223,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         try {
             Thresholder.loadFilters(allFilters);
             Thresholder.setActiveFilter(selectedFilter);   // !! must be called before any threshold is evaluated !!
-            Thresholder.parseThreshold(allDetectors.get(selectedDetector).getImplementation().getThresholdFormula());
+            Thresholder.parseThreshold(allDetectors.get(selectedDetector).getThreadLocalImplementation().getThresholdFormula());
         } catch(Exception ex) {
             IJ.error("Error parsing threshold formula! " + ex.toString());
         }
@@ -252,7 +265,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         //
         ip.setRoi(roi);
         FloatProcessor fp = subtract((FloatProcessor) ip.crop().convertToFloat(), (float) CameraSetupPlugIn.offset);
-        float minVal = min((float[])fp.getPixels());
+        float minVal = min((float[]) fp.getPixels());
         if(minVal < 0) {
             IJ.log("Camera base level is set higher than values in the image!");
             fp = add(-minVal, fp);
@@ -263,10 +276,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         Vector<Molecule> fits;
         try {
             Thresholder.setCurrentImage(fp);
-            FloatProcessor filtered = allFilters.get(selectedFilter).getImplementation().filterImage(fp);
-            IDetector detector = allDetectors.get(selectedDetector).getImplementation();
+            FloatProcessor filtered = allFilters.get(selectedFilter).getThreadLocalImplementation().filterImage(fp);
+            IDetector detector = allDetectors.get(selectedDetector).getThreadLocalImplementation();
             Vector<Point> detections = detector.detectMoleculeCandidates(filtered);
-            fits = allEstimators.get(selectedEstimator).getImplementation().estimateParameters(fp, Point.applyRoiMask(roi, detections));
+            fits = allEstimators.get(selectedEstimator).getThreadLocalImplementation().estimateParameters(fp, Point.applyRoiMask(roi, detections));
             results[ip.getSliceNumber()] = fits;
             nProcessed.incrementAndGet();
 

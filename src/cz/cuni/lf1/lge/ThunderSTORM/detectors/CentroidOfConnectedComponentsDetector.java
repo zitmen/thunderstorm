@@ -27,7 +27,7 @@ import javax.swing.JTextField;
  * molecule, unless a shape of these connected pixels indicates that there is in
  * fact more of them.
  */
-public final class CentroidOfConnectedComponentsDetector implements IDetector, IDetectorUI {
+public final class CentroidOfConnectedComponentsDetector extends IDetectorUI implements IDetector {
 
     private final String name = "Centroid of connected components";
     private boolean upsample;

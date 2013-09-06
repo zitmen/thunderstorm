@@ -51,8 +51,8 @@ public class RadialSymmetryFitter implements OneLocationFitter {
         int idx2 = mainDiagonalDirection ? img.size + 1 : img.size;
         int resIdx = 0;
 
-        for (int i = 0; i < img.size - 1; i++) {
-            for (int j = 0; j < img.size - 1; j++) {
+        for(int i = 0; i < img.size - 1; i++) {
+            for(int j = 0; j < img.size - 1; j++) {
                 dI[resIdx++] = (float) (img.values[idx1++] - img.values[idx2++]);
             }
             idx1++;
@@ -62,6 +62,9 @@ public class RadialSymmetryFitter implements OneLocationFitter {
         return dI;
     }
 
+    /**
+     * smoothing by 3*3 box filter
+     */
     private void smooth(float[] dIdu, int size) {
         float[] kernel = {1f / 3f, 1f / 3f, 1f / 3f};
 
@@ -74,7 +77,7 @@ public class RadialSymmetryFitter implements OneLocationFitter {
     private float[] calculateSlope(float[] dIdu, float[] dIdv) {
         float[] m = new float[dIdu.length];
 
-        for (int i = 0; i < m.length; i++) {
+        for(int i = 0; i < m.length; i++) {
             float val = -(dIdu[i] + dIdv[i]) / (dIdu[i] - dIdv[i]);
             val = Float.isNaN(val) ? 0 : val;
             val = Float.isInfinite(val) ? Float.MAX_VALUE / 1e5f : val; //replace inf by some big value - Not max_value because it could overflow to infinity in next step
@@ -88,9 +91,9 @@ public class RadialSymmetryFitter implements OneLocationFitter {
         int smallSize = (size - 1) / 2;
 
         int idx = 0;
-        for (int i = 0; i < size - 1; i++) {
+        for(int i = 0; i < size - 1; i++) {
             float iVal = -smallSize + 0.5f + i;
-            for (int j = 0; j < size - 1; j++) {
+            for(int j = 0; j < size - 1; j++) {
                 float jVal = -smallSize + 0.5f + j;
                 mesh[idx++] = xMesh ? jVal : iVal;
             }
@@ -98,19 +101,26 @@ public class RadialSymmetryFitter implements OneLocationFitter {
         return mesh;
     }
 
+    /**
+     * b in original matlab implementation
+     */
     private float[] calculateYIntercept(float[] xMesh, float[] yMesh, float[] m) {
         float[] intercept = new float[m.length];
-        for (int i = 0; i < intercept.length; i++) {
+        for(int i = 0; i < intercept.length; i++) {
             intercept[i] = yMesh[i] - m[i] * xMesh[i];
         }
         return intercept;
     }
 
+    /**
+     * weight by square of gradient magnitude and inverse distance to gradient
+     * intensity centroid.
+     */
     private float[] calculateWeights(float[] dIdu, float[] dIdv, float[] xMesh, float[] yMesh) {
         float gradientMagnitudeSum = 0;
         float xCentroid = 0;
         float yCentroid = 0;
-        for (int i = 0; i < dIdu.length; i++) {
+        for(int i = 0; i < dIdu.length; i++) {
             float gradientMagnitude = dIdu[i] * dIdu[i] + dIdv[i] * dIdv[i];
             gradientMagnitudeSum += gradientMagnitude;
 
@@ -122,7 +132,7 @@ public class RadialSymmetryFitter implements OneLocationFitter {
 
         float[] weights = new float[dIdu.length];
 
-        for (int i = 0; i < weights.length; i++) {
+        for(int i = 0; i < weights.length; i++) {
             float gradientMagnitude = dIdu[i] * dIdu[i] + dIdv[i] * dIdv[i];
             double distanceToCentroid = Math.sqrt((xMesh[i] - xCentroid) * (xMesh[i] - xCentroid) + (yMesh[i] - yCentroid) * (yMesh[i] - yCentroid));
             weights[i] = (float) (gradientMagnitude / distanceToCentroid);
@@ -130,6 +140,11 @@ public class RadialSymmetryFitter implements OneLocationFitter {
         return weights;
     }
 
+    /**
+     * least-squares minimization to determine the translated coordinate system
+     * origin (xc, yc) such that lines y = mx+b have the minimal total
+     * distance^2 to the origin:
+     */
     private double[] lsRadialCenterFit(float[] m, float[] b, float[] weights) {
         float sw = 0;
         float smmw = 0;
@@ -137,7 +152,7 @@ public class RadialSymmetryFitter implements OneLocationFitter {
         float smbw = 0;
         float sbw = 0;
 
-        for (int i = 0; i < m.length; i++) {
+        for(int i = 0; i < m.length; i++) {
             float weighted = weights[i] / (m[i] * m[i] + 1); //wm2p1
             sw += weighted;
             float mw = weighted * m[i];

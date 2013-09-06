@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class BoxFilterUI implements IFilterUI {
+public class BoxFilterUI extends IFilterUI {
 
     private final String name = "Box (mean) filter";
     private int size;

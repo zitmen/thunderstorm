@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
@@ -58,7 +59,6 @@ class ResultsStageOffset {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
 
-        //TODO ui
         panel.add(new JLabel("Frames per stage position:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(0,0).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
         panel.add(framesPerStagePositionTextField, new GridBagHelper.Builder().gridxy(1,0).fill(GridBagConstraints.HORIZONTAL).weightx(0.2).build());
         panel.add(new JLabel("Stage positions:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(0, 1).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
@@ -68,6 +68,7 @@ class ResultsStageOffset {
         panel.add(new JLabel("First position offset [nm]:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(2, 1).insets(new Insets(0, 20, 0, 0)).fill(GridBagConstraints.HORIZONTAL).build());
         panel.add(firstPositionOffsetTextField, new GridBagHelper.Builder().gridxy(3, 1).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
         panel.add(Box.createGlue(), new GridBagHelper.Builder().gridxy(4,1).weightx(0.1).build());
+        panel.add(Help.createHelpButton(getClass()),new GridBagHelper.Builder().gridxy(5, 0).anchor(GridBagConstraints.LINE_END).build());
         panel.add(applyButton, new GridBagHelper.Builder().gridxy(5, 1).build());
         return panel;
     }

@@ -70,33 +70,81 @@
     properties which you can use, check the target you are overriding in the
     nbproject/build-impl.xml file. 
 
-  -->
-  <target name="-post-jar" depends="compile">
+    -->
+    <target name="-post-jar" depends="compile">
 
-    <property name="store.dir" value="dist"/>
-    <property name="store.jar" value="${store.dir}/UBER_${ant.project.name}.jar"/>
+        <property name="store.dir" value="dist"/>
+        <property name="store.jar" value="${store.dir}/UBER_${ant.project.name}.jar"/>
 
-    <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
+        <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
 
-    <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
-      <zipgroupfileset dir="dist" includes="*.jar"/>
-      <zipgroupfileset dir="lib/repackage" includes="*.jar" excludes="ij.jar"/>
+        <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
+            <zipgroupfileset dir="dist" includes="*.jar"/>
+            <zipgroupfileset dir="lib/repackage" includes="*.jar" excludes="ij.jar"/>
 
-      <manifest>
-        <attribute name="Main-Class" value="${main.class}"/>
-      </manifest>
-    </jar>
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+        </jar>
 
-    <zip destfile="${store.jar}">
-      <zipfileset src="${store.dir}/temp_final.jar"
+        <zip destfile="${store.jar}">
+            <zipfileset src="${store.dir}/temp_final.jar"
                         excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
-    </zip>
+        </zip>
 
-    <delete file="${store.dir}/temp_final.jar"/>
+        <delete file="${store.dir}/temp_final.jar"/>
     
-    <property file="build.properties" description="local override"/>
-    <property name="imagej.path" value="C:/Program Files/ImageJ/plugins" description="path to plugins directory, can be overriden in build.properties"/>
-    <copy file="${store.dir}/UBER_${ant.project.name}.jar" tofile="${imagej.path}/${ant.project.name}.jar" failonerror="false"/>
+        <property file="build.properties" description="local override"/>
+        <property name="imagej.path" value="C:/Program Files/ImageJ/plugins" description="path to plugins directory, can be overriden in build.properties"/>
+        <copy file="${store.dir}/UBER_${ant.project.name}.jar" tofile="${imagej.path}/${ant.project.name}.jar" failonerror="false"/>
 
-  </target>
+    </target>
+  
+    <target name="compile html help">
+        <property name="lyx.path" value="c:/Program Files (x86)/LyX 2.0/bin/" description="path to lyx bin folder, can be overriden in build.properties"/>
+        <apply executable="${lyx.path}lyx" failonerror="true" resolveExecutable="true"> 
+            <arg line="--export latex"/> 
+            <srcfile/> 
+            <fileset id="myfileset" dir="src/resources/help">
+                <include name="**/*.lyx"/>
+            </fileset>
+        </apply> 
+        
+        <taskdef name="runInDir" classname="cz.cuni.lf1.lge.lyx.RunInDirTask" classpath="lib/CompileLyxTask.jar"/>
+        
+        <runInDir command="htlatex">
+            <fileset id="myfileset" dir="src/resources/help">
+                <include name="**/*.tex"/>
+            </fileset>
+        </runInDir>
+        
+        <runInDir command="bibtex">
+            <fileset id="myfileset" dir="src/resources/help">
+                <include name="**/*.aux"/>
+            </fileset>
+        </runInDir>
+        
+        <runInDir command="htlatex">
+            <fileset id="myfileset" dir="src/resources/help">
+                <include name="**/*.tex"/>
+            </fileset>
+        </runInDir>
+        
+        <delete>
+            <fileset id="myfileset" dir="src/resources/help">
+                <include name="**/*.log"/>
+                <include name="**/*.dvi"/>
+                <include name="**/*.tex"/>
+                <include name="**/*.xref"/>
+                <include name="**/*.tmp"/>
+                <include name="**/*.lg"/>
+                <include name="**/*.aux"/>
+                <include name="**/*.4ct"/>
+                <include name="**/*.4tc"/>
+                <include name="**/*.idv"/>
+                <include name="**/*.blg"/>
+                <include name="**/*.bbl"/>
+            </fileset>
+        </delete>
+    </target>
 </project>

@@ -8,7 +8,7 @@ import ij.plugin.frame.Recorder;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-public class CompoundWaveletFilterUI implements IFilterUI {
+public class CompoundWaveletFilterUI extends IFilterUI {
 
     private final String name = "Wavelet filter";
     private boolean third_plane = false;

@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Node;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.RetVal;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import ij.IJ;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -58,6 +59,7 @@ class ResultsFilter {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
         filterPanel.add(filterTextField, gbc);
+        filterPanel.add(Help.createHelpButton(getClass()));
         filterPanel.add(applyButton);
         return filterPanel;
     }

@@ -25,18 +25,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.yaml.snakeyaml.Yaml;
 
-public class EllipticGaussianEstimatorUI implements IEstimatorUI, ActionListener {
+public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI implements ActionListener {
 
-    private final String name = "3D Cylindrical lens estimator";
-    protected CrowdedFieldEstimatorUI crowdedField;
     CylindricalLensCalibration calibration;
     transient JButton findCalibrationButton;
     transient JTextField calibrationFileTextField;
-    transient SymmetricGaussianEstimatorUI symGaussEst; // reusing some of the methods
 
     public EllipticGaussianEstimatorUI() {
-        symGaussEst = new SymmetricGaussianEstimatorUI();
-        crowdedField = new CrowdedFieldEstimatorUI();
+        this.name = "3D Cylindrical lens estimator";
     }
     
     @Override
@@ -46,7 +42,7 @@ public class EllipticGaussianEstimatorUI implements IEstimatorUI, ActionListener
 
     @Override
     public JPanel getOptionsPanel() {
-        JPanel parentPanel = symGaussEst.getOptionsPanel();
+        JPanel parentPanel = super.getOptionsPanel();
 
         parentPanel.add(new JLabel("Calibration file:"), GridBagHelper.leftCol());
         calibrationFileTextField = new JTextField(Prefs.get("thunderstorm.estimators.calibrationpath", ""));
@@ -58,57 +54,53 @@ public class EllipticGaussianEstimatorUI implements IEstimatorUI, ActionListener
         GridBagConstraints gbc = GridBagHelper.rightCol();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         parentPanel.add(calibrationPanel, gbc);
-        crowdedField.getOptionsPanel(parentPanel);
 
         return parentPanel;
     }
 
     @Override
     public void readParameters() {
-        symGaussEst.readParameters();
+        super.readParameters();
         calibration = loadCalibration(calibrationFileTextField.getText());
 
         Prefs.set("thunderstorm.estimators.calibrationpath", calibrationFileTextField.getText());
         
-        crowdedField.readParameters();
     }
 
     @Override
     public IEstimator getImplementation() {
-        if(SymmetricGaussianEstimatorUI.LSQ.equals(symGaussEst.method)) {
+        if(SymmetricGaussianEstimatorUI.LSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
-                IEstimator mfa = crowdedField.getLSQImplementation(new EllipticGaussianPSF(symGaussEst.sigma, Math.toRadians(calibration.getAngle())), symGaussEst.sigma, symGaussEst.fitradius);
+                IEstimator mfa = crowdedField.getLSQImplementation(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())), sigma, fitradius);
                 return new CylindricalLensZEstimator(calibration, mfa);
             } else {
-                LSQFitter fitter = new LSQFitter(new EllipticGaussianPSF(symGaussEst.sigma, Math.toRadians(calibration.getAngle())));
-                return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(symGaussEst.fitradius, fitter));
+                LSQFitter fitter = new LSQFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
+                return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
             }
         }
-        if(SymmetricGaussianEstimatorUI.MLE.equals(symGaussEst.method)) {
+        if(SymmetricGaussianEstimatorUI.MLE.equals(method)) {
             if(crowdedField.isEnabled()) {
-                IEstimator mfa = crowdedField.getMLEImplementation(new EllipticGaussianPSF(symGaussEst.sigma, Math.toRadians(calibration.getAngle())), symGaussEst.sigma, symGaussEst.fitradius);
+                IEstimator mfa = crowdedField.getMLEImplementation(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())), sigma, fitradius);
                 return new CylindricalLensZEstimator(calibration, mfa);
             } else {
-                MLEFitter fitter = new MLEFitter(new EllipticGaussianPSF(symGaussEst.sigma, Math.toRadians(calibration.getAngle())));
-                return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(symGaussEst.fitradius, fitter));
+                MLEFitter fitter = new MLEFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
+                return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
             }
         }
-        throw new IllegalArgumentException("Unknown fitting method: " + symGaussEst.method);
+        throw new IllegalArgumentException("Unknown fitting method: " + method);
 
     }
 
     @Override
     public void recordOptions() {
-        symGaussEst.recordOptions();
+        super.recordOptions();
         Recorder.recordOption("calibrationfile", calibrationFileTextField.getText().replace("\\", "\\\\"));
-        crowdedField.recordOptions();
     }
 
     @Override
     public void readMacroOptions(String options) {
-        symGaussEst.readMacroOptions(options);
+        super.readMacroOptions(options);
         calibration = loadCalibration(Macro.getValue(options, "calibrationfile", ""));
-        crowdedField.readMacroOptions(options);
     }
 
     @Override
@@ -134,7 +126,6 @@ public class EllipticGaussianEstimatorUI implements IEstimatorUI, ActionListener
 
     @Override
     public void resetToDefaults() {
-        symGaussEst.resetToDefaults();
-        crowdedField.resetToDefaults();
+        super.resetToDefaults();
     }
 }

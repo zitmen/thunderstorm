@@ -4,6 +4,7 @@ import ags.utils.dataStructures.MaxHeap;
 import ags.utils.dataStructures.trees.thirdGenKD.KdTree;
 import ags.utils.dataStructures.trees.thirdGenKD.SquareEuclideanDistanceFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
@@ -59,6 +60,7 @@ class ResultsGrouping {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
         grouping.add(distanceTextField, gbc);
+        grouping.add(Help.createHelpButton(getClass()));
         grouping.add(applyButton);
         return grouping;
     }

@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class LoweredGaussianFilterUI implements IFilterUI {
+public class LoweredGaussianFilterUI extends IFilterUI {
 
     private final String name = "Lowered Gaussian filter";
     private int size;

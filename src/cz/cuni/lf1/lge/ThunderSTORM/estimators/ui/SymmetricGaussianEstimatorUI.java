@@ -17,9 +17,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class SymmetricGaussianEstimatorUI implements IEstimatorUI {
+public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
 
-    private final String name = "2D Gaussian estimator";
+    protected String name = "2D Gaussian estimator";
     protected int fitradius;
     protected String method;
     protected double sigma;

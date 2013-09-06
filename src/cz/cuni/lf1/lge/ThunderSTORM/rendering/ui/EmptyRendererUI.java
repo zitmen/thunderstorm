@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import javax.swing.JPanel;
 
-public class EmptyRendererUI implements IRendererUI {
+public class EmptyRendererUI extends IRendererUI {
 
   @Override
   public String getName() {

@@ -12,7 +12,7 @@ import javax.swing.JPanel;
  * This is useful in case of detectors of estimators that work better with raw images.
  * The {@code filterImage} method returns the {@code image} that it got on its input.
  */
-public final class EmptyFilter implements IFilter, IFilterUI {
+public final class EmptyFilter extends IFilterUI implements IFilter {
     
   private FloatProcessor input = null;
   private HashMap<String, FloatProcessor> export_variables = null;

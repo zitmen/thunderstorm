@@ -39,7 +39,7 @@ public class Thresholder {
                 // the worker threads.
                 data.filters = new ArrayList<IFilter>();
                 for(IFilterUI filter : Thresholder.filters) {
-                    data.filters.add(filter.getImplementation());
+                    data.filters.add(filter.getThreadLocalImplementation());
                 }
                 data.active_filter = Thresholder.active_filter;
             }

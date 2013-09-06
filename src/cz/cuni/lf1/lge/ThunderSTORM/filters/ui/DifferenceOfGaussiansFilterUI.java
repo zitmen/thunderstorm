@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class DifferenceOfGaussiansFilterUI implements IFilterUI {
+public class DifferenceOfGaussiansFilterUI extends IFilterUI {
 
     private final String name = "Difference of Gaussians";
     private int size;
