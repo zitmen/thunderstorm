@@ -214,7 +214,7 @@ public class MoleculeDescriptor implements Cloneable {
         return paramNames.get(param).index;
     }
     
-    // the `column` refers to everything in `MoleculeDescriptor`.
+    // the `column` refers to everything else in `MoleculeDescriptor`.
     public int getParamColumn(String param) {
         return paramNames.get(param).column;
     }

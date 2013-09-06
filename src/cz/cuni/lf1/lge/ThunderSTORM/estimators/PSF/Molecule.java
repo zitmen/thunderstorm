@@ -54,10 +54,20 @@ public final class Molecule implements Comparable<Molecule> {
         this.sortedDetections = mol.sortedDetections;
     }
     
+    /**
+     * Add a parameter to the last column. Note: indexing to the array of `values`
+     * is managed internally and the new value will be also to the last position
+     * of the array, independently of the column.
+     */
     public void addParam(String name, Units units, double value) {
         insertParamAt(descriptor.getParamsCount(), name, units, value);
     }
     
+    /**
+     * Add a parameter to a specified `column` and shift all the columns with higher index by one.
+     * Note: indexing to the array of `values` is managed internally and the new value
+     * will be also to the last position of the array, independently of the column.
+     */
     public void insertParamAt(int column, String name, Units units, double value) {
         if(hasParam(name)) {   // is the param already present in the table?
             setParam(name, value);  // then just set the value
@@ -79,6 +89,10 @@ public final class Molecule implements Comparable<Molecule> {
         return values.elementAt(i).doubleValue();
     }
     
+    public double getParamAtColumn(int c) {
+        return values.elementAt(descriptor.indices.elementAt(c)).doubleValue();
+    }
+    
     public void setParamAt(int i, double value) {
         if(i >= values.size()) {
             values.insertElementAt(value, i);
@@ -95,8 +109,8 @@ public final class Molecule implements Comparable<Molecule> {
         setParamAt(descriptor.getParamIndex(param), value);
     }
 
-    public String getParamNameAt(int i) {
-        return descriptor.getParamNameAt(i);
+    public String getParamNameAtColumn(int c) {
+        return descriptor.getParamNameAt(c);
     }
     
     public double getX() {
