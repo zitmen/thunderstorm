@@ -28,7 +28,7 @@ public class Convolution {
         assert kernel.getWidth() % 2 == 1;
         assert kernel.getHeight() % 2 == 1;
 
-        int kw = kernel.getWidth(), kh = kernel.getHeight(), padsize = java.lang.Math.max(kw, kh) / 2;
+        int kw = kernel.getWidth(), kh = kernel.getHeight(), padsize = (int)Math.ceil(java.lang.Math.max(kw, kh) / 2.0);
         int iw = image.getWidth(), ih = image.getHeight(), idx;
         //if(padding_type == Padding.PADDING_NONE) { iw -= 2*padsize; ih -= 2*padsize; }
         FloatProcessor img = (FloatProcessor) Padding.addBorder(image, padding_type, padsize);
@@ -54,9 +54,9 @@ public class Convolution {
             for(int x = x1; x < x2; x++) {
                 sum = 0.0;
                 i = 0;
-                for(int v = -vc; v <= vc; v++) {
+                for(int v = -vc; v < kh-vc; v++) {
                     offset = x + (y - v) * width;
-                    for(int u = -uc; u <= uc; u++) {
+                    for(int u = -uc; u < kw-uc; u++) {
                         sum += pixels2[offset - u] * kernelPixels[i++];
                     }
                 }
