@@ -2,7 +2,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.log;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
@@ -57,6 +56,10 @@ public abstract class PSFModel {
         public static final String LABEL_SIGMA1 = "sigma1";
         public static final String LABEL_SIGMA2 = "sigma2";
         public static final String LABEL_ANGLE = "angle";
+        
+        public static String getParamLabel(int index) {
+            return all_names[index];
+        }
 
         // automatically generates the corresponding names,
         // even if the order have been changed
