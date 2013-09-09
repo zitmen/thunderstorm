@@ -30,6 +30,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.min;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
+import ij.IJ;
 
 public class ResultsDriftCorrection {
 
@@ -64,8 +65,8 @@ public class ResultsDriftCorrection {
     }
 
     public void runDriftCorrection(final int bins, final double magnification, final boolean showCorrelationImages, final boolean showPlot) throws IllegalArgumentException {
-        if(bins < 2) {
-            throw new IllegalArgumentException("Number of images must be greater than 1. Input: " + bins);
+        if(bins < 3) {
+            throw new IllegalArgumentException("Number of images must be greater than 2. Input: " + bins);
         }
         if(magnification <= 0) {
             throw new IllegalArgumentException("Rendering magnification must be greater than 0. Input: " + magnification);
@@ -137,12 +138,14 @@ public class ResultsDriftCorrection {
 
     static void showDriftPlot(CrossCorrelationDriftCorrection driftCorrection) {
         int minFrame = driftCorrection.getMinFrame();
-        int frameCount = driftCorrection.getMaxFrame() - minFrame + 1;
-        double[] grid = new double[frameCount];
-        double[] driftX = new double[frameCount];
-        double[] driftY = new double[frameCount];
-        for(int i = 0; i < frameCount; i++) {
-            grid[i] = i + minFrame;
+        int maxFrame = driftCorrection.getMaxFrame();
+        int gridTicks = 200;
+        double tickStep = (maxFrame-minFrame)/(double)gridTicks;
+        double[] grid = new double[gridTicks];
+        double[] driftX = new double[gridTicks];
+        double[] driftY = new double[gridTicks];
+        for(int i = 0; i < gridTicks; i++) {
+            grid[i] = i*tickStep + minFrame;
             Point2D.Double offset = driftCorrection.getInterpolatedDrift(grid[i]);
             driftX[i] = offset.x;
             driftY[i] = offset.y;
@@ -166,7 +169,7 @@ public class ResultsDriftCorrection {
         double[] binDriftsX = driftCorrection.getBinDriftX();
         double[] binDriftsY = driftCorrection.getBinDriftY();
         for(int i = 1; i < binDriftsX.length; i++) {
-            RenderingOverlay.showPointsInImageSlice(imp, new double[]{-binDriftsX[i] * driftCorrection.getMagnification() + imp.getWidth() / 2 + 0.5}, new double[]{-binDriftsY[i] + imp.getHeight() / 2 + 0.5}, i, Color.red, RenderingOverlay.MARKER_CROSS);
+            RenderingOverlay.showPointsInImageSlice(imp, new double[]{-binDriftsX[i] * driftCorrection.getMagnification() + imp.getWidth() / 2 + 0.5}, new double[]{-binDriftsY[i]*driftCorrection.getMagnification() + imp.getHeight() / 2 + 0.5}, i, Color.red, RenderingOverlay.MARKER_CROSS);
         }
         imp.show();
     }

@@ -11,6 +11,8 @@ import java.util.Arrays;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
 import ij.IJ;
 import ij.ImageStack;
+import ij.process.ImageProcessor;
+import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
@@ -35,8 +37,8 @@ public class CrossCorrelationDriftCorrection {
     private double[] binDriftX;
     private double[] binDriftY;
     private double[] binCenters;
-    private PolynomialSplineFunction xFunction;
-    private PolynomialSplineFunction yFunction;
+    private UnivariateFunction xFunction;
+    private UnivariateFunction yFunction;
 
     /**
      *
@@ -118,7 +120,7 @@ public class CrossCorrelationDriftCorrection {
         firstImage.transform();
         FHT secondImage;
         for(int i = 1; i < xBinnedByFrame.length; i++) {
-            IJ.showProgress((double)i / (double)(binCount-1));
+            IJ.showProgress((double) i / (double) (binCount - 1));
             IJ.showStatus("Processing part " + i + " from " + (binCount - 1) + "...");
             secondImage = new FHT(renderer.getRenderedImage(xBinnedByFrame[i], yBinnedByFrame[i], null, null).getProcessor());
             secondImage.setShowProgress(false);
@@ -133,10 +135,10 @@ public class CrossCorrelationDriftCorrection {
             if(saveCorrelationImages) {
                 correlationImages.addSlice(crossCorrelationImage);
             }
-            
+
 //            GaussianBlur blur = new GaussianBlur();
 //            blur.blurFloat(crossCorrelationImage, magnification/2, magnification/2, 0.01);
-            
+
             //new ImagePlus("crossCorrelation " + i, crossCorrelationImage.duplicate()).show();
             //find maxima
             Point2D.Double maximumCoords = findMaxima(crossCorrelationImage);
@@ -153,7 +155,6 @@ public class CrossCorrelationDriftCorrection {
         SplineInterpolator interpolator = new SplineInterpolator();
         xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX));
         yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY));
-
         x = null;
         y = null;
         frame = null;
@@ -174,6 +175,9 @@ public class CrossCorrelationDriftCorrection {
             if(frame[i] > maxFrame) {
                 maxFrame = frame[i];
             }
+        }
+        if(maxFrame == minFrame) {
+            throw new RuntimeException("Requires multiple frames.");
         }
 
         //alloc space for binned results
@@ -245,6 +249,10 @@ public class CrossCorrelationDriftCorrection {
         int roiX = (int) maximumCoords.x - (roiSize - 1) / 2;
         int roiY = (int) maximumCoords.y - (roiSize - 1) / 2;
 
+        if(isCloseToBorder((int) maximumCoords.x, (int) maximumCoords.y, (roiSize - 1) / 2, crossCorrelationImage)) {
+            return maximumCoords;
+        }
+
         for(int ys = roiY; ys < roiY + roiSize; ys++) {
             int offset1 = (ys - roiY) * roiSize;
             int offset2 = ys * crossCorrelationImage.getWidth() + roiX;
@@ -285,9 +293,9 @@ public class CrossCorrelationDriftCorrection {
             newKnots[0] = minFrame;
             System.arraycopy(knots, 0, newKnots, 1, knots.length);
             //add function
-            double derivativeAtFirstKnot = polynomials[0].derivative().value(knots[0]);
+            double derivativeAtFirstKnot = polynomials[0].derivative().value(0);
             double valueAtFirstKnot = spline.value(knots[0]);
-            PolynomialFunction beginningFunction = new PolynomialFunction(new double[]{valueAtFirstKnot - derivativeAtFirstKnot * (knots[0] - minFrame), derivativeAtFirstKnot});
+            PolynomialFunction beginningFunction = new PolynomialFunction(new double[]{valueAtFirstKnot - (knots[0] - minFrame) * derivativeAtFirstKnot, derivativeAtFirstKnot});
             newPolynomials[0] = beginningFunction;
             System.arraycopy(polynomials, 0, newPolynomials, 1, polynomials.length);
         } else {
@@ -307,5 +315,15 @@ public class CrossCorrelationDriftCorrection {
 
         return new PolynomialSplineFunction(newKnots, newPolynomials);
 
+    }
+
+    boolean isCloseToBorder(int x, int y, int subimageSize, ImageProcessor image) {
+        if(x < subimageSize || x > image.getWidth() - subimageSize - 1) {
+            return true;
+        }
+        if(y < subimageSize || y > image.getHeight() - subimageSize - 1) {
+            return true;
+        }
+        return false;
     }
 }
