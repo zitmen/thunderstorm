@@ -64,10 +64,11 @@ public class HelpButton extends JButton {
 
     private void createTextWindowContent(URL url) {
         try {
-            editor = new JEditorPane(url);
+            editor = new JEditorPane();
             Border border = BorderFactory.createEtchedBorder(EtchedBorder.RAISED);
             editor.setBorder(border);
             editor.setEditable(false);
+            editor.setPage(url);
             editor.addHyperlinkListener(new HyperlinkListener() {
                 @Override
                 public void hyperlinkUpdate(HyperlinkEvent e) {
