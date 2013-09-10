@@ -113,7 +113,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 }
             }
             rt.convertAllColumnsToAnalogUnits();
-            rt.calculateThompsonFormula();
             rt.insertIdColumn();
             rt.copyOriginalToActual();
             rt.setActualState();

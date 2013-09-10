@@ -1,6 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
+import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 import java.util.Vector;
@@ -80,6 +82,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
                             if(!psf.detections.isEmpty()) {
                                 psf.detections.clear();
                             }
+                            appendCalculatedUncertainty(psf);
                             results.add(psf);
                         }
                     } else {
@@ -87,6 +90,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
                             if(checkIsInSubimage(m.getX(), m.getY())) {
                                 m.setX(m.getX() + xInt + 0.5);
                                 m.setY(m.getY() + yInt + 0.5);
+                                appendCalculatedUncertainty(m);
                                 results.add(m);
                             }
                         }
@@ -135,5 +139,22 @@ public class MultipleLocationsImageFitting implements IEstimator {
             }
         }
         return extracted;
+    }
+
+    private void appendCalculatedUncertainty(Molecule mol) {
+        try {
+            String paramName;
+            double paramValue;
+            if(CameraSetupPlugIn.isEmCcd) {
+                paramName = MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON;
+                paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
+            } else {
+                paramName = MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON;
+                paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
+            }
+            mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
+        } catch(Exception e) {
+            // ignore...PSF does not fit all the required parameters
+        }
     }
 }
