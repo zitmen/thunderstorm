@@ -102,35 +102,49 @@
   
     <target name="compile html help">
         <property name="lyx.path" value="c:/Program Files (x86)/LyX 2.0/bin/" description="path to lyx bin folder, can be overriden in build.properties"/>
+        <property name ="htlatex.config.path" value="${basedir}htlatex.cfg"/>
+        
+        <pathconvert targetos="unix" property="htlatex.config.unixpath">
+            <path location="${basedir}/src/resources/help/htlatex.cfg"/>
+        </pathconvert>
+        
         <apply executable="${lyx.path}lyx" failonerror="true" resolveExecutable="true"> 
             <arg line="--export latex"/> 
             <srcfile/> 
             <fileset id="myfileset" dir="src/resources/help">
                 <include name="**/*.lyx"/>
+                <exclude name="**/.*"/>
             </fileset>
         </apply> 
         
         <taskdef name="runInDir" classname="cz.cuni.lf1.lge.lyx.RunInDirTask" classpath="lib/CompileLyxTask.jar"/>
         
-        <runInDir command="htlatex">
+        <runInDir command="htlatex" params="&quot;${htlatex.config.unixpath}&quot; &quot;&quot; &quot;-interaction=batchmode&quot;">
             <fileset id="myfileset" dir="src/resources/help">
                 <include name="**/*.tex"/>
+                <exclude name="**/.*"/>
             </fileset>
         </runInDir>
         
-        <runInDir command="bibtex">
+        <runInDir command="bibtex" ignoreErrors="true">
             <fileset id="myfileset" dir="src/resources/help">
                 <include name="**/*.aux"/>
+                <exclude name="**/.*"/>
             </fileset>
         </runInDir>
         
-        <runInDir command="htlatex">
+        <runInDir command="htlatex" params="&quot;${htlatex.config.unixpath}&quot; &quot;&quot; &quot;-interaction=batchmode&quot;">
             <fileset id="myfileset" dir="src/resources/help">
                 <include name="**/*.tex"/>
+                <exclude name="**/.*"/>
             </fileset>
         </runInDir>
         
-        <delete>
+        <antcall target="clean html help"/>
+    </target>
+    
+    <target name="clean html help">
+        <delete failonerror="false">
             <fileset id="myfileset" dir="src/resources/help">
                 <include name="**/*.log"/>
                 <include name="**/*.dvi"/>
