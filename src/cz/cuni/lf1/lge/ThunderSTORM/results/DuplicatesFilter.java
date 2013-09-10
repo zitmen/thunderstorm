@@ -1,14 +1,16 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
 import ij.IJ;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -39,17 +41,13 @@ class DuplicatesFilter implements ActionListener {
     }
 
     public JPanel createUIPanel() {
-        filterPanel = new JPanel(new FlowLayout());
+        filterPanel = new JPanel(new GridBagLayout());
         applyButton = new JButton("Apply");
         applyButton.addActionListener(this);
-        JLabel label = new JLabel("<html>" +
-                "If two or more molecules are close to each other, it can happen that " +
-                "the estimator converges to the same spot in between, thus, counting " +
-                "the same false-positive detection twice. Similar situation can happen " +
-                "on the boundary of fitting region if two fitting regions overlap.</html>");
-        label.setPreferredSize(new Dimension(450, 70));
-        filterPanel.add(label);
-        filterPanel.add(applyButton);
+        JLabel label = new JLabel("Remove molecules that converged to the same position.");
+        filterPanel.add(label, new GridBagHelper.Builder().gridxy(0, 0).gridheight(1).fill(GridBagConstraints.BOTH).weightx(1).weighty(1).build());
+        filterPanel.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(1, 0).anchor(GridBagConstraints.EAST).build());
+        filterPanel.add(applyButton, new GridBagHelper.Builder().gridxy(1, 1).build());
         return filterPanel;
     }
 

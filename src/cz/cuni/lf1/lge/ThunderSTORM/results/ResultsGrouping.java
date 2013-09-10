@@ -8,6 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import ij.IJ;
 import java.awt.Color;
@@ -55,13 +56,10 @@ class ResultsGrouping {
         groupThrLabel.setLabelFor(distanceTextField);
         applyButton = new JButton("Merge");
         applyButton.addActionListener(listener);
-        grouping.add(groupThrLabel);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1;
-        grouping.add(distanceTextField, gbc);
-        grouping.add(Help.createHelpButton(getClass()));
-        grouping.add(applyButton);
+        grouping.add(groupThrLabel, new GridBagHelper.Builder().gridxy(0, 0).anchor(GridBagConstraints.WEST).build());
+        grouping.add(distanceTextField, new GridBagHelper.Builder().gridxy(0, 1).fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
+        grouping.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(1, 0).anchor(GridBagConstraints.EAST).build());
+        grouping.add(applyButton, new GridBagHelper.Builder().gridxy(1, 1).build());
         return grouping;
     }
 

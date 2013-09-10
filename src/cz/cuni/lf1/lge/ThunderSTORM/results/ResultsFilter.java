@@ -6,6 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Node;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.RetVal;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.IJ;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -54,13 +55,13 @@ class ResultsFilter {
         filterTextField.addKeyListener(listener);
         applyButton = new JButton("Apply");
         applyButton.addActionListener(listener);
-        filterPanel.add(new JLabel("Filter: ", SwingConstants.TRAILING));
+        filterPanel.add(new JLabel("Filter: "), new GridBagHelper.Builder().gridxy(0, 0).anchor(GridBagConstraints.WEST).build());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
-        filterPanel.add(filterTextField, gbc);
-        filterPanel.add(Help.createHelpButton(getClass()));
-        filterPanel.add(applyButton);
+        filterPanel.add(filterTextField, new GridBagHelper.Builder().gridxy(0, 1).fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
+        filterPanel.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(1, 0).anchor(GridBagConstraints.EAST).build());
+        filterPanel.add(applyButton, new GridBagHelper.Builder().gridxy(1, 1).build());
         return filterPanel;
     }
 
