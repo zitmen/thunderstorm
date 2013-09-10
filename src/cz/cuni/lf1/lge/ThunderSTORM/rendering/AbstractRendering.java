@@ -24,6 +24,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     protected double resolution;
     protected int imSizeX, imSizeY;
     protected double defaultDX;
+    protected boolean forceDefaultDX;
     protected double defaultDZ = 5;
     protected double zFrom, zTo, zStep;
     protected int zSlices;
@@ -42,6 +43,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         protected boolean resolutionWasSet = false, roiWasSet = false, sizeWasSet = false;
         protected final static double defaultResolution = 20;
         private double defaultDX = 0.2;
+        private boolean forceDefaultDX = true;
         private double defaultDZ = 5;
         private double zFrom = Double.NEGATIVE_INFINITY, zTo = Double.POSITIVE_INFINITY, zStep = Double.POSITIVE_INFINITY;
         private int zSlices = 1;
@@ -102,6 +104,15 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             }
             this.defaultDX = defaultDX;
             resolutionWasSet = true;
+            return (BuilderType) this;
+        }
+
+        /**
+         * Specifies whether the defaultDX value is used even if a dx (lateral
+         * uncertainty) value is provided for each molecule
+         */
+        public BuilderType forceDefaultDX(boolean bool) {
+            this.forceDefaultDX = bool;
             return (BuilderType) this;
         }
 
@@ -180,6 +191,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         this.imSizeX = builder.imSizeX;
         this.imSizeY = builder.imSizeY;
         this.defaultDX = builder.defaultDX;
+        this.forceDefaultDX = builder.forceDefaultDX;
         this.defaultDZ = builder.defaultDZ;
         this.zFrom = builder.zFrom;
         this.zSlices = builder.zSlices;
@@ -199,7 +211,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     public void addToImage(double[] x, double[] y, double[] z, double[] dx) {
         for(int i = 0; i < x.length; i++) {
             double zVal = z != null ? z[i] : 0;
-            double dxVal = dx != null ? dx[i] : defaultDX;
+            double dxVal = dx != null && !forceDefaultDX ? dx[i] : defaultDX;
             drawPoint(x[i], y[i], zVal, dxVal);
         }
     }
@@ -212,12 +224,14 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         MoleculeDescriptor descriptor = fits.get(0).descriptor;
         Units unitsDX = null;
         int dxIndex = -1;
-        if(descriptor.hasParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
-            dxIndex = descriptor.getParamIndex(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
-            unitsDX = descriptor.units.elementAt(descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON));
-        } else if(descriptor.hasParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
-            dxIndex = descriptor.getParamIndex(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
-            unitsDX = descriptor.units.elementAt(descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON));
+        if(!forceDefaultDX) {
+            if(descriptor.hasParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
+                dxIndex = descriptor.getParamIndex(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
+                unitsDX = descriptor.units.elementAt(descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON));
+            } else if(descriptor.hasParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
+                dxIndex = descriptor.getParamIndex(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
+                unitsDX = descriptor.units.elementAt(descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON));
+            }
         }
         Units unitsX = descriptor.units.elementAt(descriptor.getParamColumn(PSFModel.Params.LABEL_X));
         Units unitsY = descriptor.units.elementAt(descriptor.getParamColumn(PSFModel.Params.LABEL_Y));

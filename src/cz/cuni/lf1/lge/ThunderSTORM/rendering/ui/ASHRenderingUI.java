@@ -109,9 +109,9 @@ public class ASHRenderingUI extends AbstractRenderingUI {
   @Override
   public IncrementalRenderingMethod getMethod() {
     if (threeD) {
-      return new ASHRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).shifts(shifts).zRange(zFrom, zTo, zStep).zShifts(zShifts).build();
+      return new ASHRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1/magnification).shifts(shifts).zRange(zFrom, zTo, zStep).zShifts(zShifts).build();
     } else {
-      return new ASHRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).shifts(shifts).build();
+      return new ASHRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1/magnification).shifts(shifts).build();
     }
   }
 }

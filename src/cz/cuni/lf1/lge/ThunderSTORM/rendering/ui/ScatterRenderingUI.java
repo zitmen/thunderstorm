@@ -20,9 +20,9 @@ public class ScatterRenderingUI extends AbstractRenderingUI {
   @Override
   public IncrementalRenderingMethod getMethod() {
     if (threeD) {
-      return new ScatterRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).zRange(zFrom, zTo, zStep).build();
+      return new ScatterRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1/magnification).zRange(zFrom, zTo, zStep).build();
     } else {
-      return new ScatterRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(resolution).build();
+      return new ScatterRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1/magnification).build();
     }
   }
 }

@@ -16,6 +16,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.IJ;
+import ij.ImagePlus;
 import ij.Macro;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.Recorder;
@@ -67,9 +68,9 @@ public class RenderingPlugIn implements PlugIn {
         }
         double[] z = table.columnExists(LABEL_Z) ? table.getColumnAsDoubles(LABEL_Z) : null;
         double[] dx = null;
-        if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)){
+        if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
             dx = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON, MoleculeDescriptor.Units.PIXEL);
-        }else if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)){
+        } else if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
             dx = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON, MoleculeDescriptor.Units.PIXEL);
         }
 
@@ -91,7 +92,17 @@ public class RenderingPlugIn implements PlugIn {
             sizeX = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imwidth", "0"));
             sizeY = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imheight", "0"));
         } else {
-            RenderingDialog dialog = new RenderingDialog(preview, knownRenderers, (int) Math.ceil(max(xpos)) + 1, (int) Math.ceil(max(ypos)) + 1);
+            int guessedWidth;
+            int guessedHeight;
+            ImagePlus im;
+            if(IJResultsTable.IDENTIFIER.equals(table.getTableIdentifier()) && (im = ((IJResultsTable) table).getAnalyzedImage()) != null) {
+                guessedWidth = im.getWidth();
+                guessedHeight = im.getHeight();
+            }else{
+                guessedWidth = (int) Math.ceil(max(xpos)) + 1;
+                guessedHeight = (int) Math.ceil(max(ypos)) + 1;
+            }
+            RenderingDialog dialog = new RenderingDialog(preview, knownRenderers, guessedWidth, guessedHeight);
             dialog.setVisible(true);
             if(dialog.result == RenderingDialog.DialogResult.CANCELLED) {
                 return;
@@ -109,8 +120,8 @@ public class RenderingPlugIn implements PlugIn {
 
         if(setAsPreview) {
             RenderingQueue queue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(method.getRenderedImage()), selectedRendererUI.getRepaintFrequency());
-            ((IJResultsTable)table).setPreviewRenderer(queue);
-            ((IJResultsTable)table).showPreview();
+            ((IJResultsTable) table).setPreviewRenderer(queue);
+            ((IJResultsTable) table).showPreview();
         } else {
             if(Recorder.record) {
                 Recorder.recordOption("imwidth", Integer.toString(sizeX));

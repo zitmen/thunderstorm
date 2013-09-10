@@ -17,7 +17,7 @@ import javax.swing.JTextField;
 
 public abstract class AbstractRenderingUI extends IRendererUI {
   
-  double resolution;
+  double magnification;
   int sizeX;
   int sizeY;
   int repaintFrequency;
@@ -27,12 +27,12 @@ public abstract class AbstractRenderingUI extends IRendererUI {
   JLabel zRangeLabel;
   JCheckBox threeDCheckBox;
   ImagePlus image;            //must be set in subclass
-  private final static double DEFAULT_RESOLUTION = 0.2;
+  private final static double DEFAULT_MAGNIFICATION = 5;
   private final static int DEFAULT_REPAINT_FREQUENCY = 20;
   private static final String DEFAULT_Z_RANGE = "-500:100:500";
   
   private void defaultInit() {
-      resolution = DEFAULT_RESOLUTION;
+      magnification = DEFAULT_MAGNIFICATION;
       repaintFrequency = DEFAULT_REPAINT_FREQUENCY;
       String [] range = DEFAULT_Z_RANGE.split(":");
       zFrom = Integer.parseInt(range[0]);
@@ -65,9 +65,9 @@ public abstract class AbstractRenderingUI extends IRendererUI {
   public JPanel getOptionsPanel() {
     JPanel panel = new JPanel(new GridBagLayout());
 
-    resolutionTextField = new JTextField(Prefs.get("thunderstorm.rendering.resolution", "" + DEFAULT_RESOLUTION), 20);
+    resolutionTextField = new JTextField(Prefs.get("thunderstorm.rendering.resolution", "" + DEFAULT_MAGNIFICATION), 20);
     repaintFrequencyTextField = new JTextField(Prefs.get("thunderstorm.rendering.repaint" , "" + DEFAULT_REPAINT_FREQUENCY), 20);
-    panel.add(new JLabel("Pixels per one super-resolution pixel:"), GridBagHelper.leftCol());
+    panel.add(new JLabel("Magnification:"), GridBagHelper.leftCol());
     panel.add(resolutionTextField, GridBagHelper.rightCol());
 
     panel.add(new JLabel("Repaint frequency [frames]:"), GridBagHelper.leftCol());
@@ -101,12 +101,12 @@ public abstract class AbstractRenderingUI extends IRendererUI {
     if (threeD) {
       setZRange(zRangeTextField.getText());
     }
-    resolution = Double.parseDouble(resolutionTextField.getText());
+    magnification = Double.parseDouble(resolutionTextField.getText());
     repaintFrequency = Integer.parseInt(repaintFrequencyTextField.getText());
 
     Prefs.set("thunderstorm.rendering.z", threeD);
     Prefs.set("thunderstorm.rendering.zrange", zRangeTextField.getText());
-    Prefs.set("thunderstorm.rendering.resolution", "" + resolution);
+    Prefs.set("thunderstorm.rendering.resolution", "" + magnification);
     Prefs.set("thunderstorm.rendering.repaint", "" + repaintFrequency);
   }
 
@@ -115,8 +115,8 @@ public abstract class AbstractRenderingUI extends IRendererUI {
     if (threeD) {
       Recorder.recordOption("zRange", zFrom + ":" + zStep + ":" + zTo);
     }
-    if (resolution != DEFAULT_RESOLUTION) {
-      Recorder.recordOption("resolution", Double.toString(resolution));
+    if (magnification != DEFAULT_MAGNIFICATION) {
+      Recorder.recordOption("resolution", Double.toString(magnification));
     }
     if (repaintFrequency != DEFAULT_REPAINT_FREQUENCY) {
       Recorder.recordOption("repaintFrequency", Integer.toString(repaintFrequency));
@@ -132,7 +132,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
       threeD = true;
       setZRange(rangeText);
     }
-    resolution = Double.parseDouble(Macro.getValue(options, "resolution", "" + DEFAULT_RESOLUTION));
+    magnification = Double.parseDouble(Macro.getValue(options, "resolution", "" + DEFAULT_MAGNIFICATION));
     repaintFrequency = Integer.parseInt(Macro.getValue(options, "repaintFrequency", "" + DEFAULT_REPAINT_FREQUENCY));
   }
 
@@ -144,7 +144,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
   @Override
   public void resetToDefaults() {
     repaintFrequencyTextField.setText("" + DEFAULT_REPAINT_FREQUENCY);
-    resolutionTextField.setText(""+ DEFAULT_RESOLUTION);
+    resolutionTextField.setText(""+ DEFAULT_MAGNIFICATION);
     threeDCheckBox.setSelected(false);
     zRangeTextField.setText(DEFAULT_Z_RANGE);
     zRangeTextField.setEnabled(false);
