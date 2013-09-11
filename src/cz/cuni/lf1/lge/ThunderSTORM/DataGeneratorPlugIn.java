@@ -6,6 +6,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_FRAME;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.IntegratedGaussian;
@@ -18,16 +19,19 @@ import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.Macro;
+import ij.Prefs;
 import ij.measure.Calibration;
 import ij.plugin.PlugIn;
+import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import ij.process.ShortProcessor;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Vector;
 
-// TODO: macro, defaults, save preferences
 public class DataGeneratorPlugIn implements PlugIn {
     
     private int width, height, frames, processing_frame;
@@ -35,41 +39,67 @@ public class DataGeneratorPlugIn implements PlugIn {
     private Drift drift;
     private Range fwhm_range, intensity_range;
     private double add_poisson_var;
+    private String maskPath;
     private FloatProcessor mask;
     
     @Override
     public void run(String command) {
         GUI.setLookAndFeel();
+        CameraSetupPlugIn.loadPreferences();
+        loadPreferences();
         //
         try {
-            // Create and show the dialog
-            GenericDialogPlus gd = new GenericDialogPlus("ThunderSTORM: Data generator (16bit grayscale image sequence)");
-            gd.addButton("Camera setup...", new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    new CameraSetupPlugIn().run("");
-                }
-            });
-            gd.addMessage("Image stack:");
-            gd.addNumericField("Width [px]: ", 256, 0);
-            gd.addNumericField("Height [px]: ", 256, 0);
-            gd.addNumericField("Frames: ", 100, 0);
-            gd.addMessage("Emitters:");
-            gd.addNumericField("Density [um^-2]: ", 0.1, 1);
-            gd.addStringField("Emitter FWHM range [px]: ", "2.5:3.5");
-            gd.addStringField("Emitter intensity range [photons]: ", "700:900");
-            gd.addMessage("Noise:");
-            gd.addNumericField("Poisson noise variance [photons]: ", 10, 0);
-            gd.addMessage("Linear drift:");
-            gd.addNumericField("Drift distance [px]: ", 0, 0);
-            gd.addNumericField("Drift angle [deg]: ", 0, 0);
-            gd.addMessage("Additional settings:");
-            gd.addFileField("Grayscale mask (optional): ", "");
-            gd.showDialog();
-            
-            if(!gd.wasCanceled()) {
-                readParams(gd);
+            if(MacroParser.isRanFromMacro()) {
+                // Load preferences from the macro and run the generator
+                readMacroOptions(Macro.getOptions());
+                savePreferences();
                 runGenerator();
+            } else {
+                // Create and show the dialog
+                boolean record = Recorder.record;
+                Recorder.record = false;
+                
+                final GenericDialogPlus gd = new GenericDialogPlus("ThunderSTORM: Data generator (16bit grayscale image sequence)");
+                gd.addButton("Camera setup...", new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        new CameraSetupPlugIn().run("");
+                    }
+                });
+                gd.addMessage("Image stack:");
+                gd.addNumericField("Width [px]: ", width, 0);
+                gd.addNumericField("Height [px]: ", height, 0);
+                gd.addNumericField("Frames: ", frames, 0);
+                gd.addMessage("Emitters:");
+                gd.addNumericField("Density [um^-2]: ", density, 1);
+                gd.addStringField("FWHM range [px]: ", fwhm_range.toStrFromTo());
+                gd.addStringField("Intensity range [photons]: ", intensity_range.toStrFromTo());
+                gd.addMessage("Noise:");
+                gd.addNumericField("Poisson noise variance [photons]: ", add_poisson_var, 0);
+                gd.addMessage("Linear drift:");
+                gd.addNumericField("Drift distance [px]: ", drift.dist, 0);
+                gd.addNumericField("Drift angle [deg]: ", drift.angle, 0);
+                gd.addMessage("Additional settings:");
+                gd.addFileField("Grayscale mask (optional): ", maskPath);
+                gd.addMessage("");
+                gd.addButton("Reset to defaults", new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        resetToDefaults(gd);
+                    }
+                });
+                gd.showDialog();
+                
+                Recorder.record = record;
+            
+                if(!gd.wasCanceled()) {
+                    readParams(gd);
+                    if(Recorder.record) {
+                        recordOptions();
+                    }
+                    savePreferences();
+                    runGenerator();
+                }
             }
         } catch (Exception ex) {
             IJ.handleException(ex);
@@ -85,7 +115,8 @@ public class DataGeneratorPlugIn implements PlugIn {
         intensity_range = Range.parseFromTo(gd.getNextString(), Units.PHOTON, Units.DIGITAL);
         add_poisson_var = Units.PHOTON.convertTo(Units.DIGITAL, gd.getNextNumber());
         drift = new Drift(gd.getNextNumber(), gd.getNextNumber(), false, frames);
-        mask = readMask(gd.getNextString());
+        maskPath = gd.getNextString();
+        mask = readMask(maskPath);
     }
     
     private void runGenerator() throws InterruptedException {
@@ -242,6 +273,104 @@ public class DataGeneratorPlugIn implements PlugIn {
             }
         }
         return ImageProcessor.ones(width, height);
+    }
+    
+    // ====================================================================
+    
+    public void loadPreferences() {
+        width = Integer.parseInt(Prefs.get("thunderstorm.datagen.width", Integer.toString(Defaults.WIDTH)));
+        height = Integer.parseInt(Prefs.get("thunderstorm.datagen.height", Integer.toString(Defaults.HEIGHT)));
+        frames = Integer.parseInt(Prefs.get("thunderstorm.datagen.frames", Integer.toString(Defaults.FRAMES)));
+        density = Double.parseDouble(Prefs.get("thunderstorm.datagen.density", Double.toString(Defaults.DENSITY)));
+        add_poisson_var = Double.parseDouble(Prefs.get("thunderstorm.datagen.addPoissonVar", Double.toString(Defaults.ADD_POISSON_VAR)));
+        fwhm_range = Range.parseFromTo(Prefs.get("thunderstorm.datagen.fwhmRange", Defaults.FWHM_RANGE));
+        intensity_range = Range.parseFromTo(Prefs.get("thunderstorm.datagen.intensityRange", Defaults.INTENSITY_RANGE));
+        double driftDist = Double.parseDouble(Prefs.get("thunderstorm.datagen.driftDist", Double.toString(Defaults.DRIFT_DISTANCE)));
+        double driftAngle = Double.parseDouble(Prefs.get("thunderstorm.datagen.driftAngle", Double.toString(Defaults.DRIFT_ANGLE)));
+        drift = new Drift(driftDist, driftAngle, false, frames);
+        maskPath = Prefs.get("thunderstorm.datagen.maskPath", Defaults.MASK_PATH);
+        mask = readMask(maskPath);
+    }
+    
+    public void savePreferences() {
+        Prefs.set("thunderstorm.datagen.width", width);
+        Prefs.set("thunderstorm.datagen.height", height);
+        Prefs.set("thunderstorm.datagen.frames", frames);
+        Prefs.set("thunderstorm.datagen.density", density);
+        Prefs.set("thunderstorm.datagen.addPoissonVar", add_poisson_var);
+        Prefs.set("thunderstorm.datagen.fwhmRange", fwhm_range.toStrFromTo());
+        Prefs.set("thunderstorm.datagen.intensityRange", intensity_range.toStrFromTo());
+        Prefs.set("thunderstorm.datagen.driftDist", drift.dist);
+        Prefs.set("thunderstorm.datagen.driftAngle", drift.angle);
+        Prefs.set("thunderstorm.datagen.maskPath", maskPath);
+    }
+
+    public void recordOptions() {
+        Recorder.recordOption("width", Integer.toString(width));
+        Recorder.recordOption("height", Integer.toString(height));
+        Recorder.recordOption("frames", Integer.toString(frames));
+        Recorder.recordOption("density", Double.toString(density));
+        Recorder.recordOption("addPoissonVar", Double.toString(add_poisson_var));
+        Recorder.recordOption("fwhmRange", fwhm_range.toStrFromTo());
+        Recorder.recordOption("intensityRange", intensity_range.toStrFromTo());
+        Recorder.recordOption("driftDist", Double.toString(drift.dist));
+        Recorder.recordOption("driftAngle", Double.toString(drift.angle));
+        Recorder.recordOption("maskPath", maskPath);
+    }
+
+    public void readMacroOptions(String options) {
+        width = Integer.parseInt(Macro.getValue(options, "width", Integer.toString(Defaults.WIDTH)));
+        height = Integer.parseInt(Macro.getValue(options, "height", Integer.toString(Defaults.HEIGHT)));
+        frames = Integer.parseInt(Macro.getValue(options, "frames", Integer.toString(Defaults.FRAMES)));
+        density = Double.parseDouble(Macro.getValue(options, "density", Double.toString(Defaults.DENSITY)));
+        add_poisson_var = Double.parseDouble(Macro.getValue(options, "addPoissonVar", Double.toString(Defaults.ADD_POISSON_VAR)));
+        fwhm_range = Range.parseFromTo(Macro.getValue(options, "fwhmRange", Defaults.FWHM_RANGE));
+        intensity_range = Range.parseFromTo(Macro.getValue(options, "intensityRange", Defaults.INTENSITY_RANGE));
+        double driftDist = Double.parseDouble(Macro.getValue(options, "driftDist", Double.toString(Defaults.DRIFT_DISTANCE)));
+        double driftAngle = Double.parseDouble(Macro.getValue(options, "driftAngle", Double.toString(Defaults.DRIFT_ANGLE)));
+        drift = new Drift(driftDist, driftAngle, false, frames);
+        maskPath = Macro.getValue(options, "maskPath", Defaults.MASK_PATH);
+        mask = readMask(maskPath);
+    }
+
+    public void resetToDefaults(GenericDialogPlus gd) {
+        width = Defaults.WIDTH;
+        height = Defaults.HEIGHT;
+        frames = Defaults.FRAMES;
+        density = Defaults.DENSITY;
+        add_poisson_var = Units.PHOTON.convertTo(Units.DIGITAL, Defaults.ADD_POISSON_VAR);
+        fwhm_range = Range.parseFromTo(Defaults.FWHM_RANGE, Units.PHOTON, Units.DIGITAL);
+        intensity_range = Range.parseFromTo(Defaults.INTENSITY_RANGE, Units.PHOTON, Units.DIGITAL);
+        drift = new Drift(Defaults.DRIFT_DISTANCE, Defaults.DRIFT_ANGLE, false, frames);
+        maskPath = Defaults.MASK_PATH;
+        mask = readMask(maskPath);
+        //
+        Vector<TextField> numFields = (Vector<TextField>)gd.getNumericFields();
+        numFields.elementAt(0).setText(Integer.toString(Defaults.WIDTH));
+        numFields.elementAt(1).setText(Integer.toString(Defaults.HEIGHT));
+        numFields.elementAt(2).setText(Integer.toString(Defaults.FRAMES));
+        numFields.elementAt(3).setText(Double.toString(Defaults.DENSITY));
+        numFields.elementAt(4).setText(Double.toString(Defaults.ADD_POISSON_VAR));
+        numFields.elementAt(5).setText(Double.toString(Defaults.DRIFT_DISTANCE));
+        numFields.elementAt(6).setText(Double.toString(Defaults.DRIFT_ANGLE));
+        
+        Vector<TextField> strFields = (Vector<TextField>)gd.getStringFields();
+        strFields.elementAt(0).setText(Defaults.FWHM_RANGE);
+        strFields.elementAt(1).setText(Defaults.INTENSITY_RANGE);
+        strFields.elementAt(2).setText(Defaults.MASK_PATH);
+    }
+    
+    static class Defaults {
+        public static final int WIDTH = 256;
+        public static final int HEIGHT = 256;
+        public static final int FRAMES = 100;
+        public static final double DENSITY = 0.1;
+        public static final double ADD_POISSON_VAR = 10;
+        public static final double DRIFT_DISTANCE = 0;
+        public static final double DRIFT_ANGLE = 0;
+        public static final String FWHM_RANGE = "2.5:3.5";
+        public static final String INTENSITY_RANGE = "700:900";
+        public static final String MASK_PATH = "";
     }
 
 }

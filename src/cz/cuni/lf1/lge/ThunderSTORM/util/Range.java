@@ -58,4 +58,12 @@ public class Range {
         r.to = current.convertTo(target, r.to);
         return r;
     }
+    
+    public String toStrFromStepTo() {
+        return Double.toString(from) + ":" + Double.toString(step) + ":" + Double.toString(to);
+    }
+    
+    public String toStrFromTo() {
+        return Double.toString(from) + ":" + Double.toString(to);
+    }
 }
