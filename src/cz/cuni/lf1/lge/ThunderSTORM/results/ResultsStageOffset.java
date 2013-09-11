@@ -6,8 +6,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.ThunderSTORM.util.IValue;
-import ij.IJ;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -59,16 +57,16 @@ class ResultsStageOffset {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
 
-        panel.add(new JLabel("Frames per stage position:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(0,0).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
-        panel.add(framesPerStagePositionTextField, new GridBagHelper.Builder().gridxy(1,0).fill(GridBagConstraints.HORIZONTAL).weightx(0.2).build());
+        panel.add(new JLabel("Frames per stage position:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(0, 0).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
+        panel.add(framesPerStagePositionTextField, new GridBagHelper.Builder().gridxy(1, 0).fill(GridBagConstraints.HORIZONTAL).weightx(0.2).build());
         panel.add(new JLabel("Stage positions:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(0, 1).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
         panel.add(stagePositionsTextField, new GridBagHelper.Builder().gridxy(1, 1).fill(GridBagConstraints.HORIZONTAL).weightx(0.2).build());
         panel.add(new JLabel("Stage step [nm]:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(2, 0).insets(new Insets(0, 20, 0, 0)).fill(GridBagConstraints.HORIZONTAL).build());
         panel.add(stageStepTextField, new GridBagHelper.Builder().gridxy(3, 0).fill(GridBagConstraints.HORIZONTAL).weightx(0.2).build());
         panel.add(new JLabel("First position offset [nm]:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(2, 1).insets(new Insets(0, 20, 0, 0)).fill(GridBagConstraints.HORIZONTAL).build());
         panel.add(firstPositionOffsetTextField, new GridBagHelper.Builder().gridxy(3, 1).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
-        panel.add(Box.createGlue(), new GridBagHelper.Builder().gridxy(4,1).weightx(0.1).build());
-        panel.add(Help.createHelpButton(getClass()),new GridBagHelper.Builder().gridxy(5, 0).anchor(GridBagConstraints.LINE_END).build());
+        panel.add(Box.createGlue(), new GridBagHelper.Builder().gridxy(4, 1).weightx(0.1).build());
+        panel.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(5, 0).anchor(GridBagConstraints.LINE_END).build());
         panel.add(applyButton, new GridBagHelper.Builder().gridxy(5, 1).build());
         return panel;
     }
@@ -127,19 +125,21 @@ class ResultsStageOffset {
      * changes the z values in results table model
      */
     void applyToModel(int framesPerStagePosition, int stagePositions, double stageStep, double firstPositionOffset) {
-        if(!model.columnExists(PSFModel.Params.LABEL_Z) || !model.columnExists(MoleculeDescriptor.LABEL_FRAME)) {
-            throw new RuntimeException(String.format("Z and frame columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFModel.Params.LABEL_Z, MoleculeDescriptor.LABEL_FRAME, model.getColumnNames()));
+        if(!model.columnExists(MoleculeDescriptor.LABEL_FRAME)) {
+            throw new RuntimeException("frame column not found in Results table.");
         }
         //
-        int zColumn = model.findColumn(PSFModel.Params.LABEL_Z);
-        model.setLabel(zColumn, PSFModel.Params.LABEL_Z_REL, MoleculeDescriptor.Units.NANOMETER);
+        if(model.columnExists(PSFModel.Params.LABEL_Z)) {
+            int zColumn = model.findColumn(PSFModel.Params.LABEL_Z);
+            model.setLabel(zColumn, PSFModel.Params.LABEL_Z_REL, MoleculeDescriptor.Units.NANOMETER);
+        }
         //
         Vector<Molecule> molecules = IJResultsTable.getResultsTable().getData();
         for(Molecule molecule : molecules) {
-            double z = molecule.getParam(PSFModel.Params.LABEL_Z_REL);
+            double z = model.columnExists(PSFModel.Params.LABEL_Z_REL)? molecule.getParam(PSFModel.Params.LABEL_Z_REL): 0;
             int frame = (int) molecule.getParam(MoleculeDescriptor.LABEL_FRAME);
-            double newZ = (((frame-1) / framesPerStagePosition) % stagePositions) * stageStep + firstPositionOffset + z;
-            molecule.insertParamAt(zColumn, PSFModel.Params.LABEL_Z, MoleculeDescriptor.Units.NANOMETER, newZ);
+            double newZ = (((frame - 1) / framesPerStagePosition) % stagePositions) * stageStep + firstPositionOffset + z;
+            molecule.setZ(newZ);
         }
         model.fireTableStructureChanged();
         model.fireTableDataChanged();
