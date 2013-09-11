@@ -100,7 +100,7 @@ public class ModuleLoader {
         try {
             URLConnection URLConnection = new URL("http://localhost/").openConnection();
             boolean oldValue = URLConnection.getDefaultUseCaches();
-            URLConnection.setDefaultUseCaches(false);
+            URLConnection.setDefaultUseCaches(useCache);
             return oldValue;
         } catch(Exception ex) {
             return true;
