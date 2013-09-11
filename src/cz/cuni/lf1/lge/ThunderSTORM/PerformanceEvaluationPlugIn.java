@@ -21,7 +21,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
-// TODO: macro, defaults, save preferences
 public class PerformanceEvaluationPlugIn implements PlugIn {
     
     private int processingFrame;
@@ -47,7 +46,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         try {
             // Create and show the dialog
             GenericDialogPlus gd = new GenericDialogPlus("ThunderSTORM: Performance evaluation");
-            gd.addNumericField("Tolerance radius [nm]: ", 20, 0);
+            gd.addNumericField("Tolerance radius [nm]: ", 50, 0);
             gd.showDialog();
             
             if(!gd.wasCanceled()) {

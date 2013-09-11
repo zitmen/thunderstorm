@@ -39,7 +39,7 @@ public class IntegratedGaussian {
             if((x < 0) || (x >= width)) continue;
             for(int y = (int)(y0 - 2*fwhm0), ym = (int)(y0 + 2*fwhm0); y <= ym; y++) {
                 if((y < 0) || (y >= height)) continue;
-                img.setf(x, y, img.getf(x, y) + (float)evalAtPixel(x, y));
+                img.setf(x, y, img.getf(x, y) + (float)evalAtPos(x+0.5, y+0.5));
             }
         }
     }
@@ -53,7 +53,7 @@ public class IntegratedGaussian {
         }
     };
 
-    private double evalAtPixel(double x, double y) {
+    private double evalAtPos(double x, double y) {
         HashMap<Double,Double> dExyValues = dExyTLMap.get();
         //
         double dEx;
