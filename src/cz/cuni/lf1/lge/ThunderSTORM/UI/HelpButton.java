@@ -16,8 +16,8 @@ import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JEditorPane;
-import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
@@ -27,7 +27,7 @@ import javax.swing.event.HyperlinkListener;
 
 public class HelpButton extends JButton {
 
-    private static JFrame textWindow = constructFrame();
+    private static JDialog textWindow = constructFrame();
     private JScrollPane content;
     private JEditorPane editor;
     private static final int WINDOW_WIDTH = 400;
@@ -49,15 +49,17 @@ public class HelpButton extends JButton {
         createTextWindowContent(helpUrl);
     }
 
-    private static JFrame constructFrame() {
-        final JFrame frame = new JFrame();
+    private static JDialog constructFrame() {
+        final JDialog frame = new JDialog();
         frame.addWindowFocusListener(new WindowAdapter() {
             @Override
             public void windowLostFocus(WindowEvent e) {
                 frame.setVisible(false);
             }
         });
-        frame.setType(Window.Type.UTILITY);
+        if(IJ.isJava17()) {
+            frame.setType(Window.Type.UTILITY);
+        }
         frame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE); //for use within modal dialog
         return frame;
     }
