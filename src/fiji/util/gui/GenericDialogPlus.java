@@ -13,6 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Panel;
 import java.awt.TextField;
 import java.awt.Toolkit;
@@ -163,6 +164,26 @@ public class GenericDialogPlus extends GenericDialog implements KeyListener {
                 constraints.weightx = weightx;
                 layout.setConstraints(component, constraints);
                 add(component);
+        }
+        
+        public void addComponent(Component componentLeft, Component componentRight) {
+                GridBagLayout layout = (GridBagLayout)getLayout();
+                Panel panel = new Panel();
+                GridBagConstraints constraints = layout.getConstraints(panel);
+                //
+                constraints.gridx = 0; constraints.gridy = 0;
+                constraints.anchor = GridBagConstraints.EAST;
+                constraints.gridwidth = 1;
+                layout.setConstraints(componentLeft, constraints);
+                panel.add(componentLeft);
+                //
+                constraints.gridx = 1; constraints.gridy = 0;
+                constraints.anchor = GridBagConstraints.WEST;
+                constraints.gridwidth = 1;
+                layout.setConstraints(componentRight, constraints);
+                panel.add(componentRight);
+                //
+                addPanel(panel, GridBagConstraints.EAST, new Insets(5, 0, 0, 0));
         }
         
         /**

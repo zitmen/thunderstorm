@@ -10,6 +10,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.IntegratedGaussian;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
@@ -21,18 +22,19 @@ import ij.measure.Calibration;
 import ij.plugin.PlugIn;
 import ij.process.FloatProcessor;
 import ij.process.ShortProcessor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Vector;
-import javax.swing.JSeparator;
 
 // TODO: macro, defaults, save preferences
 public class DataGeneratorPlugIn implements PlugIn {
     
     private int width, height, frames, processing_frame;
-    private double pixelsize, density;
+    private double density;
     private Drift drift;
-    private Range fwhm_range, energy_range, bkg_range;
-    private double add_poisson_var, mul_gauss_var, mul_gauss_mean;
+    private Range fwhm_range, intensity_range;
+    private double add_poisson_var;
     private FloatProcessor mask;
     
     @Override
@@ -42,25 +44,26 @@ public class DataGeneratorPlugIn implements PlugIn {
         try {
             // Create and show the dialog
             GenericDialogPlus gd = new GenericDialogPlus("ThunderSTORM: Data generator (16bit grayscale image sequence)");
+            gd.addButton("Camera setup...", new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new CameraSetupPlugIn().run("");
+                }
+            });
+            gd.addMessage("Image stack:");
             gd.addNumericField("Width [px]: ", 256, 0);
             gd.addNumericField("Height [px]: ", 256, 0);
-            gd.addNumericField("Frames: ", 1000, 0);
-            gd.addNumericField("Pixel width [um]: ", 0.8, 1);
-            gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
-            gd.addNumericField("Density [mol/um^2]: ", 0.01, 1);
-            gd.addStringField("Emitter FWHM range [px]: ", "1.5:2.5");
-            gd.addStringField("Emitter energy range [digital units]: ", "30000:60000"); // ~ (1000-2000) [photons]
-            gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
-            gd.addStringField("Background intensity range [digital units]: ", "100:120");
-            gd.addMessage("Read-out:");
-            gd.addNumericField("Additive Poisson noise variance [digital units]: ", 10, 0);
-            gd.addMessage("Gain:");
-            gd.addNumericField("Multiplicative Gaussian noise mean [digital units]: ", 1, 0);
-            gd.addNumericField("Multiplicative Gaussian noise variance [digital units]: ", 10, 0);
-            gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
-            gd.addNumericField("Linear drift distance [px]: ", 0, 0);
-            gd.addNumericField("Linear drift angle [deg]: ", 0, 0);
-            gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
+            gd.addNumericField("Frames: ", 100, 0);
+            gd.addMessage("Emitters:");
+            gd.addNumericField("Density [um^-2]: ", 0.1, 1);
+            gd.addStringField("Emitter FWHM range [px]: ", "2.5:3.5");
+            gd.addStringField("Emitter intensity range [photons]: ", "700:900");
+            gd.addMessage("Noise:");
+            gd.addNumericField("Poisson noise variance [photons]: ", 10, 0);
+            gd.addMessage("Linear drift:");
+            gd.addNumericField("Drift distance [px]: ", 0, 0);
+            gd.addNumericField("Drift angle [deg]: ", 0, 0);
+            gd.addMessage("Additional settings:");
             gd.addFileField("Grayscale mask (optional): ", "");
             gd.showDialog();
             
@@ -77,14 +80,10 @@ public class DataGeneratorPlugIn implements PlugIn {
         width = (int)gd.getNextNumber();
         height = (int)gd.getNextNumber();
         frames = (int)gd.getNextNumber();
-        pixelsize = gd.getNextNumber();
         density = gd.getNextNumber();
         fwhm_range = Range.parseFromTo(gd.getNextString());
-        energy_range = Range.parseFromTo(gd.getNextString());
-        bkg_range = Range.parseFromTo(gd.getNextString());
-        add_poisson_var = gd.getNextNumber();
-        mul_gauss_var = gd.getNextNumber();
-        mul_gauss_mean = gd.getNextNumber();
+        intensity_range = Range.parseFromTo(gd.getNextString(), Units.PHOTON, Units.DIGITAL);
+        add_poisson_var = Units.PHOTON.convertTo(Units.DIGITAL, gd.getNextNumber());
         drift = new Drift(gd.getNextNumber(), gd.getNextNumber(), false, frames);
         mask = readMask(gd.getNextString());
     }
@@ -96,7 +95,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         IJGroundTruthTable gt = IJGroundTruthTable.getGroundTruthTable();
         gt.reset();
         ImageStack stack = new ImageStack(width, height);
-        FloatProcessor bkg = new DataGenerator().generateBackground(width, height, drift, bkg_range);
+        //FloatProcessor bkg = new DataGenerator().generateBackground(width, height, drift);
         //
         int cores = Runtime.getRuntime().availableProcessors();
         GeneratorWorker [] generators = new GeneratorWorker[cores];
@@ -109,7 +108,7 @@ public class DataGeneratorPlugIn implements PlugIn {
             } else {
                 f_end = frames - 1;
             }
-            generators[c] = new GeneratorWorker(f_start, f_end, bkg);
+            generators[c] = new GeneratorWorker(f_start, f_end/*, bkg*/);
             threads[c] = new Thread(generators[c]);
             f_start = f_end + 1;
         }
@@ -153,7 +152,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         imp.setStack(stack);
         Calibration cal = new Calibration();
         cal.setUnit("um");
-        cal.pixelWidth = cal.pixelHeight = pixelsize;
+        cal.pixelWidth = cal.pixelHeight = Units.NANOMETER.convertTo(Units.MICROMETER, CameraSetupPlugIn.pixelSize);
         imp.setCalibration(cal);
         imp.show();
         gt.show();
@@ -171,15 +170,15 @@ public class DataGeneratorPlugIn implements PlugIn {
     private class GeneratorWorker implements Runnable {
         
         private int frame_start, frame_end;
-        private FloatProcessor bkg;
+        //private FloatProcessor bkg;
         private DataGenerator datagen;
         private Vector<ShortProcessor> local_stack;
         private Vector<Vector<IntegratedGaussian>> local_table;
         
-        public GeneratorWorker(int frame_start, int frame_end, FloatProcessor bkg) {
+        public GeneratorWorker(int frame_start, int frame_end/*, FloatProcessor bkg*/) {
             this.frame_start = frame_start;
             this.frame_end = frame_end;
-            this.bkg = bkg;
+            //this.bkg = bkg;
             
             datagen = new DataGenerator();
             local_stack = new Vector<ShortProcessor>();
@@ -195,7 +194,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                     return;
                 }
                 processingNewFrame("ThunderSTORM is generating frame %d out of %d...");
-                FloatProcessor add_noise, mul_noise;
+                FloatProcessor add_noise;
                 if(add_poisson_var > 0) {
                     add_noise = datagen.generatePoissonNoise(width, height, add_poisson_var);
                 } else {
@@ -203,15 +202,8 @@ public class DataGeneratorPlugIn implements PlugIn {
                     Arrays.fill(data, 0f);
                     add_noise = new FloatProcessor(width, height, data);
                 }
-                if(mul_gauss_var > 0) {
-                    mul_noise = datagen.generateGaussianNoise(width, height, mul_gauss_mean, mul_gauss_var);
-                } else {
-                    float [] data = new float[width*height];
-                    Arrays.fill(data, (float)mul_gauss_mean);
-                    mul_noise = new FloatProcessor(width, height, data);
-                }
-                Vector<IntegratedGaussian> molecules = datagen.generateMolecules(width, height, mask, pixelsize, density, energy_range, fwhm_range);
-                ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, bkg, add_noise, mul_noise);
+                Vector<IntegratedGaussian> molecules = datagen.generateMolecules(width, height, mask, density, intensity_range, fwhm_range);
+                ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, /*bkg, */add_noise);
                 local_stack.add(slice);
                 local_table.add(molecules);
             }

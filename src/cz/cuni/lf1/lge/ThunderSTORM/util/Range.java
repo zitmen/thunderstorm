@@ -1,7 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+
 public class Range {
-    
+
     public double from;
     public double to;
     public double step;
@@ -40,5 +42,20 @@ public class Range {
         } catch(Exception ex) {
             throw new RuntimeException("Wrong format of range field.");
         }
+    }
+    
+    public static Range parseFromTo(String rangeText, MoleculeDescriptor.Units current, MoleculeDescriptor.Units target) {
+        Range r = Range.parseFromTo(rangeText);
+        r.from = current.convertTo(target, r.from);
+        r.to = current.convertTo(target, r.to);
+        return r;
+    }
+    
+    public static Range parseFromStepTo(String rangeText, MoleculeDescriptor.Units current, MoleculeDescriptor.Units target) {
+        Range r = Range.parseFromStepTo(rangeText);
+        r.from = current.convertTo(target, r.from);
+        r.step = current.convertTo(target, r.step);
+        r.to = current.convertTo(target, r.to);
+        return r;
     }
 }

@@ -1,5 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.datagen;
 
+import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
@@ -11,6 +13,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
 import static ij.process.ImageProcessor.BILINEAR;
 import ij.process.ShortProcessor;
+import java.util.Arrays;
 import java.util.Vector;
 
 public class DataGenerator {
@@ -51,9 +54,9 @@ public class DataGenerator {
         return filter.filterImage(img);
     }
     
-    public Vector<IntegratedGaussian> generateMolecules(int width, int height, FloatProcessor mask, double pixelsize, double density, Range energy, Range fwhm) {
+    public Vector<IntegratedGaussian> generateMolecules(int width, int height, FloatProcessor mask, double density, Range intensity, Range fwhm) {
         Vector<IntegratedGaussian> molist = new Vector<IntegratedGaussian>();
-        double gPpx = sqr(pixelsize) * density, p_px, p, dx, dy;
+        double gPpx = Units.NANOMETER_SQUARED.convertTo(Units.MICROMETER_SQUARED, sqr(CameraSetupPlugIn.pixelSize)) * density, p_px, p, dx, dy;
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 p_px = gPpx * mask.getf(x, y);  // probability that a molecule appears inside the pixel
@@ -61,7 +64,7 @@ public class DataGenerator {
                 while(p <= p_px) {
                     dx = rand.nextUniform(-0.5, +0.5);
                     dy = rand.nextUniform(-0.5, +0.5);
-                    molist.add(new IntegratedGaussian(rand, x+0.5+dx, y+0.5+dy, energy, fwhm));
+                    molist.add(new IntegratedGaussian(rand, x+0.5+dx, y+0.5+dy, intensity, fwhm));
                     p_px -= 1.0;
                 }
             }
@@ -69,14 +72,17 @@ public class DataGenerator {
         return molist;
     }
 
-    public ShortProcessor renderFrame(int width, int height, int frame_no, Drift drift, Vector<IntegratedGaussian> molecules, FloatProcessor bkg, FloatProcessor add_noise, FloatProcessor mul_noise) {
+    public ShortProcessor renderFrame(int width, int height, int frame_no, Drift drift, Vector<IntegratedGaussian> molecules, /*FloatProcessor bkg, */FloatProcessor add_noise) {
         // 1. acquisition (with drift)
         double dx = drift.getDriftX(frame_no), dy = drift.getDriftY(frame_no);
-        FloatProcessor frame = (FloatProcessor)bkg.duplicate();
-        frame.setInterpolationMethod(BILINEAR);
-        frame.translate(dx, dy);
-        frame.setRoi((int)ceil(drift.dist), (int)ceil(drift.dist), width, height);    // see generateBackground
-        frame = (FloatProcessor)frame.crop();
+        //FloatProcessor frame = (FloatProcessor)bkg.duplicate();
+        //frame.setInterpolationMethod(BILINEAR);
+        //frame.translate(dx, dy);
+        //frame.setRoi((int)ceil(drift.dist), (int)ceil(drift.dist), width, height);    // see generateBackground
+        //frame = (FloatProcessor)frame.crop();
+        float [] offset = new float[width*height];
+        Arrays.fill(offset, (float)CameraSetupPlugIn.offset);
+        FloatProcessor frame = new FloatProcessor(width, height, offset);
         for(IntegratedGaussian mol : molecules) {
             mol.moveXY(dx, dy);
             if(mol.isOutOfRoi(frame.getRoi())) {    // does the molecule get out of ROI due to the drift?
@@ -90,10 +96,12 @@ public class DataGenerator {
             molecules.remove(mol);
         }
         deleteLater.clear();
-        // 2. read-out
+        // 2. em gain
+        if(CameraSetupPlugIn.isEmGain) {
+            frame = ImageProcessor.multiply((float)CameraSetupPlugIn.gain, frame);
+        }
+        // 3. read-out
         frame = ImageProcessor.add(frame, add_noise);
-        // 3. gain
-        frame = ImageProcessor.multiply(frame, mul_noise);
         //
         return (ShortProcessor)frame.convertToShort(false);
     }

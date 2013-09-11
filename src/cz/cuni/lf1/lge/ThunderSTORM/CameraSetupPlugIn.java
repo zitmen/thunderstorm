@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 import java.awt.Checkbox;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.HashMap;
 
 public class CameraSetupPlugIn implements PlugIn {
@@ -18,7 +20,10 @@ public class CameraSetupPlugIn implements PlugIn {
     public static double photons2ADU = Defaults.PHOTONS_PER_ADU.toDouble();
     public static double gain = Defaults.GAIN.toDouble();
     public static double offset = Defaults.OFFSET.toDouble();
-    public static boolean isEmCcd = (Defaults.EMCCD.toDouble() != 0.0);
+    public static boolean isEmGain = (Defaults.IS_EM_GAIN.toDouble() != 0.0);
+    
+    private Checkbox emGainCheckBox;
+    private TextField gainTextField;
 
     public static HashMap<String,Object> exportSettings() {
         HashMap<String,Object> settings = new HashMap<String,Object>();
@@ -26,7 +31,7 @@ public class CameraSetupPlugIn implements PlugIn {
         settings.put("photons2ADU", photons2ADU);
         settings.put("gain", gain);
         settings.put("offset", offset);
-        settings.put("isEmCcd", isEmCcd);
+        settings.put("isEmGain", isEmGain);
         return settings;
     }
     
@@ -41,11 +46,20 @@ public class CameraSetupPlugIn implements PlugIn {
         }
         //
         final GenericDialogPlus gd = new GenericDialogPlus("Camera setup");
-        gd.addCheckbox("EM CCD", isEmCcd);
         gd.addNumericField("Pixel size [nm]: ", pixelSize, 1);
         gd.addNumericField("Photoelectrons per A/D count: ", photons2ADU, 1);
-        gd.addNumericField("Gain: ", gain, 1);
         gd.addNumericField("Base level [A/D counts]: ", offset, 1);
+        emGainCheckBox = new Checkbox("EM gain: ", isEmGain);
+        emGainCheckBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                isEmGain = emGainCheckBox.getState();
+                gainTextField.setEnabled(isEmGain);
+            }
+        });
+        gainTextField = new TextField(Double.toString(gain));
+        gainTextField.setEnabled(isEmGain);
+        gd.addComponent(emGainCheckBox, gainTextField);
         gd.addButton("Reset to defaults", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -55,11 +69,10 @@ public class CameraSetupPlugIn implements PlugIn {
         gd.showDialog();
         //
         if(!gd.wasCanceled()) {
-            isEmCcd = gd.getNextBoolean();
             pixelSize = gd.getNextNumber();
             photons2ADU = gd.getNextNumber();
-            gain = gd.getNextNumber();
             offset = gd.getNextNumber();
+            gain = Double.parseDouble(gainTextField.getText());
             //
             savePreferences();
             recordOptions();
@@ -90,12 +103,20 @@ public class CameraSetupPlugIn implements PlugIn {
         return photons / photons2ADU * gain + offset;
     }
     
-    public static double peakEnergyToPhotons(double energy) {
-        return energy * photons2ADU / gain;
+    public static double digitalCountsToPhotons(double intensity) {
+        if(isEmGain) {
+            return intensity * photons2ADU / gain;
+        } else {
+            return intensity * photons2ADU;
+        }
     }
     
-    public static double photonsToPeakEnergy(double photons) {
-        return photons * gain / photons2ADU;
+    public static double photonsToDigitalCounts(double photons) {
+        if(isEmGain) {
+            return photons * gain / photons2ADU;
+        } else {
+            return photons / photons2ADU;
+        }
     }
     
     public static enum Defaults {
@@ -104,7 +125,7 @@ public class CameraSetupPlugIn implements PlugIn {
         PHOTONS_PER_ADU(3.6), // ccd sensitivity
         GAIN(100.0),
         OFFSET(414.0),   // base level (counts)
-        EMCCD(1.0);     // 1 -> EM CCD; 0 -> just a CCD
+        IS_EM_GAIN(0.0);     // 1 -> EM gain; 0 -> no gain
         
         
         private double value;
@@ -124,7 +145,7 @@ public class CameraSetupPlugIn implements PlugIn {
     }
     
     public static void loadPreferences() {
-        CameraSetupPlugIn.isEmCcd = Boolean.parseBoolean(Prefs.get("thunderstorm.camera.emccd", Boolean.toString(Defaults.EMCCD.toDouble() != 0.0)));
+        CameraSetupPlugIn.isEmGain = Boolean.parseBoolean(Prefs.get("thunderstorm.camera.emgain", Boolean.toString(Defaults.IS_EM_GAIN.toDouble() != 0.0)));
         CameraSetupPlugIn.pixelSize = Double.parseDouble(Prefs.get("thunderstorm.camera.pixelsize", Defaults.PIXEL_SIZE.toString()));
         CameraSetupPlugIn.photons2ADU = Double.parseDouble(Prefs.get("thunderstorm.camera.photons2adu", Defaults.PHOTONS_PER_ADU.toString()));
         CameraSetupPlugIn.gain = Double.parseDouble(Prefs.get("thunderstorm.camera.gain", Defaults.GAIN.toString()));
@@ -132,7 +153,7 @@ public class CameraSetupPlugIn implements PlugIn {
     }
     
     public static void savePreferences() {
-        Prefs.set("thunderstorm.camera.emccd", CameraSetupPlugIn.isEmCcd);
+        Prefs.set("thunderstorm.camera.emgain", CameraSetupPlugIn.isEmGain);
         Prefs.set("thunderstorm.camera.pixelsize", CameraSetupPlugIn.pixelSize);
         Prefs.set("thunderstorm.camera.photons2adu", CameraSetupPlugIn.photons2ADU);
         Prefs.set("thunderstorm.camera.gain", CameraSetupPlugIn.gain);
@@ -140,7 +161,7 @@ public class CameraSetupPlugIn implements PlugIn {
     }
 
     public static void recordOptions() {
-        Recorder.recordOption("emccd", Boolean.toString(CameraSetupPlugIn.isEmCcd));
+        Recorder.recordOption("emgain", Boolean.toString(CameraSetupPlugIn.isEmGain));
         Recorder.recordOption("pixelsize", Double.toString(CameraSetupPlugIn.pixelSize));
         Recorder.recordOption("photons2adu", Double.toString(CameraSetupPlugIn.photons2ADU));
         Recorder.recordOption("gain", Double.toString(CameraSetupPlugIn.gain));
@@ -148,7 +169,7 @@ public class CameraSetupPlugIn implements PlugIn {
     }
 
     public static void readMacroOptions(String options) {
-        CameraSetupPlugIn.isEmCcd = Boolean.parseBoolean(Macro.getValue(options, "emccd", Boolean.toString(Defaults.EMCCD.toDouble() != 0.0)));
+        CameraSetupPlugIn.isEmGain = Boolean.parseBoolean(Macro.getValue(options, "emgain", Boolean.toString(Defaults.IS_EM_GAIN.toDouble() != 0.0)));
         CameraSetupPlugIn.pixelSize = Double.parseDouble(Macro.getValue(options, "pixelsize", Defaults.PIXEL_SIZE.toString()));
         CameraSetupPlugIn.photons2ADU = Double.parseDouble(Macro.getValue(options, "photons2adu", Defaults.PHOTONS_PER_ADU.toString()));
         CameraSetupPlugIn.gain = Double.parseDouble(Macro.getValue(options, "gain", Defaults.GAIN.toString()));
@@ -156,13 +177,13 @@ public class CameraSetupPlugIn implements PlugIn {
     }
 
     public void resetToDefaults(GenericDialogPlus gd) {
-        CameraSetupPlugIn.isEmCcd = (Defaults.EMCCD.toDouble() != 0.0);
+        CameraSetupPlugIn.isEmGain = (Defaults.IS_EM_GAIN.toDouble() != 0.0);
         CameraSetupPlugIn.pixelSize = Defaults.PIXEL_SIZE.toDouble();
         CameraSetupPlugIn.photons2ADU = Defaults.PHOTONS_PER_ADU.toDouble();
         CameraSetupPlugIn.gain = Defaults.GAIN.toDouble();
         CameraSetupPlugIn.offset = Defaults.OFFSET.toDouble();
         //
-        ((Checkbox)gd.getCheckboxes().elementAt(0)).setState(Defaults.EMCCD.toDouble() != 0.0);
+        ((Checkbox)gd.getCheckboxes().elementAt(0)).setState(Defaults.IS_EM_GAIN.toDouble() != 0.0);
         Vector<TextField> fields = (Vector<TextField>)gd.getNumericFields();
         fields.elementAt(0).setText(Defaults.PIXEL_SIZE.toString());
         fields.elementAt(1).setText(Defaults.PHOTONS_PER_ADU.toString());

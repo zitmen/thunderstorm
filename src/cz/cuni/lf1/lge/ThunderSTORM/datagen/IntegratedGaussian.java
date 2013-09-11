@@ -14,10 +14,10 @@ public class IntegratedGaussian {
     public static final double FWHM_factor = 2*sqrt(2*log(2));
     public double x0, y0, I0, sig0, fwhm0;
 
-    public IntegratedGaussian(RandomDataGenerator rand, double x, double y, Range energy, Range fwhm) {
+    public IntegratedGaussian(RandomDataGenerator rand, double x, double y, Range intensity, Range fwhm) {
         x0 = x;
         y0 = y;
-        I0 = rand.nextUniform(energy.from, energy.to);
+        I0 = rand.nextUniform(intensity.from, intensity.to);
         fwhm0 = rand.nextUniform(fwhm.from, fwhm.to);
         sig0 = fwhm0 / FWHM_factor;
         //

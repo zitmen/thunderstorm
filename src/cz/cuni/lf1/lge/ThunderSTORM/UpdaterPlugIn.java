@@ -4,7 +4,6 @@ import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.Menus;
 import ij.Prefs;
-import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
 import java.awt.Color;
 import java.io.BufferedReader;
