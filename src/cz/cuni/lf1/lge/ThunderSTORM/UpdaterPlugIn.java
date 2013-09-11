@@ -1,10 +1,12 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.Menus;
 import ij.Prefs;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
@@ -15,11 +17,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Vector;
+import javax.swing.JLabel;
 
-/**
- * This sub-plugin was developed based on the code of Updater_Plugin_.jar
- * available in ImageJ's plugin repository.
- */
 public class UpdaterPlugIn implements PlugIn {
 
     @Override
@@ -66,18 +65,22 @@ public class UpdaterPlugIn implements PlugIn {
             }
         }
         //
-        GenericDialog gd = new GenericDialog("ThunderSTORM Updater");
+        GenericDialogPlus gd = new GenericDialogPlus("ThunderSTORM Updater");
         if(newerAvailable == null) {
-            gd.addMessage("You are running the latest version of ThunderSTORM (" + version() + ").");
+            JLabel label = new JLabel("ThunderSTORM is up to date!");
+            label.setForeground(new Color(0, 128, 0));
+            gd.addComponent(label);
         } else {
-            gd.addMessage("There is a new version of ThunderSTORM available!");
+            JLabel label = new JLabel("New version of ThunderSTORM is available!");
+            label.setForeground(new Color(128, 0, 0));
+            gd.addComponent(label);
         }
-        gd.addChoice("Upgrade To:", versions, newerAvailable);
+        gd.addChoice("Available versions:", versions, newerAvailable);
         String msg =
                 "You are currently running version " + version() + ".\n"
                 + " \n"
-                + "If you click \"OK\", ImageJ will reload ThunderSTORM.\n"
-                + "You may have to need administrator rights.\n";
+                + "If you click \"OK\", ImageJ will download the selected\n"
+                + "version and reload the ThunderSTORM.\n";
         gd.addMessage(msg);
         gd.showDialog();
         if (gd.wasCanceled()) {
@@ -90,6 +93,7 @@ public class UpdaterPlugIn implements PlugIn {
     byte[] getJar(String address) {
         byte[] data;
         try {
+            IJ.showStatus("Downloading Thunder_STORM.jar ...");
             URL url = new URL(address);
             URLConnection uc = url.openConnection();
             int len = uc.getContentLength();
@@ -118,10 +122,13 @@ public class UpdaterPlugIn implements PlugIn {
 
     void saveJar(File f, byte[] data) {
         try {
+            IJ.showStatus("Installing Thunder_STORM.jar ...");
             FileOutputStream out = new FileOutputStream(f);
             out.write(data, 0, data.length);
             out.close();
+            IJ.showStatus("Done.");
         } catch (IOException e) {
+            IJ.showStatus("Update failed.");
             IJ.handleException(e);
         }
     }
