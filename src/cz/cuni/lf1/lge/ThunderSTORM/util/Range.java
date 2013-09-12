@@ -44,18 +44,21 @@ public class Range {
         }
     }
     
+    public void convert(MoleculeDescriptor.Units current, MoleculeDescriptor.Units target) {
+        from = current.convertTo(target, from);
+        step = current.convertTo(target, step);
+        to = current.convertTo(target, to);
+    }
+    
     public static Range parseFromTo(String rangeText, MoleculeDescriptor.Units current, MoleculeDescriptor.Units target) {
         Range r = Range.parseFromTo(rangeText);
-        r.from = current.convertTo(target, r.from);
-        r.to = current.convertTo(target, r.to);
+        r.convert(current, target);
         return r;
     }
     
     public static Range parseFromStepTo(String rangeText, MoleculeDescriptor.Units current, MoleculeDescriptor.Units target) {
         Range r = Range.parseFromStepTo(rangeText);
-        r.from = current.convertTo(target, r.from);
-        r.step = current.convertTo(target, r.step);
-        r.to = current.convertTo(target, r.to);
+        r.convert(current, target);
         return r;
     }
     

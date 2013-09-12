@@ -112,8 +112,8 @@ public class DataGeneratorPlugIn implements PlugIn {
         frames = (int)gd.getNextNumber();
         density = gd.getNextNumber();
         fwhm_range = Range.parseFromTo(gd.getNextString());
-        intensity_range = Range.parseFromTo(gd.getNextString(), Units.PHOTON, Units.DIGITAL);
-        add_poisson_var = Units.PHOTON.convertTo(Units.DIGITAL, gd.getNextNumber());
+        intensity_range = Range.parseFromTo(gd.getNextString());
+        add_poisson_var = gd.getNextNumber();
         drift = new Drift(gd.getNextNumber(), gd.getNextNumber(), false, frames);
         maskPath = gd.getNextString();
         mask = readMask(maskPath);
@@ -121,7 +121,10 @@ public class DataGeneratorPlugIn implements PlugIn {
     
     private void runGenerator() throws InterruptedException {
         IJ.showStatus("ThunderSTORM is generating your image sequence...");
-        IJ.showProgress(0.0);            
+        IJ.showProgress(0.0);       
+        // convert units
+        intensity_range.convert(Units.PHOTON, Units.DIGITAL);
+        add_poisson_var = Units.PHOTON.convertTo(Units.DIGITAL, add_poisson_var);
         //
         IJGroundTruthTable gt = IJGroundTruthTable.getGroundTruthTable();
         gt.reset();
@@ -338,9 +341,9 @@ public class DataGeneratorPlugIn implements PlugIn {
         height = Defaults.HEIGHT;
         frames = Defaults.FRAMES;
         density = Defaults.DENSITY;
-        add_poisson_var = Units.PHOTON.convertTo(Units.DIGITAL, Defaults.ADD_POISSON_VAR);
-        fwhm_range = Range.parseFromTo(Defaults.FWHM_RANGE, Units.PHOTON, Units.DIGITAL);
-        intensity_range = Range.parseFromTo(Defaults.INTENSITY_RANGE, Units.PHOTON, Units.DIGITAL);
+        add_poisson_var = Defaults.ADD_POISSON_VAR;
+        fwhm_range = Range.parseFromTo(Defaults.FWHM_RANGE);
+        intensity_range = Range.parseFromTo(Defaults.INTENSITY_RANGE);
         drift = new Drift(Defaults.DRIFT_DISTANCE, Defaults.DRIFT_ANGLE, false, frames);
         maskPath = Defaults.MASK_PATH;
         mask = readMask(maskPath);
