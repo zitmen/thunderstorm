@@ -366,9 +366,9 @@ public class DataGeneratorPlugIn implements PlugIn {
     static class Defaults {
         public static final int WIDTH = 256;
         public static final int HEIGHT = 256;
-        public static final int FRAMES = 100;
+        public static final int FRAMES = 1000;
         public static final double DENSITY = 0.1;
-        public static final double ADD_POISSON_VAR = 10;
+        public static final double ADD_POISSON_VAR = 30;
         public static final double DRIFT_DISTANCE = 0;
         public static final double DRIFT_ANGLE = 0;
         public static final String FWHM_RANGE = "2.5:3.5";

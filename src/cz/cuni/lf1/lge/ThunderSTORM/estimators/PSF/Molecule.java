@@ -236,6 +236,14 @@ public final class Molecule implements Comparable<Molecule> {
         return (sqr(mol.getX(units) - getX(units)) + sqr(mol.getY(units) - getY(units)));
     }
     
+    public double dist2z(Molecule mol) {
+        return sqr(mol.getZ() - getZ());
+    }
+    
+    public double dist2z(Molecule mol, Units units) {
+        return sqr(mol.getZ(units) - getZ(units));
+    }
+    
     public double dist2xyz(Molecule mol) {
         return (sqr(mol.getX() - getX()) + sqr(mol.getY() - getY()));
     }

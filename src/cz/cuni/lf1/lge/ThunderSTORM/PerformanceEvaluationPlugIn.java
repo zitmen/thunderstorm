@@ -142,7 +142,9 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         double precision = tp / (tp + fp);
         double recall = tp / (tp + fn);
         double F1 = 2 * precision * recall / (precision + recall);
-        double RMSE = calcRootMeanSquareError(TP, distUnits);
+        double RMSExy = calcRMSExy(TP, distUnits);
+        double RMSEz = calcRMSEz(TP, distUnits);
+        double RMSExyz = calcRMSExyz(TP, distUnits);
         //
         ResultsTable rt = ResultsTable.getResultsTable();
         rt.incrementCounter();
@@ -154,7 +156,9 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         rt.addValue("precision", precision);
         rt.addValue("recall", recall);
         rt.addValue("F1-measure", F1);
-        rt.addValue("Root-Mean Squared Distance [" + distUnits.getLabel() + "]", RMSE);
+        rt.addValue("RMSE lateral [" + distUnits.getLabel() + "]", RMSExy);
+        rt.addValue("RMSE axial [" + distUnits.getLabel() + "]", RMSEz);
+        rt.addValue("RMSE total [" + distUnits.getLabel() + "]", RMSExyz);
         rt.show("Results");
         //
         IJResultsTable.getResultsTable().fireStructureChanged();
@@ -164,10 +168,26 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         IJ.showStatus("");
     }
 
-    private double calcRootMeanSquareError(Vector<Pair<Molecule, Molecule>> pairs, Units units) {
+    private double calcRMSExyz(Vector<Pair<Molecule, Molecule>> pairs, Units units) {
         double rmse = 0.0;
         for(Pair<Molecule,Molecule> pair : pairs) {
             rmse += pair.first.dist2xyz(pair.second, units);
+        }
+        return sqrt(rmse / (double)pairs.size());
+    }
+    
+    private double calcRMSExy(Vector<Pair<Molecule, Molecule>> pairs, Units units) {
+        double rmse = 0.0;
+        for(Pair<Molecule,Molecule> pair : pairs) {
+            rmse += pair.first.dist2xy(pair.second, units);
+        }
+        return sqrt(rmse / (double)pairs.size());
+    }
+    
+    private double calcRMSEz(Vector<Pair<Molecule, Molecule>> pairs, Units units) {
+        double rmse = 0.0;
+        for(Pair<Molecule,Molecule> pair : pairs) {
+            rmse += pair.first.dist2z(pair.second, units);
         }
         return sqrt(rmse / (double)pairs.size());
     }
