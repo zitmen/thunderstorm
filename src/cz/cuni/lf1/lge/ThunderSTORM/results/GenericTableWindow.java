@@ -26,8 +26,12 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -301,6 +305,9 @@ class GenericTableWindow {
         @Override
         public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
             final Component c = super.prepareRenderer(renderer, row, column);
+            NumberFormat formatter = NumberFormat.getInstance(Locale.ENGLISH);
+            ((DecimalFormat)formatter).setGroupingUsed(false);
+            ((JLabel)c).setText(formatter.format(getValueAt(row, column)));
             if(!isCellSelected(row, column)) {
                 c.setBackground(null);
                 Molecule mol = ((GenericTableModel)super.getModel()).getRow(convertRowIndexToModel(row));
