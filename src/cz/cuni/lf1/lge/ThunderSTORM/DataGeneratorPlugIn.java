@@ -123,6 +123,10 @@ public class DataGeneratorPlugIn implements PlugIn {
         IJ.showStatus("ThunderSTORM is generating your image sequence...");
         IJ.showProgress(0.0);       
         // convert units
+        if(CameraSetupPlugIn.isEmGain) {
+            intensity_range.scale(1.0 / CameraSetupPlugIn.gain);
+            add_poisson_var /= CameraSetupPlugIn.gain;
+        }
         intensity_range.convert(Units.PHOTON, Units.DIGITAL);
         add_poisson_var = Units.PHOTON.convertTo(Units.DIGITAL, add_poisson_var);
         //

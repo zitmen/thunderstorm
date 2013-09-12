@@ -11,7 +11,6 @@ import ij.process.FloatProcessor;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
-import static ij.process.ImageProcessor.BILINEAR;
 import ij.process.ShortProcessor;
 import java.util.Arrays;
 import java.util.Vector;
@@ -80,9 +79,9 @@ public class DataGenerator {
         //frame.translate(dx, dy);
         //frame.setRoi((int)ceil(drift.dist), (int)ceil(drift.dist), width, height);    // see generateBackground
         //frame = (FloatProcessor)frame.crop();
-        float [] offset = new float[width*height];
-        Arrays.fill(offset, (float)CameraSetupPlugIn.offset);
-        FloatProcessor frame = new FloatProcessor(width, height, offset);
+        float [] zeros = new float[width*height];
+        Arrays.fill(zeros, 0.0f);
+        FloatProcessor frame = new FloatProcessor(width, height, zeros);
         for(IntegratedGaussian mol : molecules) {
             mol.moveXY(dx, dy);
             if(mol.isOutOfRoi(frame.getRoi())) {    // does the molecule get out of ROI due to the drift?
@@ -96,12 +95,17 @@ public class DataGenerator {
             molecules.remove(mol);
         }
         deleteLater.clear();
+        // Additive Poisson-distributed noise...we stopped distinguishing read-out
+        // and sample noise, because it might be confusing and it would not change
+        // the results of simulation anyway.
+        frame = ImageProcessor.add(frame, add_noise);
         // 2. em gain
         if(CameraSetupPlugIn.isEmGain) {
             frame = ImageProcessor.multiply((float)CameraSetupPlugIn.gain, frame);
         }
-        // 3. read-out
-        frame = ImageProcessor.add(frame, add_noise);
+        // 3. read-out & camera base-level
+        frame = ImageProcessor.add((float)CameraSetupPlugIn.offset, frame);
+        //frame = ImageProcessor.add(frame, add_noise);
         //
         return (ShortProcessor)frame.convertToShort(false);
     }

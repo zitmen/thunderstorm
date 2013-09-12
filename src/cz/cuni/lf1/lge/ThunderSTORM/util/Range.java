@@ -44,6 +44,12 @@ public class Range {
         }
     }
     
+    public void scale(double factor) {
+        from *= factor;
+        step *= factor;
+        to *= factor;
+    }
+    
     public void convert(MoleculeDescriptor.Units current, MoleculeDescriptor.Units target) {
         from = current.convertTo(target, from);
         step = current.convertTo(target, step);
