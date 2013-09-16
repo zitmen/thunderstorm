@@ -364,7 +364,7 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
             String paramName;
             double paramValue;
             Molecule mol;
-            if(CameraSetupPlugIn.isEmCcd) {
+            if(CameraSetupPlugIn.isEmGain) {
                 if(columnExists(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
                     deleteColumn(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
                 }

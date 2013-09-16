@@ -413,7 +413,7 @@ public class MoleculeDescriptor implements Cloneable {
                 
                 case DIGITAL:
                     switch(target) {
-                        case PHOTON: return CameraSetupPlugIn.peakEnergyToPhotons(value);
+                        case PHOTON: return CameraSetupPlugIn.digitalCountsToPhotons(value);
                         case DIGITAL: return value;
                         case UNITLESS: return value;
                     }
@@ -422,7 +422,7 @@ public class MoleculeDescriptor implements Cloneable {
                 case PHOTON:
                     switch(target) {
                         case PHOTON: return value;
-                        case DIGITAL: return CameraSetupPlugIn.photonsToPeakEnergy(value);
+                        case DIGITAL: return CameraSetupPlugIn.photonsToDigitalCounts(value);
                         case UNITLESS: return value;
                     }
                     break;
