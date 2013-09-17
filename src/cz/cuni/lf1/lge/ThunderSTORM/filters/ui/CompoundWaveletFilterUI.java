@@ -5,6 +5,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import ij.Macro;
 import ij.Prefs;
 import ij.plugin.frame.Recorder;
+import java.awt.Component;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -32,8 +34,11 @@ public class CompoundWaveletFilterUI extends IFilterUI {
         thirdPlaneRadio.setSelected(Prefs.get("thunderstorm.filters.wave.thirdplane", DEFAULT_THIRD_PLANE));
         //
         JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.add(secondPlaneRadio);
         panel.add(thirdPlaneRadio);
+        secondPlaneRadio.setAlignmentX(Component.CENTER_ALIGNMENT);
+        thirdPlaneRadio.setAlignmentX(Component.CENTER_ALIGNMENT);
         return panel;
     }
 
