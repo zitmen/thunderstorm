@@ -44,7 +44,9 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
     public CardsPanel(List<T> items, int index_default) {
         this.items = items;
         createCardsPanel();
-        cb.setSelectedIndex(index_default);
+        if(index_default < cb.getItemCount()) {
+            cb.setSelectedIndex(index_default);
+        }
     }
 
     /**
@@ -88,13 +90,13 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
         helpButtonsCardsPanel = new JPanel(new CardLayout());
         for(int i = 0; i < items.size(); i++) {
             cardsPanel.add(cards[i], comboBoxItems[i]);
-            
+
             JPanel singleButtonContainer = new JPanel(new BorderLayout());
             if(Help.existsHelpForClass(items.get(i).getClass())) {
                 singleButtonContainer.add(Help.createHelpButton(items.get(i).getClass()));
             }
             helpButtonsCardsPanel.add(singleButtonContainer, comboBoxItems[i]);
-            
+
         }
 
         return cardsPanel;

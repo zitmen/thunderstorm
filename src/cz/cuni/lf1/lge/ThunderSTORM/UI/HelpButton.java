@@ -37,9 +37,6 @@ public class HelpButton extends JButton {
     public HelpButton(URL helpUrl) {
         //TODO icon licence: CC 3.0, attribution required: http://p.yusukekamiyamane.com/icons/attribution/
         super(new ImageIcon(IJ.getClassLoader().getResource("resources/help/images/question-button-icon.png")));
-        if(helpUrl == null) {
-            throw new NullPointerException("Help file not specified.");
-        }
         setBorder(BorderFactory.createEmptyBorder());
         setBorderPainted(false);
         setIconTextGap(0);
@@ -70,7 +67,11 @@ public class HelpButton extends JButton {
             Border border = BorderFactory.createEtchedBorder(EtchedBorder.RAISED);
             editor.setBorder(border);
             editor.setEditable(false);
-            editor.setPage(url);
+            if(url != null) {
+                editor.setPage(url);
+            } else {
+                editor.setText("Could not load help file");
+            }
             editor.addHyperlinkListener(new HyperlinkListener() {
                 @Override
                 public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -103,7 +104,6 @@ public class HelpButton extends JButton {
     private void showInTextWindow(JScrollPane content) throws IOException {
         textWindow.setVisible(false);
         textWindow.getContentPane().removeAll();
-        editor.setPage(url);
         textWindow.getContentPane().add(content);
 
         Window ancestor = SwingUtilities.getWindowAncestor(this);
