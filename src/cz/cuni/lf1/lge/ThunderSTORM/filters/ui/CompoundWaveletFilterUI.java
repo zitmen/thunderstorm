@@ -5,14 +5,15 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import ij.Macro;
 import ij.Prefs;
 import ij.plugin.frame.Recorder;
-import javax.swing.JCheckBox;
+import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 public class CompoundWaveletFilterUI extends IFilterUI {
 
     private final String name = "Wavelet filter";
     private boolean third_plane = false;
-    private transient JCheckBox thirdCheckBox;
+    private transient JRadioButton secondPlaneRadio, thirdPlaneRadio;
     private transient static final boolean DEFAULT_THIRD_PLANE = false;
 
     @Override
@@ -22,17 +23,23 @@ public class CompoundWaveletFilterUI extends IFilterUI {
 
     @Override
     public JPanel getOptionsPanel() {
-        thirdCheckBox = new JCheckBox("use third plane");
-        thirdCheckBox.setSelected(Prefs.get("thunderstorm.filters.wave.thirdplane", DEFAULT_THIRD_PLANE));
+        secondPlaneRadio = new JRadioButton("use 2nd wavelet plane");
+        thirdPlaneRadio = new JRadioButton("use 3rd wavelet plane");
+        ButtonGroup group = new ButtonGroup();
+        group.add(secondPlaneRadio);
+        group.add(thirdPlaneRadio);
+        secondPlaneRadio.setSelected(!Prefs.get("thunderstorm.filters.wave.thirdplane", DEFAULT_THIRD_PLANE));
+        thirdPlaneRadio.setSelected(Prefs.get("thunderstorm.filters.wave.thirdplane", DEFAULT_THIRD_PLANE));
         //
         JPanel panel = new JPanel();
-        panel.add(thirdCheckBox);
+        panel.add(secondPlaneRadio);
+        panel.add(thirdPlaneRadio);
         return panel;
     }
 
     @Override
     public void readParameters() {
-        third_plane = thirdCheckBox.isSelected();
+        third_plane = thirdPlaneRadio.isSelected();
 
         Prefs.set("thunderstorm.filters.wave.thirdplane", third_plane);
     }
@@ -56,6 +63,7 @@ public class CompoundWaveletFilterUI extends IFilterUI {
 
     @Override
     public void resetToDefaults() {
-        thirdCheckBox.setSelected(DEFAULT_THIRD_PLANE);
+        secondPlaneRadio.setSelected(!DEFAULT_THIRD_PLANE);
+        thirdPlaneRadio.setSelected(DEFAULT_THIRD_PLANE);
     }
 }
