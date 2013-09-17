@@ -24,7 +24,6 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
 
     @Override
     public double getValue(double[] params, double x, double y) {
-        params = transformParameters(params);
         //integration by mathematica 9
         //Integrate[ b^2 + J^2/(2*Pi*s^2) *E^(-1/2*((x - x0)^2/(s^2) + (y - y0)^2/(s^2))), {x, ax - 1/2, ax + 1/2}, {y, ay - 1/2, ay + 1/2}]
         double sqrt2s = sqrt(2) * params[Params.SIGMA];

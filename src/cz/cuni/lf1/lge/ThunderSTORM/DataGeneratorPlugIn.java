@@ -1,17 +1,14 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_INTENSITY;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_FRAME;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
-import cz.cuni.lf1.lge.ThunderSTORM.datagen.IntegratedGaussian;
+import cz.cuni.lf1.lge.ThunderSTORM.datagen.EmitterModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
@@ -38,7 +35,7 @@ public class DataGeneratorPlugIn implements PlugIn {
     private double density;
     private Drift drift;
     private Range fwhm_range, intensity_range;
-    private double add_poisson_var;
+    private double add_poisson_var, add_poisson_std_photons;
     private String maskPath;
     private FloatProcessor mask;
     
@@ -127,6 +124,7 @@ public class DataGeneratorPlugIn implements PlugIn {
             intensity_range.scale(1.0 / CameraSetupPlugIn.gain);
             add_poisson_var /= CameraSetupPlugIn.gain;
         }
+        add_poisson_std_photons = sqrt(add_poisson_var);
         intensity_range.convert(Units.PHOTON, Units.DIGITAL);
         add_poisson_var = Units.PHOTON.convertTo(Units.DIGITAL, add_poisson_var);
         //
@@ -211,7 +209,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         //private FloatProcessor bkg;
         private DataGenerator datagen;
         private Vector<ShortProcessor> local_stack;
-        private Vector<Vector<IntegratedGaussian>> local_table;
+        private Vector<Vector<EmitterModel>> local_table;
         
         public GeneratorWorker(int frame_start, int frame_end/*, FloatProcessor bkg*/) {
             this.frame_start = frame_start;
@@ -220,7 +218,7 @@ public class DataGeneratorPlugIn implements PlugIn {
             
             datagen = new DataGenerator();
             local_stack = new Vector<ShortProcessor>();
-            local_table = new Vector<Vector<IntegratedGaussian>>();
+            local_table = new Vector<Vector<EmitterModel>>();
         }
         
         @Override
@@ -240,7 +238,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                     Arrays.fill(data, 0f);
                     add_noise = new FloatProcessor(width, height, data);
                 }
-                Vector<IntegratedGaussian> molecules = datagen.generateMolecules(width, height, mask, density, intensity_range, fwhm_range);
+                Vector<EmitterModel> molecules = datagen.generateMolecules(width, height, mask, density, intensity_range, fwhm_range);
                 ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, /*bkg, */add_noise);
                 local_stack.add(slice);
                 local_table.add(molecules);
@@ -248,12 +246,15 @@ public class DataGeneratorPlugIn implements PlugIn {
         }
 
         private void fillResults(ImageStack stack, IJGroundTruthTable gt) {
-            gt.setDescriptor(new MoleculeDescriptor(new String[] { LABEL_FRAME, LABEL_X, LABEL_Y, LABEL_INTENSITY, LABEL_SIGMA }));
+            double bkgstd = Units.PHOTON.convertTo(Units.getDefaultUnit(PSFModel.Params.LABEL_BACKGROUND), add_poisson_std_photons);
             for(int f = frame_start, i = 0; f <= frame_end; f++, i++) {
                 processingNewFrame("ThunderSTORM is building the image stack - frame %d out of %d...");
                 stack.addSlice(local_stack.elementAt(i));
-                for(IntegratedGaussian psf : local_table.elementAt(i)) {
-                    gt.addRow(new double[] { f+1, psf.x0, psf.y0, psf.I0, psf.sig0 });
+                for(EmitterModel psf : local_table.elementAt(i)) {
+                    psf.molecule.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double)f);
+                    psf.molecule.setParam(PSFModel.Params.LABEL_OFFSET, CameraSetupPlugIn.offset);
+                    psf.molecule.setParam(PSFModel.Params.LABEL_BACKGROUND, bkgstd);
+                    gt.addRow(psf.molecule);
                 }
             }
             gt.insertIdColumn();
@@ -270,10 +271,11 @@ public class DataGeneratorPlugIn implements PlugIn {
                 }
                 // ensure that the maximum value cannot be more than 1.0 !
                 FloatProcessor fmask = (FloatProcessor)imp.getProcessor().convertToFloat();
+                float min = (float)fmask.getMin();
                 float max = (float)fmask.getMax();
                 for(int x = 0; x < width; x++) {
                     for(int y = 0; y < height; y++) {
-                        fmask.setf(x, y, fmask.getf(x, y) / max);
+                        fmask.setf(x, y, (fmask.getf(x, y) - min) / (max - min));
                     }
                 }
                 return fmask;
