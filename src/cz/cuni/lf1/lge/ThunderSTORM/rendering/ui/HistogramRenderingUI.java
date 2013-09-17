@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 
 public class HistogramRenderingUI extends AbstractRenderingUI {
 
+    private final String name = "Histograms";
     JTextField avgTextField;
     private JTextField dxTextField;
     private JTextField dzTextField;
@@ -39,7 +40,7 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
 
     @Override
     public String getName() {
-        return "Histogram Renderer";
+        return name;
     }
 
     @Override
@@ -141,9 +142,9 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
     @Override
     public IncrementalRenderingMethod getMethod() {
         if(threeD) {
-            return new HistogramRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1 / magnification).average(avg).defaultDX(dx/CameraSetupPlugIn.pixelSize).forceDefaultDX(forceDx).defaultDZ(zStep).zRange(zFrom, zTo, zStep).build();
+            return new HistogramRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1 / magnification).average(avg).defaultDX(dx / CameraSetupPlugIn.pixelSize).forceDefaultDX(forceDx).defaultDZ(zStep).zRange(zFrom, zTo, zStep).build();
         } else {
-            return new HistogramRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1 / magnification).average(avg).defaultDX(dx/CameraSetupPlugIn.pixelSize).forceDefaultDX(forceDx).defaultDZ(zStep).build();
+            return new HistogramRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1 / magnification).average(avg).defaultDX(dx / CameraSetupPlugIn.pixelSize).forceDefaultDX(forceDx).defaultDZ(zStep).build();
         }
     }
 }

@@ -251,7 +251,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                 processingNewFrame("ThunderSTORM is building the image stack - frame %d out of %d...");
                 stack.addSlice(local_stack.elementAt(i));
                 for(EmitterModel psf : local_table.elementAt(i)) {
-                    psf.molecule.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double)f);
+                    psf.molecule.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double)(f+1));
                     psf.molecule.setParam(PSFModel.Params.LABEL_OFFSET, CameraSetupPlugIn.offset);
                     psf.molecule.setParam(PSFModel.Params.LABEL_BACKGROUND, bkgstd);
                     gt.addRow(psf.molecule);

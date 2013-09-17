@@ -7,7 +7,7 @@ import javax.swing.JPanel;
 
 public class CenterOfMassEstimatorUI extends IEstimatorUI {
 
-    private final String name = "Center of Gravity";
+    private final String name = "Centroid of local neighborhood";
     private final transient int fitradius = 1;  // square 3x3
     
     @Override

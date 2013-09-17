@@ -5,7 +5,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Morphology;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.Macro;
 import ij.Prefs;
@@ -23,7 +22,7 @@ import javax.swing.JTextField;
  */
 public final class NonMaxSuppressionDetector extends  IDetectorUI implements IDetector {
 
-    private final String name = "Non-maxima suppression";
+    private final String name = "Non-maximum suppression";
     private int radius;
     private String threshold;
     private transient float thresholdValue;

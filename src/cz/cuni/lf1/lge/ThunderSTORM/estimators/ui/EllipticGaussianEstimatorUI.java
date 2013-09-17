@@ -32,7 +32,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
     transient JTextField calibrationFileTextField;
 
     public EllipticGaussianEstimatorUI() {
-        this.name = "3D Cylindrical lens estimator";
+        this.name = "PSF: Elliptical Gaussian (3D astigmatism)";
     }
     
     @Override

@@ -2,10 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.MFA_LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.Macro;
@@ -19,7 +17,7 @@ import javax.swing.JTextField;
 
 public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
 
-    protected String name = "2D Gaussian estimator";
+    protected String name = "PSF: Gaussian";
     protected int fitradius;
     protected String method;
     protected double sigma;

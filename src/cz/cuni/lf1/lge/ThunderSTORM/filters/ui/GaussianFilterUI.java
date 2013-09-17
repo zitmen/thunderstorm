@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 
 public class GaussianFilterUI extends IFilterUI {
 
-    private final String name = "Gaussian blur";
+    private final String name = "Gaussian filter";
     private int size;
     private double sigma;
     private transient JTextField sizeTextField, sigmaTextField;

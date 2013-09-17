@@ -279,6 +279,8 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
                 Vector<Molecule> det = detections.get(frame);
                 Vector<Molecule> gt = groundTruth.get(frame);
                 //
+                if(det == null || gt == null) continue;
+                //
                 KdTree<Molecule> tree = new KdTree<Molecule>(3);
                 for(Molecule mol : gt) {
                     tree.addPoint(new double[]{mol.getX(distUnits), mol.getY(distUnits), mol.getZ(distUnits)}, mol);

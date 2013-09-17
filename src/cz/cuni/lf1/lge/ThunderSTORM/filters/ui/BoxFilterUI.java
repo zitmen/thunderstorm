@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 
 public class BoxFilterUI extends IFilterUI {
 
-    private final String name = "Box (mean) filter";
+    private final String name = "Average filter";
     private int size;
     private transient JTextField sizeTextField;
     private transient static final int DEFAULT_SIZE = 3;

@@ -11,7 +11,7 @@ public class IntSymmetricGaussianEstimatorUI extends SymmetricGaussianEstimatorU
 
     public IntSymmetricGaussianEstimatorUI() {
         super();
-        name = "Integrated 2D Gaussian";
+        name = "PSF: Integrated Gaussian";
     }
 
     @Override

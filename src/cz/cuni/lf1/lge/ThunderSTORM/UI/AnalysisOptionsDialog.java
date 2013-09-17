@@ -141,13 +141,13 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 
         pane.add(cameraSetup, componentConstraints);
         pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-        pane.add(filtersPanel.getPanel("Filters: "), componentConstraints);
+        pane.add(filtersPanel.getPanel("Image denoising: "), componentConstraints);
         pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-        pane.add(detectorsPanel.getPanel("Detectors: "), componentConstraints);
+        pane.add(detectorsPanel.getPanel("Rough detection of molecules: "), componentConstraints);
         pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-        pane.add(estimatorsPanel.getPanel("Estimators: "), componentConstraints);
+        pane.add(estimatorsPanel.getPanel("Sub-pixel localization of molecules: "), componentConstraints);
         pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-        pane.add(renderersPanel.getPanel("Renderers: "), componentConstraints);
+        pane.add(renderersPanel.getPanel("Rendering of the results: "), componentConstraints);
         pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
         //
         defaults.addActionListener(this);

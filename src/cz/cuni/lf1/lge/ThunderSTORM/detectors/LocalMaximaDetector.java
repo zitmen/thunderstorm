@@ -23,7 +23,7 @@ import javax.swing.JTextField;
  */
 public class LocalMaximaDetector extends IDetectorUI implements IDetector {
 
-    private final String name = "Search for local maxima";
+    private final String name = "Local maximum";
     private int connectivity;
     private String threshold;
     private transient float thresholdValue;

@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 
 public class RadialSymmetryEstimatorUI extends IEstimatorUI {
 
-    private final String name = "Radial symmetry estimator";
+    private final String name = "Radial symmetry";
     protected int fitradius;
     protected transient JTextField fitregsizeTextField;
     private transient static final int DEFAULT_FITRAD = 5;
