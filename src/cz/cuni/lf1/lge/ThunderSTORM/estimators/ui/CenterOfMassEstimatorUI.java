@@ -3,13 +3,22 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.CentroidFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import ij.Macro;
+import ij.Prefs;
+import ij.plugin.frame.Recorder;
+import java.awt.GridBagLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class CenterOfMassEstimatorUI extends IEstimatorUI {
 
     private final String name = "Centroid of local neighborhood";
-    private final transient int fitradius = 1;  // square 3x3
-    
+    protected int fitradius;
+    protected transient JTextField fitregsizeTextField;
+    private transient static final int DEFAULT_FITRAD = 3;
+
     @Override
     public String getName() {
         return name;
@@ -17,32 +26,41 @@ public class CenterOfMassEstimatorUI extends IEstimatorUI {
 
     @Override
     public JPanel getOptionsPanel() {
-        return new JPanel();
+        fitregsizeTextField = new JTextField(Prefs.get("thunderstorm.estimators.fitregion", "" + DEFAULT_FITRAD), 20);
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.add(new JLabel("Estimation radius [px]:"), GridBagHelper.leftCol());
+        panel.add(fitregsizeTextField, GridBagHelper.rightCol());
+
+        return panel;
     }
 
     @Override
     public void readParameters() {
-        //
-    }
+        fitradius = Integer.parseInt(fitregsizeTextField.getText());
 
-    @Override
-    public void resetToDefaults() {
-        //
+        Prefs.set("thunderstorm.estimators.fitregion", "" + fitradius);
     }
 
     @Override
     public void recordOptions() {
-        //
+        if(fitradius != DEFAULT_FITRAD) {
+            Recorder.recordOption("fitrad", Integer.toString(fitradius));
+        }
     }
 
     @Override
     public void readMacroOptions(String options) {
-        //
+        fitradius = Integer.parseInt(Macro.getValue(options, "fitrad", Integer.toString(DEFAULT_FITRAD)));
+    }
+
+    @Override
+    public void resetToDefaults() {
+        fitregsizeTextField.setText(Integer.toString(DEFAULT_FITRAD));
     }
 
     @Override
     public IEstimator getImplementation() {
         return new MultipleLocationsImageFitting(fitradius, new CentroidFitter());
     }
-    
 }

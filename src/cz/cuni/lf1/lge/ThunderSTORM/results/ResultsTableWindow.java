@@ -146,7 +146,7 @@ class ResultsTableWindow extends GenericTableWindow {
         tabbedPane.addTab("Remove duplicates", duplicates);
         tabbedPane.addTab("Merging", grouping);
         tabbedPane.addTab("Drift correction", drift);
-        tabbedPane.addTab("Stage offset", offset);
+        tabbedPane.addTab("Z-stage offset", offset);
 
         //history pane
         JPanel historyPane = new JPanel(new GridBagLayout());
