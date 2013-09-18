@@ -174,7 +174,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     List<Double> coss = new ArrayList<Double>(angles);
     for (int i = 0; i < angles.size(); i++) {
       double sin = Math.sin(Math.toRadians(sins.get(i) * 4));
-      double cos = Math.cos(Math.toRadians(coss.get(i)) * 4);
+      double cos = Math.cos(Math.toRadians(coss.get(i) * 4));
       sins.set(i, sin);
       coss.set(i, cos);
     }

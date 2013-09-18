@@ -62,39 +62,34 @@ public class HelpButton extends JButton {
     }
 
     private void createTextWindowContent(URL url) {
+        editor = new JEditorPane();
+        Border border = BorderFactory.createEtchedBorder(EtchedBorder.RAISED);
+        editor.setBorder(border);
+        editor.setEditable(false);
         try {
-            editor = new JEditorPane();
-            Border border = BorderFactory.createEtchedBorder(EtchedBorder.RAISED);
-            editor.setBorder(border);
-            editor.setEditable(false);
-            if(url != null) {
-                editor.setPage(url);
-            } else {
-                editor.setText("Could not load help file");
-            }
-            editor.addHyperlinkListener(new HyperlinkListener() {
-                @Override
-                public void hyperlinkUpdate(HyperlinkEvent e) {
-                    if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                        try {
-                            if("jar".equals(e.getURL().getProtocol())) {
-                                editor.setPage(e.getURL());
-                            } else {
-                                BrowserLauncher.openURL(e.getURL().toString());
-                            }
-                        } catch(Exception e1) {
-                            IJ.handleException(e1);
+            editor.setPage(url);
+        } catch(Exception e) {
+            editor.setText("Could not load help file");
+        }
+        editor.addHyperlinkListener(new HyperlinkListener() {
+            @Override
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    try {
+                        if("jar".equals(e.getURL().getProtocol())) {
+                            editor.setPage(e.getURL());
+                        } else {
+                            BrowserLauncher.openURL(e.getURL().toString());
                         }
+                    } catch(Exception e1) {
+                        IJ.handleException(e1);
                     }
                 }
-            });
-            JScrollPane scrollPane = new JScrollPane(editor);
-            scrollPane.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
-            content = scrollPane;
-        } catch(IOException ex) {
-            IJ.handleException(ex);
-            throw new RuntimeException(ex);
-        }
+            }
+        });
+        JScrollPane scrollPane = new JScrollPane(editor);
+        scrollPane.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+        content = scrollPane;
     }
 
     /**

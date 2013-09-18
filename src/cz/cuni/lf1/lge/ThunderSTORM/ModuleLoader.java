@@ -96,7 +96,7 @@ public class ModuleLoader {
      *
      * @return the value of useCaching before this call
      */
-    private static boolean setUseCaching(boolean useCache) {
+    public static boolean setUseCaching(boolean useCache) {
         try {
             URLConnection URLConnection = new URL("http://localhost/").openConnection();
             boolean oldValue = URLConnection.getDefaultUseCaches();

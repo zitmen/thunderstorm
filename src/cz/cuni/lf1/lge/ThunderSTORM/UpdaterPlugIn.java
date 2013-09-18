@@ -51,6 +51,7 @@ public class UpdaterPlugIn implements PlugIn {
             return;
         }
         saveJar(file, getJar(urls[choice]));
+        ModuleLoader.setUseCaching(false);
         updateMenus();
     }
 
