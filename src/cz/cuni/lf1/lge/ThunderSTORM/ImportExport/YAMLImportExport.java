@@ -18,7 +18,7 @@ import org.yaml.snakeyaml.Yaml;
 public class YAMLImportExport implements IImportExport {
 
     @Override
-    public void importFromFile(String fp, GenericTable table) throws IOException {
+    public void importFromFile(String fp, GenericTable table, int startingFrame) throws IOException {
         assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -43,6 +43,9 @@ public class YAMLImportExport implements IImportExport {
                 colnames[c] = tmp.first;
                 colunits[c] = tmp.second;
                 values[c] = mol.get(label).doubleValue();
+                if(MoleculeDescriptor.LABEL_FRAME.equals(tmp.first)) {
+                    values[c] += startingFrame-1;
+                }
                 c++;
             }
             if(!table.columnNamesEqual(colnames)) {

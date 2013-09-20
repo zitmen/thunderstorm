@@ -16,7 +16,7 @@ import java.util.Vector;
 public class ProtoImportExport implements IImportExport {
     
     @Override
-    public void importFromFile(String fp, GenericTable table) throws FileNotFoundException, IOException {
+    public void importFromFile(String fp, GenericTable table, int startingFrame) throws FileNotFoundException, IOException {
         assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -58,7 +58,7 @@ public class ProtoImportExport implements IImportExport {
             // Then fill the table
             int i = 0;
             //if(mol.hasId()) rt.addValue((double)mol.getId(), PSFInstance.LABEL_ID); // skip! --> ncols = 1
-            if(mol.hasFrame()) { values[i] = (double)mol.getFrame(); i++; }
+            if(mol.hasFrame()) { values[i] = (double)mol.getFrame() + startingFrame-1; i++; }
             if(mol.hasX()) { values[i] = mol.getX(); i++; }
             if(mol.hasY()) { values[i] = mol.getY(); i++; }
             if(mol.hasZ()) { values[i] = mol.getZ(); i++; }

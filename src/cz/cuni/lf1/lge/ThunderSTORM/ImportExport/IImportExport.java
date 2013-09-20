@@ -8,7 +8,7 @@ import java.util.Vector;
 public interface IImportExport extends IModule {
     
     public String getName();
-    public void importFromFile(String fp, GenericTable table) throws IOException;
+    public void importFromFile(String fp, GenericTable table, int startingFrame) throws IOException;
     public void exportToFile(String fp, GenericTable table, Vector<String> columns) throws IOException;
     public String getSuffix();  // filename suffix
    

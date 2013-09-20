@@ -31,7 +31,7 @@ public class XMLImportExport implements IImportExport {
     static final String UNITS = "units";
     
     @Override
-    public void importFromFile(String fp, GenericTable table) throws IOException {
+    public void importFromFile(String fp, GenericTable table, int startingFrame) throws IOException {
         assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -142,6 +142,9 @@ public class XMLImportExport implements IImportExport {
                 for(int c = 0; c < colnames.length; c++) {
                     if(MoleculeDescriptor.LABEL_ID.equals(colnames[c])) continue;
                     values[c] = mol.get(colnames[c]).doubleValue();
+                    if(MoleculeDescriptor.LABEL_FRAME.equals(colnames[c])) {
+                        values[c] += startingFrame-1;
+                    }
                     IJ.showProgress((double)(r++) / (double)nrows);
                 }
                 table.addRow(values);

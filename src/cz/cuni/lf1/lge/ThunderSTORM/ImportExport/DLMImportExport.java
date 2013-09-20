@@ -22,7 +22,7 @@ abstract public class DLMImportExport implements IImportExport {
     }
 
     @Override
-    public void importFromFile(String fp, GenericTable table) throws IOException {
+    public void importFromFile(String fp, GenericTable table, int startingFrame) throws IOException {
         assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -61,6 +61,9 @@ abstract public class DLMImportExport implements IImportExport {
             for(int c = 0, ci = 0, cm = lines.get(r).length; c < cm; c++) {
                 if(c == c_id) continue;
                 values[ci] = Double.parseDouble(lines.get(r)[c]);
+                if(MoleculeDescriptor.LABEL_FRAME.equals(colnames[ci])) {
+                    values[ci] += startingFrame-1;
+                }
                 ci++;
             }
             table.addRow(values);

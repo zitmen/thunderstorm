@@ -37,6 +37,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     private Choice ftype;
     private TextField fpath;
     private String defaultPath;
+    private int startingFrame = 1;
 
     public ImportExportPlugIn() {
         super();
@@ -171,7 +172,8 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     }
 
     private void fillImportPane(String cmd, GenericDialogPlus gd) {
-        gd.addCheckbox("clear the `" + cmd + "` table of before import", true);
+        gd.addNumericField("Starting frame number: ", 1, 0);
+        gd.addCheckbox("clear the `" + cmd + "` table before import", true);
         if(IJResultsTable.IDENTIFIER.equals(cmd)) {
             gd.addCheckbox("show rendering preview", true);
             int[] openedImagesIds = WindowManager.getIDList();
@@ -212,6 +214,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     }
 
     private void runImport(String cmd, GenericDialogPlus gd, String filePath) {
+        startingFrame = (int)gd.getNextNumber();
         if(IJGroundTruthTable.IDENTIFIER.equals(cmd)) {
             importFromFile(IJGroundTruthTable.getGroundTruthTable(), filePath, gd.getNextBoolean());
         } else {    // IJResultsTable
@@ -253,7 +256,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             }
             table.setOriginalState();
             IImportExport importer = ie.elementAt(active_ie);
-            importer.importFromFile(fpath, table);
+            importer.importFromFile(fpath, table, startingFrame);
             IJ.showStatus("ThunderSTORM has imported your file.");
         } catch(IOException ex) {
             IJ.showStatus("");
