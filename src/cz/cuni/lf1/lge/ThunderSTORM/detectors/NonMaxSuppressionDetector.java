@@ -84,7 +84,7 @@ public final class NonMaxSuppressionDetector extends  IDetectorUI implements IDe
     @Override
     public JPanel getOptionsPanel() {
         thrTextField = new JTextField(Prefs.getString("thunderstorm.detectors.nonmaxsup.thr", threshold), 20);
-        radiusTextField = new JTextField(Integer.toString(Prefs.getInt("thunderstorm.detectors.nonmaxsup.radius", radius)), 20);
+        radiusTextField = new JTextField(Prefs.get("thunderstorm.detectors.nonmaxsup.radius", radius + ""), 20);
         //
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Peak intensity threshold: "), GridBagHelper.leftCol());
@@ -100,7 +100,7 @@ public final class NonMaxSuppressionDetector extends  IDetectorUI implements IDe
         radius = Integer.parseInt(radiusTextField.getText());
 
         Prefs.set("thunderstorm.detectors.nonmaxsup.thr", threshold);
-        Prefs.set("thunderstorm.detectors.nonmaxsup.radius", radius);
+        Prefs.set("thunderstorm.detectors.nonmaxsup.radius", radius + "");
     }
 
     @Override
