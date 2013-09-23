@@ -174,7 +174,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
                 measurementProtocol = new MeasurementProtocol(imp, allFilters.get(selectedFilter), allDetectors.get(selectedDetector), allEstimators.get(selectedEstimator));
 
-                return pluginFlags;
             } else {
                 // Create and show the dialog
                 try {

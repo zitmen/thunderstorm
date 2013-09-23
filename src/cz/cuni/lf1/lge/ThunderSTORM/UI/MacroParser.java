@@ -54,7 +54,6 @@ public class MacroParser {
     if (selectedFilterIndex < 0) {
       int index = getModuleIndex(knownFilters, FILTER_KEY);
       selectedFilterIndex = index;
-      Thresholder.setActiveFilter(selectedFilterIndex);
       knownFilters.get(index).readMacroOptions(options);
       return index;
     } else {
