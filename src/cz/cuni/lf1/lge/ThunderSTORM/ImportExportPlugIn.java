@@ -29,7 +29,6 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
 
     public static final String IMPORT = "import";
     public static final String EXPORT = "export";
-    
     private String[] modules = null;
     private String[] suffix = null;
     private Vector<IImportExport> ie = null;
@@ -54,7 +53,9 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         GUI.setLookAndFeel();
         //
         String[] commands = command.split(";");
-        if(commands.length != 2) throw new IllegalArgumentException("Malformatted argument for Import/Export plug-in!");
+        if(commands.length != 2) {
+            throw new IllegalArgumentException("Malformatted argument for Import/Export plug-in!");
+        }
         //
         try {
             ie = ModuleLoader.getModules(IImportExport.class);
@@ -159,7 +160,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         }
         //
         gd.addMessage("Columns to export:");
-        col_headers = (String[])table.getColumnNames().toArray(new String[0]);
+        col_headers = (String[]) table.getColumnNames().toArray(new String[0]);
         boolean[] active_columns = new boolean[col_headers.length];
         Arrays.fill(active_columns, true);
         int colId = table.findColumn(MoleculeDescriptor.LABEL_ID);
@@ -214,22 +215,25 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     }
 
     private void runImport(String cmd, GenericDialogPlus gd, String filePath) {
-        startingFrame = (int)gd.getNextNumber();
+        startingFrame = (int) gd.getNextNumber();
         if(IJGroundTruthTable.IDENTIFIER.equals(cmd)) {
             importFromFile(IJGroundTruthTable.getGroundTruthTable(), filePath, gd.getNextBoolean());
         } else {    // IJResultsTable
             IJResultsTable rt = IJResultsTable.getResultsTable();
-            importFromFile(rt, filePath, gd.getNextBoolean());
-            rt.setLivePreview(gd.getNextBoolean());
+            boolean resetFirst = gd.getNextBoolean();
             try {
                 rt.setAnalyzedImage(WindowManager.getImage(gd.getNextChoice()));
             } catch(ArrayIndexOutOfBoundsException ex) {
-                // no getNextChoice
+                if(resetFirst) {
+                    rt.setAnalyzedImage(null);
+                }
             }
+            importFromFile(rt, filePath, resetFirst);
+            rt.setLivePreview(gd.getNextBoolean());
             rt.showPreview();
         }
     }
-    
+
     private void exportToFile(GenericTable table, String fpath, Vector<String> columns) {
         IJ.showStatus("ThunderSTORM is exporting your results...");
         IJ.showProgress(0.0);
@@ -266,7 +270,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             IJ.handleException(ex);
         }
         if(table instanceof IJResultsTable) {
-            AnalysisPlugIn.setDefaultColumnsWidth((IJResultsTable)table);
+            AnalysisPlugIn.setDefaultColumnsWidth((IJResultsTable) table);
         }
         table.show();
         IJ.showProgress(1.0);
