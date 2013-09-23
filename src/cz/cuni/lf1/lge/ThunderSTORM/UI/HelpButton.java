@@ -101,6 +101,15 @@ public class HelpButton extends JButton {
         textWindow.getContentPane().removeAll();
         textWindow.getContentPane().add(content);
 
+        //reset the content to the original page (in the case the user navigated to a different page)
+        if(url != null && !url.equals(editor.getPage())) {
+            try {
+                editor.setPage(url);
+            } catch(Exception e) {
+                editor.setText("Could not load help file");
+            }
+        }
+
         Window ancestor = SwingUtilities.getWindowAncestor(this);
         int screenEnd = ancestor.getGraphicsConfiguration().getBounds().width + ancestor.getGraphicsConfiguration().getBounds().x;
         Point ancestorLocation = ancestor.getLocationOnScreen();
