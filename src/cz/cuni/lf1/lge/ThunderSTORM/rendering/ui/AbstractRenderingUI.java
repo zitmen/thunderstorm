@@ -28,7 +28,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
   JCheckBox threeDCheckBox;
   ImagePlus image;            //must be set in subclass
   private final static double DEFAULT_MAGNIFICATION = 5;
-  private final static int DEFAULT_REPAINT_FREQUENCY = 20;
+  private final static int DEFAULT_REPAINT_FREQUENCY = 50;
   private static final String DEFAULT_Z_RANGE = "-500:100:500";
   
   private void defaultInit() {

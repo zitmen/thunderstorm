@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import ij.IJ;
 import ij.ImagePlus;
 import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -108,7 +109,9 @@ public class RenderingQueue {
         public void run() {
             renderedImage.show();
             if(renderedImage.isVisible()) {
-                renderedImage.setDisplayRange(0, findMaxStackValue(renderedImage));
+                double upperRange = findQuantileHisto(renderedImage, 0.99);
+                //IJ.log("upper image range: " + upperRange);
+                renderedImage.setDisplayRange(0, upperRange);
                 renderedImage.updateAndDraw();
             }
         }
@@ -126,6 +129,41 @@ public class RenderingQueue {
                             max = val;
                         }
                     }
+                }
+            }
+            return max;
+        }
+
+        private static double findQuantileHisto(ImagePlus imp, double quantile) {
+            assert imp.getType() == ImagePlus.GRAY32;
+            assert quantile > 0 && quantile < 1;
+
+            double max = findMaxStackValue(imp);
+            int nBins = 1000;
+            double binSize = max / nBins;
+            int[] binCounts = new int[nBins + 1];
+            Object[] stack = imp.getStack().getImageArray();
+
+            int totalNonZeroPixels = 0;
+            for(int i = 0; i < stack.length; i++) {
+                float[] pixels = (float[]) stack[i];
+                if(pixels != null) {
+                    for(int j = 0; j < pixels.length; j++) {
+                        double val = pixels[j];
+                        if(val != 0) {
+                            totalNonZeroPixels++;
+                            int bin = (int) (val / binSize);
+                            binCounts[bin]++;
+                        }
+                    }
+                }
+            }
+            int requiredPixels = (int) (totalNonZeroPixels * (quantile));
+            int cumulativeCount = 0;
+            for(int i = 0; i <= nBins; i++) {
+                cumulativeCount += binCounts[i];
+                if(cumulativeCount > requiredPixels) {
+                    return (i + 1) * binSize;
                 }
             }
             return max;
