@@ -5,6 +5,9 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import ij.ImagePlus;
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.Locale;
 import javax.swing.SwingUtilities;
 
 /**
@@ -124,7 +127,7 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
     ResultsFilter getFilter() {
         return tableWindow.getFilter();
     }
-    
+
     DuplicatesFilter getDuplicatesFilter() {
         return tableWindow.getDuplicatesFilter();
     }
@@ -148,9 +151,9 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
             sb.append(" & ");
         }
         sb.append("(");
-        sb.append(paramName).append(" > ").append(greaterThan);
+        sb.append(paramName).append(" > ").append(BigDecimal.valueOf(greaterThan).round(new MathContext(6)).toString());
         sb.append(" & ");
-        sb.append(paramName).append(" < ").append(lessThan);
+        sb.append(paramName).append(" < ").append(BigDecimal.valueOf(lessThan).round(new MathContext(6)).toString());
         sb.append(")");
         tableWindow.setFilterFormula(sb.toString());
     }
@@ -165,3 +168,4 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
         return IJResultsTable.IDENTIFIER;
     }
 }
+    
