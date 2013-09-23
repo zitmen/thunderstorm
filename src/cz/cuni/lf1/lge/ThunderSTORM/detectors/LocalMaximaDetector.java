@@ -241,8 +241,9 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
      */
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException {
-        thresholdValue = Thresholder.getThreshold(threshold);
-        return ((connectivity == Graph.CONNECTIVITY_4) ? getMax4Candidates(image, thresholdValue) : getMax8Candidates(image, thresholdValue));
+        float localThresholdValue = Thresholder.getThreshold(threshold);
+        thresholdValue = localThresholdValue;
+        return ((connectivity == Graph.CONNECTIVITY_4) ? getMax4Candidates(image, localThresholdValue) : getMax8Candidates(image, localThresholdValue));
     }
 
     @Override
@@ -322,7 +323,7 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
     public String getThresholdFormula() {
         return threshold;
     }
-    
+
     @Override
     public float getThresholdValue() {
         return thresholdValue;
