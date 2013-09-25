@@ -22,33 +22,33 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
     public Molecule fit(OneLocationFitter.SubImage subimage) {
         Molecule mol;
         double[] fittedParams = null;
-        MultiPSF model = null, modelPrev;
-        double chi2 = 0.0, chi2Prev, pValue, prevDoF = 0.0;
+        MultiPSF model, modelBest = null;
+        double chi2, chi2Best = 0.0, pValue;
         if(maxN > 1) {
             // model selection - how many molecules?
             for(int n = 1; n <= maxN; n++) {
-                modelPrev = model;
                 model = new MultiPSF(n, defaultSigma, basePsfModel, fittedParams);
                 model.setIntensityRange(expectedIntensity);
                 LSQFitter fitter = new LSQFitter(model, MODEL_SELECTION_ITERATIONS);
                 mol = fitter.fit(subimage);
                 fittedParams = fitter.fittedParameters;
-                chi2Prev = chi2;
                 chi2 = model.getChiSquared(subimage.xgrid, subimage.ygrid, subimage.values, fittedParams);
-                pValue = 1.0 - new FDistribution(model.getDoF() - prevDoF, subimage.values.length - (model.getDoF() + 1)).cumulativeProbability((chi2Prev - chi2) / (chi2 / (double)(subimage.values.length - model.getDoF() - 1)));
                 if(n > 1) {
-                    if(Double.isNaN(pValue) || (pValue > pValueThr) || isOutOfRegion(mol, ((double)subimage.size) / 2.0)) {
-                        model = modelPrev;
-                        break;
+                    pValue = 1.0 - new FDistribution(model.getDoF() - modelBest.getDoF(), subimage.values.length - (model.getDoF() + 1)).cumulativeProbability((chi2Best - chi2) / (chi2 / (double)(subimage.values.length - model.getDoF() - 1)));
+                    if(!Double.isNaN(pValue) && (pValue < pValueThr) && !isOutOfRegion(mol, ((double)subimage.size) / 2.0)) {
+                        modelBest = model;
+                        chi2Best = chi2;
                     }
+                } else {
+                    modelBest = model;
+                    chi2Best = chi2;
                 }
-                prevDoF = model.getDoF();
             }
         } else {
-            model = new MultiPSF(1, defaultSigma, basePsfModel, null);
+            modelBest = new MultiPSF(1, defaultSigma, basePsfModel, null);
         }
         // fitting with the selected model
-        LSQFitter fitter = new LSQFitter(model);
+        LSQFitter fitter = new LSQFitter(modelBest);
         mol = fitter.fit(subimage);
         assert (mol != null);    // this is implication of `assert(maxN >= 1)`
         if(!mol.isSingleMolecule()) {

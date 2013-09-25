@@ -65,12 +65,15 @@ public class MultiPSF extends PSFModel {
     @Override
     public double[] transformParameters(double[] params) {
         double[] transformed = new double[params.length];
+        double intensity;   // override the transform of intensity
         for(int i = 0; i < nmol; i++) {
             double [] tmp = Arrays.copyOfRange(params, i*Params.PARAMS_LENGTH, (i+1)*Params.PARAMS_LENGTH);
+            intensity = tmp[Params.INTENSITY];
+            tmp = psf.transformParameters(tmp);
             if(expI != null) {
-                tmp[Params.INTENSITY] = expI.from + (expI.to-expI.from) * (atan(tmp[Params.INTENSITY]) + PI/2) / PI;
+                tmp[Params.INTENSITY] = expI.from + (expI.to-expI.from) * (atan(intensity) + PI/2) / PI;
             }
-            System.arraycopy(psf.transformParameters(tmp), 0, transformed, i*Params.PARAMS_LENGTH, Params.PARAMS_LENGTH);
+            System.arraycopy(tmp, 0, transformed, i*Params.PARAMS_LENGTH, Params.PARAMS_LENGTH);
         }
         return transformed;  // values of Intensity and offset must be the same for each `multi`-molecule
     }
@@ -78,12 +81,15 @@ public class MultiPSF extends PSFModel {
     @Override
     public double[] transformParametersInverse(double[] params) {
         double[] transformed = new double[params.length];
+        double intensity;   // override the transform of intensity
         for(int i = 0; i < nmol; i++) {
             double [] tmp = Arrays.copyOfRange(params, i*Params.PARAMS_LENGTH, (i+1)*Params.PARAMS_LENGTH);
+            intensity = tmp[Params.INTENSITY];
+            tmp = psf.transformParametersInverse(tmp);
             if(expI != null) {
-                tmp[Params.INTENSITY] = tan(((tmp[Params.INTENSITY] - expI.from) / (expI.to-expI.from)) * PI - PI/2);
+                tmp[Params.INTENSITY] = tan(((intensity - expI.from) / (expI.to-expI.from)) * PI - PI/2);
             }
-            System.arraycopy(psf.transformParametersInverse(tmp), 0, transformed, i*Params.PARAMS_LENGTH, Params.PARAMS_LENGTH);
+            System.arraycopy(tmp, 0, transformed, i*Params.PARAMS_LENGTH, Params.PARAMS_LENGTH);
         }
         return transformed;
     }
@@ -143,7 +149,7 @@ public class MultiPSF extends PSFModel {
 
     @Override
     public double[] getInitialSimplex() {
-        double[] steps = new double[nmol*PSFModel.Params.PARAMS_LENGTH];
+        double[] steps = new double[nmol*Params.PARAMS_LENGTH];
         double[] init = psf.getInitialSimplex();
         for(int i = 0; i < nmol; i++) {
             for(int j = 0, k = i*Params.PARAMS_LENGTH; j < Params.PARAMS_LENGTH; j++, k++) {
@@ -157,11 +163,17 @@ public class MultiPSF extends PSFModel {
     public double[] getInitialParams(OneLocationFitter.SubImage subImage) {
         if(n_1_params == null) {
             assert(nmol == 1);
-            return psf.getInitialParams(subImage);
+            double [] initial = psf.getInitialParams(subImage);
+            if(expI != null) {
+                // avoid overshooting the maximum value, because near the inifinity (in tan function)
+                // there is almost no gradient, thus an optimizer has no chance to recover
+                initial[Params.INTENSITY] = (expI.to - expI.from) / 2.0;
+            }
+            return initial;
         } else {
             assert(nmol > 1);
             //
-            double[] guess = new double[nmol*PSFModel.Params.PARAMS_LENGTH];
+            double[] guess = new double[nmol*Params.PARAMS_LENGTH];
             Arrays.fill(guess, 0);
             // copy parameters of N-1 molecules from previous model
             System.arraycopy(n_1_params, 0, guess, 0, n_1_params.length);
@@ -178,21 +190,27 @@ public class MultiPSF extends PSFModel {
             }
             OneLocationFitter.SubImage img = new OneLocationFitter.SubImage(subImage.size, subImage.xgrid, subImage.ygrid, residual, subImage.xgrid[max_i], subImage.ygrid[max_i]);
             // get the initial guess for Nth molecule
-            System.arraycopy(psf.getInitialParams(img), 0, guess, (nmol-1)*PSFModel.Params.PARAMS_LENGTH, PSFModel.Params.PARAMS_LENGTH);
+            System.arraycopy(psf.getInitialParams(img), 0, guess, (nmol-1)*Params.PARAMS_LENGTH, Params.PARAMS_LENGTH);
             // perform push&pull adjustment -- to close to the boundary? push out; else pull in;
             double x, y, sig_2 = defaultSigma / 2.0;
-            for(int i = 0, base = 0; i < nmol; i++, base += PSFModel.Params.PARAMS_LENGTH) {
-                x = guess[base+PSFModel.Params.X];
-                y = guess[base+PSFModel.Params.Y];
+            for(int i = 0, base = 0; i < nmol; i++, base += Params.PARAMS_LENGTH) {
+                x = guess[base+Params.X];
+                y = guess[base+Params.Y];
                 if((subImage.size/2 - abs(x)) < defaultSigma) {
-                    guess[base+PSFModel.Params.X] += (x > 0 ? sig_2 : -sig_2);
+                    guess[base+Params.X] += (x > 0 ? sig_2 : -sig_2);
                 } else {
-                    guess[base+PSFModel.Params.X] -= (x > 0 ? sig_2 : -sig_2);
+                    guess[base+Params.X] -= (x > 0 ? sig_2 : -sig_2);
                 }
                 if((subImage.size/2 - abs(y)) < defaultSigma) {
-                    guess[base+PSFModel.Params.Y] += (y > 0 ? sig_2 : -sig_2);
+                    guess[base+Params.Y] += (y > 0 ? sig_2 : -sig_2);
                 } else {
-                    guess[base+PSFModel.Params.Y] -= (y > 0 ? sig_2 : -sig_2);
+                    guess[base+Params.Y] -= (y > 0 ? sig_2 : -sig_2);
+                }
+                //
+                if(expI != null) {
+                    // avoid overshooting the maximum value, because near the inifinity (in tan function)
+                    // there is almost no gradient, thus an optimizer has no chance to recover
+                    guess[base+Params.INTENSITY] = (expI.to - expI.from) / 2.0;
                 }
             }
             return guess;

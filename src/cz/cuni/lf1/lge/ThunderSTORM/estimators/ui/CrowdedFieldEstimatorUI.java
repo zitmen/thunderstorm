@@ -123,12 +123,12 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
     }
 
     IEstimator getMLEImplementation(PSFModel psf, double sigma, int fitradius) {
-        MFA_LSQFitter fitter = new MFA_LSQFitter(new IntegratedSymmetricGaussianPSF(sigma), sigma, nmax, pvalue, fixedIntensity ? expectedIntensity : null);
+        MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, nmax, pvalue, fixedIntensity ? expectedIntensity : null);
         return new MultipleLocationsImageFitting(fitradius, fitter);
     }
 
     IEstimator getLSQImplementation(PSFModel psf, double sigma, int fitradius) {
-        MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, nmax, pvalue, fixedIntensity ? expectedIntensity : null);
+        MFA_LSQFitter fitter = new MFA_LSQFitter(psf, sigma, nmax, pvalue, fixedIntensity ? expectedIntensity : null);
         return new MultipleLocationsImageFitting(fitradius, fitter);
     }
 

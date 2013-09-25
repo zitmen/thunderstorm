@@ -69,7 +69,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
 
     @Override
     public IEstimator getImplementation() {
-        if(SymmetricGaussianEstimatorUI.LSQ.equals(method)) {
+        if(LSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
                 IEstimator mfa = crowdedField.getLSQImplementation(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())), sigma, fitradius);
                 return new CylindricalLensZEstimator(calibration, mfa);
@@ -78,7 +78,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
                 return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
             }
         }
-        if(SymmetricGaussianEstimatorUI.MLE.equals(method)) {
+        if(MLE.equals(method)) {
             if(crowdedField.isEnabled()) {
                 IEstimator mfa = crowdedField.getMLEImplementation(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())), sigma, fitradius);
                 return new CylindricalLensZEstimator(calibration, mfa);

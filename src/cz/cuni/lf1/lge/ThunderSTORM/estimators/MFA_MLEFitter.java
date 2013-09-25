@@ -22,33 +22,33 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
     public Molecule fit(OneLocationFitter.SubImage subimage) {
         Molecule mol;
         double[] fittedParams = null;
-        MultiPSF model = null, modelPrev;
-        double logLik = 0.0, logLikPrev, pValue, prevDoF = 0.0;
+        MultiPSF model, modelBest = null;
+        double logLik, logLikPrevBest = 0.0, pValue;
         if(maxN > 1) {
             // model selection - how many molecules?
             for(int n = 1; n <= maxN; n++) {
-                modelPrev = model;
                 model = new MultiPSF(n, defaultSigma, basePsfModel, fittedParams);
                 model.setIntensityRange(expectedIntensity);
                 MLEFitter fitter = new MLEFitter(model, MODEL_SELECTION_ITERATIONS);
                 mol = fitter.fit(subimage);
                 fittedParams = fitter.fittedParameters;
-                logLikPrev = logLik;
                 logLik = model.getLikelihoodFunction(subimage.xgrid, subimage.ygrid, subimage.values).value(fittedParams);
-                pValue = 1.0 - new ChiSquaredDistribution(model.getDoF() - prevDoF).cumulativeProbability(2 * (logLikPrev - logLik));
                 if(n > 1) {
-                    if(Double.isNaN(pValue) || (pValue > pValueThr) || isOutOfRegion(mol, ((double)subimage.size) / 2.0)) {
-                        model = modelPrev;
-                        break;
+                    pValue = 1.0 - new ChiSquaredDistribution(model.getDoF() - modelBest.getDoF()).cumulativeProbability(2 * (logLikPrevBest - logLik));
+                    if(!Double.isNaN(pValue) && (pValue < pValueThr) && !isOutOfRegion(mol, ((double)subimage.size) / 2.0)) {
+                        logLikPrevBest = logLik;
+                        modelBest = model;
                     }
+                } else {
+                    logLikPrevBest = logLik;
+                    modelBest = model;
                 }
-                prevDoF = model.getDoF();
             }
         } else {
-            model = new MultiPSF(1, defaultSigma, basePsfModel, null);
+            modelBest = new MultiPSF(1, defaultSigma, basePsfModel, null);
         }
         // fitting with the selected model
-        MLEFitter fitter = new MLEFitter(model);
+        MLEFitter fitter = new MLEFitter(modelBest);
         mol = fitter.fit(subimage);
         assert (mol != null);    // this is implication of `assert(maxN >= 1)`
         if(!mol.isSingleMolecule()) {
