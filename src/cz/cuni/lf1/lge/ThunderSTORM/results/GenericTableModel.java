@@ -374,9 +374,9 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
                     mol = getRow(row);
                     paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
                     if(mol.hasParam(paramName)) {
-                        mol.setParam(paramName, paramValue);
+                        mol.setParam(paramName, Units.NANOMETER, paramValue);
                     } else {
-                        mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
+                        mol.addParam(paramName, Units.NANOMETER, paramValue);
                     }
                 }
             } else {
@@ -389,13 +389,14 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
                     mol = getRow(row);
                     paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
                     if(mol.hasParam(paramName)) {
-                        mol.setParam(paramName, paramValue);
+                        mol.setParam(paramName, Units.NANOMETER, paramValue);
                     } else {
-                        mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
+                        mol.addParam(paramName, Units.NANOMETER, paramValue);
                     }
                 }
             }
-            fireTableStructureChanged();
+            setColumnUnits(paramName, Units.NANOMETER);
+            fireTableDataChanged();
         } catch(Exception e) {
             // ignore...PSF does not fit all the required parameters
         }

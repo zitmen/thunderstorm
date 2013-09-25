@@ -108,6 +108,21 @@ public final class Molecule implements Comparable<Molecule> {
     public void setParam(String param, double value) {
         setParamAt(descriptor.getParamIndex(param), value);
     }
+    
+    public void setParam(String param, Units unit, double value) {
+        int i = descriptor.getParamIndex(param);
+        if(i >= values.size()) {
+            values.insertElementAt(value, i);
+            try {
+                descriptor.addParam(param, i, unit);
+            } catch(Exception ex) {
+                //
+            }
+        } else {
+            values.setElementAt(value, i);
+            descriptor.setColumnUnits(unit, descriptor.getParamColumn(param));
+        }
+    }
 
     public String getParamNameAtColumn(int c) {
         return descriptor.getParamNameAt(c);
@@ -159,6 +174,14 @@ public final class Molecule implements Comparable<Molecule> {
         } else {
             addParam(Params.LABEL_Z, Units.getDefaultUnit(Params.LABEL_Z), value);
         }
+    }
+    
+    public Units getParamUnits(String name) {
+        return descriptor.units.elementAt(descriptor.getParamColumn(name));
+    }
+    
+    public Units getParamUnits(int column) {
+        return descriptor.units.elementAt(column);
     }
 
     @Override

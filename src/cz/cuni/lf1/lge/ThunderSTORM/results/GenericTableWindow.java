@@ -180,7 +180,6 @@ class GenericTableWindow {
                 item.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        model.convertAllColumnsToAnalogUnits(); // ensure that the units are correct!
                         model.calculateThompsonFormula();
                     }
                 });
@@ -191,7 +190,6 @@ class GenericTableWindow {
                 item.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        model.convertAllColumnsToAnalogUnits(); // ensure that the units are correct!
                         model.calculateThompsonFormula();
                     }
                 });

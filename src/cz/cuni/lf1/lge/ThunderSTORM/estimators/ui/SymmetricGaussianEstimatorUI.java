@@ -25,7 +25,7 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
     protected transient JTextField fitregsizeTextField;
     protected transient JComboBox<String> methodComboBox;
     protected transient JTextField sigmaTextField;
-    protected transient int DEFAULT_FITRAD = 6;
+    protected transient int DEFAULT_FITRAD = 5;
     protected transient double DEFAULT_SIGMA = 1.6;
     protected transient static final String MLE = "Maximum likelihood";
     protected transient static final String LSQ = "Least squares";

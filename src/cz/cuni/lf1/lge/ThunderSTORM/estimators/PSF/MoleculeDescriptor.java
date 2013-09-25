@@ -284,40 +284,42 @@ public class MoleculeDescriptor implements Cloneable {
         public static final String LABEL_CCD_THOMPSON = "uncertainty_ccd";
         public static final String LABEL_EMCCD_THOMPSON = "uncertainty_emccd";
         
+        // return uncertainty in nanometers
         public static double ccdThompson(Molecule molecule) throws Exception {
             double psfSigma2, psfEnergy, bkgStd, pixelSize;
             pixelSize = CameraSetupPlugIn.pixelSize;
             if(molecule.hasParam(PSFModel.Params.LABEL_SIGMA)) {    // symmetric
-                psfSigma2 = molecule.getParam(PSFModel.Params.LABEL_SIGMA) *
-                            molecule.getParam(PSFModel.Params.LABEL_SIGMA);
+                psfSigma2 = molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA)) *
+                            molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA));
             } else if(molecule.hasParam(PSFModel.Params.LABEL_SIGMA1) && molecule.hasParam(PSFModel.Params.LABEL_SIGMA2)) { // eliptic
-                psfSigma2 = molecule.getParam(PSFModel.Params.LABEL_SIGMA1) *
-                            molecule.getParam(PSFModel.Params.LABEL_SIGMA2);
+                psfSigma2 = molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA1).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA1)) *
+                            molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA2).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA2));
             } else {
                 throw new Exception("Cannot calculate Thompson equation!");
             }
-            psfEnergy = molecule.getParam(PSFModel.Params.LABEL_INTENSITY);
-            bkgStd = molecule.getParam(PSFModel.Params.LABEL_BACKGROUND);
+            psfEnergy = molecule.getParamUnits(PSFModel.Params.LABEL_INTENSITY).convertTo(Units.PHOTON, molecule.getParam(PSFModel.Params.LABEL_INTENSITY));
+            bkgStd = molecule.getParamUnits(PSFModel.Params.LABEL_BACKGROUND).convertTo(Units.PHOTON, molecule.getParam(PSFModel.Params.LABEL_BACKGROUND));
             //
             double xyVar = ((psfSigma2 + pixelSize*pixelSize/12) / psfEnergy) +
                     ((8*PI*psfSigma2*psfSigma2*bkgStd) / (pixelSize*pixelSize*psfEnergy*psfEnergy));
             return sqrt(xyVar);
         }
         
+        // return uncertainty in nanometers
         public static double emccdThompson(Molecule molecule) throws Exception {
             double psfSigma2, psfEnergy, bkgStd, pixelSize;
             pixelSize = CameraSetupPlugIn.pixelSize;
             if(molecule.hasParam(PSFModel.Params.LABEL_SIGMA)) {    // symmetric
-                psfSigma2 = molecule.getParam(PSFModel.Params.LABEL_SIGMA) *
-                            molecule.getParam(PSFModel.Params.LABEL_SIGMA);
+                psfSigma2 = molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA)) *
+                            molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA));
             } else if(molecule.hasParam(PSFModel.Params.LABEL_SIGMA1) && molecule.hasParam(PSFModel.Params.LABEL_SIGMA2)) { // eliptic
-                psfSigma2 = molecule.getParam(PSFModel.Params.LABEL_SIGMA1) *
-                            molecule.getParam(PSFModel.Params.LABEL_SIGMA2);
+                psfSigma2 = molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA1)) *
+                            molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA2));
             } else {
                 throw new Exception("Cannot calculate Thompson equation!");
             }
-            psfEnergy = molecule.getParam(PSFModel.Params.LABEL_INTENSITY);
-            bkgStd = molecule.getParam(PSFModel.Params.LABEL_BACKGROUND);
+            psfEnergy = molecule.getParamUnits(PSFModel.Params.LABEL_INTENSITY).convertTo(Units.PHOTON, molecule.getParam(PSFModel.Params.LABEL_INTENSITY));
+            bkgStd = molecule.getParamUnits(PSFModel.Params.LABEL_BACKGROUND).convertTo(Units.PHOTON, molecule.getParam(PSFModel.Params.LABEL_BACKGROUND));
             //
             double xyVar = ((2*psfSigma2 + pixelSize*pixelSize/12) / psfEnergy) +
                     ((8*PI*psfSigma2*psfSigma2*bkgStd) / (pixelSize*pixelSize*psfEnergy*psfEnergy));
@@ -580,9 +582,9 @@ public class MoleculeDescriptor implements Cloneable {
                     if(LABEL_ID.equals(paramName)) {
                         molecule.setParam(paramName, IJResultsTable.getResultsTable().getNewId());
                     } else if(Fitting.LABEL_CCD_THOMPSON.equals(paramName)) {
-                        molecule.setParam(paramName, Fitting.ccdThompson(molecule));
+                        molecule.setParam(paramName, Units.NANOMETER, Fitting.ccdThompson(molecule));
                     } else if(Fitting.LABEL_EMCCD_THOMPSON.equals(paramName)) {
-                        molecule.setParam(paramName, Fitting.emccdThompson(molecule));
+                        molecule.setParam(paramName, Units.NANOMETER, Fitting.emccdThompson(molecule));
                     } else {
                         throw new IllegalArgumentException("Parameter `" + paramName + "` can't be recalculated.");
                     }

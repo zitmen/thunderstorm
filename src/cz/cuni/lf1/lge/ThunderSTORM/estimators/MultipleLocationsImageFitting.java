@@ -152,7 +152,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
                 paramName = MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON;
                 paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
             }
-            mol.addParam(paramName, MoleculeDescriptor.Units.getDefaultUnit(paramName), paramValue);
+            mol.addParam(paramName, MoleculeDescriptor.Units.NANOMETER, paramValue);
         } catch(Exception e) {
             // ignore...PSF does not fit all the required parameters
         }
