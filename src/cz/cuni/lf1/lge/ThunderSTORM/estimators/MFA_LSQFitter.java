@@ -1,19 +1,21 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.abs;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MultiPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import org.apache.commons.math3.distribution.FDistribution;
 
 public class MFA_LSQFitter extends MFA_AbstractFitter {
-    
+
+    Range expectedIntensity;
     double pValueThr;
     final static int MODEL_SELECTION_ITERATIONS = 50; // full fitting takes ~20 iterations; this is here to limit max. number of iterations, which is set to 1000
     
-    public MFA_LSQFitter(PSFModel basePsfModel, double defaultSigma, int maxN, double pValueThr) {
+    public MFA_LSQFitter(PSFModel basePsfModel, double defaultSigma, int maxN, double pValueThr, Range expI) {
         super(basePsfModel, defaultSigma, maxN);
         this.pValueThr = pValueThr;
+        this.expectedIntensity = expI;
     }
 
     @Override
@@ -27,6 +29,7 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
             for(int n = 1; n <= maxN; n++) {
                 modelPrev = model;
                 model = new MultiPSF(n, defaultSigma, basePsfModel, fittedParams);
+                model.setIntensityRange(expectedIntensity);
                 LSQFitter fitter = new LSQFitter(model, MODEL_SELECTION_ITERATIONS);
                 mol = fitter.fit(subimage);
                 fittedParams = fitter.fittedParameters;

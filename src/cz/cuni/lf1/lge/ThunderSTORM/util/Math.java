@@ -708,6 +708,14 @@ public class Math {
     public static double atan2(double y, double x) {
         return FastMath.atan2(y, x);
     }
+    
+    public static double atan(double x) {
+        return FastMath.atan(x);
+    }
+    
+    public static double tan(double x) {
+        return FastMath.tan(x);
+    }
 
     public static int min(int a, int b) {
         return FastMath.min(a, b);
