@@ -35,7 +35,7 @@ public class DataGeneratorPlugIn implements PlugIn {
     private double density;
     private Drift drift;
     private Range fwhm_range, intensity_range;
-    private double add_poisson_var, add_poisson_std_photons;
+    private double add_poisson_var;
     private String maskPath;
     private FloatProcessor mask;
     
@@ -119,14 +119,6 @@ public class DataGeneratorPlugIn implements PlugIn {
     private void runGenerator() throws InterruptedException {
         IJ.showStatus("ThunderSTORM is generating your image sequence...");
         IJ.showProgress(0.0);       
-        // convert units
-        if(CameraSetupPlugIn.isEmGain) {
-            intensity_range.scale(1.0 / CameraSetupPlugIn.gain);
-            add_poisson_var /= CameraSetupPlugIn.gain;
-        }
-        add_poisson_std_photons = sqrt(add_poisson_var);
-        intensity_range.convert(Units.PHOTON, Units.DIGITAL);
-        add_poisson_var = Units.PHOTON.convertTo(Units.DIGITAL, add_poisson_var);
         //
         IJGroundTruthTable gt = IJGroundTruthTable.getGroundTruthTable();
         gt.reset();
@@ -232,7 +224,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                 processingNewFrame("ThunderSTORM is generating frame %d out of %d...");
                 FloatProcessor add_noise;
                 if(add_poisson_var > 0) {
-                    add_noise = datagen.generatePoissonNoise(width, height, add_poisson_var);
+                    add_noise = datagen.generatePoissonNoise(width, height, sqrt(add_poisson_var));
                 } else {
                     float [] data = new float[width*height];
                     Arrays.fill(data, 0f);
@@ -246,7 +238,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         }
 
         private void fillResults(ImageStack stack, IJGroundTruthTable gt) {
-            double bkgstd = Units.PHOTON.convertTo(Units.getDefaultUnit(PSFModel.Params.LABEL_BACKGROUND), add_poisson_std_photons);
+            double bkgstd = Units.PHOTON.convertTo(Units.getDefaultUnit(PSFModel.Params.LABEL_BACKGROUND), sqrt(add_poisson_var));
             for(int f = frame_start, i = 0; f <= frame_end; f++, i++) {
                 processingNewFrame("ThunderSTORM is building the image stack - frame %d out of %d...");
                 stack.addSlice(local_stack.elementAt(i));

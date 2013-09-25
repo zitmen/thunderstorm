@@ -31,11 +31,17 @@ public class DataGenerator {
         deleteLater = new Vector<EmitterModel>();
     }
     
-    public FloatProcessor generatePoissonNoise(int width, int height, double variance) {
+    public FloatProcessor generatePoissonNoise(int width, int height, double stddev_photons) {
         FloatProcessor img = new FloatProcessor(width, height);
-        for(int x = 0; x < width; x++)
-            for(int y = 0; y < height; y++)
-                img.setf(x, y, (float)rand.nextPoisson(variance));
+        if(CameraSetupPlugIn.isEmGain) {
+            for(int x = 0; x < width; x++)
+                for(int y = 0; y < height; y++)
+                    img.setf(x, y, (float)rand.nextGamma(rand.nextPoisson(stddev_photons)+0.001, CameraSetupPlugIn.gain) / (float)CameraSetupPlugIn.photons2ADU);
+        } else {
+            for(int x = 0; x < width; x++)
+                for(int y = 0; y < height; y++)
+                    img.setf(x, y, (float)rand.nextPoisson(stddev_photons) * (float)CameraSetupPlugIn.photons2ADU);
+        }
         return img;
     }
     
@@ -58,7 +64,7 @@ public class DataGenerator {
         return filter.filterImage(img);
     }
     
-    public Vector<EmitterModel> generateMolecules(int width, int height, FloatProcessor mask, double density, Range intensity, Range fwhm) {
+    public Vector<EmitterModel> generateMolecules(int width, int height, FloatProcessor mask, double density, Range intensity_photons, Range fwhm) {
         double [] params = new double[PSFModel.Params.PARAMS_LENGTH];
         Arrays.fill(params, 0.0);
         Vector<EmitterModel> molist = new Vector<EmitterModel>();
@@ -71,8 +77,12 @@ public class DataGenerator {
                     fwhm0 = rand.nextUniform(fwhm.from, fwhm.to);
                     params[PSFModel.Params.X] = x + 0.5 + rand.nextUniform(-0.5, +0.5);
                     params[PSFModel.Params.Y] = y + 0.5 + rand.nextUniform(-0.5, +0.5);
-                    params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity.from, intensity.to);
                     params[PSFModel.Params.SIGMA] = fwhm0 / FWHM_factor;
+                    if(CameraSetupPlugIn.isEmGain) {
+                        params[PSFModel.Params.INTENSITY] = rand.nextGamma(rand.nextUniform(intensity_photons.from, intensity_photons.to), CameraSetupPlugIn.gain) / CameraSetupPlugIn.photons2ADU;
+                    } else {
+                        params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to) / CameraSetupPlugIn.photons2ADU;
+                    }
                     PSFModel model = new IntegratedSymmetricGaussianPSF(params[PSFModel.Params.SIGMA]);
                     molist.add(new EmitterModel(model, model.newInstanceFromParams(params), fwhm0));
                     //
@@ -110,14 +120,8 @@ public class DataGenerator {
         // Additive Poisson-distributed noise...we stopped distinguishing read-out
         // and sample noise, because it might be confusing and it would not change
         // the results of simulation anyway.
-        frame = ImageProcessor.add(frame, add_noise);
-        // 2. em gain
-        if(CameraSetupPlugIn.isEmGain) {
-            frame = ImageProcessor.multiply((float)CameraSetupPlugIn.gain, frame);
-        }
-        // 3. read-out & camera base-level
         frame = ImageProcessor.add((float)CameraSetupPlugIn.offset, frame);
-        //frame = ImageProcessor.add(frame, add_noise);
+        frame = ImageProcessor.add(frame, add_noise);
         //
         return (ShortProcessor)frame.convertToShort(false);
     }
