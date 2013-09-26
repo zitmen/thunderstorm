@@ -184,6 +184,7 @@ class DuplicatesFilter implements ActionListener {
             // molecule itself has to be added to the list of detections,
             // because the parameters can change during the merging
             mol.addDetection(mol.clone(mol.descriptor));
+            mol.updateParameters();
             mol.addParam(MoleculeDescriptor.LABEL_DETECTIONS, MoleculeDescriptor.Units.UNITLESS, 1);
             //
             if(!detections.containsKey(frame)) {

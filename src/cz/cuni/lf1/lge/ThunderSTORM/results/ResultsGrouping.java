@@ -219,6 +219,7 @@ class ResultsGrouping {
             // molecule itself has to be added to the list of detections,
             // because the parameters can change during the merging
             mol.addDetection(mol.clone(mol.descriptor));
+            mol.updateParameters();
             mol.addParam(MoleculeDescriptor.LABEL_DETECTIONS, MoleculeDescriptor.Units.UNITLESS, 1);
             //
             if(!detections.containsKey(frame)) {
@@ -263,6 +264,7 @@ class ResultsGrouping {
                     nn_mol = tree.findNearestNeighbors(new double[]{mol.getX(), mol.getY(), mol.getZ()}, 1, dist_fn);
                     if(nn_mol.getMaxKey() < dist2_thr) {
                         nn_mol.getMax().addDetection(mol);
+                        nn_mol.getMax().updateParameters();
                         selected[si] = true;
                     }
                 }

@@ -18,8 +18,8 @@ import javax.swing.JTextField;
 public class MedianFilterUI extends IFilterUI {
 
     private final String name = "Median filter";
-    private int size;
-    private int pattern;
+    private int size = DEFAULT_SIZE;
+    private int pattern = DEFAULT_PATTERN;
     private transient JTextField sizeTextField;
     private transient JRadioButton patternCrossRadioButton, patternBoxRadioButton;
     private transient static final int DEFAULT_SIZE = 3;

@@ -4,7 +4,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import ij.IJ;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 import org.apache.commons.collections.primitives.ArrayDoubleList;
@@ -13,16 +12,13 @@ import org.apache.commons.collections.primitives.DoubleList;
 public final class Molecule implements Comparable<Molecule> {
 
     public MoleculeDescriptor descriptor;
-    public Vector<Molecule> detections;
-    private boolean sortedDetections;
+    private Vector<Molecule> detections;
     public DoubleList values;
 
     public Molecule(MoleculeDescriptor descriptor, DoubleList values) {
         this.descriptor = descriptor;
         this.values = values;
         //
-        this.detections = new Vector<Molecule>(0);
-        this.sortedDetections = true;
     }
     
     public Molecule(MoleculeDescriptor descriptor, double [] values) {
@@ -32,8 +28,6 @@ public final class Molecule implements Comparable<Molecule> {
             this.values.add(values[i]);
         }
         //
-        this.detections = new Vector<Molecule>(0);
-        this.sortedDetections = true;
     }
     
     public Molecule(Params params) {
@@ -45,15 +39,12 @@ public final class Molecule implements Comparable<Molecule> {
             values.add(params.values[i]);
         }
         //
-        this.detections = new Vector<Molecule>(0);
-        this.sortedDetections = true;
     }
     
     public Molecule(Molecule mol) {
         this.descriptor = mol.descriptor;
         this.values = mol.values;
         this.detections = mol.detections;
-        this.sortedDetections = mol.sortedDetections;
     }
     
     /**
@@ -219,8 +210,7 @@ public final class Molecule implements Comparable<Molecule> {
      */
     public Molecule clone(MoleculeDescriptor descriptor) {
         Molecule mol = new Molecule(descriptor, new ArrayDoubleList(values));
-        mol.sortedDetections = sortedDetections;
-        mol.detections = new Vector<Molecule>(detections);
+        mol.detections = detections != null ? new Vector<Molecule>(detections) : null;
         return mol;
     }
 
@@ -278,27 +268,28 @@ public final class Molecule implements Comparable<Molecule> {
     }
 
     public void addDetection(Molecule mol) {
-        if(mol.detections.isEmpty()) {
+        if(detections == null){
+            detections = new Vector<Molecule>();
+        }
+        if(mol.isSingleMolecule()) {
             detections.add(mol);
         } else {    // if it is not empty, it already contains, at least, itself
             for(Molecule m : mol.detections) {
                 detections.add(m);
             }
         }
-        updateParameters();
-        sortedDetections = false;
     }
 
     public Vector<Molecule> getDetections() {
-        if(sortedDetections == false) {
-            Collections.sort(detections);
-            sortedDetections = true;
-        }
         return detections;
     }
 
+    public void setDetections(Vector<Molecule> detections) {
+        this.detections = detections;
+    }
+
     public boolean isSingleMolecule() {
-        return (detections.size() <= 1);
+        return (detections == null || detections.size() <= 1);
     }
 
     @Override
