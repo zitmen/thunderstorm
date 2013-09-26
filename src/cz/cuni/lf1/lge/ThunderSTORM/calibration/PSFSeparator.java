@@ -8,10 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Organizes localizations by position (close molecules are grouped together)
+ * Organizes localizations by position (close detections are grouped together)
  * and by frame.
  *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
  */
 public class PSFSeparator {
 

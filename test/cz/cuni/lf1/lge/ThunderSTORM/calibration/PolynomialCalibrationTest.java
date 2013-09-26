@@ -15,7 +15,7 @@ public class PolynomialCalibrationTest {
     double angle = 45;
     double [] sigma1 = {-10,0.0003,1.986};
     double [] sigma2 = {2.2354,0.0003,2.015};
-    PolynomialCalibration calibration = new PolynomialCalibration(angle,sigma1,sigma2);
+    PolynomialCalibration calibration = new PolynomialCalibration(angle,new QuadraticFunction(sigma1),new QuadraticFunction(sigma2));
     Yaml yaml = new Yaml();
     String output = yaml.dump(calibration);
     System.out.println(output);
