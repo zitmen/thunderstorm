@@ -202,11 +202,7 @@ public abstract class PSFModel {
         };
     }
 
-    /**
-     * Default implementation with numeric gradients. You can override it with
-     * analytical jacobian.
-     */
-    public MultivariateMatrixFunction getJacobianFunction(final int[] xgrid, final int[] ygrid) {
+    public MultivariateMatrixFunction getNumericJacobianFunction(final int[] xgrid, final int[] ygrid) {
         final MultivariateVectorFunction valueFunction = getValueFunction(xgrid, ygrid);
         return new MultivariateMatrixFunction() {
             static final double step = 0.01;
@@ -227,6 +223,14 @@ public abstract class PSFModel {
                 return retVal;
             }
         };
+    }
+
+    /*
+     * Default implementation with numeric gradients. You can override it with
+     * analytical jacobian.
+     */
+    public MultivariateMatrixFunction getJacobianFunction(final int[] xgrid, final int[] ygrid) {
+        return getNumericJacobianFunction(xgrid, ygrid);
     }
 
     public MultivariateFunction getLikelihoodFunction(final int[] xgrid, final int[] ygrid, final double[] imageValues) {

@@ -1,14 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.abs;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.tan;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.atan;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import java.util.Arrays;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
+import static org.apache.commons.math3.util.FastMath.abs;
 
 /**
  * Representation of multi-molecule model.
@@ -65,13 +62,12 @@ public class MultiPSF extends PSFModel {
     @Override
     public double[] transformParameters(double[] params) {
         double[] transformed = new double[params.length];
-        double intensity;   // override the transform of intensity
         for(int i = 0; i < nmol; i++) {
             double [] tmp = Arrays.copyOfRange(params, i*Params.PARAMS_LENGTH, (i+1)*Params.PARAMS_LENGTH);
-            intensity = tmp[Params.INTENSITY];
             tmp = psf.transformParameters(tmp);
             if(expI != null) {
-                tmp[Params.INTENSITY] = expI.from + (expI.to-expI.from) * (atan(intensity) + PI/2) / PI;
+                if(tmp[Params.INTENSITY] > expI.to) tmp[Params.INTENSITY] = expI.to;
+                if(tmp[Params.INTENSITY] < expI.from) tmp[Params.INTENSITY] = expI.from;
             }
             System.arraycopy(tmp, 0, transformed, i*Params.PARAMS_LENGTH, Params.PARAMS_LENGTH);
         }
@@ -81,14 +77,13 @@ public class MultiPSF extends PSFModel {
     @Override
     public double[] transformParametersInverse(double[] params) {
         double[] transformed = new double[params.length];
-        double intensity;   // override the transform of intensity
         for(int i = 0; i < nmol; i++) {
             double [] tmp = Arrays.copyOfRange(params, i*Params.PARAMS_LENGTH, (i+1)*Params.PARAMS_LENGTH);
-            intensity = tmp[Params.INTENSITY];
-            tmp = psf.transformParametersInverse(tmp);
             if(expI != null) {
-                tmp[Params.INTENSITY] = tan(((intensity - expI.from) / (expI.to-expI.from)) * PI - PI/2);
+                if(tmp[Params.INTENSITY] > expI.to) tmp[Params.INTENSITY] = expI.to;
+                if(tmp[Params.INTENSITY] < expI.from) tmp[Params.INTENSITY] = expI.from;
             }
+            tmp = psf.transformParametersInverse(tmp);
             System.arraycopy(tmp, 0, transformed, i*Params.PARAMS_LENGTH, Params.PARAMS_LENGTH);
         }
         return transformed;
@@ -104,7 +99,7 @@ public class MultiPSF extends PSFModel {
                 double[][] retVal = new double[xgrid.length][point.length];
                 for(int i = 0; i < nmol; i++) {
                     double [] tmp = Arrays.copyOfRange(point, i*Params.PARAMS_LENGTH, (i+1)*Params.PARAMS_LENGTH);
-                    double [][] J = psf.getJacobianFunction(xgrid, ygrid).value(tmp);
+                    double [][] J = psf.getNumericJacobianFunction(xgrid, ygrid).value(tmp);
                     for(int j = 0; j < J.length; j++) {
                         for(int k = 0, l = i*Params.PARAMS_LENGTH; k < J[j].length; k++, l++) {
                             retVal[j][l] = J[j][k];
@@ -163,13 +158,7 @@ public class MultiPSF extends PSFModel {
     public double[] getInitialParams(OneLocationFitter.SubImage subImage) {
         if(n_1_params == null) {
             assert(nmol == 1);
-            double [] initial = psf.getInitialParams(subImage);
-            if(expI != null) {
-                // avoid overshooting the maximum value, because near the inifinity (in tan function)
-                // there is almost no gradient, thus an optimizer has no chance to recover
-                initial[Params.INTENSITY] = (expI.to - expI.from) / 2.0;
-            }
-            return initial;
+            return psf.getInitialParams(subImage);
         } else {
             assert(nmol > 1);
             //
@@ -205,12 +194,6 @@ public class MultiPSF extends PSFModel {
                     guess[base+Params.Y] += (y > 0 ? sig_2 : -sig_2);
                 } else {
                     guess[base+Params.Y] -= (y > 0 ? sig_2 : -sig_2);
-                }
-                //
-                if(expI != null) {
-                    // avoid overshooting the maximum value, because near the inifinity (in tan function)
-                    // there is almost no gradient, thus an optimizer has no chance to recover
-                    guess[base+Params.INTENSITY] = (expI.to - expI.from) / 2.0;
                 }
             }
             return guess;
