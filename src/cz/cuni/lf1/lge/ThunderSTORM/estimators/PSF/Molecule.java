@@ -7,30 +7,32 @@ import ij.IJ;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
+import org.apache.commons.collections.primitives.ArrayDoubleList;
+import org.apache.commons.collections.primitives.DoubleList;
 
 public final class Molecule implements Comparable<Molecule> {
 
     public MoleculeDescriptor descriptor;
     public Vector<Molecule> detections;
     private boolean sortedDetections;
-    public Vector<Double> values;
+    public DoubleList values;
 
-    public Molecule(MoleculeDescriptor descriptor, Vector<Double> values) {
+    public Molecule(MoleculeDescriptor descriptor, DoubleList values) {
         this.descriptor = descriptor;
         this.values = values;
         //
-        this.detections = new Vector<Molecule>();
+        this.detections = new Vector<Molecule>(0);
         this.sortedDetections = true;
     }
     
     public Molecule(MoleculeDescriptor descriptor, double [] values) {
         this.descriptor = descriptor;
-        this.values = new Vector<Double>();
+        this.values = new ArrayDoubleList(values.length);
         for(int i = 0; i < values.length; i++) {
             this.values.add(values[i]);
         }
         //
-        this.detections = new Vector<Molecule>();
+        this.detections = new Vector<Molecule>(0);
         this.sortedDetections = true;
     }
     
@@ -38,12 +40,12 @@ public final class Molecule implements Comparable<Molecule> {
         assert(params.hasParam(Params.X) && params.hasParam(Params.Y));
         
         this.descriptor = new MoleculeDescriptor(params);
-        this.values = new Vector<Double>();
+        this.values = new ArrayDoubleList(params.values.length);
         for(int i = 0; i < params.values.length; i++) {
             values.add(params.values[i]);
         }
         //
-        this.detections = new Vector<Molecule>();
+        this.detections = new Vector<Molecule>(0);
         this.sortedDetections = true;
     }
     
@@ -86,23 +88,23 @@ public final class Molecule implements Comparable<Molecule> {
     }
 
     public double getParamAt(int i) {
-        return values.elementAt(i).doubleValue();
+        return values.get(i);
     }
     
     public double getParamAtColumn(int c) {
-        return values.elementAt(descriptor.indices.elementAt(c)).doubleValue();
+        return values.get(descriptor.indices.get(c));
     }
     
     public void setParamAt(int i, double value) {
         if(i >= values.size()) {
-            values.insertElementAt(value, i);
+            values.add(i, value);
         } else {
-            values.setElementAt(value, i);
+            values.set(i, value);
         }
     }
     
     public double getParam(String param) {
-        return values.elementAt(descriptor.getParamIndex(param)).doubleValue();
+        return values.get(descriptor.getParamIndex(param));
     }
     
     public double getParam(String param, Units unit) {
@@ -116,14 +118,14 @@ public final class Molecule implements Comparable<Molecule> {
     public void setParam(String param, Units unit, double value) {
         int i = descriptor.getParamIndex(param);
         if(i >= values.size()) {
-            values.insertElementAt(value, i);
+            values.add(i, value);
             try {
                 descriptor.addParam(param, i, unit);
             } catch(Exception ex) {
                 //
             }
         } else {
-            values.setElementAt(value, i);
+            values.set(i, value);
             descriptor.setColumnUnits(unit, descriptor.getParamColumn(param));
         }
     }
@@ -137,7 +139,7 @@ public final class Molecule implements Comparable<Molecule> {
     }
     
     public double getX(Units unit) {
-        return descriptor.units.elementAt(descriptor.getParamColumn(Params.LABEL_X)).convertTo(unit, getX());
+        return descriptor.units.get(descriptor.getParamColumn(Params.LABEL_X)).convertTo(unit, getX());
     }
     
     public void setX(double value) {
@@ -149,7 +151,7 @@ public final class Molecule implements Comparable<Molecule> {
     }
     
     public double getY(Units unit) {
-        return descriptor.units.elementAt(descriptor.getParamColumn(Params.LABEL_Y)).convertTo(unit, getY());
+        return descriptor.units.get(descriptor.getParamColumn(Params.LABEL_Y)).convertTo(unit, getY());
     }
     
     public void setY(double value) {
@@ -166,7 +168,7 @@ public final class Molecule implements Comparable<Molecule> {
     
     public double getZ(Units unit) {
         if(hasParam(Params.LABEL_Z)) {
-            return descriptor.units.elementAt(descriptor.getParamColumn(Params.LABEL_Z)).convertTo(unit, getParam(Params.LABEL_Z));
+            return descriptor.units.get(descriptor.getParamColumn(Params.LABEL_Z)).convertTo(unit, getParam(Params.LABEL_Z));
         } else {
             return 0.0;
         }
@@ -181,11 +183,11 @@ public final class Molecule implements Comparable<Molecule> {
     }
     
     public Units getParamUnits(String name) {
-        return descriptor.units.elementAt(descriptor.getParamColumn(name));
+        return descriptor.units.get(descriptor.getParamColumn(name));
     }
     
     public Units getParamUnits(int column) {
-        return descriptor.units.elementAt(column);
+        return descriptor.units.get(column);
     }
 
     @Override
@@ -196,9 +198,9 @@ public final class Molecule implements Comparable<Molecule> {
             if (i != 0) {
                 sb.append(", ");
             }
-            sb.append(descriptor.labels.elementAt(i));
+            sb.append(descriptor.labels.get(i));
             sb.append("=");
-            sb.append(values.elementAt(descriptor.indices.elementAt(i)));
+            sb.append(values.get(descriptor.indices.get(i)));
         }
         sb.append("]");
         return sb.toString();
@@ -216,11 +218,7 @@ public final class Molecule implements Comparable<Molecule> {
      * Caller has to duplicate the descriptor if it is required!
      */
     public Molecule clone(MoleculeDescriptor descriptor) {
-        Vector<Double> vals = new Vector<Double>();
-        for(Double v : values) {
-            vals.add(v.doubleValue());
-        }
-        Molecule mol = new Molecule(descriptor, vals);
+        Molecule mol = new Molecule(descriptor, new ArrayDoubleList(values));
         mol.sortedDetections = sortedDetections;
         mol.detections = new Vector<Molecule>(detections);
         return mol;

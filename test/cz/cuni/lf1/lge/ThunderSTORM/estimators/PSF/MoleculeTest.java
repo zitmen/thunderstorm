@@ -32,7 +32,7 @@ public class MoleculeTest {
         //
         int index = m.descriptor.getParamIndex("test");
         assertEquals(m.values.size()-1, index);
-        assertEquals(2000.0, m.values.elementAt(index), 0.0);
+        assertEquals(2000.0, m.values.get(index), 0.0);
         //
         int column = m.descriptor.getParamColumn("test");
         assertEquals(m.descriptor.getParamsCount()-1, column);
@@ -55,7 +55,7 @@ public class MoleculeTest {
         //
         int index = m.descriptor.getParamIndex("test");
         assertEquals(m.values.size()-1, index);
-        assertEquals(2000.0, m.values.elementAt(index), 0.0);
+        assertEquals(2000.0, m.values.get(index), 0.0);
         //
         assertEquals(column, m.descriptor.getParamColumn("test"));
         assertEquals(2000.0, m.getParam("test"), 0.0);
