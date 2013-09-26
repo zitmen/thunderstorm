@@ -13,7 +13,6 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Vector;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -44,41 +43,41 @@ public class CrowdedFieldEstimatorsTest {
     
     @Test
     public void testLSQSym() {
-        testEstimator(new MFA_LSQFitter(new SymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL));
+        testEstimator(new MFA_LSQFitter(new SymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL, null));
     }
 
     @Test
     public void testLSQIntSym() {
-        testEstimator(new MFA_LSQFitter(new IntegratedSymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL));
+        testEstimator(new MFA_LSQFitter(new IntegratedSymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL, null));
     }
     
     @Test
     public void testMLEIntSym() {
-        testEstimator(new MFA_MLEFitter(new IntegratedSymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL));
+        testEstimator(new MFA_MLEFitter(new IntegratedSymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL, null));
     }
     @Test
     public void testMLESym() {
-        testEstimator(new MFA_MLEFitter(new SymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL));
+        testEstimator(new MFA_MLEFitter(new SymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL, null));
     }
 
     @Test
     public void testLSQEllipticAngle() {
-        testEstimator(new MFA_LSQFitter(new EllipticGaussianWAnglePSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL));
+        testEstimator(new MFA_LSQFitter(new EllipticGaussianWAnglePSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL, null));
     }
 
     @Test
     public void testMLEEllipticAngle() {
-        testEstimator(new MFA_MLEFitter(new EllipticGaussianWAnglePSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL));
+        testEstimator(new MFA_MLEFitter(new EllipticGaussianWAnglePSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL, null));
     }
 
     @Test
     public void testLSQElliptic() {
-        testEstimator(new MFA_LSQFitter(new EllipticGaussianPSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL));
+        testEstimator(new MFA_LSQFitter(new EllipticGaussianPSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL, null));
     }
 
     @Test
     public void testMLEElliptic() {
-        testEstimator(new MFA_MLEFitter(new EllipticGaussianPSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL));
+        testEstimator(new MFA_MLEFitter(new EllipticGaussianPSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL, null));
     }
     
     public void testEstimator(OneLocationFitter fitter) {

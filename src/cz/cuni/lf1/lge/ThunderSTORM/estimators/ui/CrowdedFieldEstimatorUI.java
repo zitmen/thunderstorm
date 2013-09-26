@@ -4,7 +4,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MFA_LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MFA_MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
@@ -18,6 +17,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import org.apache.commons.math3.distribution.fitting.MultivariateNormalMixtureExpectationMaximization;
 
 public class CrowdedFieldEstimatorUI implements ActionListener {
 
@@ -36,8 +36,8 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
     protected transient boolean DEFAULT_ENABLED = false;
     protected transient int DEFAULT_NMAX = 5;
     protected transient double DEFAULT_PVALUE = 1e-6;
-    protected transient boolean DEFAULT_FIXED_INTENSITY = true;
-    protected transient String DEFAULT_INTENSITY_RANGE = "1000:2000";
+    protected transient boolean DEFAULT_FIXED_INTENSITY = false;
+    protected transient String DEFAULT_INTENSITY_RANGE = "500:2500";
 
     public boolean isEnabled() {
         return enabled;
@@ -115,11 +115,15 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
     }
 
     public void resetToDefaults() {
-        isEnabledCheckbox.setSelected(DEFAULT_ENABLED);
         nMaxTextField.setText(Integer.toString(DEFAULT_NMAX));
         pValueTextField.setText(Double.toString(DEFAULT_PVALUE));
-        isFixedIntensityCheckBox.setSelected(DEFAULT_FIXED_INTENSITY);
         expectedIntensityTextField.setText(DEFAULT_INTENSITY_RANGE);
+        isEnabledCheckbox.setSelected(DEFAULT_ENABLED);
+        isFixedIntensityCheckBox.setSelected(DEFAULT_FIXED_INTENSITY);
+        nMaxTextField.setEnabled(DEFAULT_ENABLED);
+        pValueTextField.setEnabled(DEFAULT_ENABLED);
+        isFixedIntensityCheckBox.setEnabled(DEFAULT_ENABLED);
+        expectedIntensityTextField.setEnabled(DEFAULT_ENABLED && DEFAULT_FIXED_INTENSITY);
     }
 
     IEstimator getMLEImplementation(PSFModel psf, double sigma, int fitradius) {

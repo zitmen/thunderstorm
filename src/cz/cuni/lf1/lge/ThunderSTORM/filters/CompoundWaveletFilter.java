@@ -8,36 +8,35 @@ import ij.process.FloatProcessor;
 import java.util.HashMap;
 
 /**
- * This wavelet filter is implemented as an undecimated wavelet transform using B-spline of third order.
- * 
- * This filter uses the separable kernel feature.
- * Note that in the convolution with the wavelet kernels we use padding twice to
- * simulate {@code conv2} function from Matlab to keep the results identical to
- * the results we got in Matlab version of ThunderSTORM.
- * 
+ * This wavelet filter is implemented as an undecimated wavelet transform using
+ * B-spline of third order.
+ *
+ * This filter uses the separable kernel feature. Note that in the convolution
+ * with the wavelet kernels we use padding twice to simulate {@code conv2}
+ * function from Matlab to keep the results identical to the results we got in
+ * Matlab version of ThunderSTORM.
+ *
  * @see WaveletFilter
  * @see ConvolutionFilter
  */
 public final class CompoundWaveletFilter implements IFilter {
-    
-    private FloatProcessor input = null, result = null, result_V1 = null, result_V2 = null, result_V3 = null;
-    private HashMap<String, FloatProcessor> export_variables = null;
 
+    private FloatProcessor input = null, result = null, result_F1 = null, result_F2 = null, result_F3 = null;
+    private HashMap<String, FloatProcessor> export_variables = null;
     private int margin;
     private boolean third_plane;
-    
     private WaveletFilter w1, w2, w3;
-    
-    
 
-  public CompoundWaveletFilter() {
-    this(false);
-  }
-    
+    public CompoundWaveletFilter() {
+        this(false);
+    }
+
     /**
-     * Initialize the filter with all the wavelet kernels needed to create the wavelet transform.
+     * Initialize the filter with all the wavelet kernels needed to create the
+     * wavelet transform.
      *
-     * @param third_plane if {@code true} use 3rd plane for detection; otherwise use 2nd plane instead
+     * @param third_plane if {@code true} use 3rd plane for detection; otherwise
+     * use 2nd plane instead
      */
     public CompoundWaveletFilter(boolean third_plane) {
         this.third_plane = third_plane;
@@ -48,53 +47,52 @@ public final class CompoundWaveletFilter implements IFilter {
         //
         this.margin = w3.getKernelX().getWidth() / 2;
     }
-    
+
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         input = image;
         FloatProcessor padded = Padding.addBorder(image, Padding.PADDING_DUPLICATE, margin);
         FloatProcessor V1 = w1.filterImage(padded);
         FloatProcessor V2 = w2.filterImage(V1);
-        
-        result_V1 = crop(V1, margin, margin, image.getWidth(), image.getHeight());
-        result_V2 = crop(V2, margin, margin, image.getWidth(), image.getHeight());
-        
-        if (third_plane){
+
+        result_F1 = subtract(input, crop(V1, margin, margin, image.getWidth(), image.getHeight()));
+        result_F2 = subtract(input, crop(V2, margin, margin, image.getWidth(), image.getHeight()));
+
+        if(third_plane) {
             FloatProcessor V3 = w3.filterImage(V2);
-            result_V3 = crop(V3, margin, margin, image.getWidth(), image.getHeight());
+            result_F3 = subtract(input, crop(V3, margin, margin, image.getWidth(), image.getHeight()));
             result = crop(subtract(V2, V3), margin, margin, image.getWidth(), image.getHeight());
-            }
-        else
+        } else {
             result = crop(subtract(V1, V2), margin, margin, image.getWidth(), image.getHeight());
-        
+        }
         return result;
     }
-    
-    
+
     @Override
     public String getFilterVarName() {
         return "Wave";
     }
-    
+
     @Override
     public HashMap<String, FloatProcessor> exportVariables(boolean reevaluate) {
-        if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
+        if(export_variables == null) {
+            export_variables = new HashMap<String, FloatProcessor>();
+        }
         //
         if(reevaluate) {
-          filterImage(Thresholder.getCurrentImage());
+            filterImage(Thresholder.getCurrentImage());
         }
         //
         export_variables.put("I", input);
         export_variables.put("F", result);
-        export_variables.put("V1", result_V1);
-        export_variables.put("V2", result_V2);
-        export_variables.put("V3", result_V3);
+        export_variables.put("F1", result_F1);
+        export_variables.put("F2", result_F2);
+        export_variables.put("F3", result_F3);
         return export_variables;
     }
-    
+
     @Override
     public IFilter clone() {
         return new CompoundWaveletFilter(third_plane);
     }
-    
 }

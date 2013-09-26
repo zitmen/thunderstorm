@@ -105,6 +105,10 @@ public final class Molecule implements Comparable<Molecule> {
         return values.elementAt(descriptor.getParamIndex(param)).doubleValue();
     }
     
+    public double getParam(String param, Units unit) {
+        return getParamUnits(param).convertTo(unit, getParam(param));
+    }
+    
     public void setParam(String param, double value) {
         setParamAt(descriptor.getParamIndex(param), value);
     }

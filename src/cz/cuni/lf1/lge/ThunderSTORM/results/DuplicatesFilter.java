@@ -5,6 +5,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Uni
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
@@ -208,7 +209,7 @@ class DuplicatesFilter implements ActionListener {
          * 
          * The method works just in 2D, since the Thompson formula applies only for
          * lateral coordinates. Thus calculating distance
-         * {@mathjax (x_1-x_2)^2+(y_1-y_2)^2.
+         * {@mathjax (x_1-x_2)^2+(y_1-y_2)^2}.
          */
         public boolean [] filterDuplicateMolecules() {
             molecules.clear();
@@ -224,7 +225,7 @@ class DuplicatesFilter implements ActionListener {
                 for(int i = 0, count = frmol.size(); i < count; i++) {
                     Molecule mol = frmol.get(i);
                     int id = (int)mol.getParam(MoleculeDescriptor.LABEL_ID)-1;  // zero-based indexing
-                    double uncertainty = sqr(getUncertainty(mol));
+                    double uncertainty = sqr(getUncertaintyNm(mol));
                     //
                     if(filter[id] == false) continue;
                     for(int j = i - 1; j >= 0; j--) {
@@ -232,7 +233,7 @@ class DuplicatesFilter implements ActionListener {
                             break;
                         }
                         if(mol.dist2xy(frmol.get(j), NANOMETER) < uncertainty) {
-                            if(uncertainty > sqr(getUncertainty(frmol.get(j)))) {
+                            if(uncertainty > sqr(getUncertaintyNm(frmol.get(j)))) {
                                 filter[id] = false;
                                 break;
                             }
@@ -245,7 +246,7 @@ class DuplicatesFilter implements ActionListener {
                             break;
                         }
                         if(mol.dist2xy(frmol.get(j), NANOMETER) < uncertainty) {
-                            if(uncertainty > sqr(getUncertainty(frmol.get(j)))) {
+                            if(uncertainty > sqr(getUncertaintyNm(frmol.get(j)))) {
                                 filter[id] = false;
                                 break;
                             }
@@ -256,12 +257,12 @@ class DuplicatesFilter implements ActionListener {
             return filter;
         }
 
-        private double getUncertainty(Molecule mol) {
+        private double getUncertaintyNm(Molecule mol) {
             double uncertainty;
             if(mol.hasParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
-                uncertainty = mol.getParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
+                uncertainty = mol.getParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON, Units.NANOMETER);
             } else if(mol.hasParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
-                uncertainty = mol.getParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
+                uncertainty = mol.getParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON, Units.NANOMETER);
             } else {
                 throw new RuntimeException("Fitting uncertainty not found in Results table.");
             }

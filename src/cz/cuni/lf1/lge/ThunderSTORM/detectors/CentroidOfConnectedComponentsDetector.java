@@ -36,7 +36,7 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
     private transient float thresholdValue;
     private transient JTextField thrTextField;
     private transient JCheckBox watershedCheckBox;
-    private transient final static String DEFAULT_THRESHOLD = "std(I-Wave.V1)";
+    private transient final static String DEFAULT_THRESHOLD = "std(Wave.F1)";
     private transient final static boolean DEFAULT_USE_WATERSHED = true;
 
     public CentroidOfConnectedComponentsDetector() throws FormulaParserException {
