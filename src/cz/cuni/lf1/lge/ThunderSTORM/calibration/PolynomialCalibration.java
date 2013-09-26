@@ -29,14 +29,14 @@ public class PolynomialCalibration implements CylindricalLensCalibration {
     public PolynomialCalibration() {
     }
 
-    public PolynomialCalibration(double angle, double[] sigma1Params, double[] sigma2Params) {
+    public PolynomialCalibration(double angle, QuadraticFunction sigma1Params, QuadraticFunction sigma2Params) {
         this.angle = angle;
-        c1 = sigma1Params[0];
-        a1 = sigma1Params[1];
-        b1 = sigma1Params[2];
-        c2 = sigma2Params[0];
-        a2 = sigma2Params[1];
-        b2 = sigma2Params[2];
+        c1 = sigma1Params.getC();
+        a1 = sigma1Params.getA();
+        b1 = sigma1Params.getB();
+        c2 = sigma2Params.getC();
+        a2 = sigma2Params.getA();
+        b2 = sigma2Params.getB();
     }
 
     @Override
