@@ -13,6 +13,7 @@ import ij.IJ;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
 import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
@@ -152,9 +153,15 @@ public class CrossCorrelationDriftCorrection {
         //cumulativeSum(binDriftY);
 
         //interpolate the drift using cubic splines
-        LoessInterpolator interpolator = new LoessInterpolator(0.5,2 );
-        xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX));
-        yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY));
+        if(binCount < 4) {
+            LinearInterpolator interpolator = new LinearInterpolator();
+            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX));
+            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY));
+        } else {
+            LoessInterpolator interpolator = new LoessInterpolator(0.5, 2);
+            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX));
+            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY));
+        }
         x = null;
         y = null;
         frame = null;
