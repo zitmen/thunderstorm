@@ -167,7 +167,9 @@ final class TableRowsPopUpMenu implements ActionListener {
         int row = jtable.getSelectedRow();
         int rowIndex = jtable.convertRowIndexToModel(row);
         Molecule mol = tableModel.getRow(rowIndex);
-        new MergedMoleculesPopUp(jtable, row, 0, mol.getDetections());
+        Vector<Molecule> detections = mol.getDetections();
+        Collections.sort(detections);
+        new MergedMoleculesPopUp(jtable, row, 0, detections);
     }
 
 }

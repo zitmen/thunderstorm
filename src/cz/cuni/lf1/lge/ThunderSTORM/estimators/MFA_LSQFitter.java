@@ -59,7 +59,7 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
         if(!mol.isSingleMolecule()) {
             // copy background value to all molecules
             double bkg = mol.getParam(PSFModel.Params.LABEL_BACKGROUND);
-            for(Molecule m : mol.detections) {
+            for(Molecule m : mol.getDetections()) {
                 m.setParam(PSFModel.Params.LABEL_BACKGROUND, bkg);
             }
         }

@@ -79,14 +79,12 @@ public class MultipleLocationsImageFitting implements IEstimator {
                         if(checkIsInSubimage(psf.getX(), psf.getY())) {
                             psf.setX(psf.getX() + xInt + 0.5);
                             psf.setY(psf.getY() + yInt + 0.5);
-                            if(!psf.detections.isEmpty()) {
-                                psf.detections.clear();
-                            }
+                            psf.setDetections(null);
                             appendCalculatedUncertainty(psf);
                             results.add(psf);
                         }
                     } else {
-                        for(Molecule m : psf.detections) {
+                        for(Molecule m : psf.getDetections()) {
                             if(checkIsInSubimage(m.getX(), m.getY())) {
                                 m.setX(m.getX() + xInt + 0.5);
                                 m.setY(m.getY() + yInt + 0.5);
@@ -94,7 +92,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
                                 results.add(m);
                             }
                         }
-                        psf.detections.clear();
+                        psf.setDetections(null);
                     }
                 } catch(MaxCountExceededException ex) {
                     //IJ.log(ex.getMessage());

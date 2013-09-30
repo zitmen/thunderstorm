@@ -29,7 +29,7 @@ public class EmitterModel {
     public void generate(FloatProcessor img) {
         double [] params = new double[molecule.values.size()];
         for(int i = 0; i < params.length; i++) {
-            params[i] = molecule.values.elementAt(i);
+            params[i] = molecule.values.get(i);
         }
         //
         int width = img.getWidth(), height = img.getHeight();

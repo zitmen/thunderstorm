@@ -29,6 +29,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.Collections;
+import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -278,7 +280,9 @@ class ResultsTableWindow extends GenericTableWindow {
                 Molecule mol = rt.getRow(rowIndex);
                 if(mol.hasParam(LABEL_DETECTIONS)) {
                     if(mol.getParam(LABEL_DETECTIONS) > 1) {
-                        new MergedMoleculesPopUp(table, row, 0, mol.getDetections());
+                        Vector<Molecule> detections = mol.getDetections();
+                        Collections.sort(detections);
+                        new MergedMoleculesPopUp(table, row, 0, detections);
                     }
                 }
             }

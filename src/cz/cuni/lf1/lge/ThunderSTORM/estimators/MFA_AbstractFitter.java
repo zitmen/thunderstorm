@@ -12,7 +12,7 @@ abstract public class MFA_AbstractFitter implements OneLocationFitter {
     int maxN;
 
     public MFA_AbstractFitter(PSFModel basePsfModel, double defaultSigma, int maxN) {
-        assert(maxN >= 1);
+        assert (maxN >= 1);
         //
         this.defaultSigma = defaultSigma;
         this.basePsfModel = basePsfModel;
@@ -21,20 +21,27 @@ abstract public class MFA_AbstractFitter implements OneLocationFitter {
 
     // get rid of the molecules close to the fiting region boundary
     protected Molecule eliminateBadFits(Molecule mol, double maxXY) {
-        Vector<Molecule> detections = new Vector<Molecule>();
-        for(Molecule m : mol.detections) {
-            if((abs(m.getX()) <= maxXY) || (abs(m.getY()) <= maxXY)) {
-                detections.add(m);
+        if(!mol.isSingleMolecule()) {
+            Vector<Molecule> detections = new Vector<Molecule>();
+            for(Molecule m : mol.getDetections()) {
+                if((abs(m.getX()) <= maxXY) || (abs(m.getY()) <= maxXY)) {
+                    detections.add(m);
+                }
             }
+            mol.setDetections(detections);
         }
-        mol.detections = detections;
         return mol;
     }
-    
+
     protected boolean isOutOfRegion(Molecule mol, double maxXY) {
-        for(Molecule m : mol.detections) {
-            if((abs(m.getX()) > maxXY) || (abs(m.getY()) > maxXY)) {
-                return true;
+        if((abs(mol.getX()) > maxXY) || (abs(mol.getY()) > maxXY)) {
+            return true;
+        }
+        if(!mol.isSingleMolecule()) {
+            for(Molecule m : mol.getDetections()) {
+                if((abs(m.getX()) > maxXY) || (abs(m.getY()) > maxXY)) {
+                    return true;
+                }
             }
         }
         return false;

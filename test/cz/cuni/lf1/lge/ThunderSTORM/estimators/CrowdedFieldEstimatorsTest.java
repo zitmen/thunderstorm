@@ -96,7 +96,7 @@ public class CrowdedFieldEstimatorsTest {
         for(int mol = 1; mol <= 3; mol++) {
             fit = fitTestData(fitter, mol);
             System.out.println(fit.toString());
-            assertEquals(mol, fit.detections.size());
+            assertEquals(mol, fit.getDetections().size());
             Vector<Molecule> detections = fit.getDetections();
             Collections.sort(detections, new MoleculeXYZComparator());
             for(int i = 0; i < mol; i++) {

@@ -176,11 +176,11 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
 
     @Override
     public Double getValueAt(int rowIndex, int columnIndex) {
-        return rows.elementAt(rowIndex).values.elementAt(columns.indices.elementAt(columnIndex));
+        return rows.elementAt(rowIndex).values.get(columns.indices.elementAt(columnIndex));
     }
 
     public Double getValueAt(int rowIndex, String columnName) {
-        return rows.elementAt(rowIndex).values.elementAt(columns.getParamIndex(columnName));
+        return rows.elementAt(rowIndex).values.get(columns.getParamIndex(columnName));
     }
 
     public void setColumnUnits(String columnName, Units new_units) {
