@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import javax.swing.JPanel;
 
 /**
@@ -13,6 +14,7 @@ import javax.swing.JPanel;
 public abstract class IModuleUI<T extends IModule> {
 
     transient ThreadLocal<T> threadLocalImplementation;
+    protected ParameterTracker parameters = new ParameterTracker(getPreferencesPrefix());
 
     public IModuleUI() {
         threadLocalImplementation = new ThreadLocal<T>() {
@@ -41,16 +43,27 @@ public abstract class IModuleUI<T extends IModule> {
     /**
      * Read the parameters back from the GUI controls after used submited them.
      */
-    public abstract void readParameters();
+    public void readParameters() {
+        parameters.readDialogOptions();
+        parameters.savePrefs();
+    }
 
-    public abstract void resetToDefaults();
+    protected String getPreferencesPrefix(){
+        return "thunderstorm";
+    }
+
+    public void resetToDefaults() {
+        parameters.resetToDefaults(true);
+    }
 
     /**
      * Record the module parameters to the imagej macro recorder. Use
      * {@code Recorder.recordOption(name, value)}. The parameter should not
      * conflict with other modules.
      */
-    public abstract void recordOptions();
+    public void recordOptions() {
+        parameters.recordMacroOptions();
+    }
 
     /**
      * Read the parameters from macro options string. Use
@@ -60,7 +73,13 @@ public abstract class IModuleUI<T extends IModule> {
      * @param options String with options passed by
      * {@code IJ.run(command, options)}.
      */
-    public abstract void readMacroOptions(String options);
+    public void readMacroOptions(String options) {
+        parameters.readMacroOptions();
+    }
+
+    protected ParameterTracker getParameterTracker() {
+        return parameters;
+    }
 
     /**
      * Returns the object that does the actual calculation. The object returned

@@ -3,10 +3,14 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
+import static cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.AbstractRenderingUI.MAGNIFICATION;
+import static cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.AbstractRenderingUI.THREE_D;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import ij.Macro;
-import ij.Prefs;
-import ij.plugin.frame.Recorder;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,24 +22,53 @@ import javax.swing.JTextField;
 public class HistogramRenderingUI extends AbstractRenderingUI {
 
     private final String name = "Histograms";
-    JTextField avgTextField;
-    private JTextField dxTextField;
-    private JTextField dzTextField;
-    private JLabel dzLabel;
-    private JCheckBox forceDXCheckBox;
-    private boolean forceDx;
-    private double dx, dz;
-    int avg;
+    //default values
     private static final int DEFAULT_AVG = 0;
     private static final double DEFAULT_DX = 20;
     private static final boolean DEFAULT_FORCE_DX = false;
     private static final double DEFAULT_DZ = 100;
+    //parameter names
+    private static final ParameterName.Integer AVG = new ParameterName.Integer("avg");
+    private static final ParameterName.Double DX = new ParameterName.Double("dx");
+    private static final ParameterName.Boolean FORCE_DX = new ParameterName.Boolean("forcedx");
+    private static final ParameterName.Double DZ = new ParameterName.Double("dz");
 
     public HistogramRenderingUI() {
+        initPars();
     }
 
     public HistogramRenderingUI(int sizeX, int sizeY) {
         super(sizeX, sizeY);
+        initPars();
+    }
+
+    private void initPars() {
+        parameters.createIntField(AVG, IntegerValidatorFactory.positive(), DEFAULT_AVG);
+        ParameterTracker.Condition avgGTZeroCondition = new ParameterTracker.Condition() {
+            @Override
+            public boolean isSatisfied() {
+                return parameters.getInt(AVG) > 0;
+            }
+
+            @Override
+            public ParameterName[] dependsOn() {
+                return new ParameterName[]{AVG};
+            }
+        };
+        ParameterTracker.Condition threeDAndAvgGTZeroCondition = new ParameterTracker.Condition() {
+            @Override
+            public boolean isSatisfied() {
+                return (parameters.getInt(AVG) > 0 && parameters.getBoolean(THREE_D));
+            }
+
+            @Override
+            public ParameterName[] dependsOn() {
+                return new ParameterName[]{AVG, THREE_D};
+            }
+        };
+        parameters.createDoubleField(DX, DoubleValidatorFactory.positiveNonZero(), DEFAULT_DX, avgGTZeroCondition);
+        parameters.createBooleanField(FORCE_DX, null, DEFAULT_FORCE_DX, avgGTZeroCondition);
+        parameters.createDoubleField(DZ, DoubleValidatorFactory.positiveNonZero(), DEFAULT_DZ, threeDAndAvgGTZeroCondition);
     }
 
     @Override
@@ -46,25 +79,28 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
     @Override
     public JPanel getOptionsPanel() {
         JPanel panel = super.getOptionsPanel();
-
-        avgTextField = new JTextField(Prefs.get("thunderstorm.rendering.histo.avg", "" + DEFAULT_AVG), 20);
+        //avg
+        JTextField avgTextField = new JTextField("", 20);
+        parameters.registerComponent(AVG, avgTextField);
         panel.add(new JLabel("Averages:"), GridBagHelper.leftCol());
         panel.add(avgTextField, GridBagHelper.rightCol());
-
-        forceDXCheckBox = new JCheckBox("Force", Prefs.get("thunderstorm.rendering.histo.forcedx", false));
+        //dx
+        JCheckBox forceDXCheckBox = new JCheckBox("Force", false);
+        parameters.registerComponent(FORCE_DX, forceDXCheckBox);
         JPanel latUncertaintyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         panel.add(new JLabel("Lateral uncertainty [nm]:"), GridBagHelper.leftCol());
-        dxTextField = new JTextField(Prefs.get("thunderstorm.rendering.histo.dx", "" + DEFAULT_DX), 10);
+        JTextField dxTextField = new JTextField("", 10);
+        parameters.registerComponent(DX, dxTextField);
         latUncertaintyPanel.add(dxTextField);
         latUncertaintyPanel.add(forceDXCheckBox);
         panel.add(latUncertaintyPanel, GridBagHelper.rightCol());
-
-        dzLabel = new JLabel("Axial uncertainty [nm]:");
+        //dz
+        final JLabel dzLabel = new JLabel("Axial uncertainty [nm]:");
         panel.add(dzLabel, GridBagHelper.leftCol());
-        dzTextField = new JTextField(Prefs.get("thunderstorm.rendering.histo.dz", "" + DEFAULT_DZ), 20);
+        final JTextField dzTextField = new JTextField("", 20);
+        parameters.registerComponent(DZ, dxTextField);
         panel.add(dzTextField, GridBagHelper.rightCol());
-        dzLabel.setEnabled(threeD);
-        dzTextField.setEnabled(threeD);
+        final JCheckBox threeDCheckBox = (JCheckBox) parameters.getRegisteredComponent(THREE_D);
         threeDCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -72,79 +108,29 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
                 dzTextField.setEnabled(threeDCheckBox.isSelected());
             }
         });
-
+        parameters.loadPrefs();
         return panel;
     }
 
     @Override
-    public void readParameters() {
-        super.readParameters();
-        avg = Integer.parseInt(avgTextField.getText());
-        if(avg > 0) {
-            dx = Double.parseDouble(dxTextField.getText());
-            if(threeD) {
-                dz = Double.parseDouble(dzTextField.getText());
-            }
-            forceDx = forceDXCheckBox.isSelected();
-        }
-
-        Prefs.set("thunderstorm.rendering.histo.avg", "" + avg);
-
-        if(avg > 0) {
-            Prefs.set("thunderstorm.rendering.histo.forcedx", forceDx);
-            Prefs.set("thunderstorm.rendering.histo.dx", "" + dx);
-            if(threeD) {
-                Prefs.set("thunderstorm.rendering.histo.dz", "" + dz);
-            }
-        }
-
-    }
-
-    @Override
-    public void resetToDefaults() {
-        super.resetToDefaults();
-        avgTextField.setText("" + DEFAULT_AVG);
-        forceDXCheckBox.setSelected(DEFAULT_FORCE_DX);
-        dxTextField.setText("" + DEFAULT_DX);
-        dzTextField.setText("" + DEFAULT_DZ);
-    }
-
-    @Override
-    public void recordOptions() {
-        super.recordOptions();
-        if(avg != DEFAULT_AVG) {
-            Recorder.recordOption("avg", Integer.toString(avg));
-        }
-        if(avg > 0) {
-            if(dx != DEFAULT_DX) {
-                Recorder.recordOption("dx", Double.toString(dx));
-            }
-            if(dz != DEFAULT_DZ && threeD) {
-                Recorder.recordOption("dz", Double.toString(dz));
-            }
-            if(forceDx != DEFAULT_FORCE_DX) {
-                Recorder.recordOption("forcedx", forceDx + "");
-            }
-        }
-    }
-
-    @Override
-    public void readMacroOptions(String options) {
-        super.readMacroOptions(options);
-        avg = Integer.parseInt(Macro.getValue(options, "avg", Integer.toString(DEFAULT_AVG)));
-        dx = Double.parseDouble(Macro.getValue(options, "dx", Double.toString(DEFAULT_DX)));
-        if(threeD) {
-            dz = Double.parseDouble(Macro.getValue(options, "dz", Double.toString(DEFAULT_DZ)));
-        }
-        forceDx = Boolean.parseBoolean(Macro.getValue(options, "forcedx", DEFAULT_FORCE_DX + ""));
-    }
-
-    @Override
     public IncrementalRenderingMethod getMethod() {
-        if(threeD) {
-            return new HistogramRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1 / magnification).average(avg).defaultDX(dx / CameraSetupPlugIn.pixelSize).forceDefaultDX(forceDx).defaultDZ(zStep).zRange(zFrom, zTo, zStep).build();
+        if(parameters.getBoolean(THREE_D)) {
+            Range zRange = Range.parseFromStepTo(parameters.getString(Z_RANGE));
+            return new HistogramRendering.Builder()
+                    .roi(0, sizeX, 0, sizeY)
+                    .resolution(1 / parameters.getDouble(MAGNIFICATION))
+                    .average(parameters.getInt(AVG))
+                    .defaultDX(parameters.getDouble(DX) / CameraSetupPlugIn.pixelSize)
+                    .forceDefaultDX(parameters.getBoolean(FORCE_DX))
+                    .defaultDZ(parameters.getDouble(DZ))
+                    .zRange(zRange.from, zRange.to, zRange.step).build();
         } else {
-            return new HistogramRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1 / magnification).average(avg).defaultDX(dx / CameraSetupPlugIn.pixelSize).forceDefaultDX(forceDx).defaultDZ(zStep).build();
+            return new HistogramRendering.Builder()
+                    .roi(0, sizeX, 0, sizeY)
+                    .resolution(1 / parameters.getDouble(MAGNIFICATION))
+                    .average(parameters.getInt(AVG))
+                    .defaultDX(parameters.getDouble(DX) / CameraSetupPlugIn.pixelSize)
+                    .forceDefaultDX(parameters.getBoolean(FORCE_DX)).build();
         }
     }
 }

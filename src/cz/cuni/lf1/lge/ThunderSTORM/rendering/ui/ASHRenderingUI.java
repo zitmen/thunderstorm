@@ -2,12 +2,15 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
+import static cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.AbstractRenderingUI.THREE_D;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import ij.Macro;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import ij.Prefs;
-import ij.plugin.frame.Recorder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -15,27 +18,24 @@ import javax.swing.JTextField;
 public class ASHRenderingUI extends AbstractRenderingUI {
 
     private final String name = "Averaged shifted histograms";
-    JTextField shiftsTextField;
-    JTextField zShiftsTextField;
-    JLabel zShiftsLabel;
-    int shifts;
-    int zShifts;
     private static final int DEFAULT_SHIFTS = 2;
     private static final int DEFAULT_ZSHIFTS = 2;
+    private static final ParameterName.Integer SHIFTS = new ParameterName.Integer("shifts");
+    private static final ParameterName.Integer ZSHIFTS = new ParameterName.Integer("zshifts");
 
-    private void defaultInit() {
-        shifts = DEFAULT_SHIFTS;
-        zShifts = DEFAULT_ZSHIFTS;
+    private void initPars() {
+        parameters.createIntField(SHIFTS, IntegerValidatorFactory.positiveNonZero(), DEFAULT_SHIFTS);
+        parameters.createIntField(ZSHIFTS, IntegerValidatorFactory.positiveNonZero(), DEFAULT_ZSHIFTS, threeDCondition);
     }
 
     public ASHRenderingUI() {
         super();
-        defaultInit();
+        initPars();
     }
 
     public ASHRenderingUI(int sizeX, int sizeY) {
         super(sizeX, sizeY);
-        defaultInit();
+        initPars();
     }
 
     @Override
@@ -47,16 +47,17 @@ public class ASHRenderingUI extends AbstractRenderingUI {
     public JPanel getOptionsPanel() {
         JPanel panel = super.getOptionsPanel();
 
-        shiftsTextField = new JTextField(Prefs.get("thunderstorm.rendering.ash.shifts", "" + DEFAULT_SHIFTS), 20);
+        JTextField shiftsTextField = new JTextField("", 20);
+        parameters.registerComponent(SHIFTS, shiftsTextField);
         panel.add(new JLabel("Lateral shifts:"), GridBagHelper.leftCol());
         panel.add(shiftsTextField, GridBagHelper.rightCol());
 
-        zShiftsTextField = new JTextField(Prefs.get("thunderstorm.rendering.ash.zshifts", "" + DEFAULT_ZSHIFTS), 20);
-        zShiftsLabel = new JLabel("Axial shifts:");
-        zShiftsLabel.setEnabled(threeD);
-        zShiftsTextField.setEnabled(threeD);
+        final JTextField zShiftsTextField = new JTextField(Prefs.get("thunderstorm.rendering.ash.zshifts", "" + DEFAULT_ZSHIFTS), 20);
+        parameters.registerComponent(ZSHIFTS, zShiftsTextField);
+        final JLabel zShiftsLabel = new JLabel("Axial shifts:");
         panel.add(zShiftsLabel, GridBagHelper.leftCol());
         panel.add(zShiftsTextField, GridBagHelper.rightCol());
+        final JCheckBox threeDCheckBox = (JCheckBox) parameters.getRegisteredComponent(THREE_D);
         threeDCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -65,54 +66,25 @@ public class ASHRenderingUI extends AbstractRenderingUI {
             }
         });
 
+        parameters.loadPrefs();
         return panel;
     }
 
     @Override
-    public void readParameters() {
-        super.readParameters();
-        shifts = Integer.parseInt(shiftsTextField.getText());
-        if(threeD) {
-            zShifts = Integer.parseInt(zShiftsTextField.getText());
-        }
-
-        Prefs.set("thunderstorm.rendering.ash.shifts", "" + shifts);
-        Prefs.set("thunderstorm.rendering.ash.zshifts", "" + zShifts);
-    }
-
-    @Override
-    public void recordOptions() {
-        super.recordOptions();
-        if(shifts != DEFAULT_SHIFTS) {
-            Recorder.recordOption("shifts", Integer.toString(shifts));
-        }
-        if(threeD && zShifts != DEFAULT_ZSHIFTS) {
-            Recorder.recordOption("zShifts", Integer.toString(zShifts));
-        }
-    }
-
-    @Override
-    public void resetToDefaults() {
-        super.resetToDefaults();
-        shiftsTextField.setText("" + DEFAULT_SHIFTS);
-        zShiftsTextField.setText("" + DEFAULT_ZSHIFTS);
-    }
-
-    @Override
-    public void readMacroOptions(String options) {
-        super.readMacroOptions(options);
-        shifts = Integer.parseInt(Macro.getValue(options, "shifts", Integer.toString(DEFAULT_SHIFTS)));
-        if(threeD) {
-            zShifts = Integer.parseInt(Macro.getValue(options, "zShifts", Integer.toString(DEFAULT_ZSHIFTS)));
-        }
-    }
-
-    @Override
     public IncrementalRenderingMethod getMethod() {
-        if(threeD) {
-            return new ASHRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1 / magnification).shifts(shifts).zRange(zFrom, zTo, zStep).zShifts(zShifts).build();
+        if(parameters.getBoolean(THREE_D)) {
+            Range r = Range.parseFromStepTo(parameters.getString(Z_RANGE));
+            return new ASHRendering.Builder()
+                    .roi(0, sizeX, 0, sizeY)
+                    .resolution(1 / parameters.getDouble(MAGNIFICATION))
+                    .shifts(parameters.getInt(SHIFTS))
+                    .zRange(r.from, r.to, r.step)
+                    .zShifts(parameters.getInt(ZSHIFTS)).build();
         } else {
-            return new ASHRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1 / magnification).shifts(shifts).build();
+            return new ASHRendering.Builder()
+                    .roi(0, sizeX, 0, sizeY)
+                    .resolution(1 / parameters.getDouble(MAGNIFICATION))
+                    .shifts(parameters.getInt(SHIFTS)).build();
         }
     }
 }
