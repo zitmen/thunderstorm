@@ -17,12 +17,14 @@ public class MultiPSF extends PSFModel {
     private PSFModel psf;
     private double [] n_1_params;   // params fitted in model with nmol=nmol-1
     private Range expI;
+    private boolean sameI;
     
     public MultiPSF(int nmol, double defaultSigma, PSFModel psf) {
         this.psf = psf;
         this.nmol = nmol;
         this.n_1_params = null;
         this.expI = null;
+        this.sameI = true;
     }
     
     public MultiPSF(int nmol, double defaultSigma, PSFModel psf, double [] n_1_params) {
@@ -30,6 +32,7 @@ public class MultiPSF extends PSFModel {
         this.nmol = nmol;
         this.n_1_params = n_1_params;
         this.expI = null;
+        this.sameI = true;
     }
     
     public void setIntensityRange(Range expI) {
@@ -49,7 +52,7 @@ public class MultiPSF extends PSFModel {
     
     @Override
     public double getValue(double[] params, double x, double y) {
-        fixParams(params);
+        if(sameI) fixParams(params);
         //
         double value = 0.0;
         for(int i = 0; i < nmol; i++) {
@@ -94,7 +97,7 @@ public class MultiPSF extends PSFModel {
         return new MultivariateMatrixFunction() {
             @Override
             public double[][] value(double[] point) throws IllegalArgumentException {
-                fixParams(point);
+                if(sameI) fixParams(point);
                 //
                 double[][] retVal = new double[xgrid.length][point.length];
                 for(int i = 0; i < nmol; i++) {
@@ -126,7 +129,7 @@ public class MultiPSF extends PSFModel {
         return new MultivariateVectorFunction() {
             @Override
             public double[] value(double[] point) throws IllegalArgumentException {
-                fixParams(point);
+                if(sameI) fixParams(point);
                 //
                 double[] retVal = new double[xgrid.length];
                 Arrays.fill(retVal, 0.0);
@@ -215,5 +218,9 @@ public class MultiPSF extends PSFModel {
     @Override
     public double getDoF() {
         return psf.getDoF() + (nmol-1)*(psf.getDoF()-2);    // both intensity and offset are estimated for all molecules as a single parameter (see method `fixParams`)
+    }
+
+    public void setFixedIntensities(boolean sameI) {
+        this.sameI = sameI;
     }
 }

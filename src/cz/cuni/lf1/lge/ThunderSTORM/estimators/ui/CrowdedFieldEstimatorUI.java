@@ -17,7 +17,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import org.apache.commons.math3.distribution.fitting.MultivariateNormalMixtureExpectationMaximization;
 
 public class CrowdedFieldEstimatorUI implements ActionListener {
 
@@ -26,10 +25,12 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
     protected double pvalue;
     protected boolean enabled;
     protected boolean fixedIntensity;
+    protected boolean keepSameIntensity;
     protected String expectedIntensityStr;
     protected transient Range expectedIntensity;
     protected transient JCheckBox isEnabledCheckbox;
     protected transient JCheckBox isFixedIntensityCheckBox;
+    protected transient JCheckBox keepSameIntensityCheckBox;
     protected transient JTextField nMaxTextField;
     protected transient JTextField pValueTextField;
     protected transient JTextField expectedIntensityTextField;
@@ -37,6 +38,7 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
     protected transient int DEFAULT_NMAX = 5;
     protected transient double DEFAULT_PVALUE = 1e-6;
     protected transient boolean DEFAULT_FIXED_INTENSITY = false;
+    protected transient boolean DEFAULT_KEEP_SAME_INTENSITY = true;
     protected transient String DEFAULT_INTENSITY_RANGE = "500:2500";
 
     public boolean isEnabled() {
@@ -51,6 +53,8 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
         nMaxTextField.setEnabled(enabled);
         pValueTextField = new JTextField(Prefs.get("thunderstorm.estimators.dense.mfa.pvalue", "" + DEFAULT_PVALUE));
         pValueTextField.setEnabled(enabled);
+        keepSameIntensity = Boolean.parseBoolean(Prefs.get("thunderstorm.estimators.dense.mfa.keep_same_intensity", Boolean.toString(DEFAULT_KEEP_SAME_INTENSITY)));
+        keepSameIntensityCheckBox = new JCheckBox("Keep the same intensity of all molecules", keepSameIntensity);
         fixedIntensity = Boolean.parseBoolean(Prefs.get("thunderstorm.estimators.dense.mfa.fixed_intensity", Boolean.toString(DEFAULT_FIXED_INTENSITY)));
         isFixedIntensityCheckBox = new JCheckBox("Fix intensity to the range [photons]:", fixedIntensity);
         isFixedIntensityCheckBox.addActionListener(this);
@@ -64,6 +68,8 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
         panel.add(nMaxTextField, GridBagHelper.rightCol());
         panel.add(new JLabel("Threshold for more complicated model (p-value):"), GridBagHelper.leftCol());
         panel.add(pValueTextField, GridBagHelper.rightCol());
+        panel.add(keepSameIntensityCheckBox, GridBagHelper.leftCol());
+        panel.add(new JLabel(), GridBagHelper.rightCol());
         panel.add(isFixedIntensityCheckBox, GridBagHelper.leftCol());
         panel.add(expectedIntensityTextField, GridBagHelper.rightCol());
 
@@ -81,9 +87,11 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
             expectedIntensity = Range.parseFromTo(expectedIntensityStr);
             expectedIntensity.convert(Units.PHOTON, Units.DIGITAL);
             fixedIntensity = isFixedIntensityCheckBox.isSelected();
+            keepSameIntensity = keepSameIntensityCheckBox.isSelected();
             Prefs.set("thunderstorm.estimators.dense.mfa.nmax", "" + nmax);
             Prefs.set("thunderstorm.estimators.dense.mfa.pvalue", "" + pvalue);
             Prefs.set("thunderstorm.estimators.dense.mfa.fixed_intensity", Boolean.toString(fixedIntensity));
+            Prefs.set("thunderstorm.estimators.dense.mfa.keep_same_intensity", Boolean.toString(keepSameIntensity));
             if(fixedIntensity) {
                 Prefs.set("thunderstorm.estimators.dense.mfa.expected_intensity", "" + expectedIntensityStr);
             }
@@ -94,6 +102,7 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
     public void recordOptions() {
         Recorder.recordOption("enabled", Boolean.toString(enabled));
         Recorder.recordOption("fixed_intensity", Boolean.toString(fixedIntensity));
+        Recorder.recordOption("keep_same_intensity", Boolean.toString(keepSameIntensity));
         if(nmax != DEFAULT_NMAX && enabled) {
             Recorder.recordOption("nmax", Integer.toString(nmax));
         }
@@ -107,7 +116,8 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
 
     public void readMacroOptions(String options) {
         enabled = Boolean.parseBoolean(Macro.getValue(options, "enabled", Boolean.toString(DEFAULT_ENABLED)));
-        fixedIntensity = Boolean.parseBoolean(Macro.getValue(options, "enabled", Boolean.toString(DEFAULT_FIXED_INTENSITY)));
+        fixedIntensity = Boolean.parseBoolean(Macro.getValue(options, "fixed_intensity", Boolean.toString(DEFAULT_FIXED_INTENSITY)));
+        keepSameIntensity = Boolean.parseBoolean(Macro.getValue(options, "keep_same_intensity", Boolean.toString(DEFAULT_KEEP_SAME_INTENSITY)));
         nmax = Integer.parseInt(Macro.getValue(options, "nmax", Integer.toString(DEFAULT_NMAX)));
         pvalue = Double.parseDouble(Macro.getValue(options, "pvalue", Double.toString(DEFAULT_PVALUE)));
         expectedIntensityStr = Macro.getValue(options, "expected_intensity", DEFAULT_INTENSITY_RANGE);
@@ -120,19 +130,21 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
         expectedIntensityTextField.setText(DEFAULT_INTENSITY_RANGE);
         isEnabledCheckbox.setSelected(DEFAULT_ENABLED);
         isFixedIntensityCheckBox.setSelected(DEFAULT_FIXED_INTENSITY);
+        keepSameIntensityCheckBox.setSelected(DEFAULT_KEEP_SAME_INTENSITY);
         nMaxTextField.setEnabled(DEFAULT_ENABLED);
         pValueTextField.setEnabled(DEFAULT_ENABLED);
         isFixedIntensityCheckBox.setEnabled(DEFAULT_ENABLED);
+        keepSameIntensityCheckBox.setEnabled(DEFAULT_ENABLED);
         expectedIntensityTextField.setEnabled(DEFAULT_ENABLED && DEFAULT_FIXED_INTENSITY);
     }
 
     IEstimator getMLEImplementation(PSFModel psf, double sigma, int fitradius) {
-        MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, nmax, pvalue, fixedIntensity ? expectedIntensity : null);
+        MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, nmax, pvalue, keepSameIntensity, fixedIntensity ? expectedIntensity : null);
         return new MultipleLocationsImageFitting(fitradius, fitter);
     }
 
     IEstimator getLSQImplementation(PSFModel psf, double sigma, int fitradius) {
-        MFA_LSQFitter fitter = new MFA_LSQFitter(psf, sigma, nmax, pvalue, fixedIntensity ? expectedIntensity : null);
+        MFA_LSQFitter fitter = new MFA_LSQFitter(psf, sigma, nmax, pvalue, keepSameIntensity, fixedIntensity ? expectedIntensity : null);
         return new MultipleLocationsImageFitting(fitradius, fitter);
     }
 
@@ -142,6 +154,7 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
             nMaxTextField.setEnabled(isEnabledCheckbox.isSelected());
             pValueTextField.setEnabled(isEnabledCheckbox.isSelected());
             isFixedIntensityCheckBox.setEnabled(isEnabledCheckbox.isSelected());
+            keepSameIntensityCheckBox.setEnabled(isEnabledCheckbox.isSelected());
             expectedIntensityTextField.setEnabled(isEnabledCheckbox.isSelected() && isFixedIntensityCheckBox.isSelected());
         }
         if(e.getSource() == isFixedIntensityCheckBox) {
