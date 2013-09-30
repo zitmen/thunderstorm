@@ -68,10 +68,8 @@ public class RenderingPlugIn implements PlugIn {
         }
         double[] z = table.columnExists(LABEL_Z) ? table.getColumnAsDoubles(LABEL_Z) : null;
         double[] dx = null;
-        if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
-            dx = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON, MoleculeDescriptor.Units.PIXEL);
-        } else if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
-            dx = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON, MoleculeDescriptor.Units.PIXEL);
+        if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_THOMPSON)) {
+            dx = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_THOMPSON, MoleculeDescriptor.Units.PIXEL);
         }
 
         List<IRendererUI> knownRenderers = ModuleLoader.getUIModules(IRendererUI.class);

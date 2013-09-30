@@ -54,7 +54,7 @@ class DuplicatesFilter {
 
     public JPanel createUIPanel() {
         filterPanel = new JPanel(new GridBagLayout());
-        distTextField = new JTextField(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
+        distTextField = new JTextField(MoleculeDescriptor.Fitting.LABEL_THOMPSON);
         InputListener listener = new InputListener();
         distTextField.addKeyListener(listener);
         applyButton = new JButton("Apply");

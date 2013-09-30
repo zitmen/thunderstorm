@@ -141,13 +141,11 @@ public class MultipleLocationsImageFitting implements IEstimator {
 
     private void appendCalculatedUncertainty(Molecule mol) {
         try {
-            String paramName;
+            String paramName = MoleculeDescriptor.Fitting.LABEL_THOMPSON;
             double paramValue;
             if(CameraSetupPlugIn.isEmGain) {
-                paramName = MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON;
                 paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
             } else {
-                paramName = MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON;
                 paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
             }
             mol.addParam(paramName, MoleculeDescriptor.Units.NANOMETER, paramValue);

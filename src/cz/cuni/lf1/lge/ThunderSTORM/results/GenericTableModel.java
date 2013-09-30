@@ -361,38 +361,20 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
         // Note: even though that the uncertainity can be calculated in pixels,
         //       we choose to do it in nanometers by default setting
         try {
-            String paramName;
+            String paramName = MoleculeDescriptor.Fitting.LABEL_THOMPSON;
             double paramValue;
             Molecule mol;
-            if(CameraSetupPlugIn.isEmGain) {
-                if(columnExists(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
-                    deleteColumn(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
-                }
-                //
-                paramName = MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON;
-                for(int row = 0, max = getRowCount(); row < max; row++) {
-                    mol = getRow(row);
+            for(int row = 0, max = getRowCount(); row < max; row++) {
+                mol = getRow(row);
+                if(CameraSetupPlugIn.isEmGain) {
                     paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
-                    if(mol.hasParam(paramName)) {
-                        mol.setParam(paramName, Units.NANOMETER, paramValue);
-                    } else {
-                        mol.addParam(paramName, Units.NANOMETER, paramValue);
-                    }
-                }
-            } else {
-                if(columnExists(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
-                    deleteColumn(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
-                }
-                //
-                paramName = MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON;
-                for(int row = 0, max = getRowCount(); row < max; row++) {
-                    mol = getRow(row);
+                } else {
                     paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
-                    if(mol.hasParam(paramName)) {
-                        mol.setParam(paramName, Units.NANOMETER, paramValue);
-                    } else {
-                        mol.addParam(paramName, Units.NANOMETER, paramValue);
-                    }
+                }
+                if(mol.hasParam(paramName)) {
+                    mol.setParam(paramName, Units.NANOMETER, paramValue);
+                } else {
+                    mol.addParam(paramName, Units.NANOMETER, paramValue);
                 }
             }
             setColumnUnits(paramName, Units.NANOMETER);

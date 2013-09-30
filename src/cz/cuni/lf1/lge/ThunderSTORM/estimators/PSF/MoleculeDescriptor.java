@@ -281,8 +281,7 @@ public class MoleculeDescriptor implements Cloneable {
     // ===============================================================
     
     public static class Fitting {
-        public static final String LABEL_CCD_THOMPSON = "uncertainty_ccd";
-        public static final String LABEL_EMCCD_THOMPSON = "uncertainty_emccd";
+        public static final String LABEL_THOMPSON = "uncertainty";
         
         // return uncertainty in nanometers
         public static double ccdThompson(Molecule molecule) throws Exception {
@@ -523,8 +522,7 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(LABEL_GROUND_TRUTH_ID, Units.UNITLESS);
                 allUnits.put(LABEL_DISTANCE_TO_GROUND_TRUTH, Units.NANOMETER);
                 //
-                allUnits.put(Fitting.LABEL_CCD_THOMPSON, Units.NANOMETER);
-                allUnits.put(Fitting.LABEL_EMCCD_THOMPSON, Units.NANOMETER);
+                allUnits.put(Fitting.LABEL_THOMPSON, Units.NANOMETER);
             }
             if(allUnits.containsKey(paramName)) {
                 return allUnits.get(paramName);
@@ -561,8 +559,7 @@ public class MoleculeDescriptor implements Cloneable {
             allParams.put(LABEL_FRAME, MergingOperations.MIN);
             allParams.put(LABEL_DETECTIONS, MergingOperations.COUNT);
             //
-            allParams.put(Fitting.LABEL_CCD_THOMPSON, MergingOperations.RECALC);
-            allParams.put(Fitting.LABEL_EMCCD_THOMPSON, MergingOperations.RECALC);
+            allParams.put(Fitting.LABEL_THOMPSON, MergingOperations.RECALC);
         }
         
         // molecule <-- target
@@ -581,10 +578,12 @@ public class MoleculeDescriptor implements Cloneable {
                 case RECALC:
                     if(LABEL_ID.equals(paramName)) {
                         molecule.setParam(paramName, IJResultsTable.getResultsTable().getNewId());
-                    } else if(Fitting.LABEL_CCD_THOMPSON.equals(paramName)) {
-                        molecule.setParam(paramName, Units.NANOMETER, Fitting.ccdThompson(molecule));
-                    } else if(Fitting.LABEL_EMCCD_THOMPSON.equals(paramName)) {
-                        molecule.setParam(paramName, Units.NANOMETER, Fitting.emccdThompson(molecule));
+                    } else if(Fitting.LABEL_THOMPSON.equals(paramName)) {
+                        if(CameraSetupPlugIn.isEmGain) {
+                            molecule.setParam(paramName, Units.NANOMETER, Fitting.emccdThompson(molecule));
+                        } else {
+                            molecule.setParam(paramName, Units.NANOMETER, Fitting.ccdThompson(molecule));
+                        }
                     } else {
                         throw new IllegalArgumentException("Parameter `" + paramName + "` can't be recalculated.");
                     }
