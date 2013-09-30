@@ -9,7 +9,7 @@ public class Constant extends Node {
     }
     
     @Override
-    public RetVal eval() {
+    public RetVal eval(Object param) {
         return val;
     }
 

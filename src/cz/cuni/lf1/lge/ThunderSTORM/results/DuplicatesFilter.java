@@ -1,5 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParser;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Node;
+import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.RetVal;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
@@ -10,25 +15,31 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
 import ij.IJ;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
-class DuplicatesFilter implements ActionListener {
+class DuplicatesFilter {
 
     private JPanel filterPanel;
+    private JTextField distTextField;
     private JButton applyButton;
     private ResultsTableWindow table;
     private TripleStateTableModel model;
@@ -43,11 +54,15 @@ class DuplicatesFilter implements ActionListener {
 
     public JPanel createUIPanel() {
         filterPanel = new JPanel(new GridBagLayout());
+        distTextField = new JTextField(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
+        InputListener listener = new InputListener();
+        distTextField.addKeyListener(listener);
         applyButton = new JButton("Apply");
-        applyButton.addActionListener(this);
-        JLabel label = new JLabel("Remove molecules that converged to the same position.");
+        applyButton.addActionListener(listener);
+        JLabel label = new JLabel("Remove molecules that converged to the same position. Distance threshold [nm]:");
         filterPanel.add(label, new GridBagHelper.Builder().gridxy(0, 0).gridheight(1).fill(GridBagConstraints.BOTH).weightx(1).weighty(1).build());
         filterPanel.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(1, 0).anchor(GridBagConstraints.EAST).build());
+        filterPanel.add(distTextField, new GridBagHelper.Builder().gridxy(0, 1).fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
         filterPanel.add(applyButton, new GridBagHelper.Builder().gridxy(1, 1).build());
         return filterPanel;
     }
@@ -56,6 +71,8 @@ class DuplicatesFilter implements ActionListener {
         if(!applyButton.isEnabled()) {
             return;
         }
+        distTextField.setBackground(Color.WHITE);
+        GUI.closeBalloonTip();
         try {
             applyButton.setEnabled(false);
             final OperationsHistoryPanel opHistory = table.getOperationHistoryPanel();
@@ -78,12 +95,16 @@ class DuplicatesFilter implements ActionListener {
                 @Override
                 protected void done() {
                     try {
+                        get();  // throws an exception if doInBackground hasn't finished
                         int filtered = all - model.getRowCount();
                         opHistory.addOperation(new DuplicatesRemovalOperation());
                         String be = ((filtered > 1) ? "were" : "was");
                         String item = ((all > 1) ? "items" : "item");
                         table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
                         table.showPreview();
+                    } catch(ExecutionException ex) {
+                        distTextField.setBackground(new Color(255, 200, 200));
+                        GUI.showBalloonTip(distTextField, ex.getCause().getMessage());
                     } catch(Exception ex) {
                         IJ.handleException(ex);
                     } finally {
@@ -94,30 +115,36 @@ class DuplicatesFilter implements ActionListener {
             
             TableHandlerPlugin.recordRemoveDuplicates();
         } catch(Exception ex) {
+            distTextField.setBackground(new Color(255, 200, 200));
+            GUI.showBalloonTip(distTextField, ex.toString());
             IJ.handleException(ex);
         }
     }
 
-    static void applyToModel(GenericTableModel model) {
+    void applyToModel(GenericTableModel model) {
         if(!model.columnExists(PSFModel.Params.LABEL_X) || !model.columnExists(PSFModel.Params.LABEL_Y)) {
             throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y, model.getColumnNames()));
         }
-        if(!model.columnExists(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON) && !model.columnExists(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
-            throw new RuntimeException(String.format("Fitting uncertainty not found in Results table. Looking for: %s or %s. Found: %s.", MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON, MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON, model.getColumnNames()));
+        Node tree = new FormulaParser(distTextField.getText(), FormulaParser.FORMULA_RESULTS_FILTER).parse();
+        tree.semanticScan();
+        RetVal retval = tree.eval(Units.NANOMETER);
+        Double [] dist;
+        if(retval.isVector()) {
+            if(((Double [])retval.get()).length != model.getRowCount()) {
+                throw new FormulaParserException("Semantic error: result of formula must be either a scalar value, or a numeric vector of the same length as the number of rows in the table!");
+            } else {
+                dist = (Double[])retval.get();
+            }
+        } else {
+            dist = new Double[model.getRowCount()];
+            Arrays.fill(dist, (Double)retval.get());
         }
         //
         FrameSequence frames = new FrameSequence();
         for(int i = 0, im = model.getRowCount(); i < im; i++) {
-            frames.InsertMolecule(model.getRow(i));
+            frames.insertMolecule(model.getRow(i), dist[i]);
         }
         model.filterRows(frames.filterDuplicateMolecules());
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == applyButton) {
-            runFilter();
-        }
     }
 
     class DuplicatesRemovalOperation extends OperationsHistoryPanel.Operation {
@@ -160,14 +187,30 @@ class DuplicatesFilter implements ActionListener {
         }
     }
     
+    private class InputListener extends KeyAdapter implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            runFilter();
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                runFilter();
+            }
+        }
+    }
+    
     //
     // ===================================================================
     //
-
+    
     static class FrameSequence {
 
         // <Frame #, List of Molecules>
         private HashMap<Integer, Vector<Molecule>> detections;
+        private HashMap<Integer,Double> uncertainties;
         private Vector<Molecule> molecules;
         private SortedSet frames;
         private int maxId;
@@ -177,15 +220,12 @@ class DuplicatesFilter implements ActionListener {
             molecules = new Vector<Molecule>();
             frames = new TreeSet();
             maxId = 0;
+            uncertainties = new HashMap<Integer,Double>();
         }
 
-        public void InsertMolecule(Molecule mol) {
+        public void insertMolecule(Molecule mol, Double uncertainty) {
             int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME);
-            // molecule itself has to be added to the list of detections,
-            // because the parameters can change during the merging
-            mol.addDetection(mol.clone(mol.descriptor));
-            mol.updateParameters();
-            mol.addParam(MoleculeDescriptor.LABEL_DETECTIONS, MoleculeDescriptor.Units.UNITLESS, 1);
+            uncertainties.put((int)mol.getParam(MoleculeDescriptor.LABEL_ID), uncertainty);
             //
             if(!detections.containsKey(frame)) {
                 detections.put(frame, new Vector<Molecule>());
@@ -234,7 +274,7 @@ class DuplicatesFilter implements ActionListener {
                             break;
                         }
                         if(mol.dist2xy(frmol.get(j), NANOMETER) < uncertainty) {
-                            if(uncertainty > sqr(getUncertaintyNm(frmol.get(j)))) {
+                            if(uncertainty >= sqr(getUncertaintyNm(frmol.get(j)))) {
                                 filter[id] = false;
                                 break;
                             }
@@ -247,7 +287,7 @@ class DuplicatesFilter implements ActionListener {
                             break;
                         }
                         if(mol.dist2xy(frmol.get(j), NANOMETER) < uncertainty) {
-                            if(uncertainty > sqr(getUncertaintyNm(frmol.get(j)))) {
+                            if(uncertainty >= sqr(getUncertaintyNm(frmol.get(j)))) {
                                 filter[id] = false;
                                 break;
                             }
@@ -259,15 +299,7 @@ class DuplicatesFilter implements ActionListener {
         }
 
         private double getUncertaintyNm(Molecule mol) {
-            double uncertainty;
-            if(mol.hasParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
-                uncertainty = mol.getParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON, Units.NANOMETER);
-            } else if(mol.hasParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
-                uncertainty = mol.getParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON, Units.NANOMETER);
-            } else {
-                throw new RuntimeException("Fitting uncertainty not found in Results table.");
-            }
-            return uncertainty;
+            return uncertainties.get((int)mol.getParam(MoleculeDescriptor.LABEL_ID)).doubleValue();
         }
     }
 

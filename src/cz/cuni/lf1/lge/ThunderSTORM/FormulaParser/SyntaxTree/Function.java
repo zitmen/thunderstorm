@@ -28,21 +28,21 @@ public class Function extends Node {
     }
     
     @Override
-    public RetVal eval() {
-        if(name.equals("var")) return new RetVal(var());
-        if(name.equals("std")) return new RetVal(std());
-        if(name.equals("mean")) return new RetVal(mean());
-        if(name.equals("median")) return new RetVal(median());
-        if(name.equals("max")) return new RetVal(max());
-        if(name.equals("min")) return new RetVal(min());
-        if(name.equals("sum")) return new RetVal(sum());
-        if(name.equals("abs")) return abs();
+    public RetVal eval(Object param) {
+        if(name.equals("var")) return new RetVal(var(param));
+        if(name.equals("std")) return new RetVal(std(param));
+        if(name.equals("mean")) return new RetVal(mean(param));
+        if(name.equals("median")) return new RetVal(median(param));
+        if(name.equals("max")) return new RetVal(max(param));
+        if(name.equals("min")) return new RetVal(min(param));
+        if(name.equals("sum")) return new RetVal(sum(param));
+        if(name.equals("abs")) return abs(param);
         // the following will never happen due to the semanticCheck in the constructor
         throw new FormulaParserException("Semantic error! Function '" + name + "' does not exist!");
     }
     
-    protected double max() {
-        RetVal val = arg.eval();
+    protected double max(Object param) {
+        RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
             return ((FloatProcessor)val.get()).getStatistics().max;
         } else if(val.isVector()) {
@@ -53,8 +53,8 @@ public class Function extends Node {
         throw new FormulaParserException("Variables can be only scalars, vectors, or matrices!");
     }
     
-    protected double min() {
-        RetVal val = arg.eval();
+    protected double min(Object param) {
+        RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
             return ((FloatProcessor)val.get()).getStatistics().min;
         } else if(val.isVector()) {
@@ -65,8 +65,8 @@ public class Function extends Node {
         throw new FormulaParserException("Variables can be only scalars, vectors, or matrices!");
     }
     
-    protected double sum() {
-        RetVal val = arg.eval();
+    protected double sum(Object param) {
+        RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
             return Math.sum((float [])((FloatProcessor)val.get()).getPixels());
         } else if(val.isVector()) {
@@ -77,12 +77,12 @@ public class Function extends Node {
         throw new FormulaParserException("Variables can be only scalars, vectors, or matrices!");
     }
     
-    protected double var() {
-        return Math.sqr(std());
+    protected double var(Object param) {
+        return Math.sqr(std(param));
     }
     
-    protected double std() {
-        RetVal val = arg.eval();
+    protected double std(Object param) {
+        RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
             return ((FloatProcessor)val.get()).getStatistics().stdDev;
         } else if(val.isVector()) {
@@ -93,8 +93,8 @@ public class Function extends Node {
         throw new FormulaParserException("Variables can be only scalars, vectors, or matrices!");
     }
     
-    protected double mean() {
-        RetVal val = arg.eval();
+    protected double mean(Object param) {
+        RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
             return ((FloatProcessor)val.get()).getStatistics().mean;
         } else if(val.isVector()) {
@@ -105,8 +105,8 @@ public class Function extends Node {
         throw new FormulaParserException("Variables can be only scalars, vectors, or matrices!");
     }
     
-    protected double median() {
-        RetVal val = arg.eval();
+    protected double median(Object param) {
+        RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
             return ((FloatProcessor)val.get()).getStatistics().median;
         } else if(val.isVector()) {
@@ -117,8 +117,8 @@ public class Function extends Node {
         throw new FormulaParserException("Variables can be only scalars, vectors, or matrices!");
     }
     
-    protected RetVal abs() {
-        RetVal val = arg.eval();
+    protected RetVal abs(Object param) {
+        RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
             return new RetVal(ImageProcessor.abs((FloatProcessor)val.get()));
         } else if(val.isVector()) { // Double []

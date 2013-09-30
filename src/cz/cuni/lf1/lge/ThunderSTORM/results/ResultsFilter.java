@@ -16,12 +16,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
 class ResultsFilter {
@@ -93,15 +93,16 @@ class ResultsFilter {
                 @Override
                 protected void done() {
                     try {
+                        get();  // throws an exception if doInBackground hasn't finished
                         int filtered = all - model.getRowCount();
                         opHistory.addOperation(new FilteringOperation(filterText));
                         String be = ((filtered > 1) ? "were" : "was");
                         String item = ((all > 1) ? "items" : "item");
                         table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
                         table.showPreview();
-                    } catch(FormulaParserException ex) {
+                    } catch(ExecutionException ex) {
                         filterTextField.setBackground(new Color(255, 200, 200));
-                        GUI.showBalloonTip(filterTextField, ex.getMessage());
+                        GUI.showBalloonTip(filterTextField, ex.getCause().getMessage());
                     } catch(Exception ex) {
                         IJ.handleException(ex);
                     } finally {
@@ -125,7 +126,7 @@ class ResultsFilter {
         } else {
             Node tree = new FormulaParser(text, FormulaParser.FORMULA_RESULTS_FILTER).parse();
             tree.semanticScan();
-            RetVal retval = tree.eval();
+            RetVal retval = tree.eval(null);
             if(!retval.isVector()) {
                 throw new FormulaParserException("Semantic error: result of filtering formula must be a vector of boolean values!");
             }
