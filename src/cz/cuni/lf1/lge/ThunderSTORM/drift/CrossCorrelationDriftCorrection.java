@@ -3,7 +3,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.drift;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.RadialSymmetryFitter;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRendering;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
 import ij.process.FHT;
 import ij.process.FloatProcessor;
 import java.awt.geom.Point2D;
@@ -115,7 +116,7 @@ public class CrossCorrelationDriftCorrection {
         binDriftX[0] = 0;   //first image has no drift
         binDriftY[0] = 0;
 
-        HistogramRendering renderer = new HistogramRendering.Builder().imageSize(paddedSize, paddedSize).roi(minRoi, maxRoi, minRoi, maxRoi).build();
+        RenderingMethod renderer = new ASHRendering.Builder().imageSize(paddedSize, paddedSize).roi(minRoi, maxRoi, minRoi, maxRoi).shifts(2).build();
         FHT firstImage = new FHT(renderer.getRenderedImage(xBinnedByFrame[0], yBinnedByFrame[0], null, null).getProcessor());
         firstImage.setShowProgress(false);
         firstImage.transform();
