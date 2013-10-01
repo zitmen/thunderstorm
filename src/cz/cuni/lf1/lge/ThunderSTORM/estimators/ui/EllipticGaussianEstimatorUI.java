@@ -7,13 +7,17 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.METHOD;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
 import ij.IJ;
 import ij.Macro;
 import ij.Prefs;
 import ij.plugin.frame.Recorder;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -25,16 +29,16 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.yaml.snakeyaml.Yaml;
 
-public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI implements ActionListener {
+public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
 
     CylindricalLensCalibration calibration;
-    transient JButton findCalibrationButton;
-    transient JTextField calibrationFileTextField;
+    protected transient static final ParameterName.String CALIBRATION_PATH = new ParameterName.String("calibrationpath");
 
     public EllipticGaussianEstimatorUI() {
         this.name = "PSF: Elliptical Gaussian (3D astigmatism)";
+        parameters.createStringField(CALIBRATION_PATH, StringValidatorFactory.fileExists(), "");
     }
-    
+
     @Override
     public String getName() {
         return name;
@@ -45,9 +49,20 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
         JPanel parentPanel = super.getOptionsPanel();
 
         parentPanel.add(new JLabel("Calibration file:"), GridBagHelper.leftCol());
-        calibrationFileTextField = new JTextField(Prefs.get("thunderstorm.estimators.calibrationpath", ""));
-        findCalibrationButton = new JButton("Browse...");
-        findCalibrationButton.addActionListener(this);
+        final JTextField calibrationFileTextField = new JTextField(Prefs.get("thunderstorm.estimators.calibrationpath", ""));
+        parameters.registerComponent(CALIBRATION_PATH, calibrationFileTextField);
+        JButton findCalibrationButton = new JButton("...");
+        findCalibrationButton.setMargin(new Insets(1, 1, 1, 1));
+        findCalibrationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser(IJ.getDirectory("image"));
+                int userAction = fileChooser.showOpenDialog(null);
+                if(userAction == JFileChooser.APPROVE_OPTION) {
+                    calibrationFileTextField.setText(fileChooser.getSelectedFile().getPath());
+                }
+            }
+        });
         JPanel calibrationPanel = new JPanel(new BorderLayout());
         calibrationPanel.add(calibrationFileTextField, BorderLayout.CENTER);
         calibrationPanel.add(findCalibrationButton, BorderLayout.EAST);
@@ -55,20 +70,27 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
         gbc.fill = GridBagConstraints.HORIZONTAL;
         parentPanel.add(calibrationPanel, gbc);
 
+        parameters.loadPrefs();
         return parentPanel;
     }
 
     @Override
     public void readParameters() {
         super.readParameters();
-        calibration = loadCalibration(calibrationFileTextField.getText());
+        calibration = loadCalibration(parameters.getString(CALIBRATION_PATH));
+    }
 
-        Prefs.set("thunderstorm.estimators.calibrationpath", calibrationFileTextField.getText());
-        
+    @Override
+    public void readMacroOptions(String options) {
+        super.readMacroOptions(options);
+        calibration = loadCalibration(parameters.getString(CALIBRATION_PATH));
     }
 
     @Override
     public IEstimator getImplementation() {
+        String method = parameters.getChoice(METHOD);
+        double sigma = parameters.getDouble(SIGMA);
+        int fitradius = parameters.getInt(FITRAD);
         if(LSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
                 IEstimator mfa = crowdedField.getLSQImplementation(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())), sigma, fitradius);
@@ -91,27 +113,6 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
 
     }
 
-    @Override
-    public void recordOptions() {
-        super.recordOptions();
-        Recorder.recordOption("calibrationfile", calibrationFileTextField.getText().replace("\\", "\\\\"));
-    }
-
-    @Override
-    public void readMacroOptions(String options) {
-        super.readMacroOptions(options);
-        calibration = loadCalibration(Macro.getValue(options, "calibrationfile", ""));
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        JFileChooser fileChooser = new JFileChooser(IJ.getDirectory("image"));
-        int userAction = fileChooser.showOpenDialog(null);
-        if(userAction == JFileChooser.APPROVE_OPTION) {
-            calibrationFileTextField.setText(fileChooser.getSelectedFile().getPath());
-        }
-    }
-
     private CylindricalLensCalibration loadCalibration(String calibrationFilePath) {
         try {
             Yaml yaml = new Yaml();
@@ -122,10 +123,5 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI im
         } catch(ClassCastException ex) {
             throw new RuntimeException("Could not parse calibration file.", ex);
         }
-    }
-
-    @Override
-    public void resetToDefaults() {
-        super.resetToDefaults();
     }
 }

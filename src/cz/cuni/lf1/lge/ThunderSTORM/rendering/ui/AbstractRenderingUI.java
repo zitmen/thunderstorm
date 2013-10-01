@@ -22,7 +22,6 @@ public abstract class AbstractRenderingUI extends IRendererUI {
 
     int sizeX;
     int sizeY;
-    ImagePlus image;            //must be set in subclass
     //default values
     private final static double DEFAULT_MAGNIFICATION = 5;
     private final static int DEFAULT_REPAINT_FREQUENCY = 50;
@@ -30,7 +29,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
     //parameter names
     protected static final ParameterName.Double MAGNIFICATION =  new ParameterName.Double("magnification");
     protected static final ParameterName.Integer REPAINT_FREQUENCY = new ParameterName.Integer("repaint");
-    protected static final ParameterName.Boolean THREE_D = new ParameterName.Boolean("z");
+    protected static final ParameterName.Boolean THREE_D = new ParameterName.Boolean("threeD");
     protected static final ParameterName.String Z_RANGE = new ParameterName.String("zrange");
     protected ParameterTracker.Condition threeDCondition = new ParameterTracker.Condition() {
         @Override
@@ -82,11 +81,6 @@ public abstract class AbstractRenderingUI extends IRendererUI {
     @Override
     public int getRepaintFrequency() {
         return parameters.getInt(REPAINT_FREQUENCY);
-    }
-
-    @Override
-    protected String getPreferencesPrefix() {
-        return super.getPreferencesPrefix() + ".rendering";
     }
 
     @Override

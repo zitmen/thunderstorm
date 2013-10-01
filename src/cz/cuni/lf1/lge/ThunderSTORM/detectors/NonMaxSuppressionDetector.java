@@ -6,9 +6,10 @@ import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Morphology;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import ij.Macro;
-import ij.Prefs;
-import ij.plugin.frame.Recorder;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.Validator;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Vector;
@@ -20,16 +21,16 @@ import javax.swing.JTextField;
  * Detect pixels with its intensity equal or greater then a threshold and also
  * with its value not changed after a morphological dilation is performed.
  */
-public final class NonMaxSuppressionDetector extends  IDetectorUI implements IDetector {
+public final class NonMaxSuppressionDetector extends IDetectorUI implements IDetector {
 
     private final String name = "Non-maximum suppression";
     private int radius;
     private String threshold;
     private transient float thresholdValue;
-    private transient JTextField thrTextField;
-    private transient JTextField radiusTextField;
     private transient final static String DEFAULT_THRESHOLD = "6*std(F)";
     private transient final static int DEFAULT_RADIUS = 3;
+    private transient final static ParameterName.Integer RADIUS = new ParameterName.Integer("radius");
+    private transient final static ParameterName.String THRESHOLD = new ParameterName.String("threshold");
 
     public NonMaxSuppressionDetector() throws FormulaParserException {
         this(DEFAULT_RADIUS, DEFAULT_THRESHOLD);
@@ -42,8 +43,15 @@ public final class NonMaxSuppressionDetector extends  IDetectorUI implements IDe
      * @param threshold a threshold value
      */
     public NonMaxSuppressionDetector(int radius, String threshold) throws FormulaParserException {
+        parameters.createStringField(THRESHOLD, null, DEFAULT_THRESHOLD);
+        parameters.createIntField(RADIUS, IntegerValidatorFactory.positiveNonZero(), DEFAULT_RADIUS);
         this.radius = radius;
         this.threshold = threshold;
+    }
+
+    @Override
+    protected String getPreferencesPrefix() {
+        return super.getPreferencesPrefix() + ".nonmaxsup";
     }
 
     /**
@@ -83,58 +91,31 @@ public final class NonMaxSuppressionDetector extends  IDetectorUI implements IDe
 
     @Override
     public JPanel getOptionsPanel() {
-        thrTextField = new JTextField(Prefs.get("thunderstorm.detectors.nonmaxsup.thr", threshold), 20);
-        radiusTextField = new JTextField(Prefs.get("thunderstorm.detectors.nonmaxsup.radius", radius + ""), 20);
+        JTextField thrTextField = new JTextField("", 20);
+        JTextField radiusTextField = new JTextField("", 20);
+        parameters.registerComponent(THRESHOLD, thrTextField);
+        parameters.registerComponent(RADIUS, radiusTextField);
         //
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Peak intensity threshold: "), GridBagHelper.leftCol());
         panel.add(thrTextField, GridBagHelper.rightCol());
         panel.add(new JLabel("Dilation radius [px]: "), GridBagHelper.leftCol());
         panel.add(radiusTextField, GridBagHelper.rightCol());
+
+        parameters.loadPrefs();
         return panel;
     }
 
     @Override
-    public void readParameters() {
-        threshold = thrTextField.getText();
-        radius = Integer.parseInt(radiusTextField.getText());
-
-        Prefs.set("thunderstorm.detectors.nonmaxsup.thr", threshold);
-        Prefs.set("thunderstorm.detectors.nonmaxsup.radius", radius + "");
-    }
-
-    @Override
     public IDetector getImplementation() {
-        return new NonMaxSuppressionDetector(radius, threshold);
-    }
-
-    @Override
-    public void recordOptions() {
-        if(!DEFAULT_THRESHOLD.equals(threshold)) {
-            Recorder.recordOption("threshold", threshold);
-        }
-        if(radius != DEFAULT_RADIUS) {
-            Recorder.recordOption("radius", Integer.toString(radius));
-        }
-    }
-
-    @Override
-    public void readMacroOptions(String options) {
-        threshold = Macro.getValue(options, "threshold", DEFAULT_THRESHOLD);
-        radius = Integer.parseInt(Macro.getValue(options, "radius", Integer.toString(DEFAULT_RADIUS)));
-    }
-
-    @Override
-    public void resetToDefaults() {
-        radiusTextField.setText(Integer.toString(DEFAULT_RADIUS));
-        thrTextField.setText(DEFAULT_THRESHOLD);
+        return new NonMaxSuppressionDetector(parameters.getInt(RADIUS), parameters.getString(THRESHOLD));
     }
 
     @Override
     public String getThresholdFormula() {
         return threshold;
     }
-    
+
     @Override
     public float getThresholdValue() {
         return thresholdValue;

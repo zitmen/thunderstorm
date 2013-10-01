@@ -3,9 +3,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.DifferenceOfBoxFilters;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import ij.Macro;
-import ij.Prefs;
-import ij.plugin.frame.Recorder;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,12 +13,15 @@ import javax.swing.JTextField;
 public class DifferenceOfBoxFiltersUI extends IFilterUI {
 
     private final String name = "Difference of box (mean) filters";
-    private int size1;
-    private int size2;
-    private transient JTextField sizeTextField1;
-    private transient JTextField sizeTextField2;
     public transient static final int DEFAULT_SIZE1 = 3;
     public transient static final int DEFAULT_SIZE2 = 6;
+    private transient static final ParameterName.Integer SIZE1 = new ParameterName.Integer("size1");
+    private transient static final ParameterName.Integer SIZE2 = new ParameterName.Integer("size2");
+
+    public DifferenceOfBoxFiltersUI() {
+        parameters.createIntField(SIZE1, IntegerValidatorFactory.positiveNonZero(), DEFAULT_SIZE1);
+        parameters.createIntField(SIZE2, IntegerValidatorFactory.positiveNonZero(), DEFAULT_SIZE2);
+    }
 
     @Override
     public String getName() {
@@ -27,51 +29,28 @@ public class DifferenceOfBoxFiltersUI extends IFilterUI {
     }
 
     @Override
+    protected String getPreferencesPrefix() {
+        return super.getPreferencesPrefix() + ".box";
+    }
+
+    @Override
     public JPanel getOptionsPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-        sizeTextField1 = new JTextField(Prefs.get("thunderstorm.filters.box.size1", "" + DEFAULT_SIZE1), 20);
-        sizeTextField2 = new JTextField(Prefs.get("thunderstorm.filters.box.size2", "" + DEFAULT_SIZE2), 20);
+        JTextField sizeTextField1 = new JTextField("", 20);
+        JTextField sizeTextField2 = new JTextField("", 20);
+        parameters.registerComponent(SIZE1, sizeTextField1);
+        parameters.registerComponent(SIZE2, sizeTextField2);
         //
         panel.add(new JLabel("First kernel size [px]: "), GridBagHelper.leftCol());
         panel.add(sizeTextField1, GridBagHelper.rightCol());
         panel.add(new JLabel("Second kernel size [px]: "), GridBagHelper.leftCol());
         panel.add(sizeTextField2, GridBagHelper.rightCol());
+        parameters.loadPrefs();
         return panel;
     }
 
     @Override
-    public void readParameters() {
-        size1 = Integer.parseInt(sizeTextField1.getText());
-        size2 = Integer.parseInt(sizeTextField2.getText());
-
-        Prefs.set("thunderstorm.filters.box.size1", sizeTextField1.getText());
-        Prefs.set("thunderstorm.filters.box.size2", sizeTextField2.getText());
-    }
-
-    @Override
     public IFilter getImplementation() {
-        return new DifferenceOfBoxFilters(size1, size2);
-    }
-
-    @Override
-    public void recordOptions() {
-        if(size1 != DEFAULT_SIZE1) {
-            Recorder.recordOption("size1", Integer.toString(size1));
-        }
-        if(size2 != DEFAULT_SIZE2) {
-            Recorder.recordOption("size2", Integer.toString(size2));
-        }
-    }
-
-    @Override
-    public void readMacroOptions(String options) {
-        size1 = Integer.parseInt(Macro.getValue(options, "size1", Integer.toString(DEFAULT_SIZE1)));
-        size2 = Integer.parseInt(Macro.getValue(options, "size2", Integer.toString(DEFAULT_SIZE2)));
-    }
-
-    @Override
-    public void resetToDefaults() {
-        sizeTextField1.setText("" + DEFAULT_SIZE1);
-        sizeTextField2.setText("" + DEFAULT_SIZE2);
+        return new DifferenceOfBoxFilters(parameters.getInt(SIZE1), parameters.getInt(SIZE2));
     }
 }

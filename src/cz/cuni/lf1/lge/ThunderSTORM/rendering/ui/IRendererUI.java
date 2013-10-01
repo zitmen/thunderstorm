@@ -4,9 +4,13 @@ import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 
 public abstract class IRendererUI extends IModuleUI<IncrementalRenderingMethod> {
-  
-  public abstract void setSize(int sizeX, int sizeY) ;
-  
-  public abstract int getRepaintFrequency();
-  
+
+    public abstract void setSize(int sizeX, int sizeY);
+
+    public abstract int getRepaintFrequency();
+
+    @Override
+    protected String getPreferencesPrefix() {
+        return super.getPreferencesPrefix() + ".rendering";
+    }
 }

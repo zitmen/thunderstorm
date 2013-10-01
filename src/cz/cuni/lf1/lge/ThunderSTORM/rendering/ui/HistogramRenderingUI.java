@@ -30,7 +30,7 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
     //parameter names
     private static final ParameterName.Integer AVG = new ParameterName.Integer("avg");
     private static final ParameterName.Double DX = new ParameterName.Double("dx");
-    private static final ParameterName.Boolean FORCE_DX = new ParameterName.Boolean("forcedx");
+    private static final ParameterName.Boolean FORCE_DX = new ParameterName.Boolean("dxforce");
     private static final ParameterName.Double DZ = new ParameterName.Double("dz");
 
     public HistogramRenderingUI() {
@@ -98,7 +98,7 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
         final JLabel dzLabel = new JLabel("Axial uncertainty [nm]:");
         panel.add(dzLabel, GridBagHelper.leftCol());
         final JTextField dzTextField = new JTextField("", 20);
-        parameters.registerComponent(DZ, dxTextField);
+        parameters.registerComponent(DZ, dzTextField);
         panel.add(dzTextField, GridBagHelper.rightCol());
         final JCheckBox threeDCheckBox = (JCheckBox) parameters.getRegisteredComponent(THREE_D);
         threeDCheckBox.addActionListener(new ActionListener() {

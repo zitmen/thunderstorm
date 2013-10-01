@@ -4,59 +4,109 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MFA_LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MFA_MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
-import ij.Macro;
-import ij.Prefs;
-import ij.plugin.frame.Recorder;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.Validator;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import org.apache.commons.math3.distribution.fitting.MultivariateNormalMixtureExpectationMaximization;
 
-public class CrowdedFieldEstimatorUI implements ActionListener {
+public class CrowdedFieldEstimatorUI {
 
+    ParameterTracker params;
     private final String name = "Multi-emitter fitting analysis";
-    protected int nmax;
-    protected double pvalue;
-    protected boolean enabled;
-    protected boolean fixedIntensity;
-    protected String expectedIntensityStr;
-    protected transient Range expectedIntensity;
-    protected transient JCheckBox isEnabledCheckbox;
-    protected transient JCheckBox isFixedIntensityCheckBox;
-    protected transient JTextField nMaxTextField;
-    protected transient JTextField pValueTextField;
-    protected transient JTextField expectedIntensityTextField;
+    //default values
     protected transient boolean DEFAULT_ENABLED = false;
     protected transient int DEFAULT_NMAX = 5;
     protected transient double DEFAULT_PVALUE = 1e-6;
     protected transient boolean DEFAULT_FIXED_INTENSITY = false;
     protected transient String DEFAULT_INTENSITY_RANGE = "500:2500";
+    //parameter names
+    protected transient static final ParameterName.Boolean ENABLED = new ParameterName.Boolean("mfaenabled");
+    protected transient static final ParameterName.Integer NMAX = new ParameterName.Integer("nmax");
+    protected transient static final ParameterName.Double PVALUE = new ParameterName.Double("pvalue");
+    protected transient static final ParameterName.Boolean FIXED_INTENSITY = new ParameterName.Boolean("fixed_intensity");
+    protected transient static final ParameterName.String INTENSITY_RANGE = new ParameterName.String("expected_intensity");
+
+    public CrowdedFieldEstimatorUI() {
+        params = new ParameterTracker("thunderstorm.estimators.dense.mfa");
+        ParameterTracker.Condition enabledCondition = new ParameterTracker.Condition() {
+            @Override
+            public boolean isSatisfied() {
+                return params.getBoolean(ENABLED);
+            }
+
+            @Override
+            public ParameterName[] dependsOn() {
+                return new ParameterName[]{ENABLED};
+            }
+        };
+        ParameterTracker.Condition enabledAndFixedIntensityCondition = new ParameterTracker.Condition() {
+            @Override
+            public boolean isSatisfied() {
+                return params.getBoolean(ENABLED) && params.getBoolean(FIXED_INTENSITY);
+            }
+
+            @Override
+            public ParameterName[] dependsOn() {
+                return new ParameterName[]{ENABLED, FIXED_INTENSITY};
+            }
+        };
+        params.createBooleanField(ENABLED, null, DEFAULT_ENABLED);
+        params.createIntField(NMAX, IntegerValidatorFactory.positive(), DEFAULT_NMAX, enabledCondition);
+        params.createDoubleField(PVALUE, DoubleValidatorFactory.positive(), DEFAULT_PVALUE, enabledCondition);
+        params.createBooleanField(FIXED_INTENSITY, null, DEFAULT_FIXED_INTENSITY, enabledCondition);
+        params.createStringField(INTENSITY_RANGE, new Validator<String>() {
+            @Override
+            public void validate(String input) throws ValidatorException {
+                try {
+                    Range r = Range.parseFromTo(input);
+                } catch(RuntimeException ex) {
+                    throw new ValidatorException(ex);
+                }
+            }
+        }, DEFAULT_INTENSITY_RANGE, enabledAndFixedIntensityCondition);
+    }
 
     public boolean isEnabled() {
-        return enabled;
+        return params.getBoolean(ENABLED);
     }
 
     public JPanel getOptionsPanel(JPanel panel) {
-        enabled = Boolean.parseBoolean(Prefs.get("thunderstorm.estimators.dense.mfa.enabled", Boolean.toString(DEFAULT_ENABLED)));
-        isEnabledCheckbox = new JCheckBox("enable", enabled);
-        isEnabledCheckbox.addActionListener(this);
-        nMaxTextField = new JTextField(Prefs.get("thunderstorm.estimators.dense.mfa.nmax", "" + DEFAULT_NMAX));
-        nMaxTextField.setEnabled(enabled);
-        pValueTextField = new JTextField(Prefs.get("thunderstorm.estimators.dense.mfa.pvalue", "" + DEFAULT_PVALUE));
-        pValueTextField.setEnabled(enabled);
-        fixedIntensity = Boolean.parseBoolean(Prefs.get("thunderstorm.estimators.dense.mfa.fixed_intensity", Boolean.toString(DEFAULT_FIXED_INTENSITY)));
-        isFixedIntensityCheckBox = new JCheckBox("Fix intensity to the range [photons]:", fixedIntensity);
-        isFixedIntensityCheckBox.addActionListener(this);
-        isFixedIntensityCheckBox.setEnabled(enabled);
-        expectedIntensityTextField = new JTextField(Prefs.get("thunderstorm.estimators.dense.mfa.expected_intensity", "" + DEFAULT_INTENSITY_RANGE));
-        expectedIntensityTextField.setEnabled(enabled && fixedIntensity);
+        final JCheckBox isEnabledCheckbox = new JCheckBox("enable", true);
+        final JTextField nMaxTextField = new JTextField("");
+        final JTextField pValueTextField = new JTextField("");
+        final JCheckBox isFixedIntensityCheckBox = new JCheckBox("Fix intensity to the range [photons]:", true);
+        final JTextField expectedIntensityTextField = new JTextField("");
+        isEnabledCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nMaxTextField.setEnabled(isEnabledCheckbox.isSelected());
+                pValueTextField.setEnabled(isEnabledCheckbox.isSelected());
+                isFixedIntensityCheckBox.setEnabled(isEnabledCheckbox.isSelected());
+                expectedIntensityTextField.setEnabled(isEnabledCheckbox.isSelected() && isFixedIntensityCheckBox.isSelected());
+            }
+        });
+        isFixedIntensityCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                expectedIntensityTextField.setEnabled(isEnabledCheckbox.isSelected() && isFixedIntensityCheckBox.isSelected());
+            }
+        });
+        params.registerComponent(ENABLED, isEnabledCheckbox);
+        params.registerComponent(NMAX, nMaxTextField);
+        params.registerComponent(PVALUE, pValueTextField);
+        params.registerComponent(FIXED_INTENSITY, isFixedIntensityCheckBox);
+        params.registerComponent(INTENSITY_RANGE, expectedIntensityTextField);
 
         panel.add(new JLabel(name + ":"), GridBagHelper.leftCol());
         panel.add(isEnabledCheckbox, GridBagHelper.rightCol());
@@ -67,85 +117,36 @@ public class CrowdedFieldEstimatorUI implements ActionListener {
         panel.add(isFixedIntensityCheckBox, GridBagHelper.leftCol());
         panel.add(expectedIntensityTextField, GridBagHelper.rightCol());
 
+        params.loadPrefs();
         return panel;
     }
 
     public void readParameters() {
-        enabled = isEnabledCheckbox.isSelected();
-        Prefs.set("thunderstorm.estimators.dense.mfa.enabled", Boolean.toString(enabled));
-        
-        if(enabled) {
-            nmax = Integer.parseInt(nMaxTextField.getText());
-            pvalue = Double.parseDouble(pValueTextField.getText());
-            expectedIntensityStr = expectedIntensityTextField.getText();
-            expectedIntensity = Range.parseFromTo(expectedIntensityStr);
-            expectedIntensity.convert(Units.PHOTON, Units.DIGITAL);
-            fixedIntensity = isFixedIntensityCheckBox.isSelected();
-            Prefs.set("thunderstorm.estimators.dense.mfa.nmax", "" + nmax);
-            Prefs.set("thunderstorm.estimators.dense.mfa.pvalue", "" + pvalue);
-            Prefs.set("thunderstorm.estimators.dense.mfa.fixed_intensity", Boolean.toString(fixedIntensity));
-            if(fixedIntensity) {
-                Prefs.set("thunderstorm.estimators.dense.mfa.expected_intensity", "" + expectedIntensityStr);
-            }
-        }
-        
+        params.readDialogOptions();
+        params.savePrefs();
     }
 
     public void recordOptions() {
-        Recorder.recordOption("enabled", Boolean.toString(enabled));
-        Recorder.recordOption("fixed_intensity", Boolean.toString(fixedIntensity));
-        if(nmax != DEFAULT_NMAX && enabled) {
-            Recorder.recordOption("nmax", Integer.toString(nmax));
-        }
-        if(pvalue != DEFAULT_PVALUE && enabled) {
-            Recorder.recordOption("pvalue", Double.toString(pvalue));
-        }
-        if(!DEFAULT_INTENSITY_RANGE.equals(expectedIntensityStr) && enabled && fixedIntensity) {
-            Recorder.recordOption("expected_intensity", expectedIntensityStr);
-        }
+        params.recordMacroOptions();
     }
 
     public void readMacroOptions(String options) {
-        enabled = Boolean.parseBoolean(Macro.getValue(options, "enabled", Boolean.toString(DEFAULT_ENABLED)));
-        fixedIntensity = Boolean.parseBoolean(Macro.getValue(options, "enabled", Boolean.toString(DEFAULT_FIXED_INTENSITY)));
-        nmax = Integer.parseInt(Macro.getValue(options, "nmax", Integer.toString(DEFAULT_NMAX)));
-        pvalue = Double.parseDouble(Macro.getValue(options, "pvalue", Double.toString(DEFAULT_PVALUE)));
-        expectedIntensityStr = Macro.getValue(options, "expected_intensity", DEFAULT_INTENSITY_RANGE);
-        expectedIntensity = Range.parseFromTo(expectedIntensityStr);
+        params.readMacroOptions();
     }
 
     public void resetToDefaults() {
-        nMaxTextField.setText(Integer.toString(DEFAULT_NMAX));
-        pValueTextField.setText(Double.toString(DEFAULT_PVALUE));
-        expectedIntensityTextField.setText(DEFAULT_INTENSITY_RANGE);
-        isEnabledCheckbox.setSelected(DEFAULT_ENABLED);
-        isFixedIntensityCheckBox.setSelected(DEFAULT_FIXED_INTENSITY);
-        nMaxTextField.setEnabled(DEFAULT_ENABLED);
-        pValueTextField.setEnabled(DEFAULT_ENABLED);
-        isFixedIntensityCheckBox.setEnabled(DEFAULT_ENABLED);
-        expectedIntensityTextField.setEnabled(DEFAULT_ENABLED && DEFAULT_FIXED_INTENSITY);
+        params.resetToDefaults(true);
     }
 
     IEstimator getMLEImplementation(PSFModel psf, double sigma, int fitradius) {
-        MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, nmax, pvalue, fixedIntensity ? expectedIntensity : null);
+        Range intensityRange = params.getBoolean(FIXED_INTENSITY) ? Range.parseFromTo(params.getString(INTENSITY_RANGE)) : null;
+        MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, params.getInt(NMAX), params.getDouble(PVALUE), intensityRange);
         return new MultipleLocationsImageFitting(fitradius, fitter);
     }
 
     IEstimator getLSQImplementation(PSFModel psf, double sigma, int fitradius) {
-        MFA_LSQFitter fitter = new MFA_LSQFitter(psf, sigma, nmax, pvalue, fixedIntensity ? expectedIntensity : null);
+        Range intensityRange = params.getBoolean(FIXED_INTENSITY) ? Range.parseFromTo(params.getString(INTENSITY_RANGE)) : null;
+        MFA_LSQFitter fitter = new MFA_LSQFitter(psf, sigma, params.getInt(NMAX), params.getDouble(PVALUE), intensityRange);
         return new MultipleLocationsImageFitting(fitradius, fitter);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == isEnabledCheckbox) {
-            nMaxTextField.setEnabled(isEnabledCheckbox.isSelected());
-            pValueTextField.setEnabled(isEnabledCheckbox.isSelected());
-            isFixedIntensityCheckBox.setEnabled(isEnabledCheckbox.isSelected());
-            expectedIntensityTextField.setEnabled(isEnabledCheckbox.isSelected() && isFixedIntensityCheckBox.isSelected());
-        }
-        if(e.getSource() == isFixedIntensityCheckBox) {
-            expectedIntensityTextField.setEnabled(isEnabledCheckbox.isSelected() && isFixedIntensityCheckBox.isSelected());
-        }
     }
 }

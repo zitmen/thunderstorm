@@ -8,17 +8,13 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.LSQ;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.METHOD;
 
 public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
 
     private final String name = "Elliptic Gaussian w/ angle";
     private double angle;
     private boolean angleWasSet = false;
-
-    public CalibrationEstimatorUI() {
-        super();
-        this.DEFAULT_FITRAD = 30;
-    }
 
     @Override
     public String getName() {
@@ -35,11 +31,14 @@ public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
     }
 
     public int getFitradius() {
-        return fitradius;
+        return parameters.getInt(FITRAD);
     }
 
     @Override
     public IEstimator getImplementation() {
+        String method = parameters.getChoice(METHOD);
+        double sigma = parameters.getDouble(SIGMA);
+        int fitradius = parameters.getInt(FITRAD);
         PSFModel psf = angleWasSet ? new EllipticGaussianPSF(sigma, Math.toRadians(angle)) : new EllipticGaussianWAnglePSF(sigma, 0);
         if(LSQ.equals(method)) {
             LSQFitter fitter = new LSQFitter(psf);

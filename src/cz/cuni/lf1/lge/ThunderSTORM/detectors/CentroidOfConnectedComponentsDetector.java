@@ -8,6 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.applyMask;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.threshold;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
 import ij.Macro;
 import ij.Prefs;
 import ij.plugin.filter.MaximumFinder;
@@ -34,10 +35,10 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
     private String threshold;
     private boolean useWatershed;
     private transient float thresholdValue;
-    private transient JTextField thrTextField;
-    private transient JCheckBox watershedCheckBox;
     private transient final static String DEFAULT_THRESHOLD = "std(Wave.F1)";
     private transient final static boolean DEFAULT_USE_WATERSHED = true;
+    private transient final static ParameterName.String THRESHOLD = new ParameterName.String("threshold");
+    private transient final static ParameterName.Boolean USE_WATERSHED = new ParameterName.Boolean("watershed"); 
 
     public CentroidOfConnectedComponentsDetector() throws FormulaParserException {
         this(DEFAULT_THRESHOLD);
@@ -50,6 +51,8 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
      */
     public CentroidOfConnectedComponentsDetector(String threshold) throws FormulaParserException {
         this.threshold = threshold;
+        parameters.createStringField(THRESHOLD, null, DEFAULT_THRESHOLD);
+        parameters.createBooleanField(USE_WATERSHED, null, DEFAULT_USE_WATERSHED);
     }
 
     /**
@@ -114,52 +117,35 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
     }
 
     @Override
+    protected String getPreferencesPrefix() {
+        return super.getPreferencesPrefix() + ".centroid";
+    }
+    
+    
+
+    @Override
     public JPanel getOptionsPanel() {
-        thrTextField = new JTextField(Prefs.get("thunderstorm.detectors.centroid.thr", DEFAULT_THRESHOLD), 20);
-        watershedCheckBox = new JCheckBox("enable", Prefs.get("thunderstorm.detectors.centroid.watershed", DEFAULT_USE_WATERSHED));
+        JTextField thrTextField = new JTextField("", 20);
+        JCheckBox watershedCheckBox = new JCheckBox("enable");
+        parameters.registerComponent(THRESHOLD, thrTextField);
+        parameters.registerComponent(USE_WATERSHED, watershedCheckBox);
         //
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Peak intensity threshold:"), GridBagHelper.leftCol());
         panel.add(thrTextField, GridBagHelper.rightCol());
         panel.add(new JLabel("Watershed segmentation:"), GridBagHelper.leftCol());
         panel.add(watershedCheckBox, GridBagHelper.rightCol());
+        
+        parameters.loadPrefs();
         return panel;
     }
 
-    @Override
-    public void readParameters() {
-        threshold = thrTextField.getText();
-        useWatershed = watershedCheckBox.isSelected();
-
-        Prefs.set("thunderstorm.detectors.centroid.thr", threshold);
-        Prefs.set("thunderstorm.detectors.centroid.watershed", useWatershed);
-    }
 
     @Override
     public IDetector getImplementation() {
+        threshold = parameters.getString(THRESHOLD);
+        useWatershed = parameters.getBoolean(USE_WATERSHED);
         return this;
-    }
-
-    @Override
-    public void recordOptions() {
-        if(!DEFAULT_THRESHOLD.equals(threshold)) {
-            Recorder.recordOption("threshold", threshold);
-        }
-        if(!DEFAULT_USE_WATERSHED == useWatershed) {
-            Recorder.recordOption("watershed", useWatershed + "");
-        }
-    }
-
-    @Override
-    public void readMacroOptions(String options) {
-        threshold = Macro.getValue(options, "threshold", DEFAULT_THRESHOLD);
-        useWatershed = Boolean.parseBoolean(Macro.getValue(options, "watershed", DEFAULT_USE_WATERSHED + ""));
-    }
-
-    @Override
-    public void resetToDefaults() {
-        thrTextField.setText(DEFAULT_THRESHOLD);
-        watershedCheckBox.setSelected(DEFAULT_USE_WATERSHED);
     }
 
     @Override

@@ -224,6 +224,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             Thresholder.parseThreshold(allDetectors.get(selectedDetector).getThreadLocalImplementation().getThresholdFormula());
         } catch(Exception ex) {
             IJ.error("Error parsing threshold formula! " + ex.toString());
+            return DONE;
         }
         //
         return pluginFlags; // ok

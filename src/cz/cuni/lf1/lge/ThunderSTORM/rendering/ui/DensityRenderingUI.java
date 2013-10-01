@@ -7,7 +7,6 @@ import static cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.AbstractRenderingUI.THRE
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -25,7 +24,7 @@ public class DensityRenderingUI extends AbstractRenderingUI {
     private static final double DEFAULT_DZ = 100;
     //param names
     private static final ParameterName.Double DX = new ParameterName.Double("dx");
-    private static final ParameterName.Boolean FORCE_DX = new ParameterName.Boolean("forcedx");
+    private static final ParameterName.Boolean FORCE_DX = new ParameterName.Boolean("dxforce");
     private static final ParameterName.Double DZ = new ParameterName.Double("dz");
 
     public DensityRenderingUI() {

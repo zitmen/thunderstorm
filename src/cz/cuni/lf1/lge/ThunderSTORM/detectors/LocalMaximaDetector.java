@@ -6,9 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import ij.Macro;
-import ij.Prefs;
-import ij.plugin.frame.Recorder;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Vector;
@@ -27,10 +25,12 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
     private int connectivity;
     private String threshold;
     private transient float thresholdValue;
-    private transient JTextField thrTextField;
-    private transient JRadioButton conn4RadioButton, conn8RadioButton;
     private transient final static String DEFAULT_THRESHOLD = "10*std(F)";
     private transient final static int DEFAULT_CONNECTIVITY = Graph.CONNECTIVITY_8;
+    private transient final static ParameterName.String THRESHOLD = new ParameterName.String("threshold");
+    private transient final static ParameterName.Choice CONNECTIVITY = new ParameterName.Choice("connectivity");
+    private transient final static String con4 = "4-neighbourhood";
+    private transient final static String con8 = "8-neighbourhood";
 
     private boolean isMax4Thr(FloatProcessor image, float thr, int x, int y, float local, boolean w, boolean e, boolean n, boolean s) {
         if(local < thr) {
@@ -216,8 +216,17 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
 
         this.connectivity = connectivity;
         this.threshold = threshold;
+
+        parameters.createStringField(THRESHOLD, null, DEFAULT_THRESHOLD);
+        parameters.createChoice(CONNECTIVITY, null, con8);
     }
 
+    @Override
+    protected String getPreferencesPrefix() {
+        return super.getPreferencesPrefix() + ".locmax";
+    }
+
+    
     /**
      * Detection of candidates using the local maxima method.
      *
@@ -253,16 +262,14 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
 
     @Override
     public JPanel getOptionsPanel() {
-        thrTextField = new JTextField(Prefs.get("thunderstorm.detectors.locmax.thr", DEFAULT_THRESHOLD), 20);
+        JTextField thrTextField = new JTextField("", 20);
         ButtonGroup btnGroup = new ButtonGroup();
-        conn4RadioButton = new JRadioButton("4-neighbourhood");
-        conn8RadioButton = new JRadioButton("8-neighbourhood");
+        JRadioButton conn4RadioButton = new JRadioButton("4-neighbourhood");
+        JRadioButton conn8RadioButton = new JRadioButton("8-neighbourhood");
         btnGroup.add(conn4RadioButton);
         btnGroup.add(conn8RadioButton);
-        //
-        connectivity = Integer.parseInt(Prefs.get("thunderstorm.detectors.locmax.connectivity", "" + DEFAULT_CONNECTIVITY));
-        conn4RadioButton.setSelected(connectivity == Graph.CONNECTIVITY_4);
-        conn8RadioButton.setSelected(connectivity == Graph.CONNECTIVITY_8);
+        parameters.registerComponent(THRESHOLD, thrTextField);
+        parameters.registerComponent(CONNECTIVITY, btnGroup);
         //
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Peak intensity threshold: "), GridBagHelper.leftCol());
@@ -270,53 +277,16 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
         panel.add(new JLabel("Connectivity: "), GridBagHelper.leftCol());
         panel.add(conn8RadioButton, GridBagHelper.rightCol());
         panel.add(conn4RadioButton, GridBagHelper.rightCol());
+        
+        parameters.loadPrefs();
         return panel;
     }
 
     @Override
-    public void readParameters() {
-        threshold = thrTextField.getText();
-        if(conn4RadioButton.isSelected()) {
-            connectivity = Graph.CONNECTIVITY_4;
-        }
-        if(conn8RadioButton.isSelected()) {
-            connectivity = Graph.CONNECTIVITY_8;
-        }
-
-        Prefs.set("thunderstorm.detectors.locmax.thr", threshold);
-        Prefs.set("thunderstorm.detectors.locmax.connectivity", "" + connectivity);
-    }
-
-    @Override
     public IDetector getImplementation() {
+        threshold = parameters.getString(THRESHOLD);
+        connectivity = con4.equals(parameters.getChoice(CONNECTIVITY)) ? Graph.CONNECTIVITY_4 : Graph.CONNECTIVITY_8;
         return this;
-    }
-
-    @Override
-    public void recordOptions() {
-        if(!DEFAULT_THRESHOLD.equals(threshold)) {
-            Recorder.recordOption("threshold", threshold);
-        }
-        if(connectivity != DEFAULT_CONNECTIVITY) {
-            Recorder.recordOption("connectivity", (connectivity == Graph.CONNECTIVITY_4) ? "4" : "8");
-        }
-    }
-
-    @Override
-    public void readMacroOptions(String options) {
-        threshold = Macro.getValue(options, "threshold", DEFAULT_THRESHOLD);
-        String value = Macro.getValue(options, "connectivity", (DEFAULT_CONNECTIVITY == Graph.CONNECTIVITY_4) ? "4" : "8");
-        connectivity = value.equals("4") ? Graph.CONNECTIVITY_4 : Graph.CONNECTIVITY_8;
-
-        Prefs.set("thunderstorm.detectors.locmax.thr", threshold);
-        Prefs.set("thunderstorm.detectors.locmax.thr", connectivity);
-    }
-
-    @Override
-    public void resetToDefaults() {
-        conn4RadioButton.setSelected(DEFAULT_CONNECTIVITY == Graph.CONNECTIVITY_4);
-        conn8RadioButton.setSelected(DEFAULT_CONNECTIVITY == Graph.CONNECTIVITY_8);
-        thrTextField.setText(DEFAULT_THRESHOLD);
     }
 
     @Override
