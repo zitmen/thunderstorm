@@ -225,13 +225,8 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         Units unitsDX = null;
         int dxIndex = -1;
         if(!forceDefaultDX) {
-            if(descriptor.hasParam(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON)) {
-                dxIndex = descriptor.getParamIndex(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON);
-                unitsDX = descriptor.units.elementAt(descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON));
-            } else if(descriptor.hasParam(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON)) {
-                dxIndex = descriptor.getParamIndex(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON);
-                unitsDX = descriptor.units.elementAt(descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON));
-            }
+            dxIndex = descriptor.getParamIndex(MoleculeDescriptor.Fitting.LABEL_THOMPSON);
+            unitsDX = descriptor.units.elementAt(descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_THOMPSON));
         }
         Units unitsX = descriptor.units.elementAt(descriptor.getParamColumn(PSFModel.Params.LABEL_X));
         Units unitsY = descriptor.units.elementAt(descriptor.getParamColumn(PSFModel.Params.LABEL_Y));

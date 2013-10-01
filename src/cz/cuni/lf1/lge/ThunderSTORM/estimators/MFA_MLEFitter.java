@@ -10,10 +10,12 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
 
     Range expectedIntensity;
     double pValueThr;
+    boolean sameI;
     final static int MODEL_SELECTION_ITERATIONS = 1500; // full fitting takes ~15000 iterations (--> this is 10%)
     
-    public MFA_MLEFitter(PSFModel basePsfModel, double defaultSigma, int maxN, double pValueThr, Range expI) {
+    public MFA_MLEFitter(PSFModel basePsfModel, double defaultSigma, int maxN, double pValueThr, boolean sameI, Range expI) {
         super(basePsfModel, defaultSigma, maxN);
+        this.sameI = sameI;
         this.pValueThr = pValueThr;
         this.expectedIntensity = expI;
     }
@@ -29,6 +31,7 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
             for(int n = 1; n <= maxN; n++) {
                 model = new MultiPSF(n, defaultSigma, basePsfModel, fittedParams);
                 model.setIntensityRange(expectedIntensity);
+                model.setFixedIntensities(sameI);
                 MLEFitter fitter = new MLEFitter(model, MODEL_SELECTION_ITERATIONS);
                 mol = fitter.fit(subimage);
                 fittedParams = fitter.fittedParameters;
@@ -46,6 +49,8 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
             }
         } else {
             modelBest = new MultiPSF(1, defaultSigma, basePsfModel, null);
+            modelBest.setIntensityRange(expectedIntensity);
+            modelBest.setFixedIntensities(sameI);
         }
         // fitting with the selected model
         MLEFitter fitter = new MLEFitter(modelBest);

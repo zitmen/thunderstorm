@@ -29,11 +29,13 @@ public class CrowdedFieldEstimatorUI {
     protected transient int DEFAULT_NMAX = 5;
     protected transient double DEFAULT_PVALUE = 1e-6;
     protected transient boolean DEFAULT_FIXED_INTENSITY = false;
+    protected transient boolean DEFAULT_KEEP_SAME_INTENSITY = true;
     protected transient String DEFAULT_INTENSITY_RANGE = "500:2500";
     //parameter names
     protected transient static final ParameterName.Boolean ENABLED = new ParameterName.Boolean("mfaenabled");
     protected transient static final ParameterName.Integer NMAX = new ParameterName.Integer("nmax");
     protected transient static final ParameterName.Double PVALUE = new ParameterName.Double("pvalue");
+    protected transient static final ParameterName.Boolean KEEP_SAME_INTENSITY = new ParameterName.Boolean("keep_same_intensity");
     protected transient static final ParameterName.Boolean FIXED_INTENSITY = new ParameterName.Boolean("fixed_intensity");
     protected transient static final ParameterName.String INTENSITY_RANGE = new ParameterName.String("expected_intensity");
 
@@ -64,6 +66,7 @@ public class CrowdedFieldEstimatorUI {
         params.createBooleanField(ENABLED, null, DEFAULT_ENABLED);
         params.createIntField(NMAX, IntegerValidatorFactory.positive(), DEFAULT_NMAX, enabledCondition);
         params.createDoubleField(PVALUE, DoubleValidatorFactory.positive(), DEFAULT_PVALUE, enabledCondition);
+        params.createBooleanField(KEEP_SAME_INTENSITY, null, DEFAULT_KEEP_SAME_INTENSITY, enabledCondition);
         params.createBooleanField(FIXED_INTENSITY, null, DEFAULT_FIXED_INTENSITY, enabledCondition);
         params.createStringField(INTENSITY_RANGE, new Validator<String>() {
             @Override
@@ -85,6 +88,7 @@ public class CrowdedFieldEstimatorUI {
         final JCheckBox isEnabledCheckbox = new JCheckBox("enable", true);
         final JTextField nMaxTextField = new JTextField("");
         final JTextField pValueTextField = new JTextField("");
+        final JCheckBox keepSameIntensityCheckBox = new JCheckBox("Keep the same intensity of all molecules",false);
         final JCheckBox isFixedIntensityCheckBox = new JCheckBox("Fix intensity to the range [photons]:", true);
         final JTextField expectedIntensityTextField = new JTextField("");
         isEnabledCheckbox.addActionListener(new ActionListener() {
@@ -92,6 +96,7 @@ public class CrowdedFieldEstimatorUI {
             public void actionPerformed(ActionEvent e) {
                 nMaxTextField.setEnabled(isEnabledCheckbox.isSelected());
                 pValueTextField.setEnabled(isEnabledCheckbox.isSelected());
+                keepSameIntensityCheckBox.setEnabled(isEnabledCheckbox.isSelected());
                 isFixedIntensityCheckBox.setEnabled(isEnabledCheckbox.isSelected());
                 expectedIntensityTextField.setEnabled(isEnabledCheckbox.isSelected() && isFixedIntensityCheckBox.isSelected());
             }
@@ -114,6 +119,8 @@ public class CrowdedFieldEstimatorUI {
         panel.add(nMaxTextField, GridBagHelper.rightCol());
         panel.add(new JLabel("Threshold for more complicated model (p-value):"), GridBagHelper.leftCol());
         panel.add(pValueTextField, GridBagHelper.rightCol());
+        panel.add(keepSameIntensityCheckBox, GridBagHelper.leftCol());
+        panel.add(new JLabel(), GridBagHelper.rightCol());
         panel.add(isFixedIntensityCheckBox, GridBagHelper.leftCol());
         panel.add(expectedIntensityTextField, GridBagHelper.rightCol());
 
@@ -140,13 +147,13 @@ public class CrowdedFieldEstimatorUI {
 
     IEstimator getMLEImplementation(PSFModel psf, double sigma, int fitradius) {
         Range intensityRange = params.getBoolean(FIXED_INTENSITY) ? Range.parseFromTo(params.getString(INTENSITY_RANGE)) : null;
-        MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, params.getInt(NMAX), params.getDouble(PVALUE), intensityRange);
+        MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, params.getInt(NMAX), params.getDouble(PVALUE), params.getBoolean(KEEP_SAME_INTENSITY), intensityRange);
         return new MultipleLocationsImageFitting(fitradius, fitter);
     }
 
     IEstimator getLSQImplementation(PSFModel psf, double sigma, int fitradius) {
         Range intensityRange = params.getBoolean(FIXED_INTENSITY) ? Range.parseFromTo(params.getString(INTENSITY_RANGE)) : null;
-        MFA_LSQFitter fitter = new MFA_LSQFitter(psf, sigma, params.getInt(NMAX), params.getDouble(PVALUE), intensityRange);
+        MFA_LSQFitter fitter = new MFA_LSQFitter(psf, sigma, params.getInt(NMAX), params.getDouble(PVALUE), params.getBoolean(KEEP_SAME_INTENSITY), intensityRange);
         return new MultipleLocationsImageFitting(fitradius, fitter);
     }
 }

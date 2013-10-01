@@ -30,20 +30,20 @@ public class Operator extends Node {
     }
 
     @Override
-    public RetVal eval() {
+    public RetVal eval(Object param) {
         switch(op) {
-            case ADD: return left.eval().add(right.eval());
-            case SUB: return left.eval().sub(right.eval());
-            case MUL: return left.eval().mul(right.eval());
-            case DIV: return left.eval().div(right.eval());
-            case MOD: return left.eval().mod(right.eval());
-            case POW: return left.eval().pow(right.eval());
-            case AND: return left.eval().and(right.eval());
-            case OR : return left.eval().or (right.eval());
-            case LT : return left.eval().lt (right.eval());
-            case GT : return left.eval().gt (right.eval());
-            case EQ : return left.eval().eq (right.eval());
-            case NEQ: return left.eval().neq(right.eval());
+            case ADD: return left.eval(param).add(right.eval(param));
+            case SUB: return left.eval(param).sub(right.eval(param));
+            case MUL: return left.eval(param).mul(right.eval(param));
+            case DIV: return left.eval(param).div(right.eval(param));
+            case MOD: return left.eval(param).mod(right.eval(param));
+            case POW: return left.eval(param).pow(right.eval(param));
+            case AND: return left.eval(param).and(right.eval(param));
+            case OR : return left.eval(param).or (right.eval(param));
+            case LT : return left.eval(param).lt (right.eval(param));
+            case GT : return left.eval(param).gt (right.eval(param));
+            case EQ : return left.eval(param).eq (right.eval(param));
+            case NEQ: return left.eval(param).neq(right.eval(param));
             default : throw new UnsupportedOperationException("Unknown operator! Only supported operators are: + - * / ^ & | < > = !=");
         }
     }

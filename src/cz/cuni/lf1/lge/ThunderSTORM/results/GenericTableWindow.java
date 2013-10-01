@@ -175,17 +175,7 @@ class GenericTableWindow {
                     }
                 });
                 popup.add(item);
-            } else if(MoleculeDescriptor.Fitting.LABEL_CCD_THOMPSON.equals(model.getColumnRealName(column))) {
-                JMenuItem item = new JMenuItem("recalculate");
-                item.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        model.calculateThompsonFormula();
-                    }
-                });
-                popup.add(item);
-                popup.add(new JSeparator());
-            } else if(MoleculeDescriptor.Fitting.LABEL_EMCCD_THOMPSON.equals(model.getColumnRealName(column))) {
+            } else if(MoleculeDescriptor.Fitting.LABEL_THOMPSON.equals(model.getColumnRealName(column))) {
                 JMenuItem item = new JMenuItem("recalculate");
                 item.addActionListener(new ActionListener() {
                     @Override

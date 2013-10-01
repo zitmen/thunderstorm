@@ -15,7 +15,7 @@ class ThresholdInterpreter {
     }
     
     public float evaluate() throws FormulaParserException {
-        RetVal retval = tree.eval();
+        RetVal retval = tree.eval(null);
         if(!retval.isValue())
             throw new FormulaParserException("Semantic error: result of threshold formula must be a scalar value!");
         return ((Number)(retval.get())).floatValue();
