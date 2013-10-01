@@ -1,8 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import ij.process.FloatProcessor;
-import java.util.Vector;
 
 /**
  * Simple rendering using scatter plot. If there is any molecule at the pixel
@@ -32,7 +30,7 @@ public class ScatterRendering extends AbstractRendering implements IncrementalRe
             int w = (int) ((z - zFrom) / zStep);
             if(w >= 0 && w < zSlices) {
                 FloatProcessor img = (FloatProcessor) slices[w];
-                img.setf(u, v, Float.MAX_VALUE);
+                img.setf(u, v, 1);
             }
         }
     }
