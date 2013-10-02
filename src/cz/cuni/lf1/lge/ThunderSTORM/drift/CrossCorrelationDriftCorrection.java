@@ -18,6 +18,7 @@ import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
+import org.apache.commons.math3.util.MathArrays;
 
 /**
  *
@@ -159,7 +160,7 @@ public class CrossCorrelationDriftCorrection {
             xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX));
             yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY));
         } else {
-            LoessInterpolator interpolator = new LoessInterpolator(0.5, 2);
+            LoessInterpolator interpolator = new LoessInterpolator(0.5, 0);
             xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX));
             yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY));
         }
@@ -188,46 +189,35 @@ public class CrossCorrelationDriftCorrection {
             throw new RuntimeException("Requires multiple frames.");
         }
 
+        MathArrays.sortInPlace(frame, x, y);
+        int detectionsPerBin = frame.length / binCount;
+
         //alloc space for binned results
-        //  count results in each bin
-        double stepFrame = ((maxFrame - minFrame) / binCount);
         xBinnedByFrame = new double[binCount][];
         yBinnedByFrame = new double[binCount][];
-        int[] binCounts = new int[binCount];
-        Arrays.fill(binCounts, 0, binCounts.length, 0);
-        for(int i = 0; i < frame.length; i++) {
-            int bin;
-            if(frame[i] == maxFrame) {
-                bin = binCount - 1;
-            } else {
-                bin = (int) ((frame[i] - minFrame) / stepFrame);
-            }
-            binCounts[bin]++;
-        }
-        //  alloc 
-        for(int i = 0; i < xBinnedByFrame.length; i++) {
-            xBinnedByFrame[i] = new double[binCounts[i]];
-            yBinnedByFrame[i] = new double[binCounts[i]];
-        }
-
-        //fill in values (in reversed order for simplicity)
-        for(int i = 0; i < frame.length; i++) {
-            int bin;
-            if(frame[i] == maxFrame) {
-                bin = binCount - 1;
-            } else {
-                bin = (int) ((frame[i] - minFrame) / stepFrame);
-            }
-            xBinnedByFrame[bin][binCounts[bin] - 1] = x[i];
-            yBinnedByFrame[bin][binCounts[bin] - 1] = y[i];
-            binCounts[bin]--;
-        }
-        //save bin centers
         binCenters = new double[binCount];
+        int currentPos = 0;
         for(int i = 0; i < binCount; i++) {
-            binCenters[i] = minFrame + stepFrame / 2 + i * stepFrame;
+            int endPos = currentPos + detectionsPerBin;
+            if(endPos >= frame.length) {
+                endPos = frame.length - 1;
+            } else {
+                double frameAtEndPos = frame[endPos-1];
+                while(endPos < frame.length - 1 && frame[endPos] == frameAtEndPos) {
+                    endPos++;
+                }
+            }
+            if(currentPos > frame.length - 1) {
+                xBinnedByFrame[i] = new double[0];
+                yBinnedByFrame[i] = new double[0];
+                binCenters[i] = maxFrame;
+            } else {
+                xBinnedByFrame[i] = Arrays.copyOfRange(x, currentPos, endPos);
+                yBinnedByFrame[i] = Arrays.copyOfRange(y, currentPos, endPos);
+                binCenters[i] = (frame[currentPos] + frame[endPos]) / 2;
+            }
+            currentPos = endPos;
         }
-
     }
 
     private static int nextPowerOf2(int num) {
