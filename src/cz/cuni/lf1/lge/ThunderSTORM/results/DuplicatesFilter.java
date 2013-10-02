@@ -125,6 +125,9 @@ class DuplicatesFilter {
         if(!model.columnExists(PSFModel.Params.LABEL_X) || !model.columnExists(PSFModel.Params.LABEL_Y)) {
             throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y, model.getColumnNames()));
         }
+        if(!model.columnExists(MoleculeDescriptor.Fitting.LABEL_THOMPSON)) {
+            throw new RuntimeException(String.format("Fitting uncertainty not found in Results table. Looking for: %s. Found: %s.", MoleculeDescriptor.Fitting.LABEL_THOMPSON, model.getColumnNames()));
+        }
         Node tree = new FormulaParser(distTextField.getText(), FormulaParser.FORMULA_RESULTS_FILTER).parse();
         tree.semanticScan();
         RetVal retval = tree.eval(Units.NANOMETER);
@@ -210,7 +213,7 @@ class DuplicatesFilter {
 
         // <Frame #, List of Molecules>
         private HashMap<Integer, Vector<Molecule>> detections;
-        private HashMap<Integer,Double> uncertainties;
+        private HashMap<Integer,Double> radii;
         private Vector<Molecule> molecules;
         private SortedSet frames;
         private int maxId;
@@ -220,12 +223,12 @@ class DuplicatesFilter {
             molecules = new Vector<Molecule>();
             frames = new TreeSet();
             maxId = 0;
-            uncertainties = new HashMap<Integer,Double>();
+            radii = new HashMap<Integer,Double>();
         }
 
         public void insertMolecule(Molecule mol, Double uncertainty) {
             int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME);
-            uncertainties.put((int)mol.getParam(MoleculeDescriptor.LABEL_ID), uncertainty);
+            radii.put((int)mol.getParam(MoleculeDescriptor.LABEL_ID), uncertainty);
             //
             if(!detections.containsKey(frame)) {
                 detections.put(frame, new Vector<Molecule>());
@@ -267,13 +270,14 @@ class DuplicatesFilter {
                     Molecule mol = frmol.get(i);
                     int id = (int)mol.getParam(MoleculeDescriptor.LABEL_ID)-1;  // zero-based indexing
                     double uncertainty = sqr(getUncertaintyNm(mol));
+                    double radius = sqr(getRadiusNm(mol));
                     //
                     if(filter[id] == false) continue;
                     for(int j = i - 1; j >= 0; j--) {
-                        if(sqr(frmol.get(j).getX() - mol.getX()) > uncertainty) {
+                        if(sqr(frmol.get(j).getX() - mol.getX()) > radius) {
                             break;
                         }
-                        if(mol.dist2xy(frmol.get(j), NANOMETER) < uncertainty) {
+                        if(mol.dist2xy(frmol.get(j), NANOMETER) < radius) {
                             if(uncertainty >= sqr(getUncertaintyNm(frmol.get(j)))) {
                                 filter[id] = false;
                                 break;
@@ -283,10 +287,10 @@ class DuplicatesFilter {
                     //
                     if(filter[id] == false) continue;
                     for(int j = i + 1; j < count; j++) {
-                        if(sqr(frmol.get(j).getX() - mol.getX()) > uncertainty) {
+                        if(sqr(frmol.get(j).getX() - mol.getX()) > radius) {
                             break;
                         }
-                        if(mol.dist2xy(frmol.get(j), NANOMETER) < uncertainty) {
+                        if(mol.dist2xy(frmol.get(j), NANOMETER) < radius) {
                             if(uncertainty >= sqr(getUncertaintyNm(frmol.get(j)))) {
                                 filter[id] = false;
                                 break;
@@ -298,9 +302,17 @@ class DuplicatesFilter {
             return filter;
         }
 
-        private double getUncertaintyNm(Molecule mol) {
-            return uncertainties.get((int)mol.getParam(MoleculeDescriptor.LABEL_ID)).doubleValue();
+        private double getRadiusNm(Molecule mol) {
+            return radii.get((int)mol.getParam(MoleculeDescriptor.LABEL_ID)).doubleValue();
         }
+        
+        private double getUncertaintyNm(Molecule mol) {
+            if(mol.hasParam(MoleculeDescriptor.Fitting.LABEL_THOMPSON)) {
+                return mol.getParam(MoleculeDescriptor.Fitting.LABEL_THOMPSON, Units.NANOMETER);
+            } else {
+                throw new RuntimeException("Fitting uncertainty not found in Results table.");
+            }
+         }
     }
 
 }
