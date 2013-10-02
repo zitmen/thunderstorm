@@ -9,6 +9,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
+import ij.Prefs;
 import ij.WindowManager;
 import ij.plugin.PlugIn;
 import java.awt.Choice;
@@ -30,25 +31,30 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     private String[] modules = null;
     private String[] suffix = null;
     private Vector<IImportExport> ie = null;
-    private int active_ie = 0;
     private Choice ftype;
     private TextField fpath;
-    private String defaultPath;
+    
+    private int active_ie = 0;
     private int startingFrame = 1;
+    private String path = "";
+    private boolean resetFirst = true;
+    private boolean livePreview = true;
+    private boolean saveMeasurementProtocol = true;
 
     public ImportExportPlugIn() {
         super();
-        this.defaultPath = null;
+        this.path = null;
     }
 
     public ImportExportPlugIn(String path) {
         super();
-        this.defaultPath = path;
+        this.path = path;
     }
 
     @Override
     public void run(String command) {
         GUI.setLookAndFeel();
+        loadPreferences();
         //
         String[] commands = command.split(";");
         if(commands.length != 2) {
@@ -70,10 +76,10 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             gd.addChoice("File type", modules, modules[active_ie]);
             ftype = (Choice) gd.getChoices().get(0);
             ftype.addItemListener(this);
-            if(defaultPath != null) {
-                gd.addFileField("Choose a file", defaultPath);
-            } else {
+            if((path == null) || path.isEmpty()) {
                 gd.addFileField("Choose a file", IJ.getDirectory("current") + commands[1] + "." + suffix[active_ie]);
+            } else {
+                gd.addFileField("Choose a file", path);
             }
             fpath = (TextField) gd.getStringFields().get(0);
             fpath.addTextListener(this);
@@ -96,6 +102,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 } else if(IMPORT.equals(commands[0])) {
                     runImport(commands[1], gd, filePath);
                 }
+                savePreferences();
             }
         } catch(Exception ex) {
             IJ.handleException(ex);
@@ -152,7 +159,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             table = IJGroundTruthTable.getGroundTruthTable();
         } else {
             if(IJResultsTable.getResultsTable().getMeasurementProtocol() != null) {
-                gd.addCheckbox("export measurement protocol", true);
+                gd.addCheckbox("export measurement protocol", saveMeasurementProtocol);
             }
             table = IJResultsTable.getResultsTable();
         }
@@ -171,10 +178,10 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     }
 
     private void fillImportPane(String cmd, GenericDialogPlus gd) {
-        gd.addNumericField("Starting frame number: ", 1, 0);
-        gd.addCheckbox("clear the `" + cmd + "` table before import", true);
+        gd.addNumericField("Starting frame number: ", startingFrame, 0);
+        gd.addCheckbox("clear the `" + cmd + "` table before import", resetFirst);
         if(IJResultsTable.IDENTIFIER.equals(cmd)) {
-            gd.addCheckbox("show rendering preview", true);
+            gd.addCheckbox("show rendering preview", livePreview);
             int[] openedImagesIds = WindowManager.getIDList();
             if(openedImagesIds != null) {
                 String[] openedImagesTitles = new String[openedImagesIds.length + 1];
@@ -196,7 +203,8 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         } else {    // IJResultsTable
             IJResultsTable rt = IJResultsTable.getResultsTable();
             if(rt.getMeasurementProtocol() != null) {
-                if(gd.getNextBoolean()) {
+                saveMeasurementProtocol = gd.getNextBoolean();
+                if(saveMeasurementProtocol) {
                     rt.getMeasurementProtocol().export(getProtocolFilePath(filePath));
                 }
             }
@@ -218,7 +226,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             importFromFile(IJGroundTruthTable.getGroundTruthTable(), filePath, gd.getNextBoolean());
         } else {    // IJResultsTable
             IJResultsTable rt = IJResultsTable.getResultsTable();
-            boolean resetFirst = gd.getNextBoolean();
+            resetFirst = gd.getNextBoolean();
             try {
                 rt.setAnalyzedImage(WindowManager.getImage(gd.getNextChoice()));
             } catch(ArrayIndexOutOfBoundsException ex) {
@@ -227,7 +235,8 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 }
             }
             importFromFile(rt, filePath, resetFirst);
-            rt.setLivePreview(gd.getNextBoolean());
+            livePreview = gd.getNextBoolean();
+            rt.setLivePreview(livePreview);
             rt.showPreview();
         }
     }
@@ -273,4 +282,23 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         table.show();
         IJ.showProgress(1.0);
     }
+    
+    public void loadPreferences() {
+        active_ie = Integer.parseInt(Prefs.get("thunderstorm.io.active", "0"));
+        startingFrame = Integer.parseInt(Prefs.get("thunderstorm.io.startingFrame", "1"));
+        path = Prefs.get("thunderstorm.io.path", "");
+        resetFirst = Boolean.parseBoolean(Prefs.get("thunderstorm.io.resetTable", "true"));
+        livePreview = Boolean.parseBoolean(Prefs.get("thunderstorm.io.livePreview", "true"));
+        saveMeasurementProtocol = Boolean.parseBoolean(Prefs.get("thunderstorm.io.saveMeasurementProtocol", "true"));
+    }
+    
+    public void savePreferences() {
+        Prefs.set("thunderstorm.io.active", Integer.toString(active_ie));
+        Prefs.set("thunderstorm.io.startingFrame", Integer.toString(startingFrame));
+        Prefs.set("thunderstorm.io.path", path);
+        Prefs.set("thunderstorm.io.resetTable", Boolean.toString(resetFirst));
+        Prefs.set("thunderstorm.io.livePreview", Boolean.toString(livePreview));
+        Prefs.set("thunderstorm.io.saveMeasurementProtocol", Boolean.toString(saveMeasurementProtocol));
+    }
+
 }
