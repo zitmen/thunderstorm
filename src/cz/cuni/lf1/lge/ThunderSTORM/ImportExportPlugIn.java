@@ -36,7 +36,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     
     private int active_ie = 0;
     private int startingFrame = 1;
-    private String path = "";
+    private String path = null;
     private boolean resetFirst = true;
     private boolean livePreview = true;
     private boolean saveMeasurementProtocol = true;
@@ -286,7 +286,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     public void loadPreferences() {
         active_ie = Integer.parseInt(Prefs.get("thunderstorm.io.active", "0"));
         startingFrame = Integer.parseInt(Prefs.get("thunderstorm.io.startingFrame", "1"));
-        path = Prefs.get("thunderstorm.io.path", "");
+        if(path == null) path = Prefs.get("thunderstorm.io.path", "");  // if it is not null, the plugin was invoked by drag&drop operation
         resetFirst = Boolean.parseBoolean(Prefs.get("thunderstorm.io.resetTable", "true"));
         livePreview = Boolean.parseBoolean(Prefs.get("thunderstorm.io.livePreview", "true"));
         saveMeasurementProtocol = Boolean.parseBoolean(Prefs.get("thunderstorm.io.saveMeasurementProtocol", "true"));
