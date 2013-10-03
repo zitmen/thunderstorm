@@ -173,6 +173,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         for(int c = 0; c < cores; c++) {
             generators[c].fillResults(stack, gt);   // and generate stack and table of ground-truth data
         }
+        gt.insertIdColumn();
         gt.copyOriginalToActual();
         gt.setActualState();
         //
@@ -249,7 +250,6 @@ public class DataGeneratorPlugIn implements PlugIn {
                     gt.addRow(psf.molecule);
                 }
             }
-            gt.insertIdColumn();
         }
         
     }
