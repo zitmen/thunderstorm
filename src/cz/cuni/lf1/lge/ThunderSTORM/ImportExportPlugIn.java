@@ -96,11 +96,11 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
 
             if(!gd.wasCanceled()) {
                 active_ie = gd.getNextChoiceIndex();
-                String filePath = gd.getNextString();
+                path = gd.getNextString();
                 if(EXPORT.equals(commands[0])) {
-                    runExport(commands[1], gd, filePath, col_headers);
+                    runExport(commands[1], gd, path, col_headers);
                 } else if(IMPORT.equals(commands[0])) {
-                    runImport(commands[1], gd, filePath);
+                    runImport(commands[1], gd, path);
                 }
                 savePreferences();
             }
