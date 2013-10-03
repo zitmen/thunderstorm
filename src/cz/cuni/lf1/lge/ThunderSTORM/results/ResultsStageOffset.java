@@ -57,13 +57,13 @@ class ResultsStageOffset {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
 
-        panel.add(new JLabel("Frames per stage position:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(0, 0).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
+        panel.add(new JLabel("Frames per one Z-stage position:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(0, 0).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
         panel.add(framesPerStagePositionTextField, new GridBagHelper.Builder().gridxy(1, 0).fill(GridBagConstraints.HORIZONTAL).weightx(0.2).build());
-        panel.add(new JLabel("Stage positions:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(0, 1).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
+        panel.add(new JLabel("Number of Z-stage positions:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(0, 1).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
         panel.add(stagePositionsTextField, new GridBagHelper.Builder().gridxy(1, 1).fill(GridBagConstraints.HORIZONTAL).weightx(0.2).build());
-        panel.add(new JLabel("Stage step [nm]:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(2, 0).insets(new Insets(0, 20, 0, 0)).fill(GridBagConstraints.HORIZONTAL).build());
+        panel.add(new JLabel("Z-stage step [nm]:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(2, 0).insets(new Insets(0, 20, 0, 0)).fill(GridBagConstraints.HORIZONTAL).build());
         panel.add(stageStepTextField, new GridBagHelper.Builder().gridxy(3, 0).fill(GridBagConstraints.HORIZONTAL).weightx(0.2).build());
-        panel.add(new JLabel("First position offset [nm]:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(2, 1).insets(new Insets(0, 20, 0, 0)).fill(GridBagConstraints.HORIZONTAL).build());
+        panel.add(new JLabel("Initial Z-stage offset [nm]:", SwingConstants.RIGHT), new GridBagHelper.Builder().gridxy(2, 1).insets(new Insets(0, 20, 0, 0)).fill(GridBagConstraints.HORIZONTAL).build());
         panel.add(firstPositionOffsetTextField, new GridBagHelper.Builder().gridxy(3, 1).fill(GridBagConstraints.HORIZONTAL).weightx(0.1).build());
         panel.add(Box.createGlue(), new GridBagHelper.Builder().gridxy(4, 1).weightx(0.1).build());
         panel.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(5, 0).anchor(GridBagConstraints.LINE_END).build());
@@ -148,7 +148,7 @@ class ResultsStageOffset {
 
     class StageOffsetOperation extends OperationsHistoryPanel.Operation {
 
-        final String name = "Stage offset";
+        final String name = "Z-stage scanning";
         int framesPerStagePosition;
         int stagePositions;
         double stageStep;
