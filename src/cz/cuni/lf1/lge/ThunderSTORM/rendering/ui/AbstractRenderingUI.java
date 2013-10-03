@@ -9,7 +9,6 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFacto
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.Validator;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
-import ij.ImagePlus;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

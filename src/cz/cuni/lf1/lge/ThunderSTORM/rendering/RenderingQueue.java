@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
-import ij.IJ;
 import ij.ImagePlus;
 import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;

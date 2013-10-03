@@ -18,7 +18,7 @@ import javax.swing.JTextField;
 
 public class DensityRenderingUI extends AbstractRenderingUI {
 
-    private final String name = "Normalized Gaussian";
+    public static final String name = "Normalized Gaussian";
     private static final double DEFAULT_DX = 20;
     private static final boolean DEFAULT_FORCE_DX = false;
     private static final double DEFAULT_DZ = 100;

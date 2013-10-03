@@ -21,7 +21,7 @@ import javax.swing.JTextField;
 
 public class HistogramRenderingUI extends AbstractRenderingUI {
 
-    private final String name = "Histograms";
+    public static final String name = "Histograms";
     //default values
     private static final int DEFAULT_AVG = 0;
     private static final double DEFAULT_DX = 20;

@@ -7,7 +7,7 @@ import javax.swing.JPanel;
 
 public class ScatterRenderingUI extends AbstractRenderingUI {
 
-    private final String name = "Scatter plot";
+    public static final String name = "Scatter plot";
 
     public ScatterRenderingUI() {
     }

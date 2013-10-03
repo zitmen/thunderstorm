@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.ScatterRenderingUI;
 import ij.process.FloatProcessor;
 
 /**
@@ -11,6 +12,11 @@ public class ScatterRendering extends AbstractRendering implements IncrementalRe
 
     private ScatterRendering(Builder builder) {
         super(builder);
+    }
+
+    @Override
+    public String getRendererName() {
+        return ScatterRenderingUI.name;
     }
 
     public static class Builder extends AbstractBuilder<Builder, ScatterRendering> {

@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.HistogramRenderingUI;
 import ij.process.FloatProcessor;
 import java.util.Random;
 
@@ -17,6 +18,11 @@ public class HistogramRendering extends AbstractRendering implements Incremental
     private HistogramRendering(Builder builder) {
         super(builder);
         this.avg = builder.avg;
+    }
+
+    @Override
+    public String getRendererName() {
+        return HistogramRenderingUI.name;
     }
 
     public static class Builder extends AbstractBuilder<Builder, HistogramRendering> {

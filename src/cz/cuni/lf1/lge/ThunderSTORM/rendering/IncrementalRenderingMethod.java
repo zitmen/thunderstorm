@@ -37,6 +37,13 @@ public interface IncrementalRenderingMethod extends IModule {
    * @return
    */
   public ImagePlus getRenderedImage();
+  
+  /**
+   * Returns the name of the renderer.
+   * 
+   * @return
+   */
+  public abstract String getRendererName();
 
   /**
    * Sets the whole image to zeros. Makes the image returned by getRenderedImage

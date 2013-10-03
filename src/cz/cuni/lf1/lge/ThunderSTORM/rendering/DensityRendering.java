@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 import ij.process.ImageProcessor;
 import static java.lang.Math.ceil;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF.erf;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.DensityRenderingUI;
 
 /**
  * This rendering method draws a normalized gaussian blob at every molecule
@@ -15,6 +16,11 @@ public class DensityRendering extends AbstractRendering implements IncrementalRe
     private DensityRendering(Builder builder) {
         super(builder);
         this.radius = builder.radius;
+    }
+
+    @Override
+    public String getRendererName() {
+        return DensityRenderingUI.name;
     }
 
     public static class Builder extends AbstractBuilder<Builder, DensityRendering> {

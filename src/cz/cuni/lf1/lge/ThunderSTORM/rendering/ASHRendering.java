@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.ASHRenderingUI;
 import ij.process.ImageProcessor;
 
 /**
@@ -16,6 +17,11 @@ public class ASHRendering extends AbstractRendering implements IncrementalRender
     this.shifts = builder.shifts;
     this.zShifts = threeDimensions ? builder.zShifts : 1;
   }
+
+    @Override
+    public String getRendererName() {
+        return ASHRenderingUI.name;
+    }
 
   public static class Builder extends AbstractBuilder<Builder, ASHRendering> {
 

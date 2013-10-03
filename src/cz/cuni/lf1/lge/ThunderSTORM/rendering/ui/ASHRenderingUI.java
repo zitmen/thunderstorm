@@ -17,7 +17,7 @@ import javax.swing.JTextField;
 
 public class ASHRenderingUI extends AbstractRenderingUI {
 
-    private final String name = "Averaged shifted histograms";
+    public static final String name = "Averaged shifted histograms";
     private static final int DEFAULT_SHIFTS = 2;
     private static final int DEFAULT_ZSHIFTS = 2;
     private static final ParameterName.Integer SHIFTS = new ParameterName.Integer("shifts");

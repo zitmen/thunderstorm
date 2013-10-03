@@ -204,7 +204,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             slices[i] = new FloatProcessor(imSizeX, imSizeY);
             stack.addSlice((i * zStep + zFrom) + " to " + ((i + 1) * zStep + zFrom), slices[i]);
         }
-        image = new ImagePlus(this.getClass().getSimpleName(), stack);
+        image = new ImagePlus(getRendererName(), stack);
     }
 
     @Override
