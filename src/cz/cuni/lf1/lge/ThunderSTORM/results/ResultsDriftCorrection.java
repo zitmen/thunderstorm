@@ -150,7 +150,7 @@ public class ResultsDriftCorrection {
             driftY[i] = offset.y;
         }
         Plot plot = new Plot("drift", "frame", "drift [px]", grid, driftX);
-        plot.setLimits(minFrame, driftCorrection.getMaxFrame(), Math.min(min(driftCorrection.getBinDriftX()),min(driftCorrection.getBinDriftY())), Math.max(max(driftX),max(driftY)));
+        plot.setLimits(minFrame, driftCorrection.getMaxFrame(), Math.min(min(driftCorrection.getBinDriftX()),min(driftCorrection.getBinDriftY())), Math.max(max(driftCorrection.getBinDriftX()),max(driftCorrection.getBinDriftY())));
         plot.setColor(Color.blue);
         plot.addPoints(driftCorrection.getBinCenters(), driftCorrection.getBinDriftX(), Plot.CROSS);
         plot.addLabel(0.05, 0.8, "x drift");

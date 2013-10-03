@@ -200,7 +200,7 @@ public class CrossCorrelationDriftCorrection {
         for(int i = 0; i < binCount; i++) {
             int endPos = currentPos + detectionsPerBin;
             if(endPos >= frame.length) {
-                endPos = frame.length - 1;
+                endPos = frame.length;
             } else {
                 double frameAtEndPos = frame[endPos-1];
                 while(endPos < frame.length - 1 && frame[endPos] == frameAtEndPos) {
@@ -214,7 +214,7 @@ public class CrossCorrelationDriftCorrection {
             } else {
                 xBinnedByFrame[i] = Arrays.copyOfRange(x, currentPos, endPos);
                 yBinnedByFrame[i] = Arrays.copyOfRange(y, currentPos, endPos);
-                binCenters[i] = (frame[currentPos] + frame[endPos]) / 2;
+                binCenters[i] = (frame[currentPos] + frame[endPos-1]) / 2;
             }
             currentPos = endPos;
         }

@@ -13,15 +13,15 @@ public class CrossCorrelationDriftCorrectionTest {
 
   @Test
   public void testArtificialData() throws InterruptedException {
-    double[] x = {20, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 30};
-    double[] y = {20, 20, 21, 22, 23, 24, 25, 24, 23, 22, 21, 20, 20};
-    double[] frame = {6, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 116};
+    double[] x = { 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30};
+    double[] y = { 20, 21, 22, 23, 24, 25, 24, 23, 22, 21, 20};
+    double[] frame = {11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111};
 
     int bins = 11;
 
     CrossCorrelationDriftCorrection driftCorrection = new CrossCorrelationDriftCorrection(x, y, frame, bins, 5, 50, 50, true);
 
-//    DriftCorrectionPlugIn.showDriftPlot(driftCorrection);
+//    ResultsDriftCorrection.showDriftPlot(driftCorrection);
 //    new ImagePlus("corr", driftCorrection.getCorrelationImages()).show();
 //    Thread.sleep(200000);
 
