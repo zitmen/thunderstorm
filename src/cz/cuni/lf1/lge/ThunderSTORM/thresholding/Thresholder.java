@@ -27,7 +27,8 @@ public class Thresholder {
             this.image = null;
         }
     }
-    private static final ThreadLocal<Data> data = new ThreadLocal<Data>() {
+    
+    private final static class ThreadLocalData extends ThreadLocal<Data> {
         @Override
         protected synchronized Data initialValue() {
             Data data = new Data();
@@ -45,10 +46,13 @@ public class Thresholder {
             }
             return data;
         }
-    };
+    }
+    
+    private static ThreadLocal<Data> data = new ThreadLocalData();
 
     public static synchronized void loadFilters(List<IFilterUI> filters) {
         Thresholder.filters = filters;
+        data = new ThreadLocalData();
     }
 
     public static synchronized void setActiveFilter(int index) {
