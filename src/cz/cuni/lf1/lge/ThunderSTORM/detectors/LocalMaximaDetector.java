@@ -25,7 +25,7 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
     private int connectivity;
     private String threshold;
     private transient float thresholdValue;
-    private transient final static String DEFAULT_THRESHOLD = "10*std(F)";
+    private transient final static String DEFAULT_THRESHOLD = "std(Wave.F1)";
     private transient final static int DEFAULT_CONNECTIVITY = Graph.CONNECTIVITY_8;
     private transient final static ParameterName.String THRESHOLD = new ParameterName.String("threshold");
     private transient final static ParameterName.Choice CONNECTIVITY = new ParameterName.Choice("connectivity");
