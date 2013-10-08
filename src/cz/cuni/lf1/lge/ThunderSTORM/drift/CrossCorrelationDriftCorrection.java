@@ -142,7 +142,6 @@ public class CrossCorrelationDriftCorrection {
 //            GaussianBlur blur = new GaussianBlur();
 //            blur.blurFloat(crossCorrelationImage, magnification/2, magnification/2, 0.01);
 
-            //new ImagePlus("crossCorrelation " + i, crossCorrelationImage.duplicate()).show();
             //find maxima
             Point2D.Double maximumCoords = findMaxima(crossCorrelationImage);
             maximumCoords = findMaximaWithSubpixelPrecision(maximumCoords, 1 + 2 * (int) (5 * magnification), crossCorrelationImage);
@@ -150,11 +149,7 @@ public class CrossCorrelationDriftCorrection {
             binDriftY[i] = (crossCorrelationImage.getHeight() / 2 - maximumCoords.y) / magnification;
         }
 
-        //cumulative sum to get offset from the first bin
-        //cumulativeSum(binDriftX);
-        //cumulativeSum(binDriftY);
-
-        //interpolate the drift using cubic splines
+        //interpolate the drift using loess interpolator, or linear interpolation if not enough data for loess
         if(binCount < 4) {
             LinearInterpolator interpolator = new LinearInterpolator();
             xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX));
@@ -199,8 +194,8 @@ public class CrossCorrelationDriftCorrection {
         int currentPos = 0;
         for(int i = 0; i < binCount; i++) {
             int endPos = currentPos + detectionsPerBin;
-            if(endPos >= frame.length) {
-                endPos = frame.length - 1;
+            if(endPos >= frame.length || i == binCount-1) {
+                endPos = frame.length;
             } else {
                 double frameAtEndPos = frame[endPos-1];
                 while(endPos < frame.length - 1 && frame[endPos] == frameAtEndPos) {
@@ -214,7 +209,7 @@ public class CrossCorrelationDriftCorrection {
             } else {
                 xBinnedByFrame[i] = Arrays.copyOfRange(x, currentPos, endPos);
                 yBinnedByFrame[i] = Arrays.copyOfRange(y, currentPos, endPos);
-                binCenters[i] = (frame[currentPos] + frame[endPos]) / 2;
+                binCenters[i] = (frame[currentPos] + frame[endPos-1]) / 2;
             }
             currentPos = endPos;
         }

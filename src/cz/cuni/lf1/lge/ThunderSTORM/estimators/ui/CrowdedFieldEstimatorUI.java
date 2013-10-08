@@ -110,6 +110,7 @@ public class CrowdedFieldEstimatorUI {
         params.registerComponent(ENABLED, isEnabledCheckbox);
         params.registerComponent(NMAX, nMaxTextField);
         params.registerComponent(PVALUE, pValueTextField);
+        params.registerComponent(KEEP_SAME_INTENSITY, keepSameIntensityCheckBox);
         params.registerComponent(FIXED_INTENSITY, isFixedIntensityCheckBox);
         params.registerComponent(INTENSITY_RANGE, expectedIntensityTextField);
 
