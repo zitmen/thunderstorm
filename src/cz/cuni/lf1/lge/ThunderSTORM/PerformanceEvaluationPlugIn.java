@@ -294,6 +294,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
                         FN.remove(nn_mol.getMax());
                         mol.setStatus(Molecule.DetectionStatus.TRUE_POSITIVE);
                         nn_mol.getMax().setStatus(Molecule.DetectionStatus.TRUE_POSITIVE);
+                        tree.removePoint(nn_mol);
                         //
                         mol.setParam(MoleculeDescriptor.LABEL_GROUND_TRUTH_ID, nn_mol.getMax().getParam(MoleculeDescriptor.LABEL_ID));
                         mol.setParam(MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH, sqrt(nn_mol.getMaxKey()));
