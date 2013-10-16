@@ -260,7 +260,7 @@ public abstract class PSFModel {
         double[] expectedValues = getValueFunction(xgrid, ygrid).value(point);
         double chi2 = 0;
         for(int i = 0; i < expectedValues.length; i++) {
-            chi2 += sqr(imageValues[i] - expectedValues[i]) / expectedValues[i];
+            chi2 += sqr(imageValues[i] - expectedValues[i]) / imageValues[i];
         }
         return chi2;
     }
