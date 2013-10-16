@@ -20,17 +20,16 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import org.fit.cssbox.swingbox.BrowserPane;
+import org.fit.cssbox.swingbox.SwingBoxEditorKit;
 
 public class HelpButton extends JButton {
 
-    private static JDialog textWindow = constructFrame();
-    private JScrollPane content;
-    private JEditorPane editor;
-    private static final int WINDOW_WIDTH = 400;
+    private static JDialog window = constructFrame();
+    private static JEditorPane htmlBrowser;
+    private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 400;
     URL url;
 
@@ -43,7 +42,6 @@ public class HelpButton extends JButton {
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         this.url = helpUrl;
         addActionListener(new HelpButtonActionListener());
-        createTextWindowContent(helpUrl);
     }
 
     private static JDialog constructFrame() {
@@ -58,70 +56,64 @@ public class HelpButton extends JButton {
             frame.setType(Window.Type.UTILITY);
         }
         frame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE); //for use within modal dialog
-        return frame;
-    }
-
-    private void createTextWindowContent(URL url) {
-        editor = new JEditorPane();
-        Border border = BorderFactory.createEtchedBorder(EtchedBorder.RAISED);
-        editor.setBorder(border);
-        editor.setEditable(false);
-        try {
-            editor.setPage(url);
-        } catch(Exception e) {
-            editor.setText("Could not load help file");
-        }
-        editor.addHyperlinkListener(new HyperlinkListener() {
+        htmlBrowser = new BrowserPane();
+        htmlBrowser.setEditorKit(new SwingBoxEditorKit());
+        htmlBrowser.setBorder(BorderFactory.createEmptyBorder());
+        htmlBrowser.addHyperlinkListener(new HyperlinkListener() {
             @Override
             public void hyperlinkUpdate(HyperlinkEvent e) {
                 if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                     try {
                         if("jar".equals(e.getURL().getProtocol())) {
-                            editor.setPage(e.getURL());
+                            htmlBrowser.setPage(e.getURL());
                         } else {
                             BrowserLauncher.openURL(e.getURL().toString());
                         }
-                    } catch(Exception e1) {
-                        IJ.handleException(e1);
+                    } catch(Exception ex) {
+                        IJ.handleException(ex);
                     }
+                } else if(e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+                    htmlBrowser.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                } else if(e.getEventType() == HyperlinkEvent.EventType.EXITED) {
+                    htmlBrowser.setCursor(Cursor.getDefaultCursor());
                 }
+
             }
         });
-        JScrollPane scrollPane = new JScrollPane(editor);
+        JScrollPane scrollPane = new JScrollPane(htmlBrowser);
         scrollPane.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
-        content = scrollPane;
+        frame.getContentPane().add(scrollPane);
+        return frame;
     }
 
     /**
-     * show the content in the static window, sizes and positions the window
+     * shows the url in the static window, sizes and positions the window
      * accordingly
      */
-    private void showInTextWindow(JScrollPane content) throws IOException {
-        textWindow.setVisible(false);
-        textWindow.getContentPane().removeAll();
-        textWindow.getContentPane().add(content);
+    private void showInTextWindow() throws IOException {
+        window.setVisible(false);
+        // same height as parent window of the button, positioned next to it on left or right side
+        Window ancestor = SwingUtilities.getWindowAncestor(this);
+        window.setPreferredSize(new Dimension(WINDOW_WIDTH, Math.max(ancestor.getHeight(), WINDOW_HEIGHT)));
+        int screenEnd = ancestor.getGraphicsConfiguration().getBounds().width + ancestor.getGraphicsConfiguration().getBounds().x;
+        Point ancestorLocation = ancestor.getLocationOnScreen();
+        if(ancestorLocation.x + ancestor.getWidth() + window.getPreferredSize().width < screenEnd) {
+            window.setLocation(ancestorLocation.x + ancestor.getWidth(), ancestorLocation.y);
+        } else {
+            window.setLocation(ancestorLocation.x - window.getPreferredSize().width, ancestorLocation.y);
+        }
 
-        //reset the content to the original page (in the case the user navigated to a different page)
-        if(url != null && !url.equals(editor.getPage())) {
+        //set page shown in browser
+        if(url != null && !url.equals(htmlBrowser.getPage())) {
             try {
-                editor.setPage(url);
+                htmlBrowser.setPage(url);
             } catch(Exception e) {
-                editor.setText("Could not load help file");
+                htmlBrowser.setText("Could not load help file");
             }
         }
 
-        Window ancestor = SwingUtilities.getWindowAncestor(this);
-        int screenEnd = ancestor.getGraphicsConfiguration().getBounds().width + ancestor.getGraphicsConfiguration().getBounds().x;
-        Point ancestorLocation = ancestor.getLocationOnScreen();
-        if(ancestorLocation.x + ancestor.getWidth() + textWindow.getPreferredSize().width < screenEnd) {
-            textWindow.setLocation(ancestorLocation.x + ancestor.getWidth(), ancestorLocation.y);
-        } else {
-            textWindow.setLocation(ancestorLocation.x - textWindow.getPreferredSize().width, ancestorLocation.y);
-        }
-        textWindow.pack();
-        textWindow.setVisible(true);
-
-
+        window.pack();
+        window.setVisible(true);
     }
 
     class HelpButtonActionListener implements ActionListener {
@@ -129,7 +121,7 @@ public class HelpButton extends JButton {
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                showInTextWindow(content);
+                showInTextWindow();
             } catch(IOException ex) {
                 IJ.handleException(ex);
             }
