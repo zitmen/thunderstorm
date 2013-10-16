@@ -3,10 +3,13 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
-\language_package default
+\language_package none
 \inputencoding auto
 \fontencoding global
 \font_roman default
@@ -22,7 +25,7 @@
 \graphics default
 \default_output_format default
 \output_sync 0
-\bibtex_command bibtex
+\bibtex_command default
 \index_command default
 \paperfontsize default
 \spacing single
@@ -60,45 +63,93 @@
 
 \begin_body
 
-\begin_layout Subsection*
+\begin_layout Section*
 Wavelet filter
 \end_layout
 
 \begin_layout Standard
-ThunderSTORM uses a wavelet filter based on the method of 
+The wavelet transform is commonly used in modern signal-processing applications.
+ This type of wavelet filter applies the 
+\emph on
+à trous
+\emph default
+ algorithm 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Izeddin2012"
+key "Starck2002,Izeddin2012"
 
+\end_inset
+
+ which is an undecimated scheme in which the filter responses are up-sampled,
+ thereby inserting holes (
+\emph on
+trous
+\emph default
+ in French) between the filter coefficients.
+ The output of each filter level therefore contains the same number of samples
+ as the input.
+\end_layout
+
+\begin_layout Standard
+The first step is based on separable 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Convolution.html}{convolution}
+\end_layout
+
+\end_inset
+
+ to obtain the smoothed approximations 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+V_{i}=V_{i-1}*\boldsymbol{k}_{i}*\boldsymbol{k}_{i}^{\top}\,,
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $V_{0}=I$
+\end_inset
+
+ is the input image, 
+\begin_inset Formula $i=1,\ldots,N$
+\end_inset
+
+, and 
+\begin_inset Formula $\boldsymbol{k}_{i}$
+\end_inset
+
+ is a filter kernel at the corresponding level.
+ The number of levels is given by 
+\begin_inset Formula $N$
 \end_inset
 
 .
- This is our filter of choice in ThunderSTORM.
- The filter is an undecimated wavelet transform with a kernel determined
- by a third-order B-spline.
- We use three wavelet planes, each corresponding to a range of different
- spatial frequencies:
-\end_layout
+ The convolution kernel is usually based on a third-order B-spline scaling
+ function 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Starck2002,Izeddin2012"
 
-\begin_layout Enumerate
-the first plane is given by 
-\begin_inset Formula $k_{1}=\left[\frac{1}{16},\frac{1}{4},\frac{3}{8},\frac{1}{4},\frac{1}{16}\right]^{T}$
 \end_inset
 
- and contains mainly the high spatial frequencies present in the input image
- including noise;
-\end_layout
-
-\begin_layout Enumerate
-the second plane is given by 
-\begin_inset Formula $k_{2}=\left[\frac{1}{16},0,\frac{1}{4},0,\frac{3}{8},0,\frac{1}{4},0,\frac{1}{16}\right]^{T}$
+, where 
+\begin_inset Formula $\boldsymbol{k}_{1}=\left[\frac{1}{16},\frac{1}{4},\frac{3}{8},\frac{1}{4},\frac{1}{16}\right]^{\top}$
 \end_inset
 
- and contains structures with sizes close to the diffraction limit;
-\end_layout
+, 
+\begin_inset Formula $\boldsymbol{k}_{2}=\left[\frac{1}{16},0,\frac{1}{4},0,\frac{3}{8},0,\frac{1}{4},0,\frac{1}{16}\right]^{\top}$
+\end_inset
 
-\begin_layout Enumerate
-the third plane is given by
+
 \family roman
 \series medium
 \shape up
@@ -110,8 +161,8 @@ the third plane is given by
 \uwave off
 \noun off
 \color none
- 
-\begin_inset Formula $k_{3}=\left[\frac{1}{16},0,0,0,\frac{1}{4},0,0,0,\frac{3}{8},0,0,0,\frac{1}{4},0,0,0,\frac{1}{16}\right]^{T}$
+, 
+\begin_inset Formula $\boldsymbol{k}_{3}=\left[\frac{1}{16},0,0,0,\frac{1}{4},0,0,0,\frac{3}{8},0,0,0,\frac{1}{4},0,0,0,\frac{1}{16}\right]^{\top}$
 \end_inset
 
 
@@ -126,70 +177,52 @@ the third plane is given by
 \uwave default
 \noun default
 \color inherit
- and contains the lower frequency image components.
+, etc.
 \end_layout
 
 \begin_layout Standard
-Each of the planes can be used for different operations.
- For example we use the first plane for threshold estimation for the subsequent
- molecular detection step.
- We use the second plane (or if selected by the user, the third plane) as
- an input image for the detection of molecules.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Paragraph
-
-\shape italic
-Implementation:
-\end_layout
-
-\begin_layout Standard
-The filter itself takes an image 
-\begin_inset Formula $I$
+The wavelet transform of the input data at level 
+\begin_inset Formula $i$
 \end_inset
 
- and outputs the result 
-\begin_inset Formula $F$
-\end_inset
+ is computed as the difference between two consecutive approximation levels
+ 
+\end_layout
 
-: 
+\begin_layout Standard
 \begin_inset Formula 
-\begin{eqnarray}
-V_{1} & = & (I*k_{1}*k_{1}^{T})\label{eq:waveletV1}\\
-V_{2} & = & (V_{1}*k_{2}*k_{2}^{T})\label{eq:waveletV2}\\
-V_{3} & = & (V_{2}*k_{3}*k_{3}^{T})\label{eq:waveletV3}\\
-F & = & \begin{cases}
-V_{2}-V_{3} & \mathrm{{if\, user\, selected\, third\, plane\, option}}\\
-V_{1}-V_{2} & \mathrm{{otherwise}}
-\end{cases}\,.\label{eq:waveletF}
-\end{eqnarray}
+\begin{equation}
+F_{i}=V_{i-1}-V_{i}\,.
+\end{equation}
 
 \end_inset
 
+Here, each wavelet level corresponds to different ranges of spatial frequencies.
+ The first level 
+\begin_inset Formula $F_{1}$
+\end_inset
 
+ contains mainly the high spatial frequencies present in the input image
+ including noise.
+ Higher levels contain ranges of lower and lower image frequency components.
 \end_layout
 
 \begin_layout Standard
-All of the kernels above are vectors and are separable.
- We implemented the filter as written in equations (
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:waveletV1"
-
+In our implementation, the output of the wavelet filter is the second wavelet
+ level 
+\begin_inset Formula $F_{2}$
 \end_inset
 
--
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:waveletF"
-
+ (optionally the third, 
+\begin_inset Formula $F_{3}$
 \end_inset
 
-).
+), because at this level, most localization microscopy data contains structures
+ with sizes close to the diffraction limit of the microscope (we note that
+ this depends on the effective camera pixel size).
+ The wavelet filter is the default option in ThunderSTORM as it performs
+ very well on many of localization microscopy data sets we have experimented
+ with.
 \end_layout
 
 \begin_layout Standard

@@ -1,0 +1,133 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Averaging filter
+\end_layout
+
+\begin_layout Standard
+Applying an averaging filter (also known as mean or box filter) results
+ in an image in which the value of each pixel is equal to an average intensity
+ of pixels from the input image in a given neighborhood.
+ Filtering can be defined as a convolution of the image with a kernel given
+ by an 
+\begin_inset Formula $l\times l$
+\end_inset
+
+ matrix containing equal entries that sum to one, thus
+\begin_inset Formula 
+\begin{equation}
+K_{\mathrm{AV}}=\frac{1}{l^{2}}\left[\begin{array}{ccc}
+1 & \cdots & 1\\
+\vdots & \ddots & \vdots\\
+1 & \cdots & 1
+\end{array}\right]\,.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Kernel 
+\begin_inset Formula $K_{\mathrm{AV}}$
+\end_inset
+
+ is separable and the vector 
+\begin_inset Formula $\boldsymbol{k}$
+\end_inset
+
+ (see 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Convolution.html}{convolution}
+\end_layout
+
+\end_inset
+
+) can be composed from values 
+\begin_inset Formula $k_{i}=1/l$
+\end_inset
+
+, where 
+\begin_inset Formula $i=1,\ldots,l$
+\end_inset
+
+.
+ The kernel size 
+\begin_inset Formula $l$
+\end_inset
+
+ is a user-specified parameter.
+\end_layout
+
+\end_body
+\end_document

@@ -1,100 +1,126 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  
-  "http://www.w3.org/TR/html4/loose.dtd">  
-<html > 
-<head><title></title> 
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> 
-<meta name="generator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
-<meta name="originator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
-<!-- html --> 
-<meta name="src" content="CompoundWaveletFilterUI.tex"> 
-<meta name="date" content="2013-09-04 13:45:00"> 
-<link rel="stylesheet" type="text/css" href="CompoundWaveletFilterUI.css"> 
-</head><body 
->
-   <h4 class="likesubsectionHead"><a 
- id="x1-1000"></a>Wavelet filter</h4>
-<!--l. 12--><p class="noindent" >ThunderSTORM uses a wavelet filter based on the method of <span class="cite">[<a 
-href="#XIzeddin2012">1</a>]</span>. This is our filter of
-choice in ThunderSTORM. The filter is an undecimated wavelet transform with a
-kernel determined by a third-order B-spline. We use three wavelet planes, each
-corresponding to a range of different spatial frequencies:
-     <ol  class="enumerate1" >
-     <li 
-  class="enumerate" id="x1-1002x1">the first plane is given by <span 
-class="cmmi-10">k</span><sub><span 
-class="cmr-7">1</span></sub> <span 
-class="cmr-10">= </span><img 
-src="CompoundWaveletFilterUI0x.png" alt="[-1, 1, 3, 1,-1]
- 16 4 8 4 16"  class="left" align="middle"><sup><span 
-class="cmmi-7">T</span></sup> and contains mainly the
-     high spatial frequencies present in the input image including noise;
-     </li>
-     <li 
-  class="enumerate" id="x1-1004x2">the second plane is given by <span 
-class="cmmi-10">k</span><sub><span 
-class="cmr-7">2</span></sub> <span 
-class="cmr-10">= </span><img 
-src="CompoundWaveletFilterUI1x.png" alt="[                  ]
- 116,0, 14,0, 38,0, 14,0, 116"  class="left" align="middle"><sup><span 
-class="cmmi-7">T</span></sup> and contains
-     structures with sizes close to the diffraction limit;
-     </li>
-     <li 
-  class="enumerate" id="x1-1006x3">the                                       third                                       plane
-     is given by <span 
-class="cmmi-10">k</span><sub><span 
-class="cmr-7">3</span></sub> <span 
-class="cmr-10">= </span><img 
-src="CompoundWaveletFilterUI2x.png" alt="[-1      1       3      1       1-]
- 16,0,0,0,4,0,0,0,8,0,0,0,4,0,0,0,16"  class="left" align="middle"><sup><span 
-class="cmmi-7">T</span></sup> and contains
-     the lower frequency image components.</li></ol>
-<!--l. 26--><p class="noindent" >Each of the planes can be used for different operations. For example we use the first
-plane for threshold estimation for the subsequent molecular detection step. We use
-the second plane (or if selected by the user, the third plane) as an input image for the
-detection of molecules.
-<!--l. 35--><p class="noindent" ><span class="paragraphHead"><a 
- id="x1-2000"></a><span 
-class="ecbi-1000">Implementation:</span></span>
-   The filter itself takes an image <span 
-class="cmmi-10">I </span>and outputs the result <span 
-class="cmmi-10">F</span>: <div class="eqnarray">
-   <center class="math-display" >
-<img 
-src="CompoundWaveletFilterUI3x.png" alt="V1  =  (I *k1 * kT1 )                                (1)
-V   =  (V  *k * kT)                                 (2)
- 2       1   2   2T
-V3  =  ({V2 *k3 * k3 )                               (3)
-         V2 - V3 ifuserselectedthirdplaneoption
- F  =    V - V   otherwise                  .        (4)
-          1   2
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title></title>
+<!--Generated on Wed Oct 16 14:03:36 2013 by LaTeXML (version 0.7.9alpha) http://dlmf.nist.gov/LaTeXML/.-->
 
-" class="math-display" ><a 
- id="x1-2001r1"></a><a 
- id="x1-2001r2"></a><a 
- id="x1-2001r3"></a><a 
- id="x1-2001r4"></a></center>
-</div>
-<!--l. 49--><p class="indent" >   All of the kernels above are vectors and are separable. We implemented the filter
-as written in equations (<a 
-href="#x1-2001r1">1<!--tex4ht:ref: eq:waveletV1 --></a>-<a 
-href="#x1-2001r4">4<!--tex4ht:ref: eq:waveletF --></a>).
-<!--l. 1--><p class="noindent" >
-   <h3 class="likesectionHead"><a 
- id="x1-3000"></a>References</h3>
-<!--l. 1--><p class="noindent" >
-   <div class="thebibliography">
-   <p class="bibitem" ><span class="biblabel">
- [1]<span class="bibsp">&#x00A0;&#x00A0;&#x00A0;</span></span><a 
- id="XIzeddin2012"></a>I&#x00A0;Izeddin, J&#x00A0;Boulanger, V&#x00A0;Racine, C&#x00A0;G Specht, A&#x00A0;Kechkar, D&#x00A0;Nair,
-   A&#x00A0;Triller,  D&#x00A0;Choquet,  M&#x00A0;Dahan,  and  J&#x00A0;B  Sibarita.    Wavelet  analysis
-   for single molecule localization microscopy.  <span 
-class="ecti-1000">Optics express</span>, 20(3):2081&#8211;95,
-   January 2012.
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="../../../../../../../ltx-article.css" type="text/css">
+<link rel="stylesheet" href="../../../../../../../customRules.css" type="text/css">
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<div class="ltx_document">
+<div id="Sx1" class="ltx_section">
+<h1 class="ltx_title ltx_title_section">Wavelet filter</h1>
+
+<div id="Sx1.p1" class="ltx_para">
+<p class="ltx_p">The wavelet transform is commonly used in modern signal-processing
+applications. This type of wavelet filter applies the <em class="ltx_emph">à trous</em>
+algorithm <cite class="ltx_cite">[<a href="#bib.bib21" title="Astronomical Image and Data Analysis" class="ltx_ref">2</a>, <a href="#bib.bib10" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite> which is an undecimated scheme
+in which the filter responses are up-sampled, thereby inserting holes
+(<em class="ltx_emph">trous</em> in French) between the filter coefficients. The output
+of each filter level therefore contains the same number of samples
+as the input.
 </p>
-   </div>
-    
-</body></html> 
+</div>
+<div id="Sx1.p2" class="ltx_para">
+<p class="ltx_p">The first step is based on separable <a href="Convolution.html" title="" class="ltx_ref">convolution</a>
+to obtain the smoothed approximations</p>
+</div>
+<div id="Sx1.p3" class="ltx_para">
+<table id="Sx1.E1" class="ltx_equation">
 
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi9.png" width="159" height="25" alt="V_{i}=V_{i-1}*\boldsymbol{k}_{i}*\boldsymbol{k}_{i}^{\top}\,,"></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
+</tr>
+</table>
+<p class="ltx_p">where <img id="Sx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="55" height="18" alt="V_{0}=I"> is the input image, <img id="Sx1.p3.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi19.png" width="98" height="19" alt="i=1,\ldots,N">, and <img id="Sx1.p3.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi18.png" width="21" height="19" alt="\boldsymbol{k}_{i}">
+is a filter kernel at the corresponding level. The number of levels
+is given by <img id="Sx1.p3.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi13.png" width="20" height="16" alt="N">. The convolution kernel is usually based on a third-order
+B-spline scaling function <cite class="ltx_cite">[<a href="#bib.bib21" title="Astronomical Image and Data Analysis" class="ltx_ref">2</a>, <a href="#bib.bib10" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>, where <img id="Sx1.p3.m5" class="ltx_Math" style="vertical-align:-8px" src="mi/mi15.png" width="175" height="29" alt="\boldsymbol{k}_{1}=\left[\frac{1}{16},\frac{1}{4},\frac{3}{8},\frac{1}{4},%
+\frac{1}{16}\right]^{\top}">,
+<img id="Sx1.p3.m6" class="ltx_Math" style="vertical-align:-8px" src="mi/mi16.png" width="242" height="29" alt="\boldsymbol{k}_{2}=\left[\frac{1}{16},0,\frac{1}{4},0,\frac{3}{8},0,\frac{1}{4%
+},0,\frac{1}{16}\right]^{\top}">,
+<img id="Sx1.p3.m7" class="ltx_Math" style="vertical-align:-8px" src="mi/mi17.png" width="376" height="29" alt="\boldsymbol{k}_{3}=\left[\frac{1}{16},0,0,0,\frac{1}{4},0,0,0,\frac{3}{8},0,0,%
+0,\frac{1}{4},0,0,0,\frac{1}{16}\right]^{\top}">,
+etc.</p>
+</div>
+<div id="Sx1.p4" class="ltx_para">
+<p class="ltx_p">The wavelet transform of the input data at level <img id="Sx1.p4.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi20.png" width="10" height="15" alt="i"> is computed
+as the difference between two consecutive approximation levels</p>
+</div>
+<div id="Sx1.p5" class="ltx_para">
+<table id="Sx1.E2" class="ltx_equation">
 
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi8.png" width="125" height="20" alt="F_{i}=V_{i-1}-V_{i}\,."></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
+</tr>
+</table>
+<p class="ltx_p">Here, each wavelet level corresponds to different ranges of spatial
+frequencies. The first level <img id="Sx1.p5.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi10.png" width="23" height="18" alt="F_{1}"> contains mainly the high spatial
+frequencies present in the input image including noise. Higher levels
+contain ranges of lower and lower image frequency components.
+</p>
+</div>
+<div id="Sx1.p6" class="ltx_para">
+<p class="ltx_p">In our implementation, the output of the wavelet filter is the second
+wavelet level <img id="Sx1.p6.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi11.png" width="23" height="18" alt="F_{2}"> (optionally the third, <img id="Sx1.p6.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi12.png" width="23" height="18" alt="F_{3}">), because at
+this level, most localization microscopy data contains structures
+with sizes close to the diffraction limit of the microscope (we note
+that this depends on the effective camera pixel size). The wavelet
+filter is the default option in ThunderSTORM as it performs very well
+on many of localization microscopy data sets we have experimented
+with.</p>
+</div>
+</div>
+<div id="bib" class="ltx_bibliography">
+<h1 class="ltx_title ltx_title_bibliography">References</h1>
 
+<ul id="L1" class="ltx_biblist">
+<li id="bib.bib10" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">I. Izeddin, J. Boulanger, V. Racine, C. G. Specht, A. Kechkar, D. Nair, A. Triller, D. Choquet, M. Dahan and J. B. Sibarita</span><span class="ltx_text ltx_bib_year">(2012-01)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Wavelet analysis for single molecule localization microscopy</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Optics express</span> <span class="ltx_text ltx_bib_volume">20</span> (<span class="ltx_text ltx_bib_number">3</span>), <span class="ltx_text ltx_bib_pages"> pp. 2081–95</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/OE.20.002081" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
+<span class="ltx_text issn ltx_bib_external">ISSN 1094-4087</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>,
+<a href="#Sx1.p3" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>.
+</span>
+</li>
+<li id="bib.bib21" class="ltx_bibitem ltx_bib_book">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. Starck and F. Murtagh</span><span class="ltx_text ltx_bib_year">(2002)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Astronomical Image and Data Analysis</span>,
+</span>
+<span class="ltx_bibblock"> <span class="ltx_text ltx_bib_publisher">Springer-Verlag</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>,
+<a href="#Sx1.p3" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>.
+</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Wed Oct 16 14:03:36 2013 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+</div>
+</div>
+</div>
+</body>
+</html>

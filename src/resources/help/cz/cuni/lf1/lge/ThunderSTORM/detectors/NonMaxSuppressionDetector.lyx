@@ -1,0 +1,134 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Non-maximum suppression
+\end_layout
+
+\begin_layout Standard
+Non-maximum suppression is a way to eliminate all image information that
+ is not part of the local maxima by setting all non-maximal pixels to zero.
+ Our implementation is based on morphological gray-scale dilation defined
+ by the formula
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(F\oplus S\right)\left(x,y\right)=\max_{\left(x',y'\right)\in D_{S}}\left[F\left(x-x',y-y'\right)+S\left(x',y'\right)\right]\,,
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $F$
+\end_inset
+
+ is an input image, 
+\begin_inset Formula $S$
+\end_inset
+
+ is a structuring element, and 
+\begin_inset Formula $D_{S}$
+\end_inset
+
+ is the domain of 
+\begin_inset Formula $S$
+\end_inset
+
+.
+ Gray-scale dilation is a more general approach than the local maximum method
+ described above, because the structuring element can be of any form in
+ principle.
+\end_layout
+
+\begin_layout Standard
+We first perform a gray-scale dilation of the input image using a structuring
+ element of size 
+\begin_inset Formula $l\times l$
+\end_inset
+
+ with all entries set to zero, where 
+\begin_inset Formula $l$
+\end_inset
+
+ is a dilation radius given by the user.
+ The approximate molecular positions are extracted by finding pixels in
+ the original image that have intensities equal to corresponding pixels
+ in the dilated image and also have an intensity greater than a user-specified
+ threshold.
+ Essentially, a binary image can be built with all non-maximum pixels set
+ to zero and with all local maxima set to one.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename ".threshold.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

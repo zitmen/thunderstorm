@@ -99,65 +99,70 @@
         <copy file="${store.dir}/UBER_${ant.project.name}.jar" tofile="${imagej.path}/${ant.project.name}.jar" failonerror="false"/>
 
     </target>
-  
-    <target name="compile html help">
-        <property name="lyx.path" value="c:/Program Files (x86)/LyX 2.0/bin/" description="path to lyx bin folder, can be overriden in build.properties"/>
-        <property name ="htlatex.config.path" value="${basedir}htlatex.cfg"/>
+    
+    <target name="compile-html-help">
+        <property file="build.properties" description="local override"/>
+        <property name="lyx.path" location="c:/Program Files (x86)/LyX 2.0/bin/" description="path to lyx bin folder, can be overriden in build.properties"/>
+        <property name="doc.root" location="src/resources/help"/>
+        <property name="customCSS" location="src/resources/help/customRules.css" />
         
-        <pathconvert targetos="unix" property="htlatex.config.unixpath">
-            <path location="${basedir}/src/resources/help/htlatex.cfg"/>
-        </pathconvert>
+        <property environment="env"/>
         
-        <apply executable="${lyx.path}lyx" failonerror="true" resolveExecutable="true"> 
+        <apply executable="lyx" failonerror="true" resolveExecutable="false" vmlauncher="false"> 
+            <env key="Path" path="{env.Path};${lyx.path}"/>
             <arg line="--export latex"/> 
             <srcfile/> 
-            <fileset id="myfileset" dir="src/resources/help">
+            <fileset dir="src/resources/help">
                 <include name="**/*.lyx"/>
                 <exclude name="**/.*"/>
             </fileset>
+            <globmapper from="*.lyx" to="*.html"/>
         </apply> 
         
-        <taskdef name="runInDir" classname="cz.cuni.lf1.lge.lyx.RunInDirTask" classpath="lib/CompileLyxTask.jar"/>
-        
-        <runInDir command="htlatex" params="&quot;${htlatex.config.unixpath}&quot; &quot;&quot; &quot;-interaction=batchmode&quot;">
-            <fileset id="myfileset" dir="src/resources/help">
+        <apply executable="latexml" failonerror="true" resolveExecutable="true" vmlauncher="false" dest="${doc.root}"> 
+            <fileset dir="${doc.root}">
                 <include name="**/*.tex"/>
                 <exclude name="**/.*"/>
             </fileset>
-        </runInDir>
+            <globmapper from="*.tex" to="*.xml"/>
+            
+            <srcfile/> 
+            <targetfile prefix="--destination="/>
+        </apply>
         
-        <runInDir command="bibtex" ignoreErrors="true">
-            <fileset id="myfileset" dir="src/resources/help">
-                <include name="**/*.aux"/>
+        <exec executable="latexml" dir="${doc.root}" vmlauncher="false">
+            <arg path="${doc.root}/references.bib"/>
+            <arg prefix="--destination=" path="${doc.root}/references.xml"/>
+        </exec>
+        
+        <apply executable="latexmlpost" failonerror="true" resolveExecutable="true" vmlauncher="false" dest="${doc.root}"> 
+            <arg value="--sitedirectory=${doc.root}"/>
+            <arg value="--format=html"/>
+            <arg value="--bibliography=${doc.root}/references.xml"/>
+            <arg value="--css=${customCSS}"/>
+            <fileset dir="${doc.root}">
+                <include name="**/*.xml"/>
                 <exclude name="**/.*"/>
+                <exclude name="**/references.xml"/>
             </fileset>
-        </runInDir>
-        
-        <runInDir command="htlatex" params="&quot;${htlatex.config.unixpath}&quot; &quot;&quot; &quot;-interaction=batchmode&quot;">
-            <fileset id="myfileset" dir="src/resources/help">
-                <include name="**/*.tex"/>
-                <exclude name="**/.*"/>
-            </fileset>
-        </runInDir>
-        
+            <globmapper from="*.xml" to="*.html"/>
+            
+            <srcfile/> 
+            <targetfile prefix="--destination="/>
+        </apply> 
+      
+        <!--
         <antcall target="clean html help"/>
+        -->
     </target>
     
     <target name="clean html help">
         <delete failonerror="false">
             <fileset id="myfileset" dir="src/resources/help">
                 <include name="**/*.log"/>
-                <include name="**/*.dvi"/>
                 <include name="**/*.tex"/>
-                <include name="**/*.xref"/>
-                <include name="**/*.tmp"/>
-                <include name="**/*.lg"/>
-                <include name="**/*.aux"/>
-                <include name="**/*.4ct"/>
-                <include name="**/*.4tc"/>
-                <include name="**/*.idv"/>
-                <include name="**/*.blg"/>
-                <include name="**/*.bbl"/>
+                <include name="**/*.xml"/>
+                <include name="**/*.cache"/>
             </fileset>
         </delete>
     </target>

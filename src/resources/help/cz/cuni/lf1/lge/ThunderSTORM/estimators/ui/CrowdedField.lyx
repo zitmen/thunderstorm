@@ -1,0 +1,269 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+The Crowded-field problem
+\end_layout
+
+\begin_layout Standard
+To solve the 
+\begin_inset Quotes eld
+\end_inset
+
+crowded field problem,
+\begin_inset Quotes erd
+\end_inset
+
+ i.e., analysis of a dense local distribution of molecules which can not be
+ adequately resolved by one of the methods described above, ThunderSTORM
+ uses a multiple-emitter fitting method similar to the algorithm described
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Huang2011"
+
+\end_inset
+
+.
+ This algorithm can use any of the PSF fitting algorithms, including the
+ 3D approach, described above.
+ First, users need to specify the maximum number of molecules allowed in
+ one fitting region 
+\begin_inset Formula $N_{max}$
+\end_inset
+
+.
+ Next, the algorithm fits a single molecule in the image, then subtracts
+ the fitted molecule from the image and finds the maximum in the residual
+ image which is taken as the approximate position of a second molecule.
+ The algorithm then fits two molecules to the imaged spot.
+ This routine is repeated until it reaches a model with 
+\begin_inset Formula $N_{max}$
+\end_inset
+
+ molecules.
+ Because a model with 
+\begin_inset Formula $n+1$
+\end_inset
+
+ parameters will fit at least as well as a model with 
+\begin_inset Formula $n$
+\end_inset
+
+ parameters, we must determine whether the extra parameters are statistically
+ justified.
+ 
+\end_layout
+
+\begin_layout Standard
+When using least-squares methods, we use a model selection criteria based
+ on an 
+\begin_inset Formula $F$
+\end_inset
+
+ test 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Bevington2003"
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{equation}
+F_{\chi}=\frac{\chi^{2}(\,|\hat{\theta}_{n}|\,)-\chi^{2}(\,|\hat{\theta}_{n+1}|\,)/(|\hat{\theta}_{n+1}|-|\hat{\theta}_{n}|)}{\chi^{2}(\,|\hat{\theta}_{n+1}|\,)/(N-|\hat{\theta}_{n}|-1)}\,,
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $N$
+\end_inset
+
+ is the number of pixels in the sub-region and 
+\begin_inset Formula $|\cdot|$
+\end_inset
+
+ is the total number of fitted parameters for each model.
+ The model with 
+\begin_inset Formula $n+1$
+\end_inset
+
+ molecules is accepted if the calculated value of 
+\begin_inset Formula $F_{\chi}$
+\end_inset
+
+is greater than 
+\begin_inset Formula $F_{critical}$
+\end_inset
+
+ at a user-specified p-value.
+ 
+\end_layout
+
+\begin_layout Standard
+When using maximum-likelihood estimation, we use another model selection
+ criteria based on the log-likelihood ratio 
+\begin_inset Formula 
+\begin{equation}
+\lambda=-2\ln\left[\frac{L(\hat{\mathbf{\boldsymbol{\theta}}}_{n}\mid\mathcal{D})}{L(\hat{\boldsymbol{\theta}}_{n+1}\mid\mathcal{D})}\right]\,,
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where and 
+\begin_inset Formula $\hat{\boldsymbol{\theta}}_{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\boldsymbol{\theta}}_{n+1}$
+\end_inset
+
+ are the estimated set of parameters for 
+\begin_inset Formula $n$
+\end_inset
+
+ and 
+\begin_inset Formula $n+1$
+\end_inset
+
+ molecules respectively.
+ When the number of measurements is large, the log-likelihood ratio approximates
+ a chi-square distribution.
+ The model with 
+\begin_inset Formula $n+1$
+\end_inset
+
+ molecules is accepted if the calculated value of 
+\begin_inset Formula $\lambda\approx\chi^{2}$
+\end_inset
+
+ is greater than 
+\begin_inset Formula $\chi_{critical}^{2}$
+\end_inset
+
+at a user-specified p-value.
+ 
+\end_layout
+
+\begin_layout Standard
+(
+\emph on
+!!p-value is probability or p=1-confidence level, 
+\begin_inset Formula $\chi_{critical}^{2}$
+\end_inset
+
+ is calculated by apache or looked up in a table
+\emph default
+)
+\end_layout
+
+\begin_layout Standard
+Users can constrain the multiple-emitter fitting algorithm so that all the
+ molecules have the same intensity.
+ In our hands, this was necessary to ensure stability of the fit.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+see Motulsky2003, p.
+ 141
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand
+\backslash
+bibname{References}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

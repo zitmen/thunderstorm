@@ -6,7 +6,7 @@
 \use_default_options true
 \maintain_unincluded_children false
 \language english
-\language_package default
+\language_package none
 \inputencoding auto
 \fontencoding global
 \font_roman default
@@ -25,6 +25,7 @@
 \bibtex_command default
 \index_command default
 \paperfontsize default
+\spacing single
 \use_hyperref false
 \papersize default
 \use_geometry false
@@ -59,74 +60,23 @@
 
 \begin_body
 
-\begin_layout Part*
-LocalMaximaDetector
+\begin_layout Section*
+Detection of local intensity maxima
 \end_layout
 
 \begin_layout Standard
-In mathematics, a real-valued function 
-\begin_inset Formula $f$
-\end_inset
-
- defined on a metric space domain 
-\begin_inset Formula $X$
-\end_inset
-
- is said to have a local maximum point at the point 
-\begin_inset Formula $\hat{x}$
-\end_inset
-
- if there exists some 
-\begin_inset Formula $\varepsilon>0$
-\end_inset
-
- such that 
-\begin_inset Formula $f(\hat{x})>f\left(x\right)$
-\end_inset
-
- for all 
-\begin_inset Formula $x\in X$
-\end_inset
-
- within a distance 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
- of 
-\begin_inset Formula $\hat{x}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Paragraph
-
-\shape italic
-Implementation:
-\end_layout
-
-\begin_layout Standard
-This method passes through each pixel of the input filtered image 
+This method passes through each pixel of the input image 
 \begin_inset Formula $F$
 \end_inset
 
- of size 
-\begin_inset Formula $m\times n$
+ and determines if the pixel intensity 
+\begin_inset Formula $F\left(x,y\right)$
 \end_inset
 
- pixels and checks if the pixel intensity 
-\begin_inset Formula $F(x,y)$
-\end_inset
-
- is greater than a user specified threshold and at the same time greater
- than or equal to all values within a 4- or 8-connected neighborhood.
+ is greater than a user-specified threshold and at the same time greater
+ than or equal to all values within a 4 or 8-connected neighborhood.
  If this condition holds, the point is accepted as a candidate molecule
  for further processing.
- The time complexity is 
-\begin_inset Formula $\mathcal{O}(mn)$
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Standard

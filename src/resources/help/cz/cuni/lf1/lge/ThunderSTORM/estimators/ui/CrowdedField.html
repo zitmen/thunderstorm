@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title></title>
+<!--Generated on Wed Oct 16 14:02:08 2013 by LaTeXML (version 0.7.9alpha) http://dlmf.nist.gov/LaTeXML/.-->
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="../../../../../../../ltx-article.css" type="text/css">
+<link rel="stylesheet" href="../../../../../../../customRules.css" type="text/css">
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<div class="ltx_document">
+<div id="Sx1" class="ltx_section">
+<h1 class="ltx_title ltx_title_section">The Crowded-field problem</h1>
+
+<div id="Sx1.p1" class="ltx_para">
+<p class="ltx_p">To solve the ‘‘crowded field problem,’’ i.e., analysis of a dense
+local distribution of molecules which can not be adequately resolved
+by one of the methods described above, ThunderSTORM uses a multiple-emitter
+fitting method similar to the algorithm described in <cite class="ltx_cite">[<a href="#bib.bib9" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite>.
+This algorithm can use any of the PSF fitting algorithms, including
+the 3D approach, described above. First, users need to specify the
+maximum number of molecules allowed in one fitting region <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi8.png" width="47" height="18" alt="N_{max}">.
+Next, the algorithm fits a single molecule in the image, then subtracts
+the fitted molecule from the image and finds the maximum in the residual
+image which is taken as the approximate position of a second molecule.
+The algorithm then fits two molecules to the imaged spot. This routine
+is repeated until it reaches a model with <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi8.png" width="47" height="18" alt="N_{max}"> molecules. Because
+a model with <img id="Sx1.p1.m3" class="ltx_Math" style="vertical-align:-3px" src="mi/mi13.png" width="45" height="17" alt="n+1"> parameters will fit at least as well as a model
+with <img id="Sx1.p1.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi14.png" width="14" height="11" alt="n"> parameters, we must determine whether the extra parameters
+are statistically justified.</p>
+</div>
+<div id="Sx1.p2" class="ltx_para">
+<p class="ltx_p">When using least-squares methods, we use a model selection criteria
+based on an <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi4.png" width="18" height="16" alt="F"> test <cite class="ltx_cite">[<a href="#bib.bib2" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite></p>
+<table id="Sx1.E1" class="ltx_equation">
+
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-21px" src="mi/mi2.png" width="351" height="52" alt="F_{\chi}=\frac{\chi^{2}(\,|\hat{\theta}_{n}|\,)-\chi^{2}(\,|\hat{\theta}_{n+1}%
+|\,)/(|\hat{\theta}_{n+1}|-|\hat{\theta}_{n}|)}{\chi^{2}(\,|\hat{\theta}_{n+1}%
+|\,)/(N-|\hat{\theta}_{n}|-1)}\,,"></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
+</tr>
+</table>
+<p class="ltx_p">where <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi7.png" width="20" height="16" alt="N"> is the number of pixels in the sub-region and <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi15.png" width="26" height="21" alt="|\cdot|">
+is the total number of fitted parameters for each model. The model
+with <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-3px" src="mi/mi13.png" width="45" height="17" alt="n+1"> molecules is accepted if the calculated value of <img id="Sx1.p2.m5" class="ltx_Math" style="vertical-align:-7px" src="mi/mi5.png" width="25" height="21" alt="F_{\chi}">is
+greater than <img id="Sx1.p2.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi6.png" width="63" height="18" alt="F_{critical}"> at a user-specified p-value.</p>
+</div>
+<div id="Sx1.p3" class="ltx_para">
+<p class="ltx_p">When using maximum-likelihood estimation, we use another model selection
+criteria based on the log-likelihood ratio</p>
+<table id="Sx1.E2" class="ltx_equation">
+
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-24px" src="mi/mi3.png" width="209" height="57" alt="\lambda=-2\ln\left[\frac{L(\hat{\mathbf{\boldsymbol{\theta}}}_{n}\mid\mathcal{%
+D})}{L(\hat{\boldsymbol{\theta}}_{n+1}\mid\mathcal{D})}\right]\,,"></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
+</tr>
+</table>
+</div>
+<div id="Sx1.p4" class="ltx_para">
+<p class="ltx_p">where and <img id="Sx1.p4.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi11.png" width="24" height="23" alt="\hat{\boldsymbol{\theta}}_{n}"> and <img id="Sx1.p4.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi10.png" width="42" height="25" alt="\hat{\boldsymbol{\theta}}_{n+1}">
+are the estimated set of parameters for <img id="Sx1.p4.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi14.png" width="14" height="11" alt="n"> and <img id="Sx1.p4.m4" class="ltx_Math" style="vertical-align:-3px" src="mi/mi13.png" width="45" height="17" alt="n+1"> molecules
+respectively. When the number of measurements is large, the log-likelihood
+ratio approximates a chi-square distribution. The model with <img id="Sx1.p4.m5" class="ltx_Math" style="vertical-align:-3px" src="mi/mi13.png" width="45" height="17" alt="n+1">
+molecules is accepted if the calculated value of <img id="Sx1.p4.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi12.png" width="57" height="22" alt="\lambda\approx\chi^{2}">
+is greater than <img id="Sx1.p4.m7" class="ltx_Math" style="vertical-align:-7px" src="mi/mi9.png" width="63" height="23" alt="\chi_{critical}^{2}">at a user-specified p-value.
+</p>
+</div>
+<div id="Sx1.p5" class="ltx_para">
+<p class="ltx_p">(<em class="ltx_emph">!!p-value is probability or p=1-confidence level, <img id="Sx1.p5.m1" class="ltx_Math" style="vertical-align:-7px" src="mi/mi9.png" width="63" height="23" alt="\chi_{critical}^{2}">
+is calculated by apache or looked up in a table</em>)</p>
+</div>
+<div id="Sx1.p6" class="ltx_para">
+<p class="ltx_p">Users can constrain the multiple-emitter fitting algorithm so that
+all the molecules have the same intensity. In our hands, this was
+necessary to ensure stability of the fit.</p>
+</div>
+<div id="Sx1.p7" class="ltx_para">
+<p class="ltx_p">.</p>
+</div>
+<div id="Sx1.p8" class="ltx_para">
+<p class="ltx_p">see Motulsky2003, p. 141</p>
+</div>
+</div>
+<div id="bib" class="ltx_bibliography">
+<h1 class="ltx_title ltx_title_bibliography">References</h1>
+
+<ul id="L1" class="ltx_biblist">
+<li id="bib.bib2" class="ltx_bibitem ltx_bib_book">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. R. Bevington and D. K. Robinson</span><span class="ltx_text ltx_bib_year">(2003)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Data reduction and error analysis for the physical science</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_series">McGraw-Hill Higher Education</span>,  <span class="ltx_text ltx_bib_publisher">McGraw-Hill</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><span class="ltx_text isbn ltx_bib_external">ISBN 9780072472271</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p2" title="The Crowded-field problem" class="ltx_ref"><span class="ltx_text ltx_ref_title">The Crowded-field problem</span></a>.
+</span>
+</li>
+<li id="bib.bib9" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. Huang, S. L. Schwartz, J. M. Byars and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2011-01)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Simultaneous multiple-emitter fitting for single molecule super-resolution imaging</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Biomedical optics express</span> <span class="ltx_text ltx_bib_volume">2</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 1377–93</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/BOE.2.001377" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
+<span class="ltx_text issn ltx_bib_external">ISSN 2156-7085</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="The Crowded-field problem" class="ltx_ref"><span class="ltx_text ltx_ref_title">The Crowded-field problem</span></a>.
+</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Wed Oct 16 14:02:08 2013 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+</div>
+</div>
+</div>
+</body>
+</html>

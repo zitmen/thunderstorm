@@ -3,10 +3,36 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\makeatletter
+\let\orig@item\item
+
+\def\item{%
+    \@ifnextchar{[}%
+        {\lstinline@item}%
+        {\orig@item}%
+}
+
+\begingroup
+\catcode`\]=\active
+\gdef\lstinline@item[{%
+    \setbox0\hbox\bgroup
+        \catcode`\]=\active
+        \let]\lstinline@item@end
+}
+\endgroup
+
+\def\lstinline@item@end{%
+    \egroup
+    \orig@item[\usebox0]%
+}
+
+\makeatother
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
-\language_package default
+\language_package none
 \inputencoding auto
 \fontencoding global
 \font_roman default
@@ -61,7 +87,7 @@
 
 \begin_body
 
-\begin_layout Section
+\begin_layout Section*
 Threshold
 \end_layout
 
@@ -76,7 +102,7 @@ Threshold can be specified either as a fixed number or a formula containing
  usable default threshold for unknown images.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsection*
 Variables
 \end_layout
 
@@ -86,13 +112,11 @@ Variables are images you can use in your formula, that are obtained during
  There are two variables that are always present:
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
+\begin_layout Description
 I current unfiltered image
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
+\begin_layout Description
 F current filtered image
 \end_layout
 
@@ -125,7 +149,7 @@ will evaluate to the mean value of the image filtered with median filter
  even if your selected filter is for example the wavelet filter.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsection*
 Functions
 \end_layout
 
@@ -156,49 +180,262 @@ Functions can take both an image or a scalar value (where it is meaningfull)
 
 \begin_layout Standard
 The supported functions are:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+arraystretch}{2}
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-var variance
+\end_inset
+
+
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-std standard deviation
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+std
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-mean mean intensity in the image
+\end_inset
+
+
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-median median intensity in the image
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+standard deviation
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-max maximum pixel value in the image
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+mean
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-min minimum pixel value in the image
+\end_inset
+
+
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-sum sum of all the pixel values
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mean intensity in the image 
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-abs returns image with abolute value of each pixel
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+median
 \end_layout
 
-\begin_layout Subsection
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+median intensity in the image
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+max
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+maximum pixel value in the image
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+min
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+minimum pixel value in the image
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+sum
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+sum of all the pixel values
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+sub
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+image with absolute value of each pixel
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
 Operators
 \end_layout
 
@@ -211,40 +448,35 @@ Operators can take images or scalars as operands.
 The supported operators are:
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
+\begin_layout Description
 \begin_inset Formula $+$
 \end_inset
 
  addition, element by element for images
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
+\begin_layout Description
 \begin_inset Formula $-$
 \end_inset
 
  subtraction, element by element for images
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
+\begin_layout Description
 \begin_inset Formula $*$
 \end_inset
 
  multiplication, element by element for images
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
+\begin_layout Description
 \begin_inset Formula $/$
 \end_inset
 
  division, element by element for images
 \end_layout
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
+\begin_layout Description
 ^ exponentiation, the second argument can only be a scalar
 \end_layout
 

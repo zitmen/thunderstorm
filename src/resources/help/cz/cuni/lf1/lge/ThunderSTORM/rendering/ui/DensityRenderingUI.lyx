@@ -1,0 +1,187 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Gaussian rendering
+\end_layout
+
+\begin_layout Standard
+This method draws a normalized Gaussian blob for every localized molecule.
+ The standard deviation of the blobs is equal to their computed, or user-specifi
+ed localization uncertainty.
+ Contributions from all accepted molecules are plotted together in the final
+ super-resolution image.
+\end_layout
+
+\begin_layout Standard
+The blobs are rendered using a symmetric Gaussian function integrated over
+ the voxel volume.
+ The contribution of one molecule to the voxel intensity at the integer
+ position 
+\begin_inset Formula $\left(x,y,z\right)$
+\end_inset
+
+ is computed as
+\begin_inset Formula 
+\begin{eqnarray}
+v_{x,y,z} & =\frac{1}{8} & \left(\text{erf}\left(\frac{x-\hat{x}_{p}+\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy,p}}\right)-\text{erf}\left(\frac{x-\hat{x}_{p}-\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy,p}}\right)\right)\nonumber \\
+ &  & \left(\text{erf}\left(\frac{y-\hat{y}_{p}+\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy,p}}\right)-\text{erf}\left(\frac{y-\hat{y}_{p}-\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy,p}}\right)\right)\nonumber \\
+ &  & \left(\text{erf}\left(\frac{z-\hat{z}_{p}+\frac{\triangle_{z}}{2}}{\sqrt{2}\hat{\sigma}_{z,p}}\right)-\text{erf}\left(\frac{z-\hat{z}_{p}-\frac{\triangle_{z}}{2}}{\sqrt{2}\hat{\sigma}_{z,p}}\right)\right)\,.
+\end{eqnarray}
+
+\end_inset
+
+Here 
+\begin_inset Formula $\hat{x}_{p},\hat{y}_{p},\hat{z}_{p}$
+\end_inset
+
+ is the position of a molecule, 
+\begin_inset Formula $p$
+\end_inset
+
+ indexes the molecules, 
+\begin_inset Formula $\hat{\sigma}_{xy,p}$
+\end_inset
+
+ is the corresponding lateral localization uncertainty, 
+\begin_inset Formula $\hat{\sigma}_{z,p}$
+\end_inset
+
+ is the axial localization uncertainty, and 
+\begin_inset Formula $\triangle_{z}$
+\end_inset
+
+ is the proportional size of a voxel in the axial direction.
+ Contributions from one molecule are limited to an interval given by a circle
+ with radius of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $3\hat{\sigma}_{xy,p}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+around the molecule position in lateral dimension
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+and by 
+\begin_inset Formula $3\hat{\sigma}_{z,p}$
+\end_inset
+
+ in axial direction.
+\end_layout
+
+\end_body
+\end_document

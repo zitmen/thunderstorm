@@ -1,8 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-    <h1>Duplicates Filter</h1>
+<head>
+<title></title>
+<!--Generated on Wed Oct 16 14:04:53 2013 by LaTeXML (version 0.7.9alpha) http://dlmf.nist.gov/LaTeXML/.-->
 
-    If two or more molecules are close to each other, it can happen that 
-    the estimator converges to the same spot in between, thus, counting 
-    the same false-positive detection twice. Similar situation can happen
-    on the boundary of fitting region if two fitting regions overlap.
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../../../LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="../../../../../../ltx-article.css" type="text/css">
+<link rel="stylesheet" href="../../../../../../customRules.css" type="text/css">
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<div class="ltx_document">
+<div id="Sx1" class="ltx_section">
+<h1 class="ltx_title ltx_title_section">Removing duplicates</h1>
+
+<div id="Sx1.p1" class="ltx_para">
+<p class="ltx_p">If two molecules are localized in the same image and their mutual
+distance is smaller than their localization uncertainty, then the
+molecule with lower localization uncertainty is kept and the other
+one is rejected. This post-processing method is suggested by Huang
+et. al. <cite class="ltx_cite">[<a href="#bib.bib9" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">1</a>]</cite> to deal with repeated localizations that
+can occur due to overlapping fitting sub-regions in crowded-field
+data. ThunderSTORM allows users to specify the distance threshold
+as an expression combining mathematical functions and parameters from
+the table of results.</p>
+</div>
+</div>
+<div id="bib" class="ltx_bibliography">
+<h1 class="ltx_title ltx_title_bibliography">References</h1>
+
+<ul id="L1" class="ltx_biblist">
+<li id="bib.bib9" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. Huang, S. L. Schwartz, J. M. Byars and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2011-01)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Simultaneous multiple-emitter fitting for single molecule super-resolution imaging</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Biomedical optics express</span> <span class="ltx_text ltx_bib_volume">2</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 1377–93</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/BOE.2.001377" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
+<span class="ltx_text issn ltx_bib_external">ISSN 2156-7085</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Removing duplicates" class="ltx_ref"><span class="ltx_text ltx_ref_title">Removing duplicates</span></a>.
+</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Wed Oct 16 14:04:53 2013 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+</div>
+</div>
+</div>
+</body>
 </html>

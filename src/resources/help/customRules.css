@@ -1,0 +1,20 @@
+/* add missing style for bibliography title, same as subsection */
+.ltx_title_bibliography {
+    font-size:120%; font-weight:bold; margin-top:1.5em; margin-bottom:1em;
+}
+/* hide footer */
+.ltx_page_footer {
+	display : none;
+}
+/* hide backlinks in bibliography */
+.ltx_bib_cited{
+    display : none;
+}
+/* remove body padding */
+.ltx_page_main {
+	padding:0em 0em 0em 0em; 
+ }
+ /* workaround for a css bug in swingbox: vertical misalignement in equations */
+ .ltx_td{
+	vertical-align: middle;
+ }

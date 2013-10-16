@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title></title>
+<!--Generated on Wed Oct 16 14:02:53 2013 by LaTeXML (version 0.7.9alpha) http://dlmf.nist.gov/LaTeXML/.-->
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="../../../../../../../ltx-article.css" type="text/css">
+<link rel="stylesheet" href="../../../../../../../customRules.css" type="text/css">
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<div class="ltx_document">
+<div id="Sx1" class="ltx_section">
+<h1 class="ltx_title ltx_title_section">Fitting PSF models: Integral form of symmetric 2D Gaussian function</h1>
+
+<div id="Sx1.p1" class="ltx_para">
+<p class="ltx_p">A single molecule emitter can be treated as a point source in SMLM
+data. The impulse response of a microscope to a point-like source
+is described by the point-spread function (PSF). The result of fitting
+a PSF model to an image of a single molecule is an estimate of the
+position of the molecule, its imaged size, and its intensity.</p>
+</div>
+<div id="Sx1.SSx1" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">PSF model</h2>
+
+<div id="Sx1.SSx1.p1" class="ltx_para">
+<p class="ltx_p">The integrated form of a symmetric two-dimensional Gaussian function
+can be used to help to take into account the discrete nature of pixels
+present in digital cameras <cite class="ltx_cite">[<a href="#bib.bib19" title="Fast, single-molecule localization that achieves theoretically minimum uncertainty" class="ltx_ref">3</a>, <a href="#bib.bib9" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">1</a>]</cite>. Assuming a
+uniform distribution of pixels with unit size, a single molecule intensity
+profile can be expressed as</p>
+</div>
+<div id="Sx1.SSx1.p2" class="ltx_para">
+<table id="Sx1.E1" class="ltx_equation">
+
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-7px" src="mi/mi83.png" width="257" height="22" alt="\mathrm{PSF_{IG}}\left(x,y\mid\boldsymbol{\theta}\right)=\theta_{N}E_{x}E_{y}+%
+\theta_{b}\,,"></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
+</tr>
+</table>
+<p class="ltx_p">where <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi85.png" width="123" height="21" alt="\mathrm{PSF_{IG}}\left(x,y\mid\boldsymbol{\theta}\right)">
+gives the expected photon count at the pixel <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi38.png" width="45" height="21" alt="\left(x,y\right)"> for
+coefficients <img id="Sx1.SSx1.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi84.png" width="168" height="22" alt="\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{\sigma},\theta_{N},%
+\theta_{b}\right]">
+and</p>
+</div>
+<div id="Sx1.SSx1.p3" class="ltx_para">
+<table id="Sx1.EGx1" class="ltx_equationgroup ltx_eqn_eqnarray">
+
+<tr id="Sx1.E2" class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_td ltx_align_right"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi78.png" width="26" height="18" alt="\displaystyle E_{x}"></td>
+<td class="ltx_td ltx_align_center"><img id="Sx1.E2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi16.png" width="17" height="10" alt="\displaystyle="></td>
+<td class="ltx_td ltx_align_left"><img id="Sx1.E2.m3" class="ltx_Math" style="vertical-align:-19px" src="mi/mi81.png" width="342" height="49" alt="\displaystyle\frac{1}{2}\erf\left(\frac{x-\theta_{x}+\frac{1}{2}}{\sqrt{2}%
+\theta_{\sigma}}\right)-\frac{1}{2}\erf\left(\frac{x-\theta_{x}-\frac{1}{2}}{%
+\sqrt{2}\theta_{\sigma}}\right)\,,"></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
+</tr>
+<tr id="Sx1.E3" class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_td ltx_align_right"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-7px" src="mi/mi80.png" width="25" height="21" alt="\displaystyle E_{y}"></td>
+<td class="ltx_td ltx_align_center"><img id="Sx1.E3.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi16.png" width="17" height="10" alt="\displaystyle="></td>
+<td class="ltx_td ltx_align_left"><img id="Sx1.E3.m3" class="ltx_Math" style="vertical-align:-19px" src="mi/mi82.png" width="339" height="49" alt="\displaystyle\frac{1}{2}\erf\left(\frac{y-\theta_{y}+\frac{1}{2}}{\sqrt{2}%
+\theta_{\sigma}}\right)-\frac{1}{2}\erf\left(\frac{y-\theta_{y}-\frac{1}{2}}{%
+\sqrt{2}\theta_{\sigma}}\right)\,."></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(3)</span></td>
+</tr>
+</table>
+<p class="ltx_p">The entries of the coefficient vector <img id="Sx1.SSx1.p3.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi37.png" width="14" height="16" alt="\boldsymbol{\theta}"> are follows:
+<img id="Sx1.SSx1.p3.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi49.png" width="21" height="19" alt="\theta_{x}"> and <img id="Sx1.SSx1.p3.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi50.png" width="20" height="21" alt="\theta_{y}"> are the sub-pixel molecular coordinates,
+<img id="Sx1.SSx1.p3.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi75.png" width="22" height="19" alt="\theta_{\sigma}"> is the imaged size of the molecule, <img id="Sx1.SSx1.p3.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi45.png" width="25" height="19" alt="\theta_{N}">
+corresponds to the total number of photons emitted by the molecule,
+and <img id="Sx1.SSx1.p3.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi48.png" width="19" height="19" alt="\theta_{b}"> corresponds to the background signal level.</p>
+</div>
+</div>
+<div id="Sx1.SSx2" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">Fitting of model parameters</h2>
+
+<div id="Sx1.SSx2.p1" class="ltx_para">
+<p class="ltx_p">Fitting of the model parameters can be done using least squares or
+maximum-likelihood methods. See <a href="Fitting.html" title="" class="ltx_ref">PSF fitting methods</a>
+for more information.</p>
+</div>
+</div>
+<div id="Sx1.SSx3" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">Crowded-field</h2>
+
+<div id="Sx1.SSx3.p1" class="ltx_para">
+<p class="ltx_p">ThunderSTORM supports fitting of multiple PSF models simultaneously
+in a single fitting region. See <a href="CrowdedField.html" title="" class="ltx_ref">crowded field</a>
+for more information.</p>
+</div>
+</div>
+<div id="Sx1.SSx4" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">Localization uncertainty</h2>
+
+<div id="Sx1.SSx4.p1" class="ltx_para">
+<p class="ltx_p">Let <img id="Sx1.SSx4.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi42.png" width="14" height="11" alt="\sigma"> be the standard deviation of a fitted Gaussian blob
+in nm, <img id="Sx1.SSx4.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi53.png" width="13" height="11" alt="a"> is the (backprojected) pixel size in nm, <img id="Sx1.SSx4.p1.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi7.png" width="20" height="16" alt="N"> is the number
+of photons detected for a given molecule, and <img id="Sx1.SSx4.p1.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi56.png" width="11" height="16" alt="b"> is the background
+signal level in photons calculated as the standard deviation of the
+residuals between the raw data and the fitted PSF model. The uncertainty
+in the lateral position of a molecule can be approximated by the formula
+<cite class="ltx_cite">[<a href="#bib.bib24" title="Precise nanometer localization analysis for individual fluorescent probes" class="ltx_ref">4</a>]</cite></p>
+</div>
+<div id="Sx1.SSx4.p2" class="ltx_para">
+<table id="Sx1.E4" class="ltx_equation">
+
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.E4.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi25.png" width="267" height="42" alt="\left\langle(\Delta x)^{2}\right\rangle=\frac{\sigma^{2}+a^{2}/12}{N}+\frac{8%
+\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,."></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(4)</span></td>
+</tr>
+</table>
+</div>
+<div id="Sx1.SSx4.p3" class="ltx_para">
+<p class="ltx_p">The previous equation can be further adjusted to take EM gain of EMCCD
+cameras into account <cite class="ltx_cite">[<a href="#bib.bib15" title="Localization capability and limitation of electron-multiplying charge-coupled, scientific complementary metal-oxide semiconductor, and charge-coupled devices for superresolution imaging" class="ltx_ref">2</a>]</cite>, giving the expression</p>
+<table id="Sx1.E5" class="ltx_equation">
+
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.E5.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi24.png" width="275" height="42" alt="\left\langle(\Delta x)^{2}\right\rangle=\frac{2\sigma^{2}+a^{2}/12}{N}+\frac{8%
+\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,."></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(5)</span></td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div id="bib" class="ltx_bibliography">
+<h1 class="ltx_title ltx_title_bibliography">References</h1>
+
+<ul id="L1" class="ltx_biblist">
+<li id="bib.bib9" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. Huang, S. L. Schwartz, J. M. Byars and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2011-01)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Simultaneous multiple-emitter fitting for single molecule super-resolution imaging</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Biomedical optics express</span> <span class="ltx_text ltx_bib_volume">2</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 1377–93</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/BOE.2.001377" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
+<span class="ltx_text issn ltx_bib_external">ISSN 2156-7085</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p1" title="PSF model ‣ Fitting PSF models: Integral form of symmetric 2D Gaussian function" class="ltx_ref"><span class="ltx_text ltx_ref_title">PSF model</span></a>.
+</span>
+</li>
+<li id="bib.bib15" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">T. Quan, S. Zeng and Z. Huang</span><span class="ltx_text ltx_bib_year">(2010-01)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Localization capability and limitation of electron-multiplying charge-coupled, scientific complementary metal-oxide semiconductor, and charge-coupled devices for superresolution imaging</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Journal of biomedical optics</span> <span class="ltx_text ltx_bib_volume">15</span> (<span class="ltx_text ltx_bib_number">6</span>), <span class="ltx_text ltx_bib_pages"> pp. 066005</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1117/1.3505017" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
+<span class="ltx_text issn ltx_bib_external">ISSN 1560-2281</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx4.p3" title="Localization uncertainty ‣ Fitting PSF models: Integral form of symmetric 2D Gaussian function" class="ltx_ref"><span class="ltx_text ltx_ref_title">Localization uncertainty</span></a>.
+</span>
+</li>
+<li id="bib.bib19" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. S. Smith, N. Joseph, B. Rieger and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2010-05)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Fast, single-molecule localization that achieves theoretically minimum uncertainty</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Nature methods</span> <span class="ltx_text ltx_bib_volume">7</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 373–5</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1038/nmeth.1449" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
+<span class="ltx_text issn ltx_bib_external">ISSN 1548-7105</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p1" title="PSF model ‣ Fitting PSF models: Integral form of symmetric 2D Gaussian function" class="ltx_ref"><span class="ltx_text ltx_ref_title">PSF model</span></a>.
+</span>
+</li>
+<li id="bib.bib24" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[4]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. E. Thompson, D. R. Larson and W. W. Webb</span><span class="ltx_text ltx_bib_year">(2002-05)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Precise nanometer localization analysis for individual fluorescent probes</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Biophysical journal</span> <span class="ltx_text ltx_bib_volume">82</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 2775–83</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1016/S0006-3495(02)75618-X" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
+<span class="ltx_text issn ltx_bib_external">ISSN 0006-3495</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx4.p1" title="Localization uncertainty ‣ Fitting PSF models: Integral form of symmetric 2D Gaussian function" class="ltx_ref"><span class="ltx_text ltx_ref_title">Localization uncertainty</span></a>.
+</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Wed Oct 16 14:02:53 2013 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+</div>
+</div>
+</div>
+</body>
+</html>

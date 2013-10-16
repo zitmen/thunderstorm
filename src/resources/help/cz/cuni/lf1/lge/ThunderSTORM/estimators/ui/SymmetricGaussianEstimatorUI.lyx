@@ -1,0 +1,317 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Fitting PSF models: Symmetric 2D Gaussian function
+\end_layout
+
+\begin_layout Standard
+A single molecule emitter can be treated as a point source in SMLM data.
+ The impulse response of a microscope to a point-like source is described
+ by the point-spread function (PSF).
+ The result of fitting a PSF model to an image of a single molecule is an
+ estimate of the position of the molecule, its imaged size, and its intensity.
+\end_layout
+
+\begin_layout Subsection*
+PSF model
+\end_layout
+
+\begin_layout Standard
+It has been shown 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Thompson2002,Rieger2010"
+
+\end_inset
+
+ that the Gaussian function provides a very good approximation of the real
+ PSF of a microscope.
+ This is mainly due to pixelation effects and the presence of noise, which
+ makes the difference between the Gaussian function and the real PSF negligible.
+ The advantage of Gaussian PSF models are their simplicity, robustness,
+ and computational efficiency.
+\end_layout
+
+\begin_layout Standard
+A common approximation of the real PSF is a symmetric two-dimensional Gaussian
+ function given by the formula
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{PSF_{G}}\left(x,y\mid\boldsymbol{\theta}\right)=\frac{\theta_{N}}{2\pi\theta_{\sigma}^{2}}\exp{\left(-\frac{\left(x-\theta_{x}\right)^{2}+\left(y-\theta_{y}\right)^{2}}{2\theta_{\sigma}^{2}}\right)}+\theta_{b}\,,
+\end{equation}
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathrm{PSF_{G}}\left(x,y\mid\boldsymbol{\theta}\right)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ gives the expected photon count at the pixel 
+\begin_inset Formula $\left(x,y\right)$
+\end_inset
+
+ for coefficients 
+\begin_inset Formula $\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{\sigma},\theta_{N},\theta_{b}\right]$
+\end_inset
+
+.
+ The entries of the coefficient vector 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ are follows: 
+\begin_inset Formula $\theta_{x}$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{y}$
+\end_inset
+
+ are the sub-pixel molecular coordinates, 
+\begin_inset Formula $\theta_{\sigma}$
+\end_inset
+
+ is the imaged size of the molecule, 
+\begin_inset Formula $\theta_{N}$
+\end_inset
+
+ corresponds to the total number of photons emitted by the molecule, and
+ 
+\begin_inset Formula $\theta_{b}$
+\end_inset
+
+ corresponds to the background signal level.
+\end_layout
+
+\begin_layout Subsection*
+Fitting of model parameters
+\end_layout
+
+\begin_layout Standard
+Fitting of the model parameters can be done using least squares or maximum-likel
+ihood methods.
+ See 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{PSF fitting methods}
+\end_layout
+
+\end_inset
+
+ for more information.
+\end_layout
+
+\begin_layout Subsection*
+Crowded-field
+\end_layout
+
+\begin_layout Standard
+ThunderSTORM supports fitting of multiple PSF models simultaneously in a
+ single fitting region.
+ See 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{CrowdedField.html}{crowded field}
+\end_layout
+
+\end_inset
+
+ for more information.
+\end_layout
+
+\begin_layout Subsection*
+Localization uncertainty
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ be the standard deviation of a fitted Gaussian blob in nm, 
+\begin_inset Formula $a$
+\end_inset
+
+ is the (backprojected) pixel size in nm, 
+\begin_inset Formula $N$
+\end_inset
+
+ is the number of photons detected for a given molecule, and 
+\begin_inset Formula $b$
+\end_inset
+
+ is the background signal level in photons calculated as the standard deviation
+ of the residuals between the raw data and the fitted PSF model.
+ The uncertainty in the lateral position of a molecule can be approximated
+ by the formula 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Thompson2002"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\langle (\Delta x)^{2}\right\rangle =\frac{\sigma^{2}+a^{2}/12}{N}+\frac{8\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,.\label{eq:thompson_ccd}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The previous equation can be further adjusted to take EM gain of EMCCD cameras
+ into account 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Quan2010"
+
+\end_inset
+
+, giving the expression 
+\begin_inset Formula 
+\begin{equation}
+\left\langle (\Delta x)^{2}\right\rangle =\frac{2\sigma^{2}+a^{2}/12}{N}+\frac{8\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,.\label{eq:thompson_emccd}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand
+\backslash
+bibname{References}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
