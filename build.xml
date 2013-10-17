@@ -137,6 +137,7 @@
         
         <apply executable="latexmlpost" failonerror="true" resolveExecutable="true" vmlauncher="false" dest="${doc.root}"> 
             <arg value="--sitedirectory=${doc.root}"/>
+            <arg value="--xsltparameter=TIMESTAMP:"/>
             <arg value="--format=html"/>
             <arg value="--bibliography=${doc.root}/references.xml"/>
             <arg value="--css=${customCSS}"/>
