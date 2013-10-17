@@ -152,7 +152,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         //add points
         plot.setColor(new Color(255, 200, 200));
         plot.addPoints(allFrames, allSigma1s, Plot.CROSS);
-        plot.setColor(new Color(230, 200, 200));
+        plot.setColor(new Color(200, 200, 255));
         plot.addPoints(allFrames, allSigma2s, Plot.CROSS);
 
         //add polynomials

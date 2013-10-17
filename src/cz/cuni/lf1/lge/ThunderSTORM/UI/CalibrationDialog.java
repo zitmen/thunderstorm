@@ -166,6 +166,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
                         }
                         Thresholder.setCurrentImage(fp);
                         FloatProcessor filtered = getActiveFilterUI().getThreadLocalImplementation().filterImage(fp);
+                        new ImagePlus("ThunderSTORM: filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
                         checkForInterruption();
                         List<Point> detections = Point.applyRoiMask(imp.getRoi(), getActiveDetectorUI().getThreadLocalImplementation().detectMoleculeCandidates(filtered));
                         checkForInterruption();
