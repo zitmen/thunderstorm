@@ -103,7 +103,7 @@ public class DataGenerator {
         //frame = (FloatProcessor)frame.crop();
         float [] zeros = new float[width*height];
         Arrays.fill(zeros, 0.0f);
-        FloatProcessor frame = new FloatProcessor(width, height, zeros);
+        FloatProcessor frame = new FloatProcessor(width, height, zeros, null);
         for(EmitterModel mol : molecules) {
             mol.moveXY(dx, dy);
             if(mol.isOutOfRoi(frame.getRoi())) {    // does the molecule get out of ROI due to the drift?

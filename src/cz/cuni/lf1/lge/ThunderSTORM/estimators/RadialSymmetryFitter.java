@@ -69,7 +69,7 @@ public class RadialSymmetryFitter implements OneLocationFitter {
         float[] kernel = {1f / 3f, 1f / 3f, 1f / 3f};
 
         Convolver convolver = new Convolver();
-        FloatProcessor imp = new FloatProcessor(size - 1, size - 1, dIdu);
+        FloatProcessor imp = new FloatProcessor(size - 1, size - 1, dIdu, null);
         convolver.convolve(imp, kernel, kernel.length, 1);
         convolver.convolve(imp, kernel, 1, kernel.length);
     }

@@ -12,13 +12,13 @@ public class ImageProcessor {
     public static FloatProcessor ones(int width, int height) {
         float [] matrix = new float[height*width];
         Arrays.fill(matrix, 1f);
-        return new FloatProcessor(width, height, matrix);
+        return new FloatProcessor(width, height, matrix, null);
     }
     
     public static FloatProcessor zeros(int width, int height) {
         float [] matrix = new float[height*width];
         Arrays.fill(matrix, 0f);
-        return new FloatProcessor(width, height, matrix);
+        return new FloatProcessor(width, height, matrix, null);
     }
 
     /**
@@ -316,7 +316,7 @@ public class ImageProcessor {
         assert (image.getWidth() == mask.getWidth());
         assert (image.getHeight() == mask.getHeight());
 
-        FloatProcessor result = new FloatProcessor(image.getWidth(), image.getHeight(), (float[]) image.getPixelsCopy());
+        FloatProcessor result = new FloatProcessor(image.getWidth(), image.getHeight(), (float[]) image.getPixelsCopy(), null);
         for (int x = 0, xm = image.getWidth(); x < xm; x++) {
             for (int y = 0, ym = image.getHeight(); y < ym; y++) {
                 if (mask.getf(x, y) == 0.0f) {
@@ -491,7 +491,7 @@ public class ImageProcessor {
     }
 
     public static FloatProcessor abs(FloatProcessor mat) {
-        FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight(), (float [])mat.getPixelsCopy());
+        FloatProcessor res = new FloatProcessor(mat.getWidth(), mat.getHeight(), (float [])mat.getPixelsCopy(), null);
         res.abs();
         res.setMask(mat.getMask());
         return res;

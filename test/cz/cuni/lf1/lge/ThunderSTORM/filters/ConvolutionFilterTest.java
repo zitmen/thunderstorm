@@ -49,11 +49,11 @@ public class ConvolutionFilterTest {
         System.out.println("ConvolutionFilter::updateKernel");
         
         ConvolutionFilter instance = new ConvolutionFilter(null, null, Padding.PADDING_NONE);
-        instance.updateKernel(new FloatProcessor(5, 1, kernel_x), new FloatProcessor(1, 5, kernel_y));
+        instance.updateKernel(new FloatProcessor(5, 1, kernel_x, null), new FloatProcessor(1, 5, kernel_y, null));
         testGetKernels(instance, true, null, kernel_x, kernel_y);
-        instance.updateKernel(new FloatProcessor(5, 1, kernel_x), true);
+        instance.updateKernel(new FloatProcessor(5, 1, kernel_x, null), true);
         testGetKernels(instance, true, null, kernel_x, kernel_x);
-        instance.updateKernel(new FloatProcessor(5, 5, kernel), false);
+        instance.updateKernel(new FloatProcessor(5, 5, kernel, null), false);
         testGetKernels(instance, false, kernel, null, null);
     }
 
@@ -71,9 +71,9 @@ public class ConvolutionFilterTest {
             {10f, 12f, 19f, 21f,  3f},
             {11f, 18f, 25f,  2f,  9f}
         });
-        ConvolutionFilter instance = new ConvolutionFilter(new FloatProcessor(5, 5, kernel), false, Padding.PADDING_ZERO);
+        ConvolutionFilter instance = new ConvolutionFilter(new FloatProcessor(5, 5, kernel, null), false, Padding.PADDING_ZERO);
         FloatProcessor expResult = instance.filterImage(image);
-        instance.updateKernel(new FloatProcessor(5, 1, kernel_x), new FloatProcessor(1, 5, kernel_y));
+        instance.updateKernel(new FloatProcessor(5, 1, kernel_x, null), new FloatProcessor(1, 5, kernel_y, null));
         FloatProcessor result = instance.filterImage(image);
         assertArrayEquals("In case of a separable kernel, the result of convolution with 2D kernel matrix " +
                           "has to be the same as the result of convolution with X and Y vector kernels from " +

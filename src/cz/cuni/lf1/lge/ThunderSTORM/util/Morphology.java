@@ -62,7 +62,7 @@ public class Morphology {
     private static FloatProcessor createBoxKernel(int width) {
         float [] pixels = new float[width*width];
         Arrays.fill(pixels, 1.0f);
-        return new FloatProcessor(width, width, pixels);
+        return new FloatProcessor(width, width, pixels, null);
     }
     
 }

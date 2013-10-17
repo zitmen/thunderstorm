@@ -30,7 +30,7 @@ public final class GaussianFilter extends ConvolutionFilter implements IFilter {
     }
     
     private void updateKernel() {
-        super.updateKernel(new FloatProcessor(1, size, getKernel(size, sigma)), true);
+        super.updateKernel(new FloatProcessor(1, size, getKernel(size, sigma), null), true);
     }
 
     public GaussianFilter() {
@@ -46,7 +46,7 @@ public final class GaussianFilter extends ConvolutionFilter implements IFilter {
      * @param sigma {@mathjax \sigma} of the 2D Gaussian function
      */
     public GaussianFilter(int size, double sigma) {
-        super(new FloatProcessor(1, size, getKernel(size, sigma)), true, Padding.PADDING_DUPLICATE);
+        super(new FloatProcessor(1, size, getKernel(size, sigma), null), true, Padding.PADDING_DUPLICATE);
         this.size = size;
         this.sigma = sigma;
         this.padding = Padding.PADDING_DUPLICATE;
@@ -64,7 +64,7 @@ public final class GaussianFilter extends ConvolutionFilter implements IFilter {
      * @see Padding
      */
     public GaussianFilter(int size, double sigma, int padding_method) {
-        super(new FloatProcessor(1, size, getKernel(size, sigma)), true, padding_method);
+        super(new FloatProcessor(1, size, getKernel(size, sigma), null), true, padding_method);
         this.size = size;
         this.sigma = sigma;
         this.padding = padding_method;

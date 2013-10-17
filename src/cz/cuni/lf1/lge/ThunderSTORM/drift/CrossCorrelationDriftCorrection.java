@@ -136,7 +136,7 @@ public class CrossCorrelationDriftCorrection {
             crossCorrelationImage.swapQuadrants();
 
             if(saveCorrelationImages) {
-                correlationImages.addSlice(crossCorrelationImage);
+                correlationImages.addSlice("", crossCorrelationImage);
             }
 
 //            GaussianBlur blur = new GaussianBlur();

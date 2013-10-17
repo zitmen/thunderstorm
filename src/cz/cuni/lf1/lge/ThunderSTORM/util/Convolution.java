@@ -68,6 +68,6 @@ public class Convolution {
         }
 
 
-        return new FloatProcessor(iw, ih, pixels);
+        return new FloatProcessor(iw, ih, pixels, null);
     }
 }

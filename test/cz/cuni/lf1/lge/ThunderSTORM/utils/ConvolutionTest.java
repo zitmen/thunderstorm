@@ -23,10 +23,10 @@ public class ConvolutionTest {
              4f,  6f, 13f, 20f, 22f,
             10f, 12f, 19f, 21f,  3f,
             11f, 18f, 25f,  2f,  9f
-        });
+        }, null);
         
         // row vector kernel
-        kernel = new FloatProcessor(3, 1, new float [] {0.1576f, 0.4854f, 0.4218f});
+        kernel = new FloatProcessor(3, 1, new float [] {0.1576f, 0.4854f, 0.4218f}, null);
         result = Convolution.convolve2D(image, kernel, Padding.PADDING_ZERO);
         expResult = new float [] {
             12.0342f, 18.9778f, 11.8694f,  6.6690f, 10.6554f,
@@ -38,7 +38,7 @@ public class ConvolutionTest {
         assertArrayEquals("Convolution with row vector kernel", expResult, (float[])result.getPixels(), 0.0001f);
         
         // column vector kernel
-        kernel = new FloatProcessor(1, 3, new float [] {0.9572f, 0.4854f, 0.8003f});
+        kernel = new FloatProcessor(1, 3, new float [] {0.9572f, 0.4854f, 0.8003f}, null);
         result = Convolution.convolve2D(image, kernel, Padding.PADDING_ZERO);
         expResult = new float [] {
             30.2674f, 16.4356f,  7.1858f, 17.2840f, 22.5962f,
@@ -54,7 +54,7 @@ public class ConvolutionTest {
             0.9649f, 0.9572f, 0.1419f,
             0.1576f, 0.4854f, 0.4218f,
             0.9706f, 0.8003f, 0.9157f
-        });
+        }, null);
         result = Convolution.convolve2D(image, kernel, Padding.PADDING_ZERO);
         expResult = new float [] {
             38.8743f, 33.7818f, 32.7879f, 36.5015f, 27.9572f,

@@ -39,7 +39,7 @@ public class UniformFilter extends ConvolutionFilter {
      * @param value value you want the kernel fill with
      */
     protected void updateKernel(int size, float value) {
-        super.updateKernel(new FloatProcessor(1, size, getKernel(size, value)), true);
+        super.updateKernel(new FloatProcessor(1, size, getKernel(size, value), null), true);
     }
 
     /**
@@ -53,7 +53,7 @@ public class UniformFilter extends ConvolutionFilter {
      * @see Padding
      */
     public UniformFilter(int size, float value) {
-        super(new FloatProcessor(1, size, getKernel(size, value)), true, Padding.PADDING_DUPLICATE);
+        super(new FloatProcessor(1, size, getKernel(size, value), null), true, Padding.PADDING_DUPLICATE);
     }
     
     /**
@@ -66,7 +66,7 @@ public class UniformFilter extends ConvolutionFilter {
      * @see Padding
      */
     public UniformFilter(int size, float value, int padding_method) {
-        super(new FloatProcessor(1, size, getKernel(size, value)), true, padding_method);
+        super(new FloatProcessor(1, size, getKernel(size, value), null), true, padding_method);
     }
 
 }

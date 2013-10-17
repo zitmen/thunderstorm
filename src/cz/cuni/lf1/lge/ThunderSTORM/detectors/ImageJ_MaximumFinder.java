@@ -194,7 +194,7 @@ class ImageJ_MaximumFinder implements ExtendedPlugInFilter, DialogListener {
             roiSaved = true;
         }
         if (roi!=null && (!roi.isArea() || outputType==SEGMENTED)) {
-            imp.deleteRoi();
+            imp.killRoi();
             roi = null;
         }
         boolean invertedLut = imp.isInvertedLut();

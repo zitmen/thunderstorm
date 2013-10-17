@@ -32,7 +32,7 @@ public final class IJHistogramWindow extends ImageWindow implements Measurements
     static final int YMARGIN = 10;
     static final int INTENSITY = 0, RED = 1, GREEN = 2, BLUE = 3;
     protected ImageStatistics stats;
-    protected long[] histogram;
+    protected int[] histogram;
     protected LookUpTable lut;
     protected Rectangle frame = null;
     protected Button list, save, copy, log, live, rgb, roiFilter;
@@ -131,7 +131,7 @@ public final class IJHistogramWindow extends ImageWindow implements Measurements
         boolean limitToThreshold = (Analyzer.getMeasurements() & LIMIT) != 0;
         if(channel != INTENSITY && imp.getType() == ImagePlus.COLOR_RGB) {
             ColorProcessor cp = (ColorProcessor) imp.getProcessor();
-            ImageProcessor ip = cp.getChannel(channel, null);
+            ImageProcessor ip = cp.toFloat(channel, null);
             ImagePlus imp2 = new ImagePlus("", ip);
             imp2.setRoi(imp.getRoi());
             stats = imp2.getStatistics(AREA + MEAN + MODE + MIN_MAX, bins, histMin, histMax);
@@ -152,17 +152,17 @@ public final class IJHistogramWindow extends ImageWindow implements Measurements
         cal = imp.getCalibration();
         boolean limitToThreshold = (Analyzer.getMeasurements() & LIMIT) != 0;
         imp.getMask();
-        histogram = stats.getHistogram();
+        histogram = stats.histogram;
         if(limitToThreshold && histogram.length == 256) {
             ImageProcessor ip = imp.getProcessor();
             if(ip.getMinThreshold() != ImageProcessor.NO_THRESHOLD) {
                 int lower = scaleDown(ip, ip.getMinThreshold());
                 int upper = scaleDown(ip, ip.getMaxThreshold());
                 for(int i = 0; i < lower; i++) {
-                    histogram[i] = 0L;
+                    histogram[i] = 0;
                 }
                 for(int i = upper + 1; i < 256; i++) {
-                    histogram[i] = 0L;
+                    histogram[i] = 0;
                 }
             }
         }
@@ -264,7 +264,7 @@ public final class IJHistogramWindow extends ImageWindow implements Measurements
         int x, y;
         long maxCount2 = 0;
         int mode2 = 0;
-        long saveModalCount;
+        int saveModalCount;
 
         ip.setColor(Color.black);
         ip.setLineWidth(1);
@@ -453,7 +453,7 @@ public final class IJHistogramWindow extends ImageWindow implements Measurements
         if((int) d == d) {
             return IJ.d2s(d, 0);
         } else {
-            return IJ.d2s(d, 3, 8);
+            return IJ.d2s(d, 8);
         }
     }
 

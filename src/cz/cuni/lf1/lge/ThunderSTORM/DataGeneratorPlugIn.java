@@ -229,7 +229,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                 } else {
                     float [] data = new float[width*height];
                     Arrays.fill(data, 0f);
-                    add_noise = new FloatProcessor(width, height, data);
+                    add_noise = new FloatProcessor(width, height, data, null);
                 }
                 Vector<EmitterModel> molecules = datagen.generateMolecules(width, height, mask, density, intensity_range, fwhm_range);
                 ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, /*bkg, */add_noise);
@@ -242,7 +242,7 @@ public class DataGeneratorPlugIn implements PlugIn {
             double bkgstd = Units.PHOTON.convertTo(Units.getDefaultUnit(PSFModel.Params.LABEL_BACKGROUND), sqrt(add_poisson_var));
             for(int f = frame_start, i = 0; f <= frame_end; f++, i++) {
                 processingNewFrame("ThunderSTORM is building the image stack - frame %d out of %d...");
-                stack.addSlice(local_stack.elementAt(i));
+                stack.addSlice("", local_stack.elementAt(i));
                 for(EmitterModel psf : local_table.elementAt(i)) {
                     psf.molecule.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double)(f+1));
                     psf.molecule.setParam(PSFModel.Params.LABEL_OFFSET, CameraSetupPlugIn.offset);

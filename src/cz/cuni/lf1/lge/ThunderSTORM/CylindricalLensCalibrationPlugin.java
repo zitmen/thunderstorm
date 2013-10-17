@@ -139,7 +139,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             QuadraticFunction sigma1param, QuadraticFunction sigma2param,
             double[] allFrames, double[] allSigma1s, double[] allSigma2s) {
         
-        Plot plot = new Plot("Sigma", "z[slices]", "sigma");
+        Plot plot = new Plot("Sigma", "z[slices]", "sigma", (float[])null, (float[])null);
         plot.setSize(1024, 768);
         //range
         int range = imp.getStackSize() / 2;

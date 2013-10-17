@@ -19,7 +19,7 @@ public class PaddingTest {
             3f, 5f, 7f,
             4f, 9f, 2f
         };
-        FloatProcessor image = new FloatProcessor(3, 3, data);
+        FloatProcessor image = new FloatProcessor(3, 3, data, null);
         FloatProcessor result;
         float [] expResult;
         
