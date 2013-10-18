@@ -33,7 +33,7 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
     private boolean useWatershed;
     private transient float thresholdValue;
     private transient final static String DEFAULT_THRESHOLD = "std(Wave.F1)";
-    private transient final static boolean DEFAULT_USE_WATERSHED = true;
+    private transient final static boolean DEFAULT_USE_WATERSHED = false;
     private transient final static ParameterName.String THRESHOLD = new ParameterName.String("threshold");
     private transient final static ParameterName.Boolean USE_WATERSHED = new ParameterName.Boolean("watershed"); 
 

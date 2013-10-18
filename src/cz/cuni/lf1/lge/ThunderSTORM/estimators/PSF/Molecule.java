@@ -287,6 +287,10 @@ public final class Molecule implements Comparable<Molecule> {
     public void setDetections(Vector<Molecule> detections) {
         this.detections = detections;
     }
+    
+    public int getDetectionsCount(){
+        return detections == null  ? 1: detections.size();
+    }
 
     public boolean isSingleMolecule() {
         return (detections == null || detections.size() <= 1);

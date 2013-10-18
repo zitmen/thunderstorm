@@ -22,7 +22,7 @@ import javax.swing.JTable;
 import javax.swing.SwingWorker;
 
 final class TableRowsPopUpMenu implements ActionListener {
-    
+
     private IJResultsTable rt;
     private ResultsTableWindow tableWindow;
     private GenericTableModel tableModel;
@@ -67,7 +67,11 @@ final class TableRowsPopUpMenu implements ActionListener {
             new SwingWorker() {
                 @Override
                 protected Object doInBackground() throws Exception {
-                    highlightMolecules();
+                    try {
+                        highlightMolecules();
+                    } catch(Exception e) {
+                        IJ.handleException(e);
+                    }
                     return null;
                 }
             }.execute();
@@ -82,7 +86,7 @@ final class TableRowsPopUpMenu implements ActionListener {
         if(rt.getAnalyzedImage() != null) {
             rt.getAnalyzedImage().setOverlay(null);
             //
-            int [] rows = jtable.getSelectedRows();
+            int[] rows = jtable.getSelectedRows();
             HashSet<Integer> rowIndices = new HashSet<Integer>();
             for(int r = 0; r < rows.length; r++) {
                 rowIndices.add(jtable.convertRowIndexToModel(rows[r]));
@@ -101,17 +105,17 @@ final class TableRowsPopUpMenu implements ActionListener {
             Units unitsY = rt.getColumnUnits(PSFModel.Params.LABEL_Y);
             IJ.showStatus("Building new overlay...");
             for(int r = 0, rm = rt.getRowCount(); r < rm; r++) {
-                IJ.showProgress((double)r / (double)rm);
+                IJ.showProgress((double) r / (double) rm);
                 int id = rt.getValue(r, MoleculeDescriptor.LABEL_ID).intValue();
                 double xCoord = rect.x + unitsX.convertTo(pixels, rt.getValue(r, PSFModel.Params.LABEL_X).doubleValue());
                 double yCoord = rect.y + unitsY.convertTo(pixels, rt.getValue(r, PSFModel.Params.LABEL_Y).doubleValue());
                 int slice = rt.getValue(r, MoleculeDescriptor.LABEL_FRAME).intValue();
                 if(rowIndices.contains(r)) {
-                    for(int frame = slice, max = slice + rt.getRow(r).getDetections().size(); frame <= max; frame++) {
+                    for(int frame = slice, max = slice + rt.getRow(r).getDetectionsCount(); frame < max; frame++) {
                         RenderingOverlay.drawCircle(id, xCoord, yCoord, frame, overlay, Color.GREEN, 2.5);
                     }
                 } else {
-                    for(int frame = slice, max = slice + rt.getRow(r).getDetections().size(); frame <= max; frame++) {
+                    for(int frame = slice, max = slice + rt.getRow(r).getDetectionsCount(); frame < max; frame++) {
                         RenderingOverlay.drawCross(id, xCoord, yCoord, frame, overlay, Color.RED);
                     }
                 }
@@ -124,7 +128,7 @@ final class TableRowsPopUpMenu implements ActionListener {
     }
 
     private void filterMolecules() {
-        int [] rows = jtable.getSelectedRows();
+        int[] rows = jtable.getSelectedRows();
         Vector<Integer> rowIds = new Vector<Integer>();
         for(int r = 0; r < rows.length; r++) {
             int rowIndex = jtable.convertRowIndexToModel(rows[r]);
@@ -134,19 +138,21 @@ final class TableRowsPopUpMenu implements ActionListener {
         int start, end;
         StringBuilder sb = new StringBuilder();
         for(int r = 0, rm = rowIds.size(); r < rm; r++) {
-            if(r > 0) sb.append("&");
+            if(r > 0) {
+                sb.append("&");
+            }
             start = rowIds.get(r);
-            if((r+1) >= rm) {
+            if((r + 1) >= rm) {
                 sb.append("(id!=").append(start).append(")");
             } else {
-                end = rowIds.get(r+1);
+                end = rowIds.get(r + 1);
                 if((end - start) > 1) {
                     sb.append("(id!=").append(start).append(")");
                 } else {
                     sb.append("(id<").append(start).append("|");
-                    while(((r+1) < rm) && ((end - start) <= 1)) {
+                    while(((r + 1) < rm) && ((end - start) <= 1)) {
                         start = rowIds.get(r);
-                        end = rowIds.get(r+1);
+                        end = rowIds.get(r + 1);
                         r++;
                     }
                     if((end - start) > 1) {
@@ -171,5 +177,4 @@ final class TableRowsPopUpMenu implements ActionListener {
         Collections.sort(detections);
         new MergedMoleculesPopUp(jtable, row, 0, detections);
     }
-
 }
