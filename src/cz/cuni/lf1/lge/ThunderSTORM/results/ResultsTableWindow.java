@@ -73,7 +73,7 @@ class ResultsTableWindow extends GenericTableWindow {
         status = new JLabel(" ");
         status.setAlignmentX(Component.CENTER_ALIGNMENT);
         status.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        //
+        //buttons
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         setCamera = new JButton("Camera setup...");
@@ -159,6 +159,7 @@ class ResultsTableWindow extends GenericTableWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
                 model.copyOriginalToActual();
+                model.convertAllColumnsToAnalogUnits();
                 operationsStackPanel.removeAllOperations();
                 setStatus("Results reset.");
                 showPreview();

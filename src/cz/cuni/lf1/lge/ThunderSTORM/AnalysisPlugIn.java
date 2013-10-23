@@ -113,10 +113,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                     }
                 }
             }
-            rt.convertAllColumnsToAnalogUnits();
             rt.insertIdColumn();
             rt.copyOriginalToActual();
             rt.setActualState();
+            rt.convertAllColumnsToAnalogUnits();
             rt.setPreviewRenderer(renderingQueue);
             setDefaultColumnsWidth(rt);
             rt.setAnalyzedImage(imp);
