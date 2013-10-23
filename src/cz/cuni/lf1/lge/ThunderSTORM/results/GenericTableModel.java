@@ -224,6 +224,7 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
             setDescriptor(mol.descriptor);
         }
         columns.validateMolecule(mol);
+        mol.descriptor = columns;
         rows.add(mol);
         if(mol.hasParam(MoleculeDescriptor.LABEL_ID)) {
             maxId = (int)max(maxId, mol.getParam(MoleculeDescriptor.LABEL_ID));
