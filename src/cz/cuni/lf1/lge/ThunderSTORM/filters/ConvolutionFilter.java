@@ -1,6 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Convolution;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
 import java.util.HashMap;
 
@@ -116,6 +118,7 @@ public class ConvolutionFilter {
 
     public FloatProcessor filterImage(FloatProcessor image) {
         input = image;
+        GUI.checkIJEscapePressed();
         // With non-separable kernels, the complexity is K*K*N,
         if (kernel != null) {
             result = Convolution.convolve2D(image, kernel, padding_method);

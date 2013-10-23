@@ -145,15 +145,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
             }
             //do the preview task
             previewFuture = previewThredRunner.submit(new Runnable() {
-                void checkForInterruption() throws InterruptedException {
-                    if(Thread.interrupted()) {
-                        throw new InterruptedException();
-                    }
-                    if(IJ.escapePressed()) {
-                        IJ.resetEscape();
-                        throw new InterruptedException();
-                    }
-                }
+                
 
                 @Override
                 public void run() {
@@ -167,9 +159,9 @@ public class CalibrationDialog extends JDialog implements ActionListener {
                         Thresholder.setCurrentImage(fp);
                         FloatProcessor filtered = getActiveFilterUI().getThreadLocalImplementation().filterImage(fp);
                         new ImagePlus("ThunderSTORM: filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
-                        checkForInterruption();
+                        GUI.checkIJEscapePressed();
                         List<Point> detections = Point.applyRoiMask(imp.getRoi(), getActiveDetectorUI().getThreadLocalImplementation().detectMoleculeCandidates(filtered));
-                        checkForInterruption();
+                        GUI.checkIJEscapePressed();
                         //
                         double[] xCoord = new double[detections.size()];
                         double[] yCoord = new double[detections.size()];
@@ -181,7 +173,8 @@ public class CalibrationDialog extends JDialog implements ActionListener {
                         ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
                         RenderingOverlay.showPointsInImage(impPreview, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
                         impPreview.show();
-                    } catch(InterruptedException ex) {
+                    } catch(StoppedByUserException ex) {
+                        IJ.resetEscape();
                         IJ.showStatus("Preview interrupted.");
                     } catch(Exception ex) {
                         IJ.handleException(ex);

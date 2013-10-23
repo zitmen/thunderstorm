@@ -242,16 +242,6 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                 previewFuture.cancel(true);
             }
             previewFuture = previewThreadRunner.submit(new Runnable() {
-                void checkForInterruption() throws InterruptedException {
-                    if(Thread.interrupted()) {
-                        throw new InterruptedException();
-                    }
-                    if(IJ.escapePressed()) {
-                        IJ.resetEscape();
-                        throw new InterruptedException();
-                    }
-                }
-
                 @Override
                 public void run() {
                     try {
@@ -264,7 +254,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                         Thresholder.setCurrentImage(fp);
                         FloatProcessor filtered = allFilters.get(activeFilterIndex).getThreadLocalImplementation().filterImage(fp);
                         new ImagePlus("ThunderSTORM: filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
-                        checkForInterruption();
+                        GUI.checkIJEscapePressed();
                         IDetector detector = allDetectors.get(activeDetectorIndex).getThreadLocalImplementation();
                         Vector<Point> detections = Point.applyRoiMask(imp.getRoi(), detector.detectMoleculeCandidates(filtered));
                         ij.measure.ResultsTable tbl = ij.measure.ResultsTable.getResultsTable();
@@ -272,9 +262,9 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                         tbl.incrementCounter();
                         tbl.addValue("Threshold value for frame " + Integer.toString(imp.getSlice()), detector.getThresholdValue());
                         tbl.show("Results");
-                        checkForInterruption();
+                        GUI.checkIJEscapePressed();
                         Vector<Molecule> results = allEstimators.get(activeEstimatorIndex).getThreadLocalImplementation().estimateParameters(fp, detections);
-                        checkForInterruption();
+                        GUI.checkIJEscapePressed();
                         //
                         ImagePlus impPreview = new ImagePlus("ThunderSTORM: detections in frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
                         RenderingOverlay.showPointsInImage(impPreview,
@@ -282,7 +272,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                                 Molecule.extractParamToArray(results, PSFModel.Params.LABEL_Y),
                                 Color.red, RenderingOverlay.MARKER_CROSS);
                         impPreview.show();
-                    } catch(InterruptedException ex) {
+                    } catch(StoppedByUserException ex) {
+                        IJ.resetEscape();
                         IJ.showStatus("Preview interrupted.");
                     } catch(Exception ex) {
                         IJ.handleException(ex);

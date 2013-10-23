@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MultiPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
@@ -29,6 +30,7 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
         if(maxN > 1) {
             // model selection - how many molecules?
             for(int n = 1; n <= maxN; n++) {
+                GUI.checkIJEscapePressed();
                 model = new MultiPSF(n, defaultSigma, basePsfModel, fittedParams);
                 model.setIntensityRange(expectedIntensity);
                 model.setFixedIntensities(sameI);

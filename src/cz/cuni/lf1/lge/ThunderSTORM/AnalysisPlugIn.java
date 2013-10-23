@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
@@ -288,6 +289,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             //
             IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
             IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
+        }catch (StoppedByUserException ie){
+            //escape pressed flag is not reset and is handled by caller
         } catch(Exception ex) {
             IJ.handleException(ex);
         }

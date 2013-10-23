@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import ij.process.FloatProcessor;
 import java.util.HashMap;
 
@@ -16,7 +17,7 @@ public interface IFilter extends IModule {
      * @return a <strong>new instance</strong> of FloatProcessor that contains
      *         the filtered image
      */
-    public FloatProcessor filterImage(FloatProcessor image);
+    public FloatProcessor filterImage(FloatProcessor image) throws StoppedByUserException;
     
     /**
      * Return a name of the filter that will be used when building a thresholding formula.
