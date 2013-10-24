@@ -111,7 +111,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             setDefaultColumnsWidth(rt);
             rt.setAnalyzedImage(imp);
             rt.setMeasurementProtocol(measurementProtocol);
-            rt.show();
+            rt.forceShow();
             //
             // Show detections in the image
             imp.setOverlay(null);
@@ -126,9 +126,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             IJResultsTable.getResultsTable().show();
             return DONE;
         } else {
-            IJResultsTable rt = IJResultsTable.getResultsTable();
-            rt.reset();
-            rt.setOriginalState();
             return pluginFlags; // Grayscale only, no changes to the image and therefore no undo
         }
     }
@@ -185,6 +182,12 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 if(dialog.wasCanceled()) {  // This is a blocking call!!
                     return DONE;    // cancel
                 }
+                
+                IJResultsTable rt = IJResultsTable.getResultsTable();
+                rt.reset();
+                rt.setOriginalState();
+                rt.forceHide();
+                
                 selectedFilter = dialog.getFilterIndex();
                 selectedDetector = dialog.getDetectorIndex();
                 selectedEstimator = dialog.getEstimatorIndex();
