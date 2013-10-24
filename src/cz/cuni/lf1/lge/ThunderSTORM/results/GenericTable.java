@@ -273,6 +273,10 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
     public void calculateThompsonFormula() {
         model.calculateThompsonFormula();
     }
+    
+    public void sortTableByFrame() {
+        model.sortTableByColumn(MoleculeDescriptor.LABEL_FRAME);
+    }
 
     public abstract String getFrameTitle();
     public abstract String getTableIdentifier();

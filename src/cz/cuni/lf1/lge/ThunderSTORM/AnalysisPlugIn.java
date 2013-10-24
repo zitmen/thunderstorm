@@ -60,7 +60,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     private AtomicInteger nProcessed = new AtomicInteger(0);
     private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES
             | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING | SUPPORTS_MASKING;
-    private List<Molecule>[] results;
     private List<IFilterUI> allFilters;
     private List<IDetectorUI> allDetectors;
     private List<IEstimatorUI> allEstimators;
@@ -102,16 +101,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             //
             // Show table with results
             IJResultsTable rt = IJResultsTable.getResultsTable();
-            rt.reset();
-            rt.setOriginalState();
-            for(int frame = 1; frame <= stackSize; frame++) {
-                if(results[frame] != null) {
-                    for(Molecule psf : results[frame]) {
-                        psf.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double) frame);
-                        rt.addRow(psf);
-                    }
-                }
-            }
+            rt.sortTableByFrame();
             rt.convertAllColumnsToAnalogUnits();
             rt.insertIdColumn();
             rt.copyOriginalToActual();
@@ -135,6 +125,9 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             IJResultsTable.getResultsTable().show();
             return DONE;
         } else {
+            IJResultsTable rt = IJResultsTable.getResultsTable();
+            rt.reset();
+            rt.setOriginalState();
             return pluginFlags; // Grayscale only, no changes to the image and therefore no undo
         }
     }
@@ -243,7 +236,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     public void setNPasses(int nPasses) {
         stackSize = nPasses;
         nProcessed.set(0);
-        results = new Vector[stackSize + 1];  // indexing from 1 for simplicity
     }
 
     /**
@@ -272,16 +264,14 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         if(roi != null) {
             fp.setMask(roi.getMask());
         }
-        Vector<Molecule> fits;
         try {
             Thresholder.setCurrentImage(fp);
             FloatProcessor filtered = allFilters.get(selectedFilter).getThreadLocalImplementation().filterImage(fp);
             IDetector detector = allDetectors.get(selectedDetector).getThreadLocalImplementation();
             Vector<Point> detections = detector.detectMoleculeCandidates(filtered);
-            fits = allEstimators.get(selectedEstimator).getThreadLocalImplementation().estimateParameters(fp, Point.applyRoiMask(roi, detections));
-            results[ip.getSliceNumber()] = fits;
+            Vector<Molecule> fits = allEstimators.get(selectedEstimator).getThreadLocalImplementation().estimateParameters(fp, Point.applyRoiMask(roi, detections));
+            storeFits(fits, ip.getSliceNumber());
             nProcessed.incrementAndGet();
-
             if(fits.size() > 0) {
                 renderingQueue.renderLater(fits);
             }
@@ -290,6 +280,14 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
         } catch(Exception ex) {
             IJ.handleException(ex);
+        }
+    }
+    
+    synchronized public void storeFits(Vector<Molecule> fits, int frame) {
+        IJResultsTable rt = IJResultsTable.getResultsTable();
+        for(Molecule psf : fits) {
+            psf.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double)frame);
+            rt.addRow(psf);
         }
     }
 

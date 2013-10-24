@@ -15,6 +15,8 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Uni
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL_SQUARED;
 import cz.cuni.lf1.lge.ThunderSTORM.util.IValue;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Vector;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TableModelListener;
@@ -37,6 +39,18 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
         this.maxId = res.maxId;
     }
     // -----------------------------------------------------
+    
+    public void sortTableByColumn(String colname) {
+        ArrayIndexComparator cmp = new ArrayIndexComparator(getColumnAsDoubles(colname, Units.UNITLESS));
+        Integer indices [] = cmp.createIndexArray();
+        Arrays.sort(indices);
+        Molecule [] sorted = new Molecule[rows.size()];
+        for(int i = 0; i < indices.length; i++) {
+            sorted[i] = rows.elementAt(indices[i].intValue());
+        }
+        rows.clear();
+        rows.addAll(Arrays.asList(sorted));
+    }
     
     public void setLabel(int column, String new_name, Units new_units) {
         assert(new_units != null);
@@ -381,6 +395,30 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
             fireTableDataChanged();
         } catch(Exception e) {
             // ignore...PSF does not fit all the required parameters
+        }
+    }
+    
+    // --------------------------------------- //
+    // From http://stackoverflow.com/a/4859279 //
+    // --------------------------------------- //
+    public class ArrayIndexComparator implements Comparator<Integer> {
+        private final double[] array;
+
+        public ArrayIndexComparator(double[] array) {
+            this.array = array;
+        }
+
+        public Integer[] createIndexArray()
+        {
+            Integer[] indexes = new Integer[array.length];
+            for (int i = 0; i < array.length; i++)
+                indexes[i] = i;
+            return indexes;
+        }
+
+        @Override
+        public int compare(Integer index1, Integer index2) {
+            return (int)Math.ceil(array[index1] - array[index2]);
         }
     }
 }
