@@ -43,7 +43,7 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
     public void sortTableByColumn(String colname) {
         ArrayIndexComparator cmp = new ArrayIndexComparator(getColumnAsDoubles(colname, Units.UNITLESS));
         Integer indices [] = cmp.createIndexArray();
-        Arrays.sort(indices);
+        Arrays.sort(indices, cmp);
         Molecule [] sorted = new Molecule[rows.size()];
         for(int i = 0; i < indices.length; i++) {
             sorted[i] = rows.elementAt(indices[i].intValue());
@@ -238,6 +238,7 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
             setDescriptor(mol.descriptor);
         }
         columns.validateMolecule(mol);
+        mol.descriptor = columns;
         rows.add(mol);
         if(mol.hasParam(MoleculeDescriptor.LABEL_ID)) {
             maxId = (int)max(maxId, mol.getParam(MoleculeDescriptor.LABEL_ID));

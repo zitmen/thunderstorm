@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA1;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA2;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Z;
@@ -24,7 +25,7 @@ public class CylindricalLensZEstimator implements IEstimator {
     }
 
     @Override
-    public Vector<Molecule> estimateParameters(FloatProcessor image, Vector<Point> detections) {
+    public Vector<Molecule> estimateParameters(FloatProcessor image, Vector<Point> detections) throws StoppedByUserException {
         Vector<Molecule> results = estimator.estimateParameters(image, detections);
         for(int i = 0; i < results.size(); i++) {
             Molecule psf = results.get(i);

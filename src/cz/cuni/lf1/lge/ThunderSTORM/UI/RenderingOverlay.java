@@ -124,7 +124,7 @@ public class RenderingOverlay {
             case MARKER_CROSS:
                 for(int r = 0, rows = rt.getRowCount(); r < rows; r++) {
                     mol = rt.getRow(r);
-                    for(int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME), max = frame + (mol.isSingleMolecule()? 1:mol.getDetections().size()); frame <= max; frame++) {
+                    for(int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME), max = frame + mol.getDetectionsCount(); frame < max; frame++) {
                         drawCross((int)mol.getParam(MoleculeDescriptor.LABEL_ID),
                                 roi.x + unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
                                 roi.y + unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
@@ -136,7 +136,7 @@ public class RenderingOverlay {
             case MARKER_CIRCLE:
                 for(int r = 0, rows = rt.getRowCount(); r < rows; r++) {
                     mol = rt.getRow(r);
-                    for(int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME), max = frame + (mol.isSingleMolecule()? 1:mol.getDetections().size()); frame <= max; frame++) {
+                    for(int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME), max = frame + mol.getDetectionsCount(); frame < max; frame++) {
                         drawCircle((int)mol.getParam(MoleculeDescriptor.LABEL_ID),
                                 roi.x + unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
                                 roi.y + unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),

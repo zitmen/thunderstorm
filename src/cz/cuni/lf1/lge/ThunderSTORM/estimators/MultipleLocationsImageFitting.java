@@ -1,6 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -19,6 +21,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
     int[] ygrid;
     Vector<Molecule> results;
     final OneLocationFitter fitter;
+    MoleculeDescriptor moleculeDescriptor;
 
     public MultipleLocationsImageFitting(int fittingRadius, OneLocationFitter fitter) {
         this.subimageSize = fittingRadius;
@@ -56,9 +59,10 @@ public class MultipleLocationsImageFitting implements IEstimator {
         }
     }
 
-    public void run() {
+    public void run() throws StoppedByUserException{
 
         for(int i = 0; i < locations.size(); i++) {
+            GUI.checkIJEscapePressed();
             int xInt = locations.get(i).x.intValue();
             int yInt = locations.get(i).y.intValue();
 
@@ -75,6 +79,13 @@ public class MultipleLocationsImageFitting implements IEstimator {
                             locations.get(i).getY().doubleValue() - yInt);
 
                     Molecule psf = fitter.fit(subImage);
+                    //replace molecule descriptor to a common one for all molecules
+                    if(moleculeDescriptor != null){
+                        moleculeDescriptor.validateMolecule(psf);
+                        psf.descriptor = moleculeDescriptor;
+                    }else{
+                        moleculeDescriptor = psf.descriptor;
+                    }
                     if(psf.isSingleMolecule()) {
                         if(checkIsInSubimage(psf.getX(), psf.getY())) {
                             psf.setX(psf.getX() + xInt + 0.5);
@@ -112,7 +123,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
     }
 
     @Override
-    public Vector<Molecule> estimateParameters(ij.process.FloatProcessor image, Vector<Point> detections) {
+    public Vector<Molecule> estimateParameters(ij.process.FloatProcessor image, Vector<Point> detections) throws StoppedByUserException{
         this.image = image;
         this.locations = detections;
         results = new Vector<Molecule>();
