@@ -21,6 +21,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
     int[] ygrid;
     Vector<Molecule> results;
     final OneLocationFitter fitter;
+    MoleculeDescriptor moleculeDescriptor;
 
     public MultipleLocationsImageFitting(int fittingRadius, OneLocationFitter fitter) {
         this.subimageSize = fittingRadius;
@@ -78,6 +79,13 @@ public class MultipleLocationsImageFitting implements IEstimator {
                             locations.get(i).getY().doubleValue() - yInt);
 
                     Molecule psf = fitter.fit(subImage);
+                    //replace molecule descriptor to a common one for all molecules
+                    if(moleculeDescriptor != null){
+                        moleculeDescriptor.validateMolecule(psf);
+                        psf.descriptor = moleculeDescriptor;
+                    }else{
+                        moleculeDescriptor = psf.descriptor;
+                    }
                     if(psf.isSingleMolecule()) {
                         if(checkIsInSubimage(psf.getX(), psf.getY())) {
                             psf.setX(psf.getX() + xInt + 0.5);
