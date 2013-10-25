@@ -58,7 +58,7 @@ import javax.swing.SwingUtilities;
 public final class AnalysisPlugIn implements ExtendedPlugInFilter {
 
     private int stackSize;
-    private AtomicInteger nProcessed = new AtomicInteger(0);
+    private final AtomicInteger nProcessed = new AtomicInteger(0);
     private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES
             | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING | SUPPORTS_MASKING;
     private List<IFilterUI> allFilters;
@@ -69,6 +69,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     private int selectedEstimator;
     private int selectedDetector;
     private int selectedRenderer;
+    private ImagePlus processedImage;
     private RenderingQueue renderingQueue;
     private ImagePlus renderedImage;
     private Roi roi;
@@ -100,23 +101,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         if(command.equals("final")) {
             IJ.showStatus("ThunderSTORM is generating the results...");
             //
-            // Show table with results
-            IJResultsTable rt = IJResultsTable.getResultsTable();
-            rt.sortTableByFrame();
-            rt.insertIdColumn();
-            rt.copyOriginalToActual();
-            rt.setActualState();
-            rt.convertAllColumnsToAnalogUnits();
-            rt.setPreviewRenderer(renderingQueue);
-            setDefaultColumnsWidth(rt);
-            rt.setAnalyzedImage(imp);
-            rt.setMeasurementProtocol(measurementProtocol);
-            rt.show();
-            //
-            // Show detections in the image
-            imp.setOverlay(null);
-            RenderingOverlay.showPointsInImage(rt, imp, roi.getBounds(), Color.red, RenderingOverlay.MARKER_CROSS);
-            renderingQueue.repaintLater();
+            // Show results (table and overlay)
+            showResults();
             //
             // Finished
             IJ.showProgress(1.0);
@@ -126,9 +112,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             IJResultsTable.getResultsTable().show();
             return DONE;
         } else {
-            IJResultsTable rt = IJResultsTable.getResultsTable();
-            rt.reset();
-            rt.setOriginalState();
+            processedImage = imp;
             return pluginFlags; // Grayscale only, no changes to the image and therefore no undo
         }
     }
@@ -167,7 +151,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), rendererPanel.getRepaintFrequency());
 
                 measurementProtocol = new MeasurementProtocol(imp, allFilters.get(selectedFilter), allDetectors.get(selectedDetector), allEstimators.get(selectedEstimator));
-
             } else {
                 // Create and show the dialog
                 try {
@@ -185,6 +168,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 if(dialog.wasCanceled()) {  // This is a blocking call!!
                     return DONE;    // cancel
                 }
+                
                 selectedFilter = dialog.getFilterIndex();
                 selectedDetector = dialog.getDetectorIndex();
                 selectedEstimator = dialog.getEstimatorIndex();
@@ -220,6 +204,11 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             IJ.error("Error parsing threshold formula! " + ex.toString());
             return DONE;
         }
+        //
+        IJResultsTable rt = IJResultsTable.getResultsTable();
+        rt.reset();
+        rt.setOriginalState();
+        rt.forceHide();
         //
         return pluginFlags; // ok
     }
@@ -276,11 +265,15 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             if(fits.size() > 0) {
                 renderingQueue.renderLater(fits);
             }
-            //
             IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
             IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
-        }catch (StoppedByUserException ie){
-            //escape pressed flag is not reset and is handled by caller
+        } catch (StoppedByUserException ie){
+            IJResultsTable rt = IJResultsTable.getResultsTable();
+            synchronized(rt) {
+                if(rt.isForceHidden()) {
+                    showResults();
+                }
+            }
         } catch(Exception ex) {
             IJ.handleException(ex);
         }
@@ -301,6 +294,31 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         rt.setColumnPreferredWidth(PSFModel.Params.LABEL_Y, 60);
         rt.setColumnPreferredWidth(PSFModel.Params.LABEL_SIGMA, 40);
         rt.setColumnPreferredWidth(PSFModel.Params.LABEL_SIGMA1, 40);
-        rt.setColumnPreferredWidth(PSFModel.Params.LABEL_SIGMA1, 40);
+        rt.setColumnPreferredWidth(PSFModel.Params.LABEL_SIGMA2, 40);
+    }
+
+    synchronized public void showResults() {
+        //
+        // Show table with results
+        IJResultsTable rt = IJResultsTable.getResultsTable();
+        rt.sortTableByFrame();
+        rt.insertIdColumn();
+        rt.copyOriginalToActual();
+        rt.setActualState();
+        rt.convertAllColumnsToAnalogUnits();
+        rt.setPreviewRenderer(renderingQueue);
+        setDefaultColumnsWidth(rt);
+        if(processedImage != null) {
+            rt.setAnalyzedImage(processedImage);
+        }
+        rt.setMeasurementProtocol(measurementProtocol);
+        rt.forceShow();
+        //
+        // Show detections in the image
+        if(processedImage != null) {
+            processedImage.setOverlay(null);
+            RenderingOverlay.showPointsInImage(rt, processedImage, roi.getBounds(), Color.red, RenderingOverlay.MARKER_CROSS);
+            renderingQueue.repaintLater();
+        }
     }
 }

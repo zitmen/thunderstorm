@@ -4,11 +4,14 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 
 public abstract class GenericTable<TW extends GenericTableWindow> {
     
     public static final int COLUMN_NOT_FOUND = -1;
     public static final int COLUMN_IN_USE = -2;
+    
+    public boolean forceHidden = false;
 
     TW tableWindow;
     TripleStateTableModel model;
@@ -32,6 +35,20 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
     public void setColumnPreferredWidth(int columnIndex, int width) {
         tableWindow.getView().getColumnModel().getColumn(columnIndex).setPreferredWidth(width);
     }
+    
+    public boolean isForceHidden() {
+        return forceHidden;
+    }
+    
+    public void forceShow() {
+        forceHidden = false;
+        tableWindow.show();
+    }
+    
+    public void forceHide() {
+        forceHidden = true;
+        tableWindow.hide();
+    }
 
     /**
      * Displays the contents of this ResultsTable in a window with the default
@@ -39,7 +56,13 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
      * Opens a new window if there is no open results window.
      */
     public void show() {
-        tableWindow.show();
+        if(!forceHidden) {
+            tableWindow.show();
+        } else {
+            JOptionPane.showMessageDialog(null,
+                    "ResultsTable is locked for processing now. Please wait until the processing is finished.",
+                    "Warning", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     /**
@@ -48,7 +71,13 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
      * is no open results window.
      */
     public void show(String windowTitle) {
-        tableWindow.show(windowTitle);
+        if(!forceHidden) {
+            tableWindow.show(windowTitle);
+        } else {
+            JOptionPane.showMessageDialog(null,
+                    "ResultsTable is locked for processing now. Please wait until the processing is finished.",
+                    "Warning", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     public synchronized void reset() {
