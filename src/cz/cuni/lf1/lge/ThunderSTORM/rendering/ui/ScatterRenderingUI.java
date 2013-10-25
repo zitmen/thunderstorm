@@ -30,11 +30,18 @@ public class ScatterRenderingUI extends AbstractRenderingUI {
 
     @Override
     public IncrementalRenderingMethod getMethod() {
-        if(parameters.getBoolean(THREE_D)) {
-            Range zrange = Range.parseFromStepTo(parameters.getString(Z_RANGE));
-            return new ScatterRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1 / parameters.getDouble(MAGNIFICATION)).zRange(zrange.from, zrange.to, zrange.step).build();
+        if(threeD.getValue()) {
+            Range zrange = Range.parseFromStepTo(zRange.getValue());
+            return new ScatterRendering.Builder()
+                    .roi(0, sizeX, 0, sizeY)
+                    .resolution(1 / magnification.getValue())
+                    .zRange(zrange.from, zrange.to, zrange.step)
+                    .build();
         } else {
-            return new ScatterRendering.Builder().roi(0, sizeX, 0, sizeY).resolution(1 / parameters.getDouble(MAGNIFICATION)).build();
+            return new ScatterRendering.Builder()
+                    .roi(0, sizeX, 0, sizeY)
+                    .resolution(1 / magnification.getValue())
+                    .build();
         }
     }
 }

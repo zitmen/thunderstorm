@@ -187,7 +187,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         } else if(e.getActionCommand().equals("Ok")) {
             Calibration cal = new Calibration();
             cal.setUnit("um");
-            cal.pixelWidth = cal.pixelHeight = CameraSetupPlugIn.pixelSize / 1000.0;
+            cal.pixelWidth = cal.pixelHeight = CameraSetupPlugIn.getPixelSize() / 1000.0;
             imp.setCalibration(cal);
             //
             activeFilterIndex = filtersPanel.getActiveComboBoxItemIndex();
@@ -246,7 +246,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                 public void run() {
                     try {
                         IJ.showStatus("Creating preview image.");
-                        FloatProcessor fp = subtract((FloatProcessor) imp.getProcessor().crop().convertToFloat(), (float) CameraSetupPlugIn.offset);
+                        FloatProcessor fp = subtract((FloatProcessor) imp.getProcessor().crop().convertToFloat(), (float) CameraSetupPlugIn.getOffset());
                         Roi roi = imp.getRoi();
                         if(roi != null) {
                             fp.setMask(roi.getMask());

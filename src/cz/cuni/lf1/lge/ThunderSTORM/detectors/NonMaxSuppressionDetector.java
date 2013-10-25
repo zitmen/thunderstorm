@@ -27,8 +27,8 @@ public final class NonMaxSuppressionDetector extends IDetectorUI implements IDet
     private transient float thresholdValue;
     private transient final static String DEFAULT_THRESHOLD = "std(Wave.F1)";
     private transient final static int DEFAULT_RADIUS = 3;
-    private transient final static ParameterName.Integer RADIUS = new ParameterName.Integer("radius");
-    private transient final static ParameterName.String THRESHOLD = new ParameterName.String("threshold");
+    private transient ParameterName.Integer RADIUS;
+    private transient ParameterName.String THRESHOLD;
 
     public NonMaxSuppressionDetector() throws FormulaParserException {
         this(DEFAULT_RADIUS, DEFAULT_THRESHOLD);
@@ -41,8 +41,8 @@ public final class NonMaxSuppressionDetector extends IDetectorUI implements IDet
      * @param threshold a threshold value
      */
     public NonMaxSuppressionDetector(int radius, String threshold) throws FormulaParserException {
-        parameters.createStringField(THRESHOLD, null, DEFAULT_THRESHOLD);
-        parameters.createIntField(RADIUS, IntegerValidatorFactory.positiveNonZero(), DEFAULT_RADIUS);
+        THRESHOLD = parameters.createStringField("threshold", null, DEFAULT_THRESHOLD);
+        RADIUS = parameters.createIntField("radius", IntegerValidatorFactory.positiveNonZero(), DEFAULT_RADIUS);
         this.radius = radius;
         this.threshold = threshold;
     }
@@ -106,7 +106,7 @@ public final class NonMaxSuppressionDetector extends IDetectorUI implements IDet
 
     @Override
     public IDetector getImplementation() {
-        return new NonMaxSuppressionDetector(parameters.getInt(RADIUS), parameters.getString(THRESHOLD));
+        return new NonMaxSuppressionDetector(RADIUS.getValue(), THRESHOLD.getValue());
     }
 
     @Override

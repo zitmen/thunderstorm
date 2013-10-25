@@ -20,20 +20,18 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
 
     protected String name = "PSF: Gaussian";
     protected CrowdedFieldEstimatorUI crowdedField;
-    protected transient int DEFAULT_FITRAD = 3;
-    protected transient double DEFAULT_SIGMA = 1.6;
     protected transient static final String MLE = "Maximum likelihood";
     protected transient static final String LSQ = "Least squares";
-    //param names
-    protected transient static final ParameterName.Integer FITRAD = new ParameterName.Integer("fitradius");
-    protected transient static final ParameterName.Choice METHOD = new ParameterName.Choice("method");
-    protected transient static final ParameterName.Double SIGMA = new ParameterName.Double("sigma");
+    //params
+    protected transient ParameterName.Integer FITRAD;
+    protected transient ParameterName.Choice METHOD;
+    protected transient ParameterName.Double SIGMA;
 
     public SymmetricGaussianEstimatorUI() {
         crowdedField = new CrowdedFieldEstimatorUI();
-        parameters.createIntField(FITRAD, IntegerValidatorFactory.positiveNonZero(), DEFAULT_FITRAD);
-        parameters.createChoice(METHOD, StringValidatorFactory.isMember(new String[]{MLE, LSQ}), LSQ);
-        parameters.createDoubleField(SIGMA, DoubleValidatorFactory.positiveNonZero(), DEFAULT_SIGMA);
+        FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
+        METHOD = parameters.createChoice("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ}), LSQ);
+        SIGMA = parameters.createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
     }
 
     @Override
@@ -71,9 +69,9 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
 
     @Override
     public IEstimator getImplementation() {
-        String method = parameters.getChoice(METHOD);
-        double sigma = parameters.getDouble(SIGMA);
-        int fitradius = parameters.getInt(FITRAD);
+        String method = METHOD.getValue();
+        double sigma = SIGMA.getValue();
+        int fitradius = FITRAD.getValue();
         if(LSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
                 return crowdedField.getLSQImplementation(new SymmetricGaussianPSF(sigma), sigma, fitradius);

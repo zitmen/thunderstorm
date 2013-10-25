@@ -121,7 +121,7 @@ public class ProtoImportExport implements IImportExport {
                 } else if(PSFModel.Params.LABEL_OFFSET.equals(name)) {
                     units.setOffset(unit);
                 } else if(MoleculeDescriptor.Fitting.LABEL_THOMPSON.equals(name)) {
-                    if(CameraSetupPlugIn.isEmGain) {
+                    if(CameraSetupPlugIn.isIsEmGain()) {
                         units.setThompsonEmccd(unit);
                     } else {
                         units.setThompsonCcd(unit);
@@ -162,7 +162,7 @@ public class ProtoImportExport implements IImportExport {
                 } else if(PSFModel.Params.LABEL_OFFSET.equals(name)) {
                     mol.setOffset(value);
                 } else if(MoleculeDescriptor.Fitting.LABEL_THOMPSON.equals(name)) {
-                    if(CameraSetupPlugIn.isEmGain) {
+                    if(CameraSetupPlugIn.isIsEmGain()) {
                         mol.setThompsonEmccd(value);
                     } else {
                         mol.setThompsonCcd(value);

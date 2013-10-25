@@ -14,14 +14,12 @@ import javax.swing.JTextField;
 public class GaussianFilterUI extends IFilterUI {
 
     private final String name = "Gaussian filter";
-    private transient static final int DEFAULT_SIZE = 11;
-    private transient static final double DEFAULT_SIGMA = 1.6;
-    private transient static final ParameterName.Integer SIZE = new ParameterName.Integer("size");
-    private transient static final ParameterName.Double SIGMA = new ParameterName.Double("sigma");
+    private transient ParameterName.Integer size;
+    private transient ParameterName.Double sigma;
 
     public GaussianFilterUI() {
-        parameters.createIntField(SIZE, IntegerValidatorFactory.positiveNonZero(), DEFAULT_SIZE);
-        parameters.createDoubleField(SIGMA, DoubleValidatorFactory.positiveNonZero(), DEFAULT_SIGMA);
+        size = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 11);
+        sigma = parameters.createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
     }
 
     @Override
@@ -38,8 +36,8 @@ public class GaussianFilterUI extends IFilterUI {
     public JPanel getOptionsPanel() {
         JTextField sizeTextField = new JTextField("", 20);
         JTextField sigmaTextField = new JTextField("", 20);
-        parameters.registerComponent(SIZE, sizeTextField);
-        parameters.registerComponent(SIGMA, sigmaTextField);
+        parameters.registerComponent(size, sizeTextField);
+        parameters.registerComponent(sigma, sigmaTextField);
 
         //
         JPanel panel = new JPanel(new GridBagLayout());
@@ -53,6 +51,6 @@ public class GaussianFilterUI extends IFilterUI {
 
     @Override
     public IFilter getImplementation() {
-        return new GaussianFilter(parameters.getInt(SIZE), parameters.getDouble(SIGMA));
+        return new GaussianFilter(size.getValue(), sigma.getValue());
     }
 }

@@ -41,6 +41,9 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
     // -----------------------------------------------------
     
     public void sortTableByColumn(String colname) {
+        if(!columnExists(colname)){
+            return;
+        }
         ArrayIndexComparator cmp = new ArrayIndexComparator(getColumnAsDoubles(colname, Units.UNITLESS));
         Integer indices [] = cmp.createIndexArray();
         Arrays.sort(indices, cmp);
@@ -381,7 +384,7 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
             Molecule mol;
             for(int row = 0, max = getRowCount(); row < max; row++) {
                 mol = getRow(row);
-                if(CameraSetupPlugIn.isEmGain) {
+                if(CameraSetupPlugIn.isIsEmGain()) {
                     paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
                 } else {
                     paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);

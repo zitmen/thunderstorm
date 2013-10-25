@@ -12,12 +12,12 @@ import javax.swing.JRadioButton;
 public class CompoundWaveletFilterUI extends IFilterUI {
 
     private final String name = "Wavelet filter";
-    private transient static final ParameterName.Choice PLANE = new ParameterName.Choice("thirdplane");
+    private transient ParameterName.Choice plane;
     private transient static final String secondPlane = "use 2nd wavelet plane";
     private transient static final String thirdPlane = "use 3rd wavelet plane";
 
     public CompoundWaveletFilterUI() {
-        parameters.createChoice(PLANE, null, secondPlane);
+        plane = parameters.createChoice("thirdplane", null, secondPlane);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class CompoundWaveletFilterUI extends IFilterUI {
         ButtonGroup group = new ButtonGroup();
         group.add(secondPlaneRadio);
         group.add(thirdPlaneRadio);
-        parameters.registerComponent(PLANE, group);
+        parameters.registerComponent(plane, group);
         //
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -51,6 +51,6 @@ public class CompoundWaveletFilterUI extends IFilterUI {
 
     @Override
     public IFilter getImplementation() {
-        return new CompoundWaveletFilter(thirdPlane.equals(parameters.getChoice(PLANE)));
+        return new CompoundWaveletFilter(thirdPlane.equals(plane.getValue()));
     }
 }

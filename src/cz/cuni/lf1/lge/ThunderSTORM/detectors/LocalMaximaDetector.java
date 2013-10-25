@@ -27,8 +27,8 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
     private transient float thresholdValue;
     private transient final static String DEFAULT_THRESHOLD = "std(Wave.F1)";
     private transient final static int DEFAULT_CONNECTIVITY = Graph.CONNECTIVITY_8;
-    private transient final static ParameterName.String THRESHOLD = new ParameterName.String("threshold");
-    private transient final static ParameterName.Choice CONNECTIVITY = new ParameterName.Choice("connectivity");
+    private transient ParameterName.String THRESHOLD;
+    private transient ParameterName.Choice CONNECTIVITY;
     private transient final static String con4 = "4-neighbourhood";
     private transient final static String con8 = "8-neighbourhood";
 
@@ -217,8 +217,8 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
         this.connectivity = connectivity;
         this.threshold = threshold;
 
-        parameters.createStringField(THRESHOLD, null, DEFAULT_THRESHOLD);
-        parameters.createChoice(CONNECTIVITY, null, con8);
+        THRESHOLD = parameters.createStringField("threshold", null, DEFAULT_THRESHOLD);
+        CONNECTIVITY = parameters.createChoice("connectivity", null, con8);
     }
 
     @Override
@@ -284,8 +284,8 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
 
     @Override
     public IDetector getImplementation() {
-        threshold = parameters.getString(THRESHOLD);
-        connectivity = con4.equals(parameters.getChoice(CONNECTIVITY)) ? Graph.CONNECTIVITY_4 : Graph.CONNECTIVITY_8;
+        threshold = THRESHOLD.getValue();
+        connectivity = con4.equals(CONNECTIVITY.getValue()) ? Graph.CONNECTIVITY_4 : Graph.CONNECTIVITY_8;
         return this;
     }
 

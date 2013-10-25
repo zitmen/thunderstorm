@@ -256,7 +256,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         assert (renderingQueue != null) : "Renderer was not selected!";
         //
         ip.setRoi(roi);
-        FloatProcessor fp = subtract((FloatProcessor) ip.crop().convertToFloat(), (float) CameraSetupPlugIn.offset);
+        FloatProcessor fp = subtract((FloatProcessor) ip.crop().convertToFloat(), (float) CameraSetupPlugIn.getOffset());
         float minVal = min((float[]) fp.getPixels());
         if(minVal < 0) {
             IJ.log("Camera base level is set higher than values in the image!");

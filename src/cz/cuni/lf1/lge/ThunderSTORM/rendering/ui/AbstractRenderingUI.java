@@ -21,32 +21,28 @@ public abstract class AbstractRenderingUI extends IRendererUI {
 
     int sizeX;
     int sizeY;
-    //default values
-    private final static double DEFAULT_MAGNIFICATION = 5;
-    private final static int DEFAULT_REPAINT_FREQUENCY = 50;
-    private static final String DEFAULT_Z_RANGE = "-500:100:500";
-    //parameter names
-    protected static final ParameterName.Double MAGNIFICATION =  new ParameterName.Double("magnification");
-    protected static final ParameterName.Integer REPAINT_FREQUENCY = new ParameterName.Integer("repaint");
-    protected static final ParameterName.Boolean THREE_D = new ParameterName.Boolean("threeD");
-    protected static final ParameterName.String Z_RANGE = new ParameterName.String("zrange");
+    //parameters
+    protected ParameterName.Double magnification;
+    protected ParameterName.Integer repaintFrequency;
+    protected ParameterName.Boolean threeD;
+    protected ParameterName.String zRange;
     protected ParameterTracker.Condition threeDCondition = new ParameterTracker.Condition() {
         @Override
         public boolean isSatisfied() {
-            return parameters.getBoolean(THREE_D);
+            return threeD.getValue();
         }
 
         @Override
         public ParameterName[] dependsOn() {
-            return new ParameterName[]{THREE_D};
+            return new ParameterName[]{threeD};
         }
     };
 
     public AbstractRenderingUI() {
-        parameters.createDoubleField(MAGNIFICATION, DoubleValidatorFactory.positiveNonZero(), DEFAULT_MAGNIFICATION);
-        parameters.createIntField(REPAINT_FREQUENCY, IntegerValidatorFactory.positive(), DEFAULT_REPAINT_FREQUENCY);
-        parameters.createBooleanField(THREE_D, null, false);
-        parameters.createStringField(Z_RANGE, new Validator<String>() {
+        magnification = parameters.createDoubleField("magnification", DoubleValidatorFactory.positiveNonZero(), 5);
+        repaintFrequency = parameters.createIntField("repaint", IntegerValidatorFactory.positive(), 50);
+        threeD = parameters.createBooleanField("threeD", null, false);
+        zRange = parameters.createStringField("zrange", new Validator<String>() {
             @Override
             public void validate(String input) throws ValidatorException {
                 try {
@@ -62,7 +58,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
                     throw new ValidatorException(ex);
                 }
             }
-        }, DEFAULT_Z_RANGE,threeDCondition);
+        }, "-500:100:500", threeDCondition);
     }
 
     public AbstractRenderingUI(int sizeX, int sizeY) {
@@ -79,7 +75,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
 
     @Override
     public int getRepaintFrequency() {
-        return parameters.getInt(REPAINT_FREQUENCY);
+        return repaintFrequency.getValue();
     }
 
     @Override
@@ -87,9 +83,9 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         JPanel panel = new JPanel(new GridBagLayout());
 
         final JTextField resolutionTextField = new JTextField("", 20);
-        parameters.registerComponent(MAGNIFICATION, resolutionTextField);
+        parameters.registerComponent(magnification, resolutionTextField);
         final JTextField repaintFrequencyTextField = new JTextField("", 20);
-        parameters.registerComponent(REPAINT_FREQUENCY, repaintFrequencyTextField);
+        parameters.registerComponent(repaintFrequency, repaintFrequencyTextField);
         panel.add(new JLabel("Magnification:"), GridBagHelper.leftCol());
         panel.add(resolutionTextField, GridBagHelper.rightCol());
 
@@ -98,9 +94,9 @@ public abstract class AbstractRenderingUI extends IRendererUI {
 
         final JLabel zRangeLabel = new JLabel("Z range (from:step:to) [nm]:");
         final JTextField zRangeTextField = new JTextField("", 20);
-        parameters.registerComponent(Z_RANGE, zRangeTextField);
+        parameters.registerComponent(zRange, zRangeTextField);
         final JCheckBox threeDCheckBox = new JCheckBox("", true);
-        parameters.registerComponent(THREE_D, threeDCheckBox);
+        parameters.registerComponent(threeD, threeDCheckBox);
         threeDCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

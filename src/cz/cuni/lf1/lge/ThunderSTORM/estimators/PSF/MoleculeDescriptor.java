@@ -286,7 +286,7 @@ public class MoleculeDescriptor implements Cloneable {
         // return uncertainty in nanometers
         public static double ccdThompson(Molecule molecule) throws Exception {
             double psfSigma2, psfEnergy, bkgStd, pixelSize;
-            pixelSize = CameraSetupPlugIn.pixelSize;
+            pixelSize = CameraSetupPlugIn.getPixelSize();
             if(molecule.hasParam(PSFModel.Params.LABEL_SIGMA)) {    // symmetric
                 psfSigma2 = molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA)) *
                             molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA));
@@ -307,7 +307,7 @@ public class MoleculeDescriptor implements Cloneable {
         // return uncertainty in nanometers
         public static double emccdThompson(Molecule molecule) throws Exception {
             double psfSigma2, psfEnergy, bkgStd, pixelSize;
-            pixelSize = CameraSetupPlugIn.pixelSize;
+            pixelSize = CameraSetupPlugIn.getPixelSize();
             if(molecule.hasParam(PSFModel.Params.LABEL_SIGMA)) {    // symmetric
                 psfSigma2 = molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA)) *
                             molecule.getParamUnits(PSFModel.Params.LABEL_SIGMA).convertTo(Units.NANOMETER, molecule.getParam(PSFModel.Params.LABEL_SIGMA));
@@ -579,7 +579,7 @@ public class MoleculeDescriptor implements Cloneable {
                     if(LABEL_ID.equals(paramName)) {
                         molecule.setParam(paramName, IJResultsTable.getResultsTable().getNewId());
                     } else if(Fitting.LABEL_THOMPSON.equals(paramName)) {
-                        if(CameraSetupPlugIn.isEmGain) {
+                        if(CameraSetupPlugIn.isIsEmGain()) {
                             molecule.setParam(paramName, Units.NANOMETER, Fitting.emccdThompson(molecule));
                         } else {
                             molecule.setParam(paramName, Units.NANOMETER, Fitting.ccdThompson(molecule));

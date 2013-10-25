@@ -194,16 +194,11 @@ class ResultsTableWindow extends GenericTableWindow {
 
     public void showPreview() {
         IJResultsTable rt = IJResultsTable.getResultsTable();
-        if(livePreview) {
+        if(livePreview && !rt.isEmpty()) {
             if(!rt.columnExists(LABEL_X) || !rt.columnExists(LABEL_Y)) {
                 IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X, LABEL_Y, rt.getColumnNames()));
                 return;
             }
-            if(rt.isEmpty()) {
-                IJ.error("Results were empty.");
-                return;
-            }
-            //
             if(previewRenderer == null) {
                 IRendererUI renderer = new ASHRenderingUI();
             ImagePlus analyzedImage = rt.getAnalyzedImage();

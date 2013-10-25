@@ -14,17 +14,14 @@ import javax.swing.JTextField;
 public class DifferenceOfGaussiansFilterUI extends IFilterUI {
 
     private final String name = "Difference of Gaussians";
-    private transient static final int DEFAULT_SIZE = 11;
-    private transient static final double DEFAULT_SIGMA_G1 = 1.6;
-    private transient static final double DEFAULT_SIGMA_G2 = 1;
-    private transient static final ParameterName.Integer SIZE = new ParameterName.Integer("size");
-    private transient static final ParameterName.Double SIGMA_G1 = new ParameterName.Double("sigma1");
-    private transient static final ParameterName.Double SIGMA_G2 = new ParameterName.Double("sigma2");
+    private transient ParameterName.Integer size;
+    private transient ParameterName.Double sigmaG1;
+    private transient ParameterName.Double sigmaG2;
 
     public DifferenceOfGaussiansFilterUI() {
-        parameters.createIntField(SIZE, IntegerValidatorFactory.positiveNonZero(), DEFAULT_SIZE);
-        parameters.createDoubleField(SIGMA_G1, DoubleValidatorFactory.positiveNonZero(), DEFAULT_SIGMA_G1);
-        parameters.createDoubleField(SIGMA_G2, DoubleValidatorFactory.positiveNonZero(), DEFAULT_SIGMA_G2);
+        size = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 11);
+        sigmaG1 = parameters.createDoubleField("sigma1", DoubleValidatorFactory.positiveNonZero(), 1.6);
+        sigmaG2 = parameters.createDoubleField("sigma2", DoubleValidatorFactory.positiveNonZero(), 1);
     }
 
     @Override
@@ -42,9 +39,9 @@ public class DifferenceOfGaussiansFilterUI extends IFilterUI {
         JTextField sizeTextField = new JTextField("", 20);
         JTextField sigma1TextField = new JTextField("", 20);
         JTextField sigma2TextField = new JTextField("", 20);
-        parameters.registerComponent(SIZE, sizeTextField);
-        parameters.registerComponent(SIGMA_G1, sigma1TextField);
-        parameters.registerComponent(SIGMA_G2, sigma2TextField);
+        parameters.registerComponent(size, sizeTextField);
+        parameters.registerComponent(sigmaG1, sigma1TextField);
+        parameters.registerComponent(sigmaG2, sigma2TextField);
         //
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());
@@ -59,6 +56,6 @@ public class DifferenceOfGaussiansFilterUI extends IFilterUI {
 
     @Override
     public IFilter getImplementation() {
-        return new DifferenceOfGaussiansFilter(parameters.getInt(SIZE), parameters.getDouble(SIGMA_G1), parameters.getDouble(SIGMA_G2));
+        return new DifferenceOfGaussiansFilter(size.getValue(), sigmaG1.getValue(), sigmaG2.getValue());
     }
 }

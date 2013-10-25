@@ -181,7 +181,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         imp.setStack(stack);
         Calibration cal = new Calibration();
         cal.setUnit("um");
-        cal.pixelWidth = cal.pixelHeight = Units.NANOMETER.convertTo(Units.MICROMETER, CameraSetupPlugIn.pixelSize);
+        cal.pixelWidth = cal.pixelHeight = Units.NANOMETER.convertTo(Units.MICROMETER, CameraSetupPlugIn.getPixelSize());
         imp.setCalibration(cal);
         imp.show();
         gt.show();
@@ -245,7 +245,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                 stack.addSlice("", local_stack.elementAt(i));
                 for(EmitterModel psf : local_table.elementAt(i)) {
                     psf.molecule.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double)(f+1));
-                    psf.molecule.setParam(PSFModel.Params.LABEL_OFFSET, CameraSetupPlugIn.offset);
+                    psf.molecule.setParam(PSFModel.Params.LABEL_OFFSET, CameraSetupPlugIn.getOffset());
                     psf.molecule.setParam(PSFModel.Params.LABEL_BACKGROUND, bkgstd);
                     gt.addRow(psf.molecule);
                 }

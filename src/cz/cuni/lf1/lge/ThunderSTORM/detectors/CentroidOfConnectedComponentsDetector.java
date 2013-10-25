@@ -32,13 +32,11 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
     private String threshold;
     private boolean useWatershed;
     private transient float thresholdValue;
-    private transient final static String DEFAULT_THRESHOLD = "std(Wave.F1)";
-    private transient final static boolean DEFAULT_USE_WATERSHED = false;
-    private transient final static ParameterName.String THRESHOLD = new ParameterName.String("threshold");
-    private transient final static ParameterName.Boolean USE_WATERSHED = new ParameterName.Boolean("watershed"); 
+    private transient ParameterName.String THRESHOLD;
+    private transient ParameterName.Boolean USE_WATERSHED;
 
     public CentroidOfConnectedComponentsDetector() throws FormulaParserException {
-        this(DEFAULT_THRESHOLD);
+        this("std(Wave.F1)");
     }
 
     /**
@@ -48,8 +46,8 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
      */
     public CentroidOfConnectedComponentsDetector(String threshold) throws FormulaParserException {
         this.threshold = threshold;
-        parameters.createStringField(THRESHOLD, null, DEFAULT_THRESHOLD);
-        parameters.createBooleanField(USE_WATERSHED, null, DEFAULT_USE_WATERSHED);
+        THRESHOLD = parameters.createStringField("threshold", null, "std(Wave.F1)");
+        USE_WATERSHED = parameters.createBooleanField("watershed", null, false);
     }
 
     /**
@@ -117,8 +115,6 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
     protected String getPreferencesPrefix() {
         return super.getPreferencesPrefix() + ".centroid";
     }
-    
-    
 
     @Override
     public JPanel getOptionsPanel() {
@@ -132,16 +128,15 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
         panel.add(thrTextField, GridBagHelper.rightCol());
         panel.add(new JLabel("Watershed segmentation:"), GridBagHelper.leftCol());
         panel.add(watershedCheckBox, GridBagHelper.rightCol());
-        
+
         parameters.loadPrefs();
         return panel;
     }
 
-
     @Override
     public IDetector getImplementation() {
-        threshold = parameters.getString(THRESHOLD);
-        useWatershed = parameters.getBoolean(USE_WATERSHED);
+        threshold = THRESHOLD.getValue();
+        useWatershed = USE_WATERSHED.getValue();
         return this;
     }
 

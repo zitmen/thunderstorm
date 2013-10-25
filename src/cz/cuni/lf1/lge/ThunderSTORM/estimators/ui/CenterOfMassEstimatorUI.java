@@ -14,11 +14,10 @@ import javax.swing.JTextField;
 public class CenterOfMassEstimatorUI extends IEstimatorUI {
 
     private final String name = "Centroid of local neighborhood";
-    private transient static final int DEFAULT_FITRAD = 3;
-    private transient static final ParameterName.Integer FITRAD = new ParameterName.Integer("fitradius");
+    private transient ParameterName.Integer FITRAD;
 
     public CenterOfMassEstimatorUI() {
-        parameters.createIntField(FITRAD, IntegerValidatorFactory.positiveNonZero(), DEFAULT_FITRAD);
+        FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
     }
 
     @Override
@@ -41,6 +40,6 @@ public class CenterOfMassEstimatorUI extends IEstimatorUI {
 
     @Override
     public IEstimator getImplementation() {
-        return new MultipleLocationsImageFitting(parameters.getInt(FITRAD), new CentroidFitter());
+        return new MultipleLocationsImageFitting(FITRAD.getValue(), new CentroidFitter());
     }
 }

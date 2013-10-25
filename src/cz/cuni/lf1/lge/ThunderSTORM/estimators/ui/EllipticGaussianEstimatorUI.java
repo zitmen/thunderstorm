@@ -7,14 +7,11 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.METHOD;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
 import ij.IJ;
-import ij.Macro;
 import ij.Prefs;
-import ij.plugin.frame.Recorder;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -32,11 +29,11 @@ import org.yaml.snakeyaml.Yaml;
 public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
 
     CylindricalLensCalibration calibration;
-    protected transient static final ParameterName.String CALIBRATION_PATH = new ParameterName.String("calibrationpath");
+    protected transient ParameterName.String CALIBRATION_PATH;
 
     public EllipticGaussianEstimatorUI() {
         this.name = "PSF: Elliptical Gaussian (3D astigmatism)";
-        parameters.createStringField(CALIBRATION_PATH, StringValidatorFactory.fileExists(), "");
+        CALIBRATION_PATH = parameters.createStringField("calibrationpath", StringValidatorFactory.fileExists(), "");
     }
 
     @Override
@@ -88,9 +85,9 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
 
     @Override
     public IEstimator getImplementation() {
-        String method = parameters.getChoice(METHOD);
-        double sigma = parameters.getDouble(SIGMA);
-        int fitradius = parameters.getInt(FITRAD);
+        String method = METHOD.getValue();
+        double sigma = SIGMA.getValue();
+        int fitradius = FITRAD.getValue();
         if(LSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
                 IEstimator mfa = crowdedField.getLSQImplementation(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())), sigma, fitradius);

@@ -7,7 +7,6 @@ import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.Locale;
 import javax.swing.SwingUtilities;
 
 /**

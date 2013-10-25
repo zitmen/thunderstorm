@@ -15,15 +15,14 @@ import javax.swing.JTextField;
 public class MedianFilterUI extends IFilterUI {
 
     private final String name = "Median filter";
-    private transient static final int DEFAULT_SIZE = 3;
-    private transient static final ParameterName.Integer SIZE = new ParameterName.Integer("size");
-    private transient static final ParameterName.Choice PATTERN = new ParameterName.Choice("pattern");
+    private transient ParameterName.Integer size;
+    private transient ParameterName.Choice pattern;
     private transient static final String box = "box";
     private transient static final String cross = "cross";
 
     public MedianFilterUI() {
-        parameters.createIntField(SIZE, IntegerValidatorFactory.positiveNonZero(), DEFAULT_SIZE);
-        parameters.createChoice(PATTERN, null, box);
+        size = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 3);
+        pattern = parameters.createChoice("pattern", null, box);
     }
 
     @Override
@@ -44,8 +43,8 @@ public class MedianFilterUI extends IFilterUI {
         btnGroup.add(patternBoxRadioButton);
         btnGroup.add(patternCrossRadioButton);
         JTextField sizeTextField = new JTextField("", 20);
-        parameters.registerComponent(SIZE, sizeTextField);
-        parameters.registerComponent(PATTERN, btnGroup);
+        parameters.registerComponent(size, sizeTextField);
+        parameters.registerComponent(pattern, btnGroup);
         //
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());
@@ -60,6 +59,6 @@ public class MedianFilterUI extends IFilterUI {
 
     @Override
     public IFilter getImplementation() {
-        return new MedianFilter(box.equals(parameters.getChoice(PATTERN)) ? MedianFilter.BOX : MedianFilter.CROSS, parameters.getInt(SIZE));
+        return new MedianFilter(box.equals(pattern.getValue()) ? MedianFilter.BOX : MedianFilter.CROSS, size.getValue());
     }
 }

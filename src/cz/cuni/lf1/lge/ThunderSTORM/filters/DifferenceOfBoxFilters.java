@@ -23,7 +23,7 @@ public final class DifferenceOfBoxFilters implements IFilter {
     private BoxFilter box1, box2;
 
     public DifferenceOfBoxFilters() {
-        this(DifferenceOfBoxFiltersUI.DEFAULT_SIZE1, DifferenceOfBoxFiltersUI.DEFAULT_SIZE2);
+        this(3, 6);
     }
 
     /**

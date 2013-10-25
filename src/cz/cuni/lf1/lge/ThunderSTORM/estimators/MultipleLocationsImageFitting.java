@@ -154,7 +154,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
         try {
             String paramName = MoleculeDescriptor.Fitting.LABEL_THOMPSON;
             double paramValue;
-            if(CameraSetupPlugIn.isEmGain) {
+            if(CameraSetupPlugIn.isIsEmGain()) {
                 paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
             } else {
                 paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
