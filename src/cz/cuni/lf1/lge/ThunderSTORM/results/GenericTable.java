@@ -36,6 +36,10 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
         tableWindow.getView().getColumnModel().getColumn(columnIndex).setPreferredWidth(width);
     }
     
+    public boolean isForceHidden() {
+        return forceHidden;
+    }
+    
     public void forceShow() {
         forceHidden = false;
         tableWindow.show();
