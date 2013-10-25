@@ -12,6 +12,8 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFact
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -79,12 +81,14 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
         panel.add(avgTextField, GridBagHelper.rightCol());
         //dx
         JCheckBox forceDXCheckBox = new JCheckBox("Force", false);
+        forceDXCheckBox.setBorder(BorderFactory.createEmptyBorder());
         parameters.registerComponent(forceDx, forceDXCheckBox);
         JPanel latUncertaintyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         panel.add(new JLabel("Lateral uncertainty [nm]:"), GridBagHelper.leftCol());
         JTextField dxTextField = new JTextField("", 10);
         parameters.registerComponent(dx, dxTextField);
         latUncertaintyPanel.add(dxTextField);
+        latUncertaintyPanel.add(Box.createHorizontalStrut(5));
         latUncertaintyPanel.add(forceDXCheckBox);
         panel.add(latUncertaintyPanel, GridBagHelper.rightCol());
         //dz

@@ -267,6 +267,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             }
             IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
             IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
+            GUI.checkIJEscapePressed();
         } catch (StoppedByUserException ie){
             IJResultsTable rt = IJResultsTable.getResultsTable();
             synchronized(rt) {
