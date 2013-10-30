@@ -32,10 +32,6 @@ import org.yaml.snakeyaml.Yaml;
 import ij.gui.Roi;
 import java.awt.Rectangle;
 
-/**
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
- */
 public class CylindricalLensCalibrationPlugin implements PlugIn {
 
     double angle;
@@ -210,7 +206,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             double[] x = Math.add(p.getXAsArray(), roiBounds.x);
             double[] y = Math.add(p.getYAsArray(), roiBounds.y);
             for(int i = 0; i < frame.length; i++) {
-                RenderingOverlay.showPointsInImageSlice(imp, new double[]{x[i]}, new double[]{y[i]}, (int) frame[i], Color.BLUE, RenderingOverlay.MARKER_CROSS);
+                RenderingOverlay.showPointsInImage(imp, new double[]{x[i]}, new double[]{y[i]}, (int) frame[i], Color.BLUE, RenderingOverlay.MARKER_CROSS);
             }
         }
 

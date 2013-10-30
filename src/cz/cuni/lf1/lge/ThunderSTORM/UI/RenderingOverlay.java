@@ -8,12 +8,17 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import ij.ImagePlus;
-import ij.gui.EllipseRoi;
-import ij.gui.Line;
 import ij.gui.Overlay;
 import ij.gui.Roi;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import org.apache.commons.collections.primitives.ArrayFloatList;
+import org.apache.commons.collections.primitives.FloatList;
 
 /**
  * Overlay for preview of results.
@@ -69,7 +74,7 @@ public class RenderingOverlay {
      * @param markerType one of the predefined marker-types
      * ({@code MARKER_CIRCLE} or {@code MARKER_CROSS})
      */
-    public static void showPointsInImageSlice(ImagePlus imp, double[] xCoord, double[] yCoord, int slice, Color c, int markerType) {
+    public static void showPointsInImage(ImagePlus imp, double[] xCoord, double[] yCoord, int slice, Color c, int markerType) {
         assert (xCoord.length == yCoord.length);
 
         Overlay overlay = imp.getOverlay();
@@ -81,37 +86,61 @@ public class RenderingOverlay {
     }
 
     public static Overlay addPointsToOverlay(double[] xCoord, double[] yCoord, Overlay overlay, int slice, Color c, int markerType) {
-        switch(markerType) {
-            case MARKER_CROSS:
-                for(int i = 0; i < xCoord.length; i++) {
-                    drawCross(i + 1, xCoord[i], yCoord[i], slice, overlay, c);
-                }
-                break;
-
-            case MARKER_CIRCLE:
-                for(int i = 0; i < xCoord.length; i++) {
-                    drawCircle(i + 1, xCoord[i], yCoord[i], slice, overlay, c, 2.5);
-                }
-                break;
-
-            default:
-                throw new IllegalArgumentException("Unknown marker type!");
+        assert xCoord.length == yCoord.length;
+        float[] xs = new float[xCoord.length];
+        float[] ys = new float[yCoord.length];
+        for(int i = 0; i < xCoord.length; i++) {
+            xs[i] = (float) xCoord[i];
+            ys[i] = (float) yCoord[i];
         }
+        overlay.add(new MultiplePointsRoi(xs, ys, slice, c, markerType));
         return overlay;
     }
-    
+
+    /**
+     * Shows all molecule locations from table in image overlay. Compound
+     * molecules are expanded.
+     *
+     * @param rt
+     * @param imp
+     * @param roi
+     * @param c
+     * @param markerType
+     */
     public static void showPointsInImage(IJResultsTable rt, ImagePlus imp, Rectangle roi, Color c, int markerType) {
-        if(rt.isEmpty()) return;
-        if(!rt.columnExists(LABEL_X) || !rt.columnExists(LABEL_Y)) return;
-        //
+        if(rt.isEmpty()) {
+            return;
+        }
+        if(!rt.columnExists(LABEL_X) || !rt.columnExists(LABEL_Y)) {
+            return;
+        }
+        List<Molecule> mols = new ArrayList<Molecule>(rt.getRowCount());
+        for(int r = 0, rows = rt.getRowCount(); r < rows; r++) {
+            Molecule m = rt.getRow(r);
+            mols.add(m);
+            if(!m.isSingleMolecule()) {
+                mols.addAll(m.getDetections());
+            }
+        }
+        showPointsInImage(mols.toArray(new Molecule[0]), imp, roi, c, markerType);
+    }
+
+    /**
+     * Shows molecule locations in image overlay. Compound molecules are not
+     * expanded - only the parent molecule is shown.
+     *
+     * @param mols
+     * @param imp
+     * @param roi
+     * @param c
+     * @param markerType
+     */
+    public static void showPointsInImage(Molecule[] mols, ImagePlus imp, Rectangle roi, Color c, int markerType) {
         Overlay overlay = imp.getOverlay();
         if(overlay == null) {
             overlay = new Overlay();
         }
-        Molecule mol;
-        Units unitsX = rt.getColumnUnits(PSFModel.Params.LABEL_X);
-        Units unitsY = rt.getColumnUnits(PSFModel.Params.LABEL_Y);
-        Units target = MoleculeDescriptor.Units.PIXEL;
+
         if(roi == null) {
             Roi r = imp.getRoi();
             if(r != null) {
@@ -120,60 +149,99 @@ public class RenderingOverlay {
                 roi = new Rectangle(0, 0, imp.getWidth(), imp.getHeight());
             }
         }
-        switch(markerType) {
-            case MARKER_CROSS:
-                for(int r = 0, rows = rt.getRowCount(); r < rows; r++) {
-                    mol = rt.getRow(r);
-                    for(int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME), max = frame + mol.getDetectionsCount(); frame < max; frame++) {
-                        drawCross((int)mol.getParam(MoleculeDescriptor.LABEL_ID),
-                                roi.x + unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
-                                roi.y + unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
-                                frame, overlay, c);
-                    }
-                }
-                break;
 
-            case MARKER_CIRCLE:
-                for(int r = 0, rows = rt.getRowCount(); r < rows; r++) {
-                    mol = rt.getRow(r);
-                    for(int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME), max = frame + mol.getDetectionsCount(); frame < max; frame++) {
-                        drawCircle((int)mol.getParam(MoleculeDescriptor.LABEL_ID),
-                                roi.x + unitsX.convertTo(target, mol.getParam(PSFModel.Params.LABEL_X)),
-                                roi.y + unitsY.convertTo(target, mol.getParam(PSFModel.Params.LABEL_Y)),
-                                (int)frame, overlay, c, 2.5);
-                    }
+        Arrays.sort(mols, new Comparator<Molecule>() {
+            @Override
+            public int compare(Molecule o1, Molecule o2) {
+                return Double.compare(o1.getParam(MoleculeDescriptor.LABEL_FRAME), o2.getParam(MoleculeDescriptor.LABEL_FRAME));
+            }
+        });
+        int oldFrame = -1;
+        FloatList xs = new ArrayFloatList();
+        FloatList ys = new ArrayFloatList();
+        for(Molecule mol : mols) {
+            int frame = (int) mol.getParam(MoleculeDescriptor.LABEL_FRAME);
+            if(frame != oldFrame) {
+                if(xs.size() > 0) {
+                    overlay.add(new MultiplePointsRoi(xs.toArray(), ys.toArray(), oldFrame, c, markerType));
+                    xs.clear();
+                    ys.clear();
                 }
-                break;
-
-            default:
-                throw new IllegalArgumentException("Unknown marker type!");
+            }
+            xs.add((float) (roi.x + mol.getParam(PSFModel.Params.LABEL_X, Units.PIXEL)));
+            ys.add((float) (roi.y + mol.getParam(PSFModel.Params.LABEL_Y, Units.PIXEL)));
+            oldFrame = frame;
         }
+        overlay.add(new MultiplePointsRoi(xs.toArray(), ys.toArray(), oldFrame, c, markerType));
         imp.setOverlay(overlay);
     }
 
-    public static void drawCross(int id, double xCoord, double yCoord, int slice, Overlay overlay, Color c) {
-        double halfSize = 1;
-        Line horizontalLine = new Line(xCoord - halfSize, yCoord, xCoord + halfSize, yCoord);
-        Line verticalLine = new Line(xCoord, yCoord - halfSize, xCoord, yCoord + halfSize);
-        if(c != null) {
-            verticalLine.setStrokeColor(c);
-            horizontalLine.setStrokeColor(c);
-        }
-        verticalLine.setName(Integer.toString(id));
-        horizontalLine.setName("");
-        horizontalLine.setPosition(slice);
-        verticalLine.setPosition(slice);
-        overlay.add(horizontalLine);
-        overlay.add(verticalLine);
-    }
+    static class MultiplePointsRoi extends Roi {
 
-    public static void drawCircle(int id, double xCoord, double yCoord, int slice, Overlay overlay, Color c, double radius) {
-        EllipseRoi ellipse = new EllipseRoi(xCoord - radius, yCoord, xCoord + radius, yCoord, 1);
-        ellipse.setName(Integer.toString(id));
-        ellipse.setPosition(slice);
-        if(c != null) {
-            ellipse.setStrokeColor(c);
+        float[] xs;
+        float[] ys;
+        int markerType;
+
+        public MultiplePointsRoi(float[] xs, float[] ys, int slice, Color c, int markerType) {
+            super(0, 0, null);
+            assert xs.length == ys.length;
+            this.xs = xs;
+            this.ys = ys;
+            setPosition(slice);
+            fillColor = c;
+            this.markerType = markerType;
         }
-        overlay.add(ellipse);
+
+        /**
+         * Draws the points on the image.
+         */
+        @Override
+        public void draw(Graphics g) {
+            for(int i = 0; i < xs.length; i++) {
+                //x,y added to coords because of the WTF way of flattening overlay in newer versions of ImageJ(1.45s works fine without it)
+                //x,y is set to zeros in constructors, but imageJ sets it to (width, height) while flattening the overlay to signal that the roi should not be painted (the roi is painted outside the image)
+                int x = getPolygon().xpoints[0];
+                int y = getPolygon().ypoints[0];
+                switch(markerType) {
+                    case MARKER_CIRCLE:
+                        drawCircle(g, screenXD(xs[i] + x), screenYD(ys[i] + y));
+                        break;
+                    case MARKER_CROSS:
+                        drawCross(g, screenXD(xs[i] + x), screenYD(ys[i] + y));
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown marker type!");
+                }
+            }
+            //showStatus();
+            if(updateFullWindow) {
+                updateFullWindow = false;
+                imp.draw();
+            }
+        }
+
+        void drawCross(Graphics g, int x, int y) {
+            double magnification = getMagnification();
+            int halfSize = (int) Math.ceil(1 * magnification);
+            g.setColor(fillColor != null ? fillColor : Color.white);
+            g.drawLine(x - halfSize, y, x + halfSize, y);
+            g.drawLine(x, y - halfSize, x, y + halfSize);
+        }
+
+        void drawCircle(Graphics g, int x, int y) {
+            double magnification = getMagnification();
+            int halfSize = (int) Math.ceil(1 * magnification);
+            g.setColor(fillColor != null ? fillColor : Color.white);
+            g.drawOval(x - halfSize, y - halfSize, 2 * halfSize, 2 * halfSize);
+        }
+
+        @Override
+        public MultiplePointsRoi clone() {
+            MultiplePointsRoi r = (MultiplePointsRoi) super.clone();
+            r.markerType = markerType;
+            r.xs = xs.clone();
+            r.ys = ys.clone();
+            return r;
+        }
     }
 }

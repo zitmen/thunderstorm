@@ -3,18 +3,16 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import ij.IJ;
-import ij.gui.Overlay;
-import ij.gui.Roi;
+import ij.ImagePlus;
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -83,47 +81,39 @@ final class TableRowsPopUpMenu implements ActionListener {
     }
 
     private void highlightMolecules() {
-        if(rt.getAnalyzedImage() != null) {
-            rt.getAnalyzedImage().setOverlay(null);
+        ImagePlus imp = rt.getAnalyzedImage();
+        if(imp != null) {
+            IJ.showStatus("Building new overlay...");
+            imp.setOverlay(null);
             //
             int[] rows = jtable.getSelectedRows();
             HashSet<Integer> rowIndices = new HashSet<Integer>();
             for(int r = 0; r < rows.length; r++) {
                 rowIndices.add(jtable.convertRowIndexToModel(rows[r]));
             }
-            //
-            Overlay overlay = new Overlay();
-            Rectangle rect;
-            Roi roi = rt.getAnalyzedImage().getRoi();
-            if(roi != null) {
-                rect = roi.getBounds();
-            } else {
-                rect = new Rectangle(0, 0, rt.getAnalyzedImage().getWidth(), rt.getAnalyzedImage().getHeight());
-            }
-            Units pixels = MoleculeDescriptor.Units.PIXEL;
-            Units unitsX = rt.getColumnUnits(PSFModel.Params.LABEL_X);
-            Units unitsY = rt.getColumnUnits(PSFModel.Params.LABEL_Y);
-            IJ.showStatus("Building new overlay...");
+            List<Molecule> selectedMolecules = new ArrayList<Molecule>();
+            List<Molecule> notSelectedMolecules = new ArrayList<Molecule>();
+
             for(int r = 0, rm = rt.getRowCount(); r < rm; r++) {
-                IJ.showProgress((double) r / (double) rm);
-                int id = rt.getValue(r, MoleculeDescriptor.LABEL_ID).intValue();
-                double xCoord = rect.x + unitsX.convertTo(pixels, rt.getValue(r, PSFModel.Params.LABEL_X).doubleValue());
-                double yCoord = rect.y + unitsY.convertTo(pixels, rt.getValue(r, PSFModel.Params.LABEL_Y).doubleValue());
-                int slice = rt.getValue(r, MoleculeDescriptor.LABEL_FRAME).intValue();
+                Molecule mol = rt.getRow(r);
                 if(rowIndices.contains(r)) {
-                    for(int frame = slice, max = slice + rt.getRow(r).getDetectionsCount(); frame < max; frame++) {
-                        RenderingOverlay.drawCircle(id, xCoord, yCoord, frame, overlay, Color.GREEN, 2.5);
+                    selectedMolecules.add(mol);
+                    if(!mol.isSingleMolecule()) {
+                        selectedMolecules.addAll(mol.getDetections());
                     }
                 } else {
-                    for(int frame = slice, max = slice + rt.getRow(r).getDetectionsCount(); frame < max; frame++) {
-                        RenderingOverlay.drawCross(id, xCoord, yCoord, frame, overlay, Color.RED);
+                    notSelectedMolecules.add(mol);
+                    if(!mol.isSingleMolecule()) {
+                        notSelectedMolecules.addAll(mol.getDetections());
                     }
                 }
             }
+
+            RenderingOverlay.showPointsInImage(selectedMolecules.toArray(new Molecule[0]), imp, null, Color.GREEN, RenderingOverlay.MARKER_CIRCLE);
+            RenderingOverlay.showPointsInImage(notSelectedMolecules.toArray(new Molecule[0]), imp, null, Color.RED, RenderingOverlay.MARKER_CROSS);
+            //
             IJ.showProgress(1.0);
             IJ.showStatus("");
-            //
-            rt.getAnalyzedImage().setOverlay(overlay);
         }
     }
 

@@ -168,7 +168,7 @@ public class ResultsDriftCorrection {
         double[] binDriftsX = driftCorrection.getBinDriftX();
         double[] binDriftsY = driftCorrection.getBinDriftY();
         for(int i = 1; i < binDriftsX.length; i++) {
-            RenderingOverlay.showPointsInImageSlice(imp, new double[]{-binDriftsX[i] * driftCorrection.getMagnification() + imp.getWidth() / 2 + 0.5}, new double[]{-binDriftsY[i]*driftCorrection.getMagnification() + imp.getHeight() / 2 + 0.5}, i, Color.red, RenderingOverlay.MARKER_CROSS);
+            RenderingOverlay.showPointsInImage(imp, new double[]{-binDriftsX[i] * driftCorrection.getMagnification() + imp.getWidth() / 2 + 0.5}, new double[]{-binDriftsY[i]*driftCorrection.getMagnification() + imp.getHeight() / 2 + 0.5}, i, Color.red, RenderingOverlay.MARKER_CROSS);
         }
         imp.show();
     }
