@@ -126,16 +126,27 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     }
 
     private void saveToFile(String path, PolynomialCalibration calibration) throws IOException {
-        Yaml yaml = new Yaml();
-        yaml.dump(calibration, new FileWriter(path));
-        IJ.showStatus("Calibration file saved to " + path);
+        FileWriter fw = null;
+        try {
+            Yaml yaml = new Yaml();
+            fw = new FileWriter(path);
+            yaml.dump(calibration, fw);
+            IJ.showStatus("Calibration file saved to " + path);
+        } catch(IOException e) {
+            throw e;
+        } finally {
+            if(fw != null) {
+                fw.close();
+            }
+        }
+
     }
 
     private void drawSigmaPlots(List<QuadraticFunction> sigma1Quadratics, List<QuadraticFunction> sigma2Quadratics,
             QuadraticFunction sigma1param, QuadraticFunction sigma2param,
             double[] allFrames, double[] allSigma1s, double[] allSigma2s) {
-        
-        Plot plot = new Plot("Sigma", "z[slices]", "sigma", (float[])null, (float[])null);
+
+        Plot plot = new Plot("Sigma", "z[slices]", "sigma", (float[]) null, (float[]) null);
         plot.setSize(1024, 768);
         //range
         int range = imp.getStackSize() / 2;
