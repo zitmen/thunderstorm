@@ -2,6 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import ij.process.FloatProcessor;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.pow;
+import ij.process.ByteProcessor;
+import ij.process.ImageStatistics;
 import java.util.Arrays;
 
 /**
@@ -19,6 +21,16 @@ public class ImageProcessor {
         float [] matrix = new float[height*width];
         Arrays.fill(matrix, 0f);
         return new FloatProcessor(width, height, matrix, null);
+    }
+    
+    public static ByteProcessor convertFloatToByte(FloatProcessor fp) {
+        ImageStatistics stats = fp.getStatistics();
+        FloatProcessor tmp = subtract(fp, (float)stats.min);
+        if((stats.max - stats.min) > 0.0) {
+            tmp = divide(tmp, (float)(stats.max - stats.min));
+        }
+        ByteProcessor bp = (ByteProcessor)tmp.convertToByte(true);
+        return (ByteProcessor)tmp.convertToByte(true);
     }
 
     /**

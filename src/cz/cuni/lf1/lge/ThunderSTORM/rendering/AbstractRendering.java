@@ -1,12 +1,14 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.convertFloatToByte;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import static java.lang.Math.ceil;
@@ -29,6 +31,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     protected double zFrom, zTo, zStep;
     protected int zSlices;
     protected boolean threeDimensions;
+    protected boolean colorizeZ;
     protected ImageProcessor[] slices;
     protected ImagePlus image;
     private ImageStack stack;
@@ -48,6 +51,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         private double zFrom = Double.NEGATIVE_INFINITY, zTo = Double.POSITIVE_INFINITY, zStep = Double.POSITIVE_INFINITY;
         private int zSlices = 1;
         private boolean threeDimensions = false;
+        private boolean colorizeZ = false;
 
         /**
          * Sets the desired resolution of the final image. In localization units
@@ -141,6 +145,11 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             threeDimensions = true;
             return (BuilderType) this;
         }
+        
+        public BuilderType colorizeZ(boolean colorize) {
+            this.colorizeZ = colorize;
+            return (BuilderType) this;
+        }
 
         protected void validate() {
             if(!roiWasSet && !sizeWasSet) {
@@ -198,6 +207,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         this.zStep = builder.zStep;
         this.zTo = builder.zTo;
         this.threeDimensions = builder.threeDimensions;
+        this.colorizeZ = builder.colorizeZ;
         slices = new ImageProcessor[zSlices];
         stack = new ImageStack(imSizeX, imSizeY);
         for(int i = 0; i < zSlices; i++) {
@@ -243,6 +253,22 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
 
     @Override
     public ImagePlus getRenderedImage() {
+        if(colorizeZ) {
+            int w = image.getWidth(), h = image.getHeight(), imsize = w * h;
+            byte [] H = new byte[imsize];
+            byte [] S = new byte[imsize];
+            byte [] B;
+            Arrays.fill(S, (byte)255);
+            ImageStack clr_stack = new ImageStack(w, h);
+            for(int z = 0; z < slices.length; z++) {
+                B = (byte[])convertFloatToByte((FloatProcessor)slices[z]).getPixels();
+                Arrays.fill(H, (byte)(255.0 / (double)slices.length * (double)z));
+                ColorProcessor clr = new ColorProcessor(w, h);
+                clr.setHSB(H, S, B);
+                clr_stack.addSlice(stack.getSliceLabel(z+1), clr);
+            }
+            return new ImagePlus(getRendererName(), clr_stack);
+        }
         return image;
     }
 

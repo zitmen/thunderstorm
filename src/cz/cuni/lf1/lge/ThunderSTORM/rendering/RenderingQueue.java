@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import ij.ImagePlus;
+import ij.ImageStack;
 import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -108,18 +109,28 @@ public class RenderingQueue {
         public void run() {
             renderedImage.show();
             if(renderedImage.isVisible()) {
-                double upperRange = findQuantileHisto(renderedImage, 0.99);
-                //IJ.log("upper image range: " + upperRange);
-                renderedImage.setDisplayRange(0, upperRange);
-                renderedImage.updateAndDraw();
+                if(!renderedImage.getStack().isHSB()) {
+                    double upperRange = findQuantileHisto(renderedImage, 0.99);
+                    //IJ.log("upper image range: " + upperRange);
+                    renderedImage.setDisplayRange(0, upperRange);
+                    renderedImage.updateAndDraw();
+                }
             }
         }
-
+        /*
+        private static Object [] getFloatImageArray(ImagePlus imp) {
+            ImageStack stack = imp.getStack();
+            ImageStack f_stack = new ImageStack(imp.getWidth(), imp.getHeight());
+            for(int z = 0, zm = stack.getSize(); z < zm; z++) {
+                f_stack.addSlice(null, stack.getProcessor(z+1).convertToFloat());
+            }
+            return new ImagePlus(null, f_stack).getStack().getImageArray();
+        }
+        */
         private static double findMaxStackValue(ImagePlus imp) {
-            Object[] stack = imp.getStack().getImageArray();
+            Object[] stack = imp.getStack().getImageArray();//getFloatImageArray(imp);
             double max = 0;
             for(int i = 0; i < stack.length; i++) {
-                //TODO: accept other than float image
                 float[] pixels = (float[]) stack[i];
                 if(pixels != null) {
                     for(int j = 0; j < pixels.length; j++) {
@@ -141,7 +152,7 @@ public class RenderingQueue {
             int nBins = 1000;
             double binSize = max / nBins;
             int[] binCounts = new int[nBins + 1];
-            Object[] stack = imp.getStack().getImageArray();
+            Object[] stack = imp.getStack().getImageArray();//getFloatImageArray(imp);
 
             int totalNonZeroPixels = 0;
             for(int i = 0; i < stack.length; i++) {
