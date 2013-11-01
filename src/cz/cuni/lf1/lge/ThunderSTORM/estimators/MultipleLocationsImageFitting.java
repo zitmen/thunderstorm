@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.ThompsonNotApplicableException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 import java.util.Vector;
@@ -160,7 +161,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
                 paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
             }
             mol.addParam(paramName, MoleculeDescriptor.Units.NANOMETER, paramValue);
-        } catch(Exception e) {
+        } catch(ThompsonNotApplicableException e) {
             // ignore...PSF does not fit all the required parameters
         }
     }

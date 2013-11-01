@@ -3,8 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.LABEL_THOMPSON;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.FloatProcessor;
@@ -222,22 +221,14 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             return;
         }
         MoleculeDescriptor descriptor = fits.get(0).descriptor;
-        Units unitsDX = null;
-        int dxIndex = -1;
-        if(!forceDefaultDX) {
-            dxIndex = descriptor.getParamIndex(MoleculeDescriptor.Fitting.LABEL_THOMPSON);
-            unitsDX = descriptor.units.elementAt(descriptor.getParamColumn(MoleculeDescriptor.Fitting.LABEL_THOMPSON));
-        }
-        Units unitsX = descriptor.units.elementAt(descriptor.getParamColumn(PSFModel.Params.LABEL_X));
-        Units unitsY = descriptor.units.elementAt(descriptor.getParamColumn(PSFModel.Params.LABEL_Y));
+        boolean useDefaultDX = forceDefaultDX || !descriptor.hasParam(LABEL_THOMPSON);
 
         for(int i = 0, im = fits.size(); i < im; i++) {
             Molecule fit = fits.elementAt(i);
-            double zVal = fit.hasParam(PSFModel.Params.LABEL_Z) ? fit.getParam(PSFModel.Params.LABEL_Z) : 0;
-            double dxVal = dxIndex < 0 ? defaultDX : unitsDX.convertTo(PIXEL, fit.getParamAt(dxIndex));
-
+            double zVal = fit.getZ();
+            double dxVal = useDefaultDX ? defaultDX : fit.getParam(LABEL_THOMPSON, PIXEL);
             //
-            drawPoint(unitsX.convertTo(PIXEL, fit.getX()), unitsY.convertTo(PIXEL, fit.getY()), zVal, dxVal);
+            drawPoint(fit.getX(PIXEL), fit.getY(PIXEL), zVal, dxVal);
         }
     }
 
