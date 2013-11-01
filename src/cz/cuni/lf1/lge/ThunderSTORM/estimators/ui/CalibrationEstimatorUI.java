@@ -8,12 +8,54 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.LSQ;
+import javax.swing.JPanel;
 
 public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
 
     private final String name = "Elliptic Gaussian w/ angle";
     private double angle;
     private boolean angleWasSet = false;
+
+    public CalibrationEstimatorUI() {
+        super();
+        crowdedField = new CrowdedFieldEstimatorUI() {
+            @Override
+            IEstimator getLSQImplementation(PSFModel psf, double sigma, int fitradius) {
+                return null;
+            }
+
+            @Override
+            IEstimator getMLEImplementation(PSFModel psf, double sigma, int fitradius) {
+                return null;
+            }
+
+            @Override
+            public void resetToDefaults() {
+            }
+
+            @Override
+            public void readMacroOptions(String options) {
+            }
+
+            @Override
+            public void recordOptions() {
+            }
+
+            @Override
+            public void readParameters() {
+            }
+
+            @Override
+            public JPanel getOptionsPanel(JPanel panel) {
+                return panel;
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+        };
+    }
 
     @Override
     public String getName() {

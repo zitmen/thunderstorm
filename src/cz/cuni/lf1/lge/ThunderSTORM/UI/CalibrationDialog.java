@@ -76,17 +76,16 @@ public class CalibrationDialog extends JDialog implements ActionListener {
         pane.add(estimators.getPanel("Estimator: "), componentConstraints);
         pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
 
-        JPanel stageOffsetPanel = new JPanel(new GridBagLayout());
-        stageOffsetPanel.add(new JLabel("Z stage step [nm]:"), GridBagHelper.leftCol());
-        stageStepTextField = new JTextField(Prefs.get("thunderstorm.calibration.step", "10"), 20);
-        stageOffsetPanel.add(stageStepTextField, GridBagHelper.rightCol());
-        pane.add(stageOffsetPanel, componentConstraints);
-
         JPanel aditionalOptions = new JPanel(new GridBagLayout());
-        aditionalOptions.add(new JLabel("Save to: "), GridBagHelper.leftCol());
+        aditionalOptions.add(new JLabel("Z stage step [nm]:"), GridBagHelper.leftCol());
+        stageStepTextField = new JTextField(Prefs.get("thunderstorm.calibration.step", "10"), 20);
+        aditionalOptions.add(stageStepTextField, GridBagHelper.rightCol());
+        
+        aditionalOptions.add(new JLabel("Save to file: "), GridBagHelper.leftCol());
         JPanel calibrationPanel = new JPanel(new BorderLayout());
-        calibrationFileTextField = new JTextField(20);
-        findCalibrationButton = new JButton("Browse...");
+        calibrationFileTextField = new JTextField(15);
+        findCalibrationButton = new JButton("...");
+        findCalibrationButton.setMargin(new Insets(1, 1, 1, 1));
         calibrationPanel.add(calibrationFileTextField, BorderLayout.CENTER);
         calibrationPanel.add(findCalibrationButton, BorderLayout.EAST);
         GridBagConstraints gbc = GridBagHelper.rightCol();
@@ -182,7 +181,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
                 }
             });
 
-        } else if("Browse...".equals(e.getActionCommand())) {
+        } else if("...".equals(e.getActionCommand())) {
             JFileChooser fileChooser = new JFileChooser(IJ.getDirectory("image"));
             int userAction = fileChooser.showSaveDialog(null);
             if(userAction == JFileChooser.APPROVE_OPTION) {
