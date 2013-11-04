@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -126,14 +129,27 @@ Find Maxima
  function.
 \end_layout
 
+\begin_layout Subsection*
+Threshold
+\end_layout
+
 \begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand input
-filename ".threshold.lyx"
+The threshold used for image segmentation can be specified as a fixed number
+ or a formula containing image statistics.
+ See 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Threshold.html}{Threshold}
+\end_layout
 
 \end_inset
 
-
+ for more information.
 \end_layout
 
 \begin_layout Standard
@@ -146,7 +162,7 @@ status open
 \backslash
 renewcommand
 \backslash
-bibname{References}
+refname{References}
 \end_layout
 
 \end_inset

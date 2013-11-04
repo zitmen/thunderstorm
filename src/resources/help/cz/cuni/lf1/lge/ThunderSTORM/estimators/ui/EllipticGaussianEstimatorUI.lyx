@@ -194,264 +194,6 @@ y' & = & \left(x-\theta_{x}\right)\sin\phi+\left(y-\theta_{y}\right)\cos\phi\,.
 \end_layout
 
 \begin_layout Subsection*
-Calibration of the imaging system
-\end_layout
-
-\begin_layout Standard
-Calibration is a procedure which determines the orientation angle 
-\begin_inset Formula $\phi$
-\end_inset
-
- of the imaged ellipsoids, and the relationship between the axial positions
- of molecules and their imaged widths 
-\begin_inset Formula $\sigma_{1},\sigma_{2}$
-\end_inset
-
-.
- We modeled this relationship by a pair of second degree polynomials
-\begin_inset Formula 
-\begin{eqnarray}
-\hat{\sigma}_{1}\left(z\right) & = & a_{1}\left(z-c_{1}\right)^{2}+b_{1}\,,\label{eq:astigmatism_poly1}\\
-\hat{\sigma}_{2}\left(z\right) & = & a_{2}\left(z-c_{2}\right)^{2}+b_{2}\,.\label{eq:astigmatism_poly2}
-\end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The calibration is typically performed using a Z-stack of images of sub-diffract
-ion fluorescent beads.
- We use a sparse sample with about 10 to 50 beads in the image and a Z-stack
- image sequence with an axial range of about 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $2$
-\end_inset
-
- 
-\begin_inset Formula $\upmu$
-\end_inset
-
-m
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
- and a step size of 
-\begin_inset Formula $10$
-\end_inset
-
- nm.
-\end_layout
-
-\begin_layout Subsubsection*
-Determining the orientation angle
-\end_layout
-
-\begin_layout Enumerate
-A sequence of images from a Z-stack is processed slice-by-slice using the
- same methods as during analysis (image denoising, rough localization, PSF
- fitting).
- Images of the beads are fit independently using the elliptical Gaussian
- PSF given by Equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:psfeg"
-
-\end_inset
-
- with 
-\begin_inset Formula $\text{\phi}$
-\end_inset
-
- as a free parameter.
- 
-\end_layout
-
-\begin_layout Enumerate
-Results close to circular are discarded as the angle 
-\begin_inset Formula $\phi$
-\end_inset
-
- cannot be determined.
-\end_layout
-
-\begin_layout Enumerate
-The final orientation angle is calculated as the circular mean of all remaining
- measurements
-\begin_inset Formula 
-\begin{equation}
-\phi=\atantwo\left(\frac{1}{n}\sum_{i=1}^{n}{\sin\varphi_{i}},\,\frac{1}{n}\sum_{i=1}^{n}{\cos\varphi_{i}}\right)\,,
-\end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $\varphi_{i}=4\left(\phi_{i}\bmod\frac{\pi}{2}\right)$
-\end_inset
-
- adjusts the fitted angles 
-\begin_inset Formula $\phi_{i}$
-\end_inset
-
-, and 
-\begin_inset Formula $n$
-\end_inset
-
- is the number of measured beads.
-\end_layout
-
-\begin_layout Subsubsection*
-Ellipticity as a function of an axial position
-\end_layout
-
-\begin_layout Enumerate
-Using the approximate positions of the beads in multiple Z-planes and the
- orientation angle 
-\begin_inset Formula $\phi$
-\end_inset
-
-, both determined in the previous step, the images of the beads are fit
- again using the elliptical Gaussian PSF given by Equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:psfeg"
-
-\end_inset
-
-, but with a fixed angle 
-\begin_inset Formula $\phi$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Enumerate
-To estimate the coefficients 
-\begin_inset Formula $a_{1},b_{1},c_{1}$
-\end_inset
-
- and 
-\begin_inset Formula $a_{2},b_{2},c_{2}$
-\end_inset
-
- in Equations 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:astigmatism_poly1"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:astigmatism_poly2"
-
-\end_inset
-
-, we first fit the pair of polynomials for each bead separately using an
- iterative least-squares algorithm which automatically discards outliers.
-\end_layout
-
-\begin_layout Enumerate
-From the fitted models, we determine a common focal plane of the beads and
- shift the data along the 
-\begin_inset Formula $z$
-\end_inset
-
--axis such that all beads are positioned at the same focal plane.
-\end_layout
-
-\begin_layout Enumerate
-The final coefficients are obtained by fitting the pair of polynomials to
- all shifted data points.
- The 
-\begin_inset Quotes eld
-\end_inset
-
-zero
-\begin_inset Quotes erd
-\end_inset
-
- axial position is given by the intersection of the two polynomials.
-\end_layout
-
-\begin_layout Subsection*
-Estimating axial position
-\end_layout
-
-\begin_layout Standard
-The axial position of a molecule is determined by minimizing the distance
- between the fitted values 
-\begin_inset Formula $\sigma_{1},\sigma_{2}$
-\end_inset
-
- and the calibration curves given by Equations 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:astigmatism_poly1"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:astigmatism_poly2"
-
-\end_inset
-
-, thus by
-\begin_inset Formula 
-\begin{equation}
-\hat{z}=\argmin_{z}\left(\sigma_{1}^{1/2}-\hat{\sigma}_{1}^{1/2}\left(z\right)\right)^{2}+\left(\sigma_{2}^{1/2}-\hat{\sigma}_{2}^{1/2}\left(z\right)\right)^{2}\,.
-\end{equation}
-
-\end_inset
-
-Using the square root of the widths 
-\begin_inset Formula $\sigma$
-\end_inset
-
- slightly improves the localization accuracy 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Huang2008"
-
-\end_inset
-
-.
- The minimization was performed by the conjugate gradient method as implemented
- in the Apache Commons Math library 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Apache"
-
-\end_inset
-
- which was initialized from randomized starting points to help avoid local
- minima.
-\end_layout
-
-\begin_layout Subsection*
 Fitting of model parameters
 \end_layout
 
@@ -495,6 +237,84 @@ href{CrowdedField.html}{crowded field}
 \end_inset
 
  for more information.
+\end_layout
+
+\begin_layout Subsection*
+Estimating axial position
+\end_layout
+
+\begin_layout Standard
+The axial position of a molecule is determined by minimizing the distance
+ between the fitted values 
+\begin_inset Formula $\sigma_{1},\sigma_{2}$
+\end_inset
+
+ and the calibration curves 
+\begin_inset Formula $\hat{\sigma}_{1}\left(z\right),\hat{\sigma}_{2}\left(z\right)$
+\end_inset
+
+, thus by
+\begin_inset Formula 
+\begin{equation}
+\hat{z}=\argmin_{z}\left(\sigma_{1}^{1/2}-\hat{\sigma}_{1}^{1/2}\left(z\right)\right)^{2}+\left(\sigma_{2}^{1/2}-\hat{\sigma}_{2}^{1/2}\left(z\right)\right)^{2}\,.
+\end{equation}
+
+\end_inset
+
+Using the square root of the widths 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ slightly improves the localization accuracy 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Huang2008"
+
+\end_inset
+
+.
+ The minimization was performed by the conjugate gradient method as implemented
+ in the Apache Commons Math library 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Apache"
+
+\end_inset
+
+ which was initialized from randomized starting points to help avoid local
+ minima.
+\end_layout
+
+\begin_layout Subsection*
+Calibration of the imaging system
+\end_layout
+
+\begin_layout Standard
+A file with values of the angle of rotation 
+\begin_inset Formula $\phi$
+\end_inset
+
+ and approximations of the calibration curves 
+\begin_inset Formula $\hat{\sigma}_{1}\left(z\right),\hat{\sigma}_{2}\left(z\right)$
+\end_inset
+
+ is required.
+ It can be created using the Cylindrical lens calibration plugin.
+ See 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{CalibrationEstimatorUI.html}{Astigmatism calibration}
+\end_layout
+
+\end_inset
+
+ for more information.
+ 
 \end_layout
 
 \begin_layout Subsection*

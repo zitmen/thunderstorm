@@ -115,8 +115,10 @@
             <fileset dir="src/resources/help">
                 <include name="**/*.lyx"/>
                 <exclude name="**/.*"/>
+                <depend targetdir="src/resources/help">
+                    <mapper type="glob" from="*.lyx" to="*.html"/>
+                </depend>
             </fileset>
-            <globmapper from="*.lyx" to="*.html"/>
         </apply> 
         
         <apply executable="latexml" failonerror="true" resolveExecutable="true" vmlauncher="false" dest="${doc.root}"> 

@@ -110,19 +110,105 @@ Variables
 Variables are images you can use in your formula, that are obtained during
  the filtering operation.
  There are two variables that are always present:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+arraystretch}{2}
 \end_layout
 
-\begin_layout Description
-I current unfiltered image
+\end_inset
+
+
 \end_layout
 
-\begin_layout Description
-F current filtered image
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+I
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+current unfiltered image
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+F
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+current filtered image
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 Filters can provide more image variables.
  For example wavelet filter provides all the used wavelet planes.
+ See help for individual filters for possible variable names.
 \end_layout
 
 \begin_layout Standard
@@ -176,25 +262,7 @@ Functions can take both an image or a scalar value (where it is meaningfull)
  as an argument.
  Expression that evaluate to an image or scalar value can also be used as
  a function argument.
-\end_layout
-
-\begin_layout Standard
-The supported functions are:
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand{
-\backslash
-arraystretch}{2}
-\end_layout
-
-\end_inset
-
-
+ The supported functions are:
 \end_layout
 
 \begin_layout Standard
@@ -408,7 +476,7 @@ status open
 
 \begin_layout Plain Layout
 
-sub
+abs
 \end_layout
 
 \end_inset
@@ -442,42 +510,181 @@ Operators
 \begin_layout Standard
 Operators can take images or scalars as operands.
  The behaviour changes accordingly.
+ The supported operators are:
 \end_layout
 
 \begin_layout Standard
-The supported operators are:
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
++
 \end_layout
 
-\begin_layout Description
-\begin_inset Formula $+$
 \end_inset
 
- addition, element by element for images
+
 \end_layout
 
-\begin_layout Description
-\begin_inset Formula $-$
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+addition, element by element for images
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+-
+\end_layout
+
 \end_inset
 
- subtraction, element by element for images
+
 \end_layout
 
-\begin_layout Description
-\begin_inset Formula $*$
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+subtraction, element by element for images
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+*
+\end_layout
+
 \end_inset
 
- multiplication, element by element for images
+
 \end_layout
 
-\begin_layout Description
-\begin_inset Formula $/$
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+multiplication, element by element for images
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+/
+\end_layout
+
 \end_inset
 
- division, element by element for images
+
 \end_layout
 
-\begin_layout Description
-^ exponentiation, the second argument can only be a scalar
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+division, element by element for images
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+^
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+exponentiation, the second argument can only be a scalar
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
 \end_layout
 
 \end_body

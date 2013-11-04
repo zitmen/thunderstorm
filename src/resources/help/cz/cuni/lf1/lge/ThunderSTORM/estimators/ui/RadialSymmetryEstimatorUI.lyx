@@ -206,7 +206,7 @@ key "Parthasarathy2012"
 \end_inset
 
 where 
-\begin_inset Formula $a=\left(\sum_{j\in\mathcal{D}}{s_{j}w_{j}}\right)^{2}-\left(\sum_{j\in\mathcal{D}}{s_{j}^{2}w_{j}}\right)\left(\sum_{j\in\mathcal{D}}{w_{j}}\right)\,$
+\begin_inset Formula $a=\bigl(\sum_{j\in\mathcal{D}}{s_{j}w_{j}}\bigr)^{2}-\bigl(\sum_{j\in\mathcal{D}}{s_{j}^{2}w_{j}}\bigr)\bigl(\sum_{j\in\mathcal{D}}{w_{j}}\bigr)\,$
 \end_inset
 
 , 
