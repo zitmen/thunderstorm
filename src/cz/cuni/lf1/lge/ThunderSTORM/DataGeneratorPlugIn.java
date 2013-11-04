@@ -2,7 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
-import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.EmitterModel;
@@ -10,115 +10,68 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
-import fiji.util.gui.GenericDialogPlus;
+import cz.cuni.lf1.lge.ThunderSTORM.util.RangeValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.Macro;
-import ij.Prefs;
 import ij.measure.Calibration;
 import ij.plugin.PlugIn;
-import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import ij.process.ShortProcessor;
-import java.awt.TextField;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class DataGeneratorPlugIn implements PlugIn {
-    
+
     private int width, height, frames, processing_frame;
     private double density;
     private Drift drift;
     private Range fwhm_range, intensity_range;
     private double add_poisson_var;
-    private String maskPath;
     private FloatProcessor mask;
-    
+
     @Override
     public void run(String command) {
-        GUI.setLookAndFeel();
-        CameraSetupPlugIn.loadPreferences();
-        loadPreferences();
-        //
         try {
-            if(MacroParser.isRanFromMacro()) {
-                // Load preferences from the macro and run the generator
-                readMacroOptions(Macro.getOptions());
-                savePreferences();
+            GUI.setLookAndFeel();
+            CameraSetupPlugIn.loadPreferences();
+
+            if(getInput()) {
                 runGenerator();
-            } else {
-                // Create and show the dialog
-                boolean record = Recorder.record;
-                Recorder.record = false;
-                
-                final GenericDialogPlus gd = new GenericDialogPlus("ThunderSTORM: Data generator (16bit grayscale image sequence)");
-                gd.addButton("Camera setup...", new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        new CameraSetupPlugIn().run("");
-                    }
-                });
-                gd.addMessage("Image stack:");
-                gd.addNumericField("Width [px]: ", width, 0);
-                gd.addNumericField("Height [px]: ", height, 0);
-                gd.addNumericField("Frames: ", frames, 0);
-                gd.addMessage("Emitters:");
-                gd.addNumericField("Density [um^-2]: ", density, 1);
-                gd.addStringField("FWHM range [px]: ", fwhm_range.toStrFromTo());
-                gd.addStringField("Intensity range [photons]: ", intensity_range.toStrFromTo());
-                gd.addMessage("Noise:");
-                gd.addNumericField("Poisson noise variance [photons]: ", add_poisson_var, 0);
-                gd.addMessage("Linear drift:");
-                gd.addNumericField("Drift distance [px]: ", drift.dist, 0);
-                gd.addNumericField("Drift angle [deg]: ", drift.angle, 0);
-                gd.addMessage("Additional settings:");
-                gd.addFileField("Grayscale mask (optional): ", maskPath);
-                gd.addMessage("");
-                gd.addButton("Reset to defaults", new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        resetToDefaults(gd);
-                    }
-                });
-                gd.showDialog();
-                
-                Recorder.record = record;
-            
-                if(!gd.wasCanceled()) {
-                    readParams(gd);
-                    if(Recorder.record) {
-                        recordOptions();
-                    }
-                    savePreferences();
-                    runGenerator();
-                }
             }
-        } catch (Exception ex) {
+        } catch(Exception ex) {
             IJ.handleException(ex);
         }
     }
-    
-    private void readParams(GenericDialogPlus gd) {
-        width = (int)gd.getNextNumber();
-        height = (int)gd.getNextNumber();
-        frames = (int)gd.getNextNumber();
-        density = gd.getNextNumber();
-        fwhm_range = Range.parseFromTo(gd.getNextString());
-        intensity_range = Range.parseFromTo(gd.getNextString());
-        add_poisson_var = gd.getNextNumber();
-        drift = new Drift(gd.getNextNumber(), gd.getNextNumber(), false, frames);
-        maskPath = gd.getNextString();
-        mask = readMask(maskPath);
-    }
-    
+
     private void runGenerator() throws InterruptedException {
         IJ.showStatus("ThunderSTORM is generating your image sequence...");
-        IJ.showProgress(0.0);       
+        IJ.showProgress(0.0);
         //
         IJGroundTruthTable gt = IJGroundTruthTable.getGroundTruthTable();
         gt.reset();
@@ -126,12 +79,12 @@ public class DataGeneratorPlugIn implements PlugIn {
         //FloatProcessor bkg = new DataGenerator().generateBackground(width, height, drift);
         //
         int cores = Runtime.getRuntime().availableProcessors();
-        GeneratorWorker [] generators = new GeneratorWorker[cores];
-        Thread [] threads = new Thread[cores];
+        GeneratorWorker[] generators = new GeneratorWorker[cores];
+        Thread[] threads = new Thread[cores];
         processing_frame = 0;
         // prepare the workers and allocate resources for all the threads
         for(int c = 0, f_start = 0, f_end, f_inc = frames / cores; c < cores; c++) {
-            if((c+1) < cores) {
+            if((c + 1) < cores) {
                 f_end = f_start + f_inc;
             } else {
                 f_end = frames - 1;
@@ -189,31 +142,31 @@ public class DataGeneratorPlugIn implements PlugIn {
         IJ.showProgress(1.0);
         IJ.showStatus("ThunderSTORM has finished generating your image sequence.");
     }
-    
+
     private synchronized void processingNewFrame(String message) {
         IJ.showStatus(String.format(message, processing_frame, frames));
-        IJ.showProgress((double)(processing_frame) / (double)frames);
+        IJ.showProgress((double) (processing_frame) / (double) frames);
         processing_frame++;
     }
-    
+
     private class GeneratorWorker implements Runnable {
-        
+
         private int frame_start, frame_end;
         //private FloatProcessor bkg;
         private DataGenerator datagen;
         private Vector<ShortProcessor> local_stack;
         private Vector<Vector<EmitterModel>> local_table;
-        
+
         public GeneratorWorker(int frame_start, int frame_end/*, FloatProcessor bkg*/) {
             this.frame_start = frame_start;
             this.frame_end = frame_end;
             //this.bkg = bkg;
-            
+
             datagen = new DataGenerator();
             local_stack = new Vector<ShortProcessor>();
             local_table = new Vector<Vector<EmitterModel>>();
         }
-        
+
         @Override
         public void run() {
             for(int f = frame_start; f <= frame_end; f++) {
@@ -227,12 +180,12 @@ public class DataGeneratorPlugIn implements PlugIn {
                 if(add_poisson_var > 0) {
                     add_noise = datagen.generatePoissonNoise(width, height, sqrt(add_poisson_var));
                 } else {
-                    float [] data = new float[width*height];
+                    float[] data = new float[width * height];
                     Arrays.fill(data, 0f);
                     add_noise = new FloatProcessor(width, height, data, null);
                 }
                 Vector<EmitterModel> molecules = datagen.generateMolecules(width, height, mask, density, intensity_range, fwhm_range);
-                ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, /*bkg, */add_noise);
+                ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, /*bkg, */ add_noise);
                 local_stack.add(slice);
                 local_table.add(molecules);
             }
@@ -244,14 +197,14 @@ public class DataGeneratorPlugIn implements PlugIn {
                 processingNewFrame("ThunderSTORM is building the image stack - frame %d out of %d...");
                 stack.addSlice("", local_stack.elementAt(i));
                 for(EmitterModel psf : local_table.elementAt(i)) {
-                    psf.molecule.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double)(f+1));
+                    psf.molecule.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double) (f + 1));
                     psf.molecule.setParam(PSFModel.Params.LABEL_OFFSET, CameraSetupPlugIn.getOffset());
                     psf.molecule.setParam(PSFModel.Params.LABEL_BACKGROUND, bkgstd);
                     gt.addRow(psf.molecule);
                 }
             }
         }
-        
+
     }
 
     private FloatProcessor readMask(String imagePath) {
@@ -262,9 +215,9 @@ public class DataGeneratorPlugIn implements PlugIn {
                     throw new RuntimeException("Mask must have the same size as the generated images!");
                 }
                 // ensure that the maximum value cannot be more than 1.0 !
-                FloatProcessor fmask = (FloatProcessor)imp.getProcessor().convertToFloat();
-                float min = (float)fmask.getMin();
-                float max = (float)fmask.getMax();
+                FloatProcessor fmask = (FloatProcessor) imp.getProcessor().convertToFloat();
+                float min = (float) fmask.getMin();
+                float max = (float) fmask.getMax();
                 for(int x = 0; x < width; x++) {
                     for(int y = 0; y < height; y++) {
                         fmask.setf(x, y, (fmask.getf(x, y) - min) / (max - min));
@@ -275,93 +228,201 @@ public class DataGeneratorPlugIn implements PlugIn {
         }
         return ImageProcessor.ones(width, height);
     }
-    
-    // ====================================================================
-    
-    public void loadPreferences() {
-        width = Integer.parseInt(Prefs.get("thunderstorm.datagen.width", Integer.toString(Defaults.WIDTH)));
-        height = Integer.parseInt(Prefs.get("thunderstorm.datagen.height", Integer.toString(Defaults.HEIGHT)));
-        frames = Integer.parseInt(Prefs.get("thunderstorm.datagen.frames", Integer.toString(Defaults.FRAMES)));
-        density = Double.parseDouble(Prefs.get("thunderstorm.datagen.density", Double.toString(Defaults.DENSITY)));
-        add_poisson_var = Double.parseDouble(Prefs.get("thunderstorm.datagen.addPoissonVar", Double.toString(Defaults.ADD_POISSON_VAR)));
-        fwhm_range = Range.parseFromTo(Prefs.get("thunderstorm.datagen.fwhmRange", Defaults.FWHM_RANGE));
-        intensity_range = Range.parseFromTo(Prefs.get("thunderstorm.datagen.intensityRange", Defaults.INTENSITY_RANGE));
-        double driftDist = Double.parseDouble(Prefs.get("thunderstorm.datagen.driftDist", Double.toString(Defaults.DRIFT_DISTANCE)));
-        double driftAngle = Double.parseDouble(Prefs.get("thunderstorm.datagen.driftAngle", Double.toString(Defaults.DRIFT_ANGLE)));
-        drift = new Drift(driftDist, driftAngle, false, frames);
-        maskPath = Prefs.get("thunderstorm.datagen.maskPath", Defaults.MASK_PATH);
-        mask = readMask(maskPath);
-    }
-    
-    public void savePreferences() {
-        Prefs.set("thunderstorm.datagen.width", width);
-        Prefs.set("thunderstorm.datagen.height", height);
-        Prefs.set("thunderstorm.datagen.frames", frames);
-        Prefs.set("thunderstorm.datagen.density", density);
-        Prefs.set("thunderstorm.datagen.addPoissonVar", add_poisson_var);
-        Prefs.set("thunderstorm.datagen.fwhmRange", fwhm_range.toStrFromTo());
-        Prefs.set("thunderstorm.datagen.intensityRange", intensity_range.toStrFromTo());
-        Prefs.set("thunderstorm.datagen.driftDist", drift.dist);
-        Prefs.set("thunderstorm.datagen.driftAngle", drift.angle);
-        Prefs.set("thunderstorm.datagen.maskPath", maskPath);
-    }
 
-    public void recordOptions() {
-        Recorder.recordOption("width", Integer.toString(width));
-        Recorder.recordOption("height", Integer.toString(height));
-        Recorder.recordOption("frames", Integer.toString(frames));
-        Recorder.recordOption("density", Double.toString(density));
-        Recorder.recordOption("addPoissonVar", Double.toString(add_poisson_var));
-        Recorder.recordOption("fwhmRange", fwhm_range.toStrFromTo());
-        Recorder.recordOption("intensityRange", intensity_range.toStrFromTo());
-        Recorder.recordOption("driftDist", Double.toString(drift.dist));
-        Recorder.recordOption("driftAngle", Double.toString(drift.angle));
-        Recorder.recordOption("maskPath", maskPath);
-    }
-
-    public void readMacroOptions(String options) {
-        width = Integer.parseInt(Macro.getValue(options, "width", Integer.toString(Defaults.WIDTH)));
-        height = Integer.parseInt(Macro.getValue(options, "height", Integer.toString(Defaults.HEIGHT)));
-        frames = Integer.parseInt(Macro.getValue(options, "frames", Integer.toString(Defaults.FRAMES)));
-        density = Double.parseDouble(Macro.getValue(options, "density", Double.toString(Defaults.DENSITY)));
-        add_poisson_var = Double.parseDouble(Macro.getValue(options, "addPoissonVar", Double.toString(Defaults.ADD_POISSON_VAR)));
-        fwhm_range = Range.parseFromTo(Macro.getValue(options, "fwhmRange", Defaults.FWHM_RANGE));
-        intensity_range = Range.parseFromTo(Macro.getValue(options, "intensityRange", Defaults.INTENSITY_RANGE));
-        double driftDist = Double.parseDouble(Macro.getValue(options, "driftDist", Double.toString(Defaults.DRIFT_DISTANCE)));
-        double driftAngle = Double.parseDouble(Macro.getValue(options, "driftAngle", Double.toString(Defaults.DRIFT_ANGLE)));
-        drift = new Drift(driftDist, driftAngle, false, frames);
-        maskPath = Macro.getValue(options, "maskPath", Defaults.MASK_PATH);
-        mask = readMask(maskPath);
-    }
-
-    public void resetToDefaults(GenericDialogPlus gd) {
-        width = Defaults.WIDTH;
-        height = Defaults.HEIGHT;
-        frames = Defaults.FRAMES;
-        density = Defaults.DENSITY;
-        add_poisson_var = Defaults.ADD_POISSON_VAR;
-        fwhm_range = Range.parseFromTo(Defaults.FWHM_RANGE);
-        intensity_range = Range.parseFromTo(Defaults.INTENSITY_RANGE);
-        drift = new Drift(Defaults.DRIFT_DISTANCE, Defaults.DRIFT_ANGLE, false, frames);
-        maskPath = Defaults.MASK_PATH;
-        mask = readMask(maskPath);
+    private boolean getInput() {
+        final ParameterTracker params = new ParameterTracker("thunderstorm.datagen");
+        ParameterName.Integer widthParam = params.createIntField("width", IntegerValidatorFactory.positiveNonZero(), Defaults.WIDTH);
+        ParameterName.Integer heightParam = params.createIntField("height", IntegerValidatorFactory.positiveNonZero(), Defaults.WIDTH);
+        ParameterName.Integer framesParam = params.createIntField("frames", IntegerValidatorFactory.positiveNonZero(), Defaults.FRAMES);
+        ParameterName.Double densityParam = params.createDoubleField("density", DoubleValidatorFactory.positiveNonZero(), Defaults.DENSITY);
+        ParameterName.Double addPoissonVarParam = params.createDoubleField("addPoisssonVar", DoubleValidatorFactory.positive(), Defaults.ADD_POISSON_VAR);
+        ParameterName.String fwhmRangeParam = params.createStringField("fwhmRange", RangeValidatorFactory.fromTo(), Defaults.FWHM_RANGE);
+        ParameterName.String intensityRangeParam = params.createStringField("intensityRange", RangeValidatorFactory.fromTo(), Defaults.INTENSITY_RANGE);
+        ParameterName.Double driftDistParam = params.createDoubleField("driftDist", null, Defaults.DRIFT_DISTANCE);
+        ParameterName.Double driftAngleParam = params.createDoubleField("driftAngle", null, Defaults.DRIFT_ANGLE);
+        ParameterName.String maskPathParam = params.createStringField("maskPath", null, Defaults.MASK_PATH);
         //
-        Vector<TextField> numFields = (Vector<TextField>)gd.getNumericFields();
-        numFields.elementAt(0).setText(Integer.toString(Defaults.WIDTH));
-        numFields.elementAt(1).setText(Integer.toString(Defaults.HEIGHT));
-        numFields.elementAt(2).setText(Integer.toString(Defaults.FRAMES));
-        numFields.elementAt(3).setText(Double.toString(Defaults.DENSITY));
-        numFields.elementAt(4).setText(Double.toString(Defaults.ADD_POISSON_VAR));
-        numFields.elementAt(5).setText(Double.toString(Defaults.DRIFT_DISTANCE));
-        numFields.elementAt(6).setText(Double.toString(Defaults.DRIFT_ANGLE));
-        
-        Vector<TextField> strFields = (Vector<TextField>)gd.getStringFields();
-        strFields.elementAt(0).setText(Defaults.FWHM_RANGE);
-        strFields.elementAt(1).setText(Defaults.INTENSITY_RANGE);
-        strFields.elementAt(2).setText(Defaults.MASK_PATH);
+        String macroOptions = Macro.getOptions();
+        if(macroOptions != null) {
+            params.readMacroOptions();
+        } else {
+            final AtomicBoolean clickedOK = new AtomicBoolean(false);
+            GUI.setLookAndFeel();
+            final JDialog dialog = new JDialog(IJ.getInstance(), "ThunderSTORM: Data generator (16bit grayscale image sequence)", true);
+            dialog.setLayout(new GridBagLayout());
+
+            JPanel cameraPanel = new JPanel(new BorderLayout());
+            cameraPanel.setBorder(BorderFactory.createTitledBorder("Camera"));
+            JButton cameraButton = new JButton("Camera setup");
+            cameraButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new CameraSetupPlugIn().run(null);
+                }
+            });
+            cameraPanel.add(cameraButton);
+
+            //image stack
+            JPanel stackPanel = new JPanel(new GridBagLayout());
+            stackPanel.setBorder(BorderFactory.createTitledBorder("Image stack"));
+
+            stackPanel.add(new JLabel("Width [px]:"), GridBagHelper.leftCol());
+            JTextField widthTextField = new JTextField(20);
+            stackPanel.add(widthTextField, GridBagHelper.rightCol());
+            params.registerComponent(widthParam, widthTextField);
+
+            stackPanel.add(new JLabel("Height [px]:"), GridBagHelper.leftCol());
+            JTextField heightTextField = new JTextField(20);
+            stackPanel.add(heightTextField, GridBagHelper.rightCol());
+            params.registerComponent(heightParam, heightTextField);
+
+            stackPanel.add(new JLabel("Frames:"), GridBagHelper.leftCol());
+            JTextField framesTextField = new JTextField(20);
+            stackPanel.add(framesTextField, GridBagHelper.rightCol());
+            params.registerComponent(framesParam, framesTextField);
+
+            //emitters
+            JPanel emittersPanel = new JPanel(new GridBagLayout());
+            emittersPanel.setBorder(BorderFactory.createTitledBorder("Emitters"));
+
+            emittersPanel.add(new JLabel("Density [um^-2]:"), GridBagHelper.leftCol());
+            JTextField densityTextField = new JTextField(20);
+            emittersPanel.add(densityTextField, GridBagHelper.rightCol());
+            params.registerComponent(densityParam, densityTextField);
+
+            emittersPanel.add(new JLabel("FWHM range [px]:"), GridBagHelper.leftCol());
+            JTextField fwhmTextField = new JTextField(20);
+            emittersPanel.add(fwhmTextField, GridBagHelper.rightCol());
+            params.registerComponent(fwhmRangeParam, fwhmTextField);
+
+            emittersPanel.add(new JLabel("Intensity range [photons]:"), GridBagHelper.leftCol());
+            JTextField intensityTextField = new JTextField(20);
+            emittersPanel.add(intensityTextField, GridBagHelper.rightCol());
+            params.registerComponent(intensityRangeParam, intensityTextField);
+            //Noise
+            JPanel noisePanel = new JPanel(new GridBagLayout());
+            noisePanel.setBorder(BorderFactory.createTitledBorder("Noise"));
+
+            noisePanel.add(new JLabel("Poisson noise variance [photons]:"), GridBagHelper.leftCol());
+            final JTextField noiseVarTextField = new JTextField(20);
+            noisePanel.add(noiseVarTextField, GridBagHelper.rightCol());
+            params.registerComponent(addPoissonVarParam, noiseVarTextField);
+
+            //drift
+            JPanel driftPanel = new JPanel(new GridBagLayout());
+            driftPanel.setBorder(BorderFactory.createTitledBorder("Linear drift"));
+
+            driftPanel.add(new JLabel("Drift distance [px]:"), GridBagHelper.leftCol());
+            JTextField driftDistTextField = new JTextField(20);
+            driftPanel.add(driftDistTextField, GridBagHelper.rightCol());
+            params.registerComponent(driftDistParam, driftDistTextField);
+
+            driftPanel.add(new JLabel("Drift angle [deg]:"), GridBagHelper.leftCol());
+            JTextField driftAngleTextField = new JTextField(20);
+            driftPanel.add(driftAngleTextField, GridBagHelper.rightCol());
+            params.registerComponent(driftAngleParam, driftAngleTextField);
+
+            //additional
+            JPanel additionalPanel = new JPanel(new GridBagLayout());
+            additionalPanel.setBorder(BorderFactory.createTitledBorder("Additional settings"));
+
+            additionalPanel.add(new JLabel("Grayscale mask (optional):"), GridBagHelper.leftCol());
+            JPanel pathPanel = new JPanel(new BorderLayout()) {
+                @Override
+                public Dimension getPreferredSize() {
+                    return noiseVarTextField.getPreferredSize();//same size as fields above
+                }
+            };
+            final JTextField pathTextField = new JTextField(15);
+            params.registerComponent(maskPathParam, pathTextField);
+            JButton browseButton = new JButton("...");
+            browseButton.setMargin(new Insets(1, 1, 1, 1));
+            browseButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFileChooser fileChooser = new JFileChooser(IJ.getDirectory("image"));
+                    int userAction = fileChooser.showOpenDialog(dialog);
+                    if(userAction == JFileChooser.APPROVE_OPTION) {
+                        pathTextField.setText(fileChooser.getSelectedFile().getPath());
+                    }
+                }
+            });
+            pathPanel.add(pathTextField);
+            pathPanel.add(browseButton, BorderLayout.EAST);
+            additionalPanel.add(pathPanel, GridBagHelper.rightCol());
+
+            //buttons
+            JPanel buttons = new JPanel(new GridBagLayout());
+            JButton defaultsButton = new JButton("Defaults");
+            defaultsButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    params.resetToDefaults(true);
+                }
+            });
+            JButton cancelButton = new JButton("Cancel");
+            cancelButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dialog.dispose();
+                }
+            });
+            JButton okButton = new JButton("OK");
+            okButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        clickedOK.set(true);
+                        params.readDialogOptions();
+                        params.recordMacroOptions();
+                        params.savePrefs();
+                        dialog.dispose();
+                    } catch(ValidatorException ex) {
+                        IJ.showMessage("Input validation error: " + ex.getMessage());
+                    }
+                }
+            });
+            buttons.add(defaultsButton);
+            buttons.add(Box.createHorizontalGlue(), new GridBagHelper.Builder()
+                    .fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
+            buttons.add(Help.createHelpButton(DataGeneratorPlugIn.class));
+            buttons.add(okButton);
+            buttons.add(cancelButton);
+
+            dialog.add(cameraPanel, GridBagHelper.twoCols());
+            dialog.add(stackPanel, GridBagHelper.twoCols());
+            dialog.add(emittersPanel, GridBagHelper.twoCols());
+            dialog.add(noisePanel, GridBagHelper.twoCols());
+            dialog.add(driftPanel, GridBagHelper.twoCols());
+            dialog.add(additionalPanel, GridBagHelper.twoCols());
+            dialog.add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
+            dialog.add(buttons, GridBagHelper.twoCols());
+
+            params.loadPrefs();
+            dialog.getRootPane().setDefaultButton(okButton);
+            dialog.getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            dialog.pack();
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
+            if(!clickedOK.get()) {
+                return false;
+            }
+        }
+        width = widthParam.getValue();
+        height = heightParam.getValue();
+        frames = framesParam.getValue();
+        density = densityParam.getValue();
+        add_poisson_var = addPoissonVarParam.getValue();
+        fwhm_range = Range.parseFromTo(fwhmRangeParam.getValue());
+        intensity_range = Range.parseFromTo(intensityRangeParam.getValue());
+        drift = new Drift(driftDistParam.getValue(), driftAngleParam.getValue(), false, frames);
+        mask = readMask(maskPathParam.getValue());
+
+        return true;
     }
-    
+
     static class Defaults {
+
         public static final int WIDTH = 256;
         public static final int HEIGHT = 256;
         public static final int FRAMES = 1000;

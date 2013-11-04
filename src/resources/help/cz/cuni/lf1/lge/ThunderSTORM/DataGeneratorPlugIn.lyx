@@ -1,0 +1,343 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\usepackage{upgreek}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Artificial data generator
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Image-formation-model"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The synthetic data generator forms images using a probabilistic model based
+ on user-supplied parameters.
+ In addition to the image dimensions and sequence length, 
+\end_layout
+
+\begin_layout Subsection*
+Image formation
+\end_layout
+
+\begin_layout Standard
+users can choose the pixel-size 
+\begin_inset Formula $a$
+\end_inset
+
+ (nm), the density of molecules 
+\begin_inset Formula $D$
+\end_inset
+
+ (molecules per 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\upmu\textrm{m}^{2}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+), the emitter intensity range 
+\begin_inset Formula $I$
+\end_inset
+
+ (photons), the emitter FWHM range (pixels), and the variance of additive
+ Poisson noise 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ (photons).
+ The software can also simulate linear drift of the sample over time.
+ We first generate a background which is static for all the images in the
+ sequence.
+ Then for each frame a set of molecules is generated and added to the image.
+ If drift was specified, the image is shifted.
+ Additive noise is then applied.
+ The process can be summarized as follows 
+\begin_inset Formula 
+\begin{equation}
+image=\mathrm{{drift}}(\mathrm{PSF_{IG}}(X\mid\theta))+\mathcal{P}(\lambda)\,,
+\end{equation}
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathcal{P}(\lambda)$
+\end_inset
+
+ is a Poisson distributed variable with parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ and
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $\mathrm{PSF_{IG}}(X\mid\theta)$
+\end_inset
+
+ is an 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{estimators/ui/IntSymmetricGaussianEstimatorUI.html}{integrated bi-variate
+ Gaussian PSF}
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The parameters 
+\begin_inset Formula $\theta$
+\end_inset
+
+ are picked randomly from a uniform distribution 
+\begin_inset Formula $\mathcal{U}$
+\end_inset
+
+ within the range of user-specified values.
+ Thus 
+\begin_inset Formula 
+\begin{equation}
+\theta=\{\mathcal{U}(x_{0}),\mathcal{U}(y_{0}),\mathcal{U}(I),\mathrm{\mathcal{U}({FWHM}/(2\sqrt{{2\ln2}})})\}\,.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To simulate the EM gain, we use a stochastic model described in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Hirsch2013"
+
+\end_inset
+
+.
+ The EM register is modeled using the Gamma distribution 
+\begin_inset Formula $\Gamma(k,g)$
+\end_inset
+
+ with its shape determined by the number of photo-electrons in the register
+ 
+\begin_inset Formula $k$
+\end_inset
+
+ and scale given by the value of gain 
+\begin_inset Formula $g$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+Spatial density of molecules
+\end_layout
+
+\begin_layout Standard
+Users can specify a fixed density of molecules for the whole image or a
+ varying density by supplying a gray-scale mask 
+\begin_inset Formula $M$
+\end_inset
+
+ in which the intensities are used in the probability model which determine
+ the probability of a molecule to appear at any given pixel,
+\begin_inset Formula 
+\begin{equation}
+\mathbb{P}=a^{2}D\cdot M_{i}\,.
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula $M_{i}$
+\end_inset
+
+ is the intensity of the 
+\begin_inset Formula $i$
+\end_inset
+
+-th pixel in mask 
+\begin_inset Formula $M,$
+\end_inset
+
+ normalized to the interval 
+\begin_inset Formula $(0,1)$
+\end_inset
+
+ to represent a probability.
+ For each pixel, the generator randomly picks a uniformly distributed value
+ 
+\begin_inset Formula $p\in(0,1)$
+\end_inset
+
+ and if 
+\begin_inset Formula $p\leq\mathbb{P}$
+\end_inset
+
+ a molecule is placed inside the pixel with a random offset from its center.
+ If the density in a single pixel is higher than one molecule, the value
+ 
+\begin_inset Formula $\mathbb{P}$
+\end_inset
+
+ is greater than one.
+ In that case the generator renders a molecule, updates 
+\begin_inset Formula $\mathbb{P}=\mathbb{P}-1$
+\end_inset
+
+, picks a new 
+\begin_inset Formula $p$
+\end_inset
+
+, and continues generating new molecules until 
+\begin_inset Formula $p>\mathbb{P}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand
+\backslash
+refname{References}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
