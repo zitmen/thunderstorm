@@ -75,6 +75,7 @@ public class ASHRenderingUI extends AbstractRenderingUI {
                     .resolution(1 / magnification.getValue())
                     .shifts(shifts.getValue())
                     .zRange(r.from, r.to, r.step)
+                    .colorizeZ(colorizeZ.getValue())
                     .zShifts(zShifts.getValue()).build();
         } else {
             return new ASHRendering.Builder()

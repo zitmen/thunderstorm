@@ -120,6 +120,7 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
                     .defaultDX(dx.getValue() / CameraSetupPlugIn.getPixelSize())
                     .forceDefaultDX(forceDx.getValue())
                     .defaultDZ(dz.getValue())
+                    .colorizeZ(colorizeZ.getValue())
                     .zRange(zRange.from, zRange.to, zRange.step).build();
         } else {
             return new HistogramRendering.Builder()

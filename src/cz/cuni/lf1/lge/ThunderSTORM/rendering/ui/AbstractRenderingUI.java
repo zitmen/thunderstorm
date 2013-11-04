@@ -25,6 +25,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
     protected ParameterName.Double magnification;
     protected ParameterName.Integer repaintFrequency;
     protected ParameterName.Boolean threeD;
+    protected ParameterName.Boolean colorizeZ;
     protected ParameterName.String zRange;
     protected ParameterTracker.Condition threeDCondition = new ParameterTracker.Condition() {
         @Override
@@ -42,6 +43,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         magnification = parameters.createDoubleField("magnification", DoubleValidatorFactory.positiveNonZero(), 5);
         repaintFrequency = parameters.createIntField("repaint", IntegerValidatorFactory.positive(), 50);
         threeD = parameters.createBooleanField("threeD", null, false);
+        colorizeZ = parameters.createBooleanField("colorizeZ", null, false);
         zRange = parameters.createStringField("zrange", new Validator<String>() {
             @Override
             public void validate(String input) throws ValidatorException {
@@ -97,15 +99,20 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         parameters.registerComponent(zRange, zRangeTextField);
         final JCheckBox threeDCheckBox = new JCheckBox("", true);
         parameters.registerComponent(threeD, threeDCheckBox);
+        final JCheckBox colorizeZCheckBox = new JCheckBox("", true);
+        parameters.registerComponent(colorizeZ, colorizeZCheckBox);
         threeDCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                colorizeZCheckBox.setEnabled(threeDCheckBox.isSelected());
                 zRangeLabel.setEnabled(threeDCheckBox.isSelected());
                 zRangeTextField.setEnabled(threeDCheckBox.isSelected());
             }
         });
         panel.add(new JLabel("3D:"), GridBagHelper.leftCol());
         panel.add(threeDCheckBox, GridBagHelper.rightCol());
+        panel.add(new JLabel("Colorize z-stack:"), GridBagHelper.leftCol());
+        panel.add(colorizeZCheckBox, GridBagHelper.rightCol());
         panel.add(zRangeLabel, GridBagHelper.leftCol());
 
         panel.add(zRangeTextField, GridBagHelper.rightCol());
