@@ -1,0 +1,168 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Camera setup
+\end_layout
+
+\begin_layout Subsection*
+Pixel
+\begin_inset space ~
+\end_inset
+
+size 
+\end_layout
+
+\begin_layout Standard
+The size of one camera pixel projected to the sample plane.
+ It is used to convert molecule coordinates from pixels to nm, to correctly
+ calculate localization uncertainty of PSF fitting estimators and also in
+ artificial data generator.
+\end_layout
+
+\begin_layout Subsection*
+Image intensity to photoelectrons
+\end_layout
+
+\begin_layout Standard
+These parameters are used to convert image intensity (A/D count) to the
+ number of photoelectrons.
+ The formula for conversion is 
+\begin_inset Formula 
+\[
+I=b+[g]\frac{i}{p}\,,
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $I$
+\end_inset
+
+ is image intensity in A/D counts, 
+\begin_inset Formula $i$
+\end_inset
+
+ is the number of photolectrons and 
+\begin_inset Formula $p,b,g$
+\end_inset
+
+ are the following camera characteristics:
+\end_layout
+
+\begin_layout Subsubsection*
+Photoelectrons
+\begin_inset space ~
+\end_inset
+
+per
+\begin_inset space ~
+\end_inset
+
+A/D
+\begin_inset space ~
+\end_inset
+
+count, 
+\begin_inset Formula $p$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+CCD sensitivity.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Base level, 
+\begin_inset Formula $b$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Constant offset added to the image intensity by the camera.
+\end_layout
+
+\begin_layout Subsubsection*
+EM gain, 
+\begin_inset Formula $g$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+EM gain for EMCCD cameras.
+ If the checkbox is not selected a CCD camera is assumed.
+ Note that the outcome of setting the EM gain to 1 and unchecking the button
+ is different.
+ Different formulas for calculating localization uncertainty are used for
+ CCD and EMCCD cameras.
+ Also the stochastic nature of EM gain is modelled in artificial data generator.
+\end_layout
+
+\end_body
+\end_document

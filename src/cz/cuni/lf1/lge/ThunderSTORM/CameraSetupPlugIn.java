@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
@@ -27,7 +28,7 @@ public class CameraSetupPlugIn implements PlugIn {
     private static final ParameterTracker params = new ParameterTracker("thunderstorm.camera");
     private static ParameterName.Double pixelSize = params.createDoubleField("pixelSize", null, 80.0);
     private static ParameterName.Double photons2ADU = params.createDoubleField("photons2ADU", null, 3.6);
-    private static ParameterName.Double gain = params.createDoubleField("gain", null, 100, new ParameterTracker.Condition() {
+    private static ParameterName.Double gain = params.createDoubleField("gainEM", null, 100, new ParameterTracker.Condition() {
         @Override
         public boolean isSatisfied() {
             return isEmGain.getValue();
@@ -144,8 +145,10 @@ public class CameraSetupPlugIn implements PlugIn {
             buttons.add(defaultsButton);
             buttons.add(Box.createHorizontalGlue(), new GridBagHelper.Builder()
                     .fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
+            buttons.add(Help.createHelpButton(CameraSetupPlugIn.class));
             buttons.add(okButton);
             buttons.add(cancelButton);
+            dialog.add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
             dialog.add(buttons, GridBagHelper.twoCols());
 
             params.loadPrefs();
