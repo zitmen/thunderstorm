@@ -44,7 +44,7 @@ public class MultiPSF extends PSFModel {
         double I = params[Params.INTENSITY];
         double off = params[Params.OFFSET];
         for(int base = 0; base < params.length; base += Params.PARAMS_LENGTH) {
-            params[base+Params.INTENSITY] = I;
+            if(sameI) params[base+Params.INTENSITY] = I;
             params[base+Params.OFFSET] = off;
         }
         return params;
@@ -52,7 +52,7 @@ public class MultiPSF extends PSFModel {
     
     @Override
     public double getValue(double[] params, double x, double y) {
-        if(sameI) fixParams(params);
+        fixParams(params);
         //
         double value = 0.0;
         for(int i = 0; i < nmol; i++) {
@@ -97,7 +97,7 @@ public class MultiPSF extends PSFModel {
         return new MultivariateMatrixFunction() {
             @Override
             public double[][] value(double[] point) throws IllegalArgumentException {
-                if(sameI) fixParams(point);
+                fixParams(point);
                 //
                 double[][] retVal = new double[xgrid.length][point.length];
                 for(int i = 0; i < nmol; i++) {
@@ -129,7 +129,7 @@ public class MultiPSF extends PSFModel {
         return new MultivariateVectorFunction() {
             @Override
             public double[] value(double[] point) throws IllegalArgumentException {
-                if(sameI) fixParams(point);
+                fixParams(point);
                 //
                 double[] retVal = new double[xgrid.length];
                 Arrays.fill(retVal, 0.0);
