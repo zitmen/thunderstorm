@@ -10,8 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This class processes rendering tasks serially. It consists of a queue and a
- * thread that takes tasks out of the queue and processes them. The lifetime of
- * the rendering thread is tied to the lifetime of this object. Can perform a
+ * thread that takes tasks out of the queue and processes them. Can perform a
  * user defined task after every [frequency] invocations.
  */
 public class RenderingQueue {
@@ -109,24 +108,22 @@ public class RenderingQueue {
         public void run() {
             renderedImage.show();
             if(renderedImage.isVisible()) {
-                if(!renderedImage.getStack().isHSB()) {
-                    double upperRange = findQuantileHisto(renderedImage, 0.99);
-                    //IJ.log("upper image range: " + upperRange);
-                    renderedImage.setDisplayRange(0, upperRange);
-                    renderedImage.updateAndDraw();
-                }
+                double upperRange = findQuantileHisto(renderedImage, 0.99);
+                //IJ.log("upper image range: " + upperRange);
+                renderedImage.setDisplayRange(0, upperRange);
+                renderedImage.updateAndDraw();
             }
         }
         /*
-        private static Object [] getFloatImageArray(ImagePlus imp) {
-            ImageStack stack = imp.getStack();
-            ImageStack f_stack = new ImageStack(imp.getWidth(), imp.getHeight());
-            for(int z = 0, zm = stack.getSize(); z < zm; z++) {
-                f_stack.addSlice(null, stack.getProcessor(z+1).convertToFloat());
-            }
-            return new ImagePlus(null, f_stack).getStack().getImageArray();
-        }
-        */
+         private static Object [] getFloatImageArray(ImagePlus imp) {
+         ImageStack stack = imp.getStack();
+         ImageStack f_stack = new ImageStack(imp.getWidth(), imp.getHeight());
+         for(int z = 0, zm = stack.getSize(); z < zm; z++) {
+         f_stack.addSlice(null, stack.getProcessor(z+1).convertToFloat());
+         }
+         return new ImagePlus(null, f_stack).getStack().getImageArray();
+         }
+         */
         private static double findMaxStackValue(ImagePlus imp) {
             Object[] stack = imp.getStack().getImageArray();//getFloatImageArray(imp);
             double max = 0;
