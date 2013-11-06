@@ -41,3 +41,9 @@ div > .ltx_listingblock + .ltx_p {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
 }
+/*margins around tabular*/
+.ltx_tabular {
+	margin-left: 1em;
+	margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}

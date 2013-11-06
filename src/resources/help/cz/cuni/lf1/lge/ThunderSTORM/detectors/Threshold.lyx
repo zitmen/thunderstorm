@@ -260,8 +260,7 @@ name(argument)
 \begin_layout Standard
 Functions can take both an image or a scalar value (where it is meaningfull)
  as an argument.
- Expression that evaluate to an image or scalar value can also be used as
- a function argument.
+ Expressions that evaluate to an image or scalar value can also be used.
  The supported functions are:
 \end_layout
 

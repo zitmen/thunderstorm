@@ -25,6 +25,164 @@ histograms of particular measured parameters and select thresholds
 to create the filtering criteria. All molecules with parameters not
 accepted by the criteria are removed.</p>
 </div>
+<div id="Sx1.SSx1" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">Filter formula syntax</h2>
+
+<div id="Sx1.SSx1.p1" class="ltx_para">
+<p class="ltx_p">The filtering criteria can be specified using a formula built-up from
+a combination of the built-in functions, operators and variables.
+The result of the formula must be a vector of boolean values containing
+1 for each row that should stay in the results table and 0 for the
+rows that should be deleted.</p>
+</div>
+<div id="Sx1.SSx1.SSSx1" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">Variables</h3>
+
+<div id="Sx1.SSx1.SSSx1.p1" class="ltx_para">
+<p class="ltx_p">Variable is a vector containing all values from a specified column
+in the results table. All columns that are present in the results
+table can be used as variables. To use the variable in the filter
+formula, simply input the name of the column (without the units in
+square brackets).</p>
+</div>
+</div>
+<div id="Sx1.SSx1.SSSx2" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">Functions</h3>
+
+<div id="Sx1.SSx1.SSSx2.p1" class="ltx_para">
+<p class="ltx_p">The syntax to use the function is the name followed by the argument
+in parenthesis:</p>
+</div>
+<div id="Sx1.SSx1.SSSx2.p2" class="ltx_para">
+<div id="LSTx1" class="ltx_listingblock ltx_lstlisting ltx_listing">
+<table class="ltx_tabular">
+<tr class="ltx_tr">
+<td class="ltx_td"><span class="ltx_text ltx_lst_line ltx_font_typewriter">name(argument)</span></td>
+</tr>
+</table>
+</div>
+</div>
+<div id="Sx1.SSx1.SSSx2.p3" class="ltx_para">
+<p class="ltx_p">Functions can take both a vector or a scalar value (where it is meaningfull)
+as an argument. Expressions that evaluate to a vector or a scalar
+value can also be used. The supported functions are:</p>
+</div>
+<div id="Sx1.SSx1.SSSx2.p4" class="ltx_para">
+<table class="ltx_tabular">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">std</span></td>
+<td class="ltx_td ltx_align_left">standard deviation</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">mean</span></td>
+<td class="ltx_td ltx_align_left">mean value</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">median</span></td>
+<td class="ltx_td ltx_align_left">median value</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">max</span></td>
+<td class="ltx_td ltx_align_left">maximum value</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">min</span></td>
+<td class="ltx_td ltx_align_left">minimum value</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">sum</span></td>
+<td class="ltx_td ltx_align_left">sum of all the values</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">abs</span></td>
+<td class="ltx_td ltx_align_left">absoulte value</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="Sx1.SSx1.SSSx3" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">Operators</h3>
+
+<div id="Sx1.SSx1.SSSx3.p1" class="ltx_para">
+<p class="ltx_p">There are two types of operators: arithmetic and logical.
+</p>
+</div>
+<div id="Sx1.SSx1.SSSx3.p2" class="ltx_para">
+<p class="ltx_p">Arithmetic operators can take numeric vectors or scalars as operands.
+The behaviour changes accordingly. The output of arithmetic operators
+is a numeric vector if at least one of the operands is a vector, or
+a scalar if both operands are scalar. The supported arithmetic operators
+are:</p>
+</div>
+<div id="Sx1.SSx1.SSSx3.p3" class="ltx_para">
+<table class="ltx_tabular">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">+</span></td>
+<td class="ltx_td ltx_align_left">addition, element by element for vectors</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">-</span></td>
+<td class="ltx_td ltx_align_left">subtraction, element by element for vectors</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">*</span></td>
+<td class="ltx_td ltx_align_left">multiplication, element by element for vectors</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">/</span></td>
+<td class="ltx_td ltx_align_left">division, element by element for vectors</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">^</span></td>
+<td class="ltx_td ltx_align_left">exponentiation, the second argument can only be a scalar</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="Sx1.SSx1.SSSx3.p4" class="ltx_para">
+<p class="ltx_p">Logical operators perform logical operations on vectors. All these
+operations are performed element-wise. The output is a vector of boolean
+values. The supported logical operators are:</p>
+</div>
+<div id="Sx1.SSx1.SSSx3.p5" class="ltx_para">
+<table class="ltx_tabular">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">&amp;</span></td>
+<td class="ltx_td ltx_align_left">logical and</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">|</span></td>
+<td class="ltx_td ltx_align_left">logical or</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">!</span></td>
+<td class="ltx_td ltx_align_left">negation (unary)</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">&lt;</span></td>
+<td class="ltx_td ltx_align_left">smaller than</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">&gt;</span></td>
+<td class="ltx_td ltx_align_left">greater than</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting">=</span></td>
+<td class="ltx_td ltx_align_left">equals</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting">!=</span></td>
+<td class="ltx_td ltx_align_left">not equals</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
