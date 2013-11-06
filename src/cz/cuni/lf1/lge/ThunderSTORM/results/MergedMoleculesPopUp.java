@@ -9,7 +9,7 @@ import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import net.java.balloontip.BalloonTip;
-import net.java.balloontip.TablecellBalloonTip;
+import net.java.balloontip.TableCellBalloonTip;
 import net.java.balloontip.positioners.RightBelowPositioner;
 import net.java.balloontip.styles.RoundedBalloonStyle;
 
@@ -28,7 +28,7 @@ class MergedMoleculesPopUp {
         JComponent mergedMoleculesTable = new JScrollPane(new JTable(model));
         mergedMoleculesTable.setPreferredSize(new Dimension(450, 250));
         //
-        new TablecellBalloonTip(parent, mergedMoleculesTable, row, col,
+        new TableCellBalloonTip(parent, mergedMoleculesTable, row, col,
                 new RoundedBalloonStyle(5, 10, Color.LIGHT_GRAY, Color.BLUE),
                 new RightBelowPositioner(10, 10), BalloonTip.getDefaultCloseButton());
     }
