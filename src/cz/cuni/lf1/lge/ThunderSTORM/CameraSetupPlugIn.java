@@ -156,6 +156,7 @@ public class CameraSetupPlugIn implements PlugIn {
             dialog.getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             dialog.pack();
             dialog.setLocationRelativeTo(null);
+            dialog.setResizable(false);
             dialog.setVisible(true);
         }
     }

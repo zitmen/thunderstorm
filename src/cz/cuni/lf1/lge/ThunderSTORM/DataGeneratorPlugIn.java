@@ -23,6 +23,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.Macro;
+import ij.Prefs;
 import ij.measure.Calibration;
 import ij.plugin.PlugIn;
 import ij.process.FloatProcessor;
@@ -78,14 +79,14 @@ public class DataGeneratorPlugIn implements PlugIn {
         ImageStack stack = new ImageStack(width, height);
         //FloatProcessor bkg = new DataGenerator().generateBackground(width, height, drift);
         //
-        int cores = Runtime.getRuntime().availableProcessors();
-        GeneratorWorker[] generators = new GeneratorWorker[cores];
-        Thread[] threads = new Thread[cores];
+        int numThreads = Math.min(Prefs.getThreads(), frames);
+        GeneratorWorker[] generators = new GeneratorWorker[numThreads];
+        Thread[] threads = new Thread[numThreads];
         processing_frame = 0;
         // prepare the workers and allocate resources for all the threads
-        for(int c = 0, f_start = 0, f_end, f_inc = frames / cores; c < cores; c++) {
-            if((c + 1) < cores) {
-                f_end = f_start + f_inc;
+        for(int c = 0, f_start = 0, f_end, f_inc = frames / numThreads; c < numThreads; c++) {
+            if((c + 1) < numThreads) {
+                f_end = f_start + f_inc - 1;
             } else {
                 f_end = frames - 1;
             }
@@ -94,25 +95,25 @@ public class DataGeneratorPlugIn implements PlugIn {
             f_start = f_end + 1;
         }
         // start all the workers
-        for(int c = 0; c < cores; c++) {
+        for(int c = 0; c < numThreads; c++) {
             threads[c].start();
         }
         // wait for all the workers to finish
-        int wait = 1000 / cores;    // max 1s
+        int wait = 1000 / numThreads;    // max 1s
         boolean finished = false;
         while(!finished) {
             finished = true;
-            for(int c = 0; c < cores; c++) {
+            for(int c = 0; c < numThreads; c++) {
                 threads[c].join(wait);
                 finished &= !threads[c].isAlive();   // all threads must not be alive to finish!
             }
             if(IJ.escapePressed()) {    // abort?
                 // stop the workers
-                for(int ci = 0; ci < cores; ci++) {
+                for(int ci = 0; ci < numThreads; ci++) {
                     threads[ci].interrupt();
                 }
                 // wait so the message below is not overwritten by any of the threads
-                for(int ci = 0; ci < cores; ci++) {
+                for(int ci = 0; ci < numThreads; ci++) {
                     threads[ci].join();
                 }
                 // show info and exit the plugin
@@ -123,7 +124,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         }
         processing_frame = 0;
         gt.setOriginalState();
-        for(int c = 0; c < cores; c++) {
+        for(int c = 0; c < numThreads; c++) {
             generators[c].fillResults(stack, gt);   // and generate stack and table of ground-truth data
         }
         gt.insertIdColumn();
@@ -290,7 +291,7 @@ public class DataGeneratorPlugIn implements PlugIn {
             emittersPanel.add(densityTextField, GridBagHelper.rightCol());
             params.registerComponent(densityParam, densityTextField);
 
-            emittersPanel.add(new JLabel("FWHM range [px]:"), GridBagHelper.leftCol());
+            emittersPanel.add(new JLabel("FWHM range [nm]:"), GridBagHelper.leftCol());
             JTextField fwhmTextField = new JTextField(20);
             emittersPanel.add(fwhmTextField, GridBagHelper.rightCol());
             params.registerComponent(fwhmRangeParam, fwhmTextField);
@@ -312,7 +313,7 @@ public class DataGeneratorPlugIn implements PlugIn {
             JPanel driftPanel = new JPanel(new GridBagLayout());
             driftPanel.setBorder(BorderFactory.createTitledBorder("Linear drift"));
 
-            driftPanel.add(new JLabel("Drift distance [px]:"), GridBagHelper.leftCol());
+            driftPanel.add(new JLabel("Drift distance [nm]:"), GridBagHelper.leftCol());
             JTextField driftDistTextField = new JTextField(20);
             driftPanel.add(driftDistTextField, GridBagHelper.rightCol());
             params.registerComponent(driftDistParam, driftDistTextField);
@@ -403,6 +404,7 @@ public class DataGeneratorPlugIn implements PlugIn {
             dialog.getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             dialog.pack();
             dialog.setLocationRelativeTo(null);
+            dialog.setResizable(false);
             dialog.setVisible(true);
             if(!clickedOK.get()) {
                 return false;
@@ -414,8 +416,9 @@ public class DataGeneratorPlugIn implements PlugIn {
         density = densityParam.getValue();
         add_poisson_var = addPoissonVarParam.getValue();
         fwhm_range = Range.parseFromTo(fwhmRangeParam.getValue());
+        fwhm_range.convert(Units.NANOMETER, Units.PIXEL);
         intensity_range = Range.parseFromTo(intensityRangeParam.getValue());
-        drift = new Drift(driftDistParam.getValue(), driftAngleParam.getValue(), false, frames);
+        drift = new Drift(Units.NANOMETER.convertTo(Units.PIXEL, driftDistParam.getValue()), driftAngleParam.getValue(), false, frames);
         mask = readMask(maskPathParam.getValue());
 
         return true;
@@ -430,7 +433,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         public static final double ADD_POISSON_VAR = 30;
         public static final double DRIFT_DISTANCE = 0;
         public static final double DRIFT_ANGLE = 0;
-        public static final String FWHM_RANGE = "2.5:3.5";
+        public static final String FWHM_RANGE = "200:350";
         public static final String INTENSITY_RANGE = "700:900";
         public static final String MASK_PATH = "";
     }

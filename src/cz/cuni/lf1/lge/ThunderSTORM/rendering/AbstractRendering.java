@@ -1,15 +1,16 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.convertFloatToByte;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.LABEL_THOMPSON;
+import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
+import ij.process.LUT;
+import java.awt.Color;
 import static java.lang.Math.ceil;
 import java.util.Arrays;
 import java.util.Vector;
@@ -144,7 +145,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             threeDimensions = true;
             return (BuilderType) this;
         }
-        
+
         public BuilderType colorizeZ(boolean colorize) {
             this.colorizeZ = colorize;
             return (BuilderType) this;
@@ -214,6 +215,12 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             stack.addSlice((i * zStep + zFrom) + " to " + ((i + 1) * zStep + zFrom), slices[i]);
         }
         image = new ImagePlus(getRendererName(), stack);
+        if(colorizeZ) {
+            image.setDimensions(zSlices, 1, 1);
+            CompositeImage image2 = new CompositeImage(image);
+            setupLuts();
+            image = image2;
+        }
     }
 
     @Override
@@ -244,22 +251,6 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
 
     @Override
     public ImagePlus getRenderedImage() {
-        if(colorizeZ) {
-            int w = image.getWidth(), h = image.getHeight(), imsize = w * h;
-            byte [] H = new byte[imsize];
-            byte [] S = new byte[imsize];
-            byte [] B;
-            Arrays.fill(S, (byte)255);
-            ImageStack clr_stack = new ImageStack(w, h);
-            for(int z = 0; z < slices.length; z++) {
-                B = (byte[])convertFloatToByte((FloatProcessor)slices[z]).getPixels();
-                Arrays.fill(H, (byte)(255.0 / (double)slices.length * (double)z));
-                ColorProcessor clr = new ColorProcessor(w, h);
-                clr.setHSB(H, S, B);
-                clr_stack.addSlice(stack.getSliceLabel(z+1), clr);
-            }
-            return new ImagePlus(getRendererName(), clr_stack);
-        }
         return image;
     }
 
@@ -283,9 +274,39 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             stack.addSlice((i * zStep + zFrom) + " to " + ((i + 1) * zStep + zFrom), slices[i]);
         }
         image.setStack(stack);
+        setupLuts();
     }
 
     protected boolean isInBounds(double x, double y) {
         return x >= xmin && x < xmax && y >= ymin && y < ymax && !Double.isNaN(x) && !Double.isNaN(y);
+    }
+
+    private void setupLuts() {
+        if(image.isComposite()) {
+            CompositeImage image2 = (CompositeImage) image;
+            LUT[] channeLuts = new LUT[zSlices];
+            for(int i = 0; i < channeLuts.length; i++) {
+                //Colormap for slices: (has constant grayscale intensity, unlike jet and similar)
+                //r:   \
+                //      \__
+                //g:    /\
+                //     /  \
+                //b:      /
+                //     __/
+                float norm = (float) i / zSlices;
+                float r, g, b;
+                if(norm < 0.5) {
+                    r = 1 - 2 * norm;
+                    g = 2 * norm;
+                    b = 0;
+                } else {
+                    r = 0;
+                    g = -2 * norm + 2;
+                    b = 2 * norm - 1;
+                }
+                channeLuts[i] = LUT.createLutFromColor(new Color(r, g, b));
+            }
+            image2.setLuts(channeLuts);
+        }
     }
 }

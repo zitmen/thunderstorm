@@ -164,6 +164,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         buttons.add(cancel);
         pane.add(buttons, componentConstraints);
         getRootPane().setDefaultButton(ok);
+        setResizable(false);
         pack();
     }
 
@@ -386,7 +387,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         return activeRendererIndex;
     }
 
-    static void resetModuleUIs(List<? extends IModuleUI>... lists) {
+    public static void resetModuleUIs(List<? extends IModuleUI>... lists) {
         for(int i = 0; i < lists.length; i++) {
             List<? extends IModuleUI> list = lists[i];
             for(IModuleUI module : list) {

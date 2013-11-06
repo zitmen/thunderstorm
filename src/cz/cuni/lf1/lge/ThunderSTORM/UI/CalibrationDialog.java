@@ -114,6 +114,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
         buttons.add(cancel);
         pane.add(buttons, componentConstraints);
         getRootPane().setDefaultButton(ok);
+        setResizable(false);
         pack();
     }
 

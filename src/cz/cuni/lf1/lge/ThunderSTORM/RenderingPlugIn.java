@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Z;
@@ -96,7 +97,7 @@ public class RenderingPlugIn implements PlugIn {
             if(IJResultsTable.IDENTIFIER.equals(table.getTableIdentifier()) && (im = ((IJResultsTable) table).getAnalyzedImage()) != null) {
                 guessedWidth = im.getWidth();
                 guessedHeight = im.getHeight();
-            }else{
+            } else {
                 guessedWidth = (int) Math.ceil(max(xpos)) + 1;
                 guessedHeight = (int) Math.ceil(max(ypos)) + 1;
             }
@@ -150,6 +151,7 @@ class RenderingDialog extends JDialog {
     JButton previewButton;
     JButton okButton;
     JButton cancelButton;
+    JButton defaultsButton;
     DialogResult result = DialogResult.CANCELLED;
     JTextField sizeXTextField;
     JTextField sizeYTextField;
@@ -213,6 +215,17 @@ class RenderingDialog extends JDialog {
                 dispose();
             }
         });
+        defaultsButton = new JButton("Defaults");
+        defaultsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sizeXTextField.setText(sizeX + "");
+                sizeYTextField.setText(sizeY + "");
+                cardsPanel.setSelectedItemIndex(0);
+                AnalysisOptionsDialog.resetModuleUIs(cardsPanel.getItems());
+            }
+        });
+        buttonsPanel.add(defaultsButton);
         if(enablePreview) {
             previewButton = new JButton("Use for preview");
             previewButton.addActionListener(new ActionListener() {

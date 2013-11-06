@@ -112,7 +112,7 @@ public class DataGenerator {
                 mol.generate(frame);
             }
         }
-        // remote the out-of-roi molecules
+        // remove the out-of-roi molecules
         for(EmitterModel mol : deleteLater) {
             molecules.remove(mol);
         }
