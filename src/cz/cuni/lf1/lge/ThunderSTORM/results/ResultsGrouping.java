@@ -67,7 +67,11 @@ class ResultsGrouping {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            try {
             runGrouping(distanceTextField.getText().isEmpty() ? 0.0 : Double.parseDouble(distanceTextField.getText()));
+            } catch(NumberFormatException ex) {
+                GUI.showBalloonTip(distanceTextField, "Illegal argument vaue. " + ex.getMessage());
+            }
         }
 
         @Override

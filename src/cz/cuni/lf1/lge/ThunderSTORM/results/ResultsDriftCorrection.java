@@ -250,14 +250,14 @@ public class ResultsDriftCorrection {
             double magnification;
             try {
                 bins = Integer.parseInt(numStepsTextField.getText());
-            } catch(Exception ex) {
-                GUI.showBalloonTip(numStepsTextField, ex.getMessage());
+            } catch(NumberFormatException ex) {
+                GUI.showBalloonTip(numStepsTextField, "Illegal argument vaue. " + ex.getMessage());
                 return;
             }
             try {
                 magnification = Double.parseDouble(magnificationTextField.getText());
-            } catch(Exception ex) {
-                GUI.showBalloonTip(magnificationTextField, ex.getMessage());
+            } catch(NumberFormatException ex) {
+                GUI.showBalloonTip(magnificationTextField, "Illegal argument vaue. " + ex.getMessage());
                 return;
             }
             //run drift correction
