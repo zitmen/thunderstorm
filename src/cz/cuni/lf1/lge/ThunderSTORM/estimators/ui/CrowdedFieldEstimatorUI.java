@@ -80,7 +80,9 @@ public class CrowdedFieldEstimatorUI {
     public JPanel getOptionsPanel(JPanel panel) {
         final JCheckBox isEnabledCheckbox = new JCheckBox("enable", true);
         final JTextField nMaxTextField = new JTextField("");
+        final JLabel nMaxLabel = new JLabel("Maximum of molecules per fitting region:");
         final JTextField pValueTextField = new JTextField("");
+        final JLabel pValueLabel = new JLabel("Threshold for more complicated model (p-value):");
         final JCheckBox keepSameIntensityCheckBox = new JCheckBox("Keep the same intensity of all molecules", false);
         final JCheckBox isFixedIntensityCheckBox = new JCheckBox("Fix intensity to the range [photons]:", true);
         final JTextField expectedIntensityTextField = new JTextField("");
@@ -88,7 +90,9 @@ public class CrowdedFieldEstimatorUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 nMaxTextField.setEnabled(isEnabledCheckbox.isSelected());
+                nMaxLabel.setEnabled(isEnabledCheckbox.isSelected());
                 pValueTextField.setEnabled(isEnabledCheckbox.isSelected());
+                pValueLabel.setEnabled(isEnabledCheckbox.isSelected());
                 keepSameIntensityCheckBox.setEnabled(isEnabledCheckbox.isSelected());
                 isFixedIntensityCheckBox.setEnabled(isEnabledCheckbox.isSelected());
                 expectedIntensityTextField.setEnabled(isEnabledCheckbox.isSelected() && isFixedIntensityCheckBox.isSelected());
@@ -109,9 +113,9 @@ public class CrowdedFieldEstimatorUI {
 
         panel.add(new JLabel(name + ":"), GridBagHelper.leftCol());
         panel.add(isEnabledCheckbox, GridBagHelper.rightCol());
-        panel.add(new JLabel("Maximum of molecules per fitting region:"), GridBagHelper.leftCol());
+        panel.add(nMaxLabel, GridBagHelper.leftCol());
         panel.add(nMaxTextField, GridBagHelper.rightCol());
-        panel.add(new JLabel("Threshold for more complicated model (p-value):"), GridBagHelper.leftCol());
+        panel.add(pValueLabel, GridBagHelper.leftCol());
         panel.add(pValueTextField, GridBagHelper.rightCol());
         panel.add(keepSameIntensityCheckBox, GridBagHelper.leftCol());
         panel.add(new JLabel(), GridBagHelper.rightCol());

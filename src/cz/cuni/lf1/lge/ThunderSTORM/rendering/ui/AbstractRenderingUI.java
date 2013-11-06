@@ -99,11 +99,13 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         parameters.registerComponent(zRange, zRangeTextField);
         final JCheckBox threeDCheckBox = new JCheckBox("", true);
         parameters.registerComponent(threeD, threeDCheckBox);
+        final JLabel colorizeZLabel = new JLabel("Colorize z-stack:");
         final JCheckBox colorizeZCheckBox = new JCheckBox("", true);
         parameters.registerComponent(colorizeZ, colorizeZCheckBox);
         threeDCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                colorizeZLabel.setEnabled(threeDCheckBox.isSelected());
                 colorizeZCheckBox.setEnabled(threeDCheckBox.isSelected());
                 zRangeLabel.setEnabled(threeDCheckBox.isSelected());
                 zRangeTextField.setEnabled(threeDCheckBox.isSelected());
@@ -111,7 +113,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         });
         panel.add(new JLabel("3D:"), GridBagHelper.leftCol());
         panel.add(threeDCheckBox, GridBagHelper.rightCol());
-        panel.add(new JLabel("Colorize z-stack:"), GridBagHelper.leftCol());
+        panel.add(colorizeZLabel, GridBagHelper.leftCol());
         panel.add(colorizeZCheckBox, GridBagHelper.rightCol());
         panel.add(zRangeLabel, GridBagHelper.leftCol());
 
