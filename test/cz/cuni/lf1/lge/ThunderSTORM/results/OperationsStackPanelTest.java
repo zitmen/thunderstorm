@@ -4,10 +4,6 @@ import javax.swing.JFrame;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
- */
 public class OperationsStackPanelTest {
 
   @Test

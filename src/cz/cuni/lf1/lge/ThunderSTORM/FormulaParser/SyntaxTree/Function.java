@@ -3,7 +3,9 @@ package cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
+import ij.measure.Measurements;
 import ij.process.FloatProcessor;
+import ij.process.FloatStatistics;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -44,7 +46,7 @@ public class Function extends Node {
     protected double max(Object param) {
         RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
-            return ((FloatProcessor)val.get()).getStatistics().max;
+            return (FloatStatistics.getStatistics((FloatProcessor)val.get(), Measurements.MIN_MAX, null)).max;
         } else if(val.isVector()) {
             return Math.max((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
@@ -56,7 +58,7 @@ public class Function extends Node {
     protected double min(Object param) {
         RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
-            return ((FloatProcessor)val.get()).getStatistics().min;
+            return (FloatStatistics.getStatistics((FloatProcessor)val.get(), Measurements.MIN_MAX, null)).min;
         } else if(val.isVector()) {
             return Math.min((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
@@ -84,7 +86,7 @@ public class Function extends Node {
     protected double std(Object param) {
         RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
-            return ((FloatProcessor)val.get()).getStatistics().stdDev;
+            return (FloatStatistics.getStatistics((FloatProcessor)val.get(), Measurements.STD_DEV, null)).stdDev;
         } else if(val.isVector()) {
             return Math.stddev((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
@@ -96,7 +98,7 @@ public class Function extends Node {
     protected double mean(Object param) {
         RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
-            return ((FloatProcessor)val.get()).getStatistics().mean;
+            return (FloatStatistics.getStatistics((FloatProcessor)val.get(), Measurements.MEAN, null)).mean;
         } else if(val.isVector()) {
             return Math.mean((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
@@ -108,7 +110,7 @@ public class Function extends Node {
     protected double median(Object param) {
         RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
-            return ((FloatProcessor)val.get()).getStatistics().median;
+            return (FloatStatistics.getStatistics((FloatProcessor)val.get(), Measurements.MEDIAN, null)).median;
         } else if(val.isVector()) {
             return Math.median((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
