@@ -36,7 +36,7 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
     private transient ParameterName.Boolean USE_WATERSHED;
 
     public CentroidOfConnectedComponentsDetector() throws FormulaParserException {
-        this("std(Wave.F1)");
+        this("std(Wave.F1)", false);
     }
 
     /**
@@ -44,8 +44,9 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
      *
      * @param threshold a threshold value of intensity
      */
-    public CentroidOfConnectedComponentsDetector(String threshold) throws FormulaParserException {
+    public CentroidOfConnectedComponentsDetector(String threshold, boolean useWatershed) throws FormulaParserException {
         this.threshold = threshold;
+        this.useWatershed = useWatershed;
         THRESHOLD = parameters.createStringField("threshold", null, "std(Wave.F1)");
         USE_WATERSHED = parameters.createBooleanField("watershed", null, false);
     }

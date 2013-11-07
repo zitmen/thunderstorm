@@ -2,9 +2,12 @@ package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import ij.IJ;
 import ij.process.FloatProcessor;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
+import org.apache.commons.math3.util.MathUtils;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -26,7 +29,7 @@ public class CentroidOfConnectedComponentsDetectorTest {
             { 2f, 3f, 5f, 6f, 8f },
             { 2f, 3f, 3f, 3f, 2f }
         });
-        instance = new CentroidOfConnectedComponentsDetector("5.0");
+        instance = new CentroidOfConnectedComponentsDetector("5.0", false);
         expResult = new Vector<Point>();
         expResult.add(new Point(0.5,1.5));
         expResult.add(new Point(3.0,3.0));
@@ -40,7 +43,7 @@ public class CentroidOfConnectedComponentsDetectorTest {
             { 5f, 8f, 5f, 3f, 5f, 8f, 5f },
             { 3f, 5f, 3f, 1f, 3f, 5f, 3f }
         });
-        instance = new CentroidOfConnectedComponentsDetector("3.0");
+        instance = new CentroidOfConnectedComponentsDetector("3.0", true);
         expResult = new Vector<Point>();
         expResult.add(new Point(1.0,1.0));
         expResult.add(new Point(1.0,5.0));
@@ -53,29 +56,12 @@ public class CentroidOfConnectedComponentsDetectorTest {
             { 5f, 1f },
             { 1f, 5f }
         });
-        instance = new CentroidOfConnectedComponentsDetector("3.0");
+        instance = new CentroidOfConnectedComponentsDetector("3.0", true);
         expResult = new Vector<Point>();
         expResult.add(new Point(0.5,0.5));
         result = instance.detectMoleculeCandidates(image);
         Collections.sort(result, new Point.XYComparator());
         assertEquals(expResult, result);
-        
-        instance = new CentroidOfConnectedComponentsDetector( "3.0");
-        expResult.clear();
-        // these coordinates are little off, because watershed has to remove part of
-        // one pixel to divide the regions; the higher upsample factor, the more
-        // precise the results, BUT more computational time!
-        // --> factor of 2 is sufficient, because the next step is fitting
-        expResult.add(new Point(0.16,0.16));
-        expResult.add(new Point(1.25,1.25));
-        result = instance.detectMoleculeCandidates(image);
-        Collections.sort(result, new Point.XYComparator());
-        assertEquals(expResult.size(), result.size());
-        for(int i = 0, im = result.size(); i < im; i++) {
-            assertEquals(expResult.get(i).x.doubleValue(), result.get(i).x.doubleValue(), 0.01);
-            assertEquals(expResult.get(i).y.doubleValue(), result.get(i).y.doubleValue(), 0.01);
-        }
-        
         
         /* Let's skip this test, because I dont know where are the real results from Matlab...in the CSV is ground-truth.
          * -- five points were not found...and it is ok, because if you look at them in the image, it is impossible to see them :-)
@@ -110,5 +96,21 @@ public class CentroidOfConnectedComponentsDetectorTest {
         }
         */
     }
-
+ 
+    @Test
+    public void testDetectMoleculeCandidates2() {
+        // seven molecules close together that needs watershed segmentation to resolve them
+        FloatProcessor fp = (FloatProcessor) IJ.openImage("test/resources/7peaksWaveletFiltered.tif").getProcessor().convertToFloat();
+        CentroidOfConnectedComponentsDetector detector = new CentroidOfConnectedComponentsDetector("2", true);
+        List<Point> detections = detector.detectMoleculeCandidates(fp);
+        assertEquals(7, detections.size());
+        for(Point p: detections){
+            double x = p.getX().doubleValue();
+            double y = p.getY().doubleValue();
+            MathUtils.checkFinite(x);
+            MathUtils.checkFinite(y);
+            assertTrue("in range", x >=0 && x <= fp.getWidth());
+            assertTrue("in range", y >=0 && y <= fp.getWidth());
+        }
+    }
 }
