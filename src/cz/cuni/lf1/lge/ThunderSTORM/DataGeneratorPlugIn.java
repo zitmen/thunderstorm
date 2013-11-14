@@ -177,16 +177,13 @@ public class DataGeneratorPlugIn implements PlugIn {
                     return;
                 }
                 processingNewFrame("ThunderSTORM is generating frame %d out of %d...");
-                FloatProcessor add_noise;
-                if(add_poisson_var > 0) {
-                    add_noise = datagen.generatePoissonNoise(width, height, sqrt(add_poisson_var));
-                } else {
-                    float[] data = new float[width * height];
-                    Arrays.fill(data, 0f);
-                    add_noise = new FloatProcessor(width, height, data, null);
-                }
+                FloatProcessor backgroundMeanIntensity;
+                float[] data = new float[width * height];
+                Arrays.fill(data, add_poisson_var > 0 ? (float) add_poisson_var : 0f);
+                backgroundMeanIntensity = new FloatProcessor(width, height, data, null);
+
                 Vector<EmitterModel> molecules = datagen.generateMolecules(width, height, mask, density, intensity_range, fwhm_range);
-                ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, /*bkg, */ add_noise);
+                ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, /*bkg, */ backgroundMeanIntensity);
                 local_stack.add(slice);
                 local_table.add(molecules);
             }

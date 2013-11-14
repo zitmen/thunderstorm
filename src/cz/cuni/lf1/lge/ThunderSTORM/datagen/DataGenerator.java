@@ -33,15 +33,9 @@ public class DataGenerator {
     
     public FloatProcessor generatePoissonNoise(int width, int height, double stddev_photons) {
         FloatProcessor img = new FloatProcessor(width, height);
-        if(CameraSetupPlugIn.isIsEmGain()) {
             for(int x = 0; x < width; x++)
                 for(int y = 0; y < height; y++)
-                    img.setf(x, y, (float)rand.nextGamma(rand.nextPoisson(stddev_photons)+0.001, CameraSetupPlugIn.getGain()) / (float)CameraSetupPlugIn.getPhotons2ADU());
-        } else {
-            for(int x = 0; x < width; x++)
-                for(int y = 0; y < height; y++)
-                    img.setf(x, y, (float)rand.nextPoisson(stddev_photons) * (float)CameraSetupPlugIn.getPhotons2ADU());
-        }
+                    img.setf(x, y, (float)(rand.nextPoisson(stddev_photons))) ;
         return img;
     }
     
@@ -78,11 +72,11 @@ public class DataGenerator {
                     params[PSFModel.Params.X] = x + 0.5 + rand.nextUniform(-0.5, +0.5);
                     params[PSFModel.Params.Y] = y + 0.5 + rand.nextUniform(-0.5, +0.5);
                     params[PSFModel.Params.SIGMA] = fwhm0 / FWHM_factor;
-                    if(CameraSetupPlugIn.isIsEmGain()) {
-                        params[PSFModel.Params.INTENSITY] = rand.nextGamma(rand.nextUniform(intensity_photons.from, intensity_photons.to), CameraSetupPlugIn.getGain()) / CameraSetupPlugIn.getPhotons2ADU();
-                    } else {
-                        params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to) / CameraSetupPlugIn.getPhotons2ADU();
-                    }
+//                    if(CameraSetupPlugIn.isIsEmGain()) {
+//                        params[PSFModel.Params.INTENSITY] = rand.nextGamma(rand.nextUniform(intensity_photons.from, intensity_photons.to), CameraSetupPlugIn.getGain()) / CameraSetupPlugIn.getPhotons2ADU();
+//                    } else {
+                        params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
+//                    }
                     PSFModel model = new IntegratedSymmetricGaussianPSF(params[PSFModel.Params.SIGMA]);
                     molist.add(new EmitterModel(model, model.newInstanceFromParams(params), fwhm0));
                     //
@@ -92,8 +86,21 @@ public class DataGenerator {
         }
         return molist;
     }
+    
+    public FloatProcessor addPoissonAndGamma(FloatProcessor fp){
+        for(int i = 0; i < fp.getPixelCount(); i ++){
+            float mean =  fp.getf(i);
 
-    public ShortProcessor renderFrame(int width, int height, int frame_no, Drift drift, Vector<EmitterModel> molecules, /*FloatProcessor bkg, */FloatProcessor add_noise) {
+            double value = mean > 0 ? (rand.nextPoisson(mean)) : 0;
+            if(CameraSetupPlugIn.isIsEmGain()) {
+                value = rand.nextGamma(value + 1e-10, CameraSetupPlugIn.getGain());
+            }
+            fp.setf(i, (float)value);
+        }
+        return fp;
+    }
+
+    public ShortProcessor renderFrame(int width, int height, int frame_no, Drift drift, Vector<EmitterModel> molecules, /*FloatProcessor bkg, */FloatProcessor backgroundMeanIntensity) {
         // 1. acquisition (with drift)
         double dx = drift.getDriftX(frame_no), dy = drift.getDriftY(frame_no);
         //FloatProcessor frame = (FloatProcessor)bkg.duplicate();
@@ -120,8 +127,11 @@ public class DataGenerator {
         // Additive Poisson-distributed noise...we stopped distinguishing read-out
         // and sample noise, because it might be confusing and it would not change
         // the results of simulation anyway.
+        frame = ImageProcessor.add(frame, backgroundMeanIntensity);
+        frame = ImageProcessor.divide(frame, (float)CameraSetupPlugIn.getPhotons2ADU());
+        frame = addPoissonAndGamma(frame);
+        
         frame = ImageProcessor.add((float)CameraSetupPlugIn.getOffset(), frame);
-        frame = ImageProcessor.add(frame, add_noise);
         //
         return (ShortProcessor)frame.convertToShort(false);
     }
