@@ -10,6 +10,7 @@ import org.apache.commons.math3.distribution.FDistribution;
 public class MFA_LSQFitter extends MFA_AbstractFitter {
 
     Range expectedIntensity;
+    boolean weightedLSQ;
     double pValueThr;
     boolean sameI;
     final static int MODEL_SELECTION_ITERATIONS = 50; // full fitting takes ~20 iterations; this is here to limit max. number of iterations, which is set to 1000
@@ -34,7 +35,7 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
                 model = new MultiPSF(n, defaultSigma, basePsfModel, fittedParams);
                 model.setIntensityRange(expectedIntensity);
                 model.setFixedIntensities(sameI);
-                LSQFitter fitter = new LSQFitter(model, MODEL_SELECTION_ITERATIONS);
+                LSQFitter fitter = new LSQFitter(model, weightedLSQ, MODEL_SELECTION_ITERATIONS);
                 mol = fitter.fit(subimage);
                 fittedParams = fitter.fittedParameters;
                 chi2 = model.getChiSquared(subimage.xgrid, subimage.ygrid, subimage.values, fittedParams);
@@ -55,7 +56,7 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
             modelBest.setFixedIntensities(sameI);
         }
         // fitting with the selected model
-        LSQFitter fitter = new LSQFitter(modelBest);
+        LSQFitter fitter = new LSQFitter(modelBest, weightedLSQ);
         mol = fitter.fit(subimage);
         assert (mol != null);    // this is implication of `assert(maxN >= 1)`
         if(!mol.isSingleMolecule()) {

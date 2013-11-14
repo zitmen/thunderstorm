@@ -24,19 +24,20 @@ public class IntSymmetricGaussianEstimatorUI extends SymmetricGaussianEstimatorU
         String method = METHOD.getValue();
         double sigma = SIGMA.getValue();
         int fitradius = FITRAD.getValue();
-        if(LSQ.equals(method)) {
+        IntegratedSymmetricGaussianPSF psf = new IntegratedSymmetricGaussianPSF(sigma);
+        if(LSQ.equals(method) || WLSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
-                return crowdedField.getLSQImplementation(new IntegratedSymmetricGaussianPSF(sigma), sigma, fitradius);
+                return crowdedField.getLSQImplementation(psf, sigma, fitradius);
             } else {
-                LSQFitter fitter = new LSQFitter(new IntegratedSymmetricGaussianPSF(sigma));
+                LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method));
                 return new MultipleLocationsImageFitting(fitradius, fitter);
             }
         }
         if(MLE.equals(method)) {
             if(crowdedField.isEnabled()) {
-                return crowdedField.getMLEImplementation(new IntegratedSymmetricGaussianPSF(sigma), sigma, fitradius);
+                return crowdedField.getMLEImplementation(psf, sigma, fitradius);
             } else {
-                MLEFitter fitter = new MLEFitter(new IntegratedSymmetricGaussianPSF(sigma));
+                MLEFitter fitter = new MLEFitter(psf);
                 return new MultipleLocationsImageFitting(fitradius, fitter);
             }
         }

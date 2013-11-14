@@ -88,21 +88,22 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
         String method = METHOD.getValue();
         double sigma = SIGMA.getValue();
         int fitradius = FITRAD.getValue();
-        if(LSQ.equals(method)) {
+        EllipticGaussianPSF psf = new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle()));
+        if(LSQ.equals(method) || WLSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
-                IEstimator mfa = crowdedField.getLSQImplementation(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())), sigma, fitradius);
+                IEstimator mfa = crowdedField.getLSQImplementation(psf, sigma, fitradius);
                 return new CylindricalLensZEstimator(calibration, mfa);
             } else {
-                LSQFitter fitter = new LSQFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
+                LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method));
                 return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
             }
         }
         if(MLE.equals(method)) {
             if(crowdedField.isEnabled()) {
-                IEstimator mfa = crowdedField.getMLEImplementation(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())), sigma, fitradius);
+                IEstimator mfa = crowdedField.getMLEImplementation(psf, sigma, fitradius);
                 return new CylindricalLensZEstimator(calibration, mfa);
             } else {
-                MLEFitter fitter = new MLEFitter(new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle())));
+                MLEFitter fitter = new MLEFitter(psf);
                 return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
             }
         }

@@ -81,8 +81,8 @@ public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
         double sigma = SIGMA.getValue();
         int fitradius = FITRAD.getValue();
         PSFModel psf = angleWasSet ? new EllipticGaussianPSF(sigma, Math.toRadians(angle)) : new EllipticGaussianWAnglePSF(sigma, 0);
-        if(LSQ.equals(method)) {
-            LSQFitter fitter = new LSQFitter(psf);
+        if(LSQ.equals(method) || WLSQ.equals(method)) {
+            LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method));
             return new MultipleLocationsImageFitting(fitradius, fitter);
         }
         if(MLE.equals(method)) {

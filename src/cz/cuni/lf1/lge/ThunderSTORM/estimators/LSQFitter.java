@@ -19,24 +19,23 @@ import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquar
 public class LSQFitter implements OneLocationFitter {
 
     private double[] weights;
-    double [] fittedModelValues;
+    boolean useWeighting;
+    double[] fittedModelValues;
     double[] fittedParameters;
     PSFModel psfModel;
     final static int MAX_ITERATIONS = 1000;
     private int maxIter;    // after `maxIter` iterations the algorithm converges
 
-    public LSQFitter(PSFModel psfModel) {
-        this.psfModel = psfModel;
-        this.fittedModelValues = null;
-        this.fittedParameters = null;
-        this.maxIter = MAX_ITERATIONS + 1;    // throws an exception after `MAX_ITERATIONS` iterations
+    public LSQFitter(PSFModel psfModel, boolean useWeighting) {
+        this(psfModel, useWeighting, MAX_ITERATIONS + 1 );
     }
-    
-    public LSQFitter(PSFModel psfModel, int maxIter) {
+
+    public LSQFitter(PSFModel psfModel, boolean useWeighting, int maxIter) {// throws an exception after `MAX_ITERATIONS` iterations
         this.psfModel = psfModel;
         this.fittedModelValues = null;
         this.fittedParameters = null;
         this.maxIter = maxIter;
+        this.useWeighting = useWeighting;
     }
 
     /**
@@ -46,10 +45,8 @@ public class LSQFitter implements OneLocationFitter {
      */
     @Override
     public Molecule fit(OneLocationFitter.SubImage subimage) {
-        if (weights == null) {
-            weights = new double[subimage.values.length];
-            Arrays.fill(weights, 1);
-        }
+        computeWeights(subimage);
+        
         if((fittedModelValues == null) || (fittedModelValues.length < subimage.values.length)) {
             fittedModelValues = new double[subimage.values.length];
         }
@@ -65,11 +62,32 @@ public class LSQFitter implements OneLocationFitter {
                 new Target(subimage.values),
                 new InitialGuess(psfModel.transformParametersInverse(psfModel.getInitialParams(subimage))),
                 new Weight(weights));
-        
+
         // estimate background and return an instance of the `Molecule`
         fittedParameters = pv.getPointRef();
         fittedParameters[PSFModel.Params.BACKGROUND] = stddev(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
         return psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters));
+    }
+
+    private void computeWeights(SubImage subimage) {
+        if(weights == null) {
+            weights = new double[subimage.values.length];
+            if(!useWeighting){
+                Arrays.fill(weights, 1);
+            }
+        }
+        if(useWeighting) {
+            double minWeight = 1.0 / subimage.getMax();
+            double maxWeight = 1000 * minWeight;
+            
+            for(int i = 0; i < weights.length; i++) {
+                double weight = 1 / subimage.values[i];
+                if(Double.isInfinite(weight) || Double.isNaN(weight) || weight > maxWeight) {
+                    weight = maxWeight;
+                }
+                weights[i] = weight;
+            }
+        }
     }
 
 }

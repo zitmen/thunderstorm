@@ -22,6 +22,7 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
     protected CrowdedFieldEstimatorUI crowdedField;
     protected transient static final String MLE = "Maximum likelihood";
     protected transient static final String LSQ = "Least squares";
+    protected transient static final String WLSQ = "Weighted Least squares";
     //params
     protected transient ParameterName.Integer FITRAD;
     protected transient ParameterName.Choice METHOD;
@@ -30,7 +31,7 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
     public SymmetricGaussianEstimatorUI() {
         crowdedField = new CrowdedFieldEstimatorUI();
         FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
-        METHOD = parameters.createChoice("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ}), LSQ);
+        METHOD = parameters.createChoice("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), LSQ);
         SIGMA = parameters.createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
     }
 
@@ -42,7 +43,7 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
     @Override
     public JPanel getOptionsPanel() {
         JTextField fitregsizeTextField = new JTextField("", 20);
-        JComboBox<String> methodComboBox = new JComboBox<String>(new String[]{LSQ, MLE});
+        JComboBox<String> methodComboBox = new JComboBox<String>(new String[]{LSQ, WLSQ, MLE});
         JTextField sigmaTextField = new JTextField("");
         parameters.registerComponent(FITRAD, fitregsizeTextField);
         parameters.registerComponent(METHOD, methodComboBox);
@@ -72,19 +73,20 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
         String method = METHOD.getValue();
         double sigma = SIGMA.getValue();
         int fitradius = FITRAD.getValue();
-        if(LSQ.equals(method)) {
+        SymmetricGaussianPSF psf = new SymmetricGaussianPSF(sigma);
+        if(LSQ.equals(method) || WLSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
-                return crowdedField.getLSQImplementation(new SymmetricGaussianPSF(sigma), sigma, fitradius);
+                return crowdedField.getLSQImplementation(psf, sigma, fitradius);
             } else {
-                LSQFitter fitter = new LSQFitter(new SymmetricGaussianPSF(sigma));
+                LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method));
                 return new MultipleLocationsImageFitting(fitradius, fitter);
             }
         }
         if(MLE.equals(method)) {
             if(crowdedField.isEnabled()) {
-                return crowdedField.getMLEImplementation(new SymmetricGaussianPSF(sigma), sigma, fitradius);
+                return crowdedField.getMLEImplementation(psf, sigma, fitradius);
             } else {
-                MLEFitter fitter = new MLEFitter(new SymmetricGaussianPSF(sigma));
+                MLEFitter fitter = new MLEFitter(psf);
                 return new MultipleLocationsImageFitting(fitradius, fitter);
             }
         }

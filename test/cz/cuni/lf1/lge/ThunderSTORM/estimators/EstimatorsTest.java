@@ -26,18 +26,21 @@ public class EstimatorsTest {
 
     @Test
     public void testLSQSym() {
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new SymmetricGaussianPSF(1))));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new SymmetricGaussianPSF(1), false)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new SymmetricGaussianPSF(1), true)));
     }
 
     @Test
     public void testLSQIntSym() {
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new IntegratedSymmetricGaussianPSF(1))));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new IntegratedSymmetricGaussianPSF(1), false)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new IntegratedSymmetricGaussianPSF(1), true)));
     }
-    
+
     @Test
     public void testMLEIntSym() {
         testEstimator(new MultipleLocationsImageFitting(5, new MLEFitter(new IntegratedSymmetricGaussianPSF(1))));
     }
+
     @Test
     public void testMLESym() {
         testEstimator(new MultipleLocationsImageFitting(5, new MLEFitter(new SymmetricGaussianPSF(1))));
@@ -45,7 +48,8 @@ public class EstimatorsTest {
 
     @Test
     public void testLSQEllipticAngle() {
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianWAnglePSF(1, 0))));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianWAnglePSF(1, 0), false)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianWAnglePSF(1, 0), true)));
     }
 
     @Test
@@ -55,7 +59,8 @@ public class EstimatorsTest {
 
     @Test
     public void testLSQElliptic() {
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianPSF(1, 45))));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianPSF(1, 45), false)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianPSF(1, 45), true)));
     }
 
     @Test
@@ -70,7 +75,7 @@ public class EstimatorsTest {
         FloatProcessor filtered = (new CompoundWaveletFilter(false)).filterImage(image);
         Vector<Point> detections = (new CentroidOfConnectedComponentsDetector("16", true)).detectMoleculeCandidates(filtered);
         Vector<Molecule> fits = estimator.estimateParameters(image, detections);
-        for (Molecule fit : fits) {
+        for(Molecule fit : fits) {
             convertXYToNanoMeters(fit, 150.0);
         }
         Vector<Molecule> ground_truth = null;
@@ -80,7 +85,7 @@ public class EstimatorsTest {
             fail(ex.getMessage());
         }
         Vector<Pair> pairs = pairFitsAndDetections2GroundTruths(detections, fits, ground_truth);
-        for (Pair pair : pairs) {
+        for(Pair pair : pairs) {
             assertFalse("Result from the estimator should be better than guess from the detector.", dist2(pair.fit, pair.ground_truth) > dist2(pair.detection, pair.ground_truth));
         }
         //
@@ -118,12 +123,12 @@ public class EstimatorsTest {
         Vector<Pair> pairs = new Vector<Pair>();
         int best_fit;
         double best_dist2, dist2;
-        for (int i = 0, im = fits.size(); i < im; i++) {
+        for(int i = 0, im = fits.size(); i < im; i++) {
             best_fit = 0;
             best_dist2 = dist2(fits.elementAt(i), ground_truth.elementAt(best_fit));
-            for (int j = 1, jm = ground_truth.size(); j < jm; j++) {
+            for(int j = 1, jm = ground_truth.size(); j < jm; j++) {
                 dist2 = dist2(fits.elementAt(i), ground_truth.elementAt(j));
-                if (dist2 < best_dist2) {
+                if(dist2 < best_dist2) {
                     best_dist2 = dist2;
                     best_fit = j;
                 }
