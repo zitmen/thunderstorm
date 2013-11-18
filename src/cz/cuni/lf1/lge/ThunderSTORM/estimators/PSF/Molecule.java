@@ -183,18 +183,40 @@ public final class Molecule implements Comparable<Molecule> {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0, im = descriptor.labels.size(); i < im; i++) {
-            if (i != 0) {
-                sb.append(", ");
+        if(isSingleMolecule()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("[");
+            for(int i = 0, im = descriptor.labels.size(); i < im; i++) {
+                if(i != 0) {
+                    sb.append(", ");
+                }
+                sb.append(descriptor.labels.get(i));
+                sb.append("=");
+                sb.append(values.get(descriptor.indices.get(i)));
             }
-            sb.append(descriptor.labels.get(i));
-            sb.append("=");
-            sb.append(values.get(descriptor.indices.get(i)));
+            sb.append("]");
+            return sb.toString();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append("[");
+            for(Molecule detection : getDetections()) {
+                if(detection != this) {
+                    sb.append(", ");
+                }
+                sb.append("[");
+                for(int i = 0, im = detection.descriptor.labels.size(); i < im; i++) {
+                    if(i != 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(detection.descriptor.labels.get(i));
+                    sb.append("=");
+                    sb.append(detection.values.get(detection.descriptor.indices.get(i)));
+                }
+                sb.append("]");
+            }
+            sb.append("]");
+            return sb.toString();
         }
-        sb.append("]");
-        return sb.toString();
     }
     
     @Override

@@ -38,10 +38,10 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
                 LSQFitter fitter = new LSQFitter(model, weightedLSQ, MODEL_SELECTION_ITERATIONS);
                 mol = fitter.fit(subimage);
                 fittedParams = fitter.fittedParameters;
-                chi2 = model.getChiSquared(subimage.xgrid, subimage.ygrid, subimage.values, fittedParams);
+                chi2 = model.getChiSquared(subimage.xgrid, subimage.ygrid, subimage.values, fittedParams, weightedLSQ);
                 if(n > 1) {
-                    pValue = 1.0 - new FDistribution(model.getDoF() - modelBest.getDoF(), subimage.values.length - model.getDoF()).cumulativeProbability((chi2Best - chi2) / (model.getDoF() - modelBest.getDoF()) / (chi2 / (double)(subimage.values.length - model.getDoF())));
-                    if(!Double.isNaN(pValue) && (pValue < pValueThr) && !isOutOfRegion(mol, ((double)subimage.size) / 2.0)) {
+                    pValue = 1.0 - new FDistribution(model.getDoF() - modelBest.getDoF(), subimage.values.length - model.getDoF()).cumulativeProbability(((chi2Best - chi2) / (model.getDoF() - modelBest.getDoF())) / (chi2 / (double)(subimage.values.length - model.getDoF())));
+                    if(!Double.isNaN(pValue) && (pValue < pValueThr) ) {//&& !isOutOfRegion(mol, ((double)subimage.size) / 2.0)
                         modelBest = model;
                         chi2Best = chi2;
                     }

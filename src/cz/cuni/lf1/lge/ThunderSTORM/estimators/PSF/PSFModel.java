@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.log;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
@@ -256,11 +257,22 @@ public abstract class PSFModel {
         };
     }
 
-    public double getChiSquared(final int[] xgrid, final int[] ygrid, final double[] imageValues, double[] point) {
+    public double getChiSquared(final int[] xgrid, final int[] ygrid, final double[] imageValues, double[] point, boolean weighted) {
+        
+        double minWeight = 1.0 / max(imageValues);
+        double maxWeight = 1000 * minWeight;
+
         double[] expectedValues = getValueFunction(xgrid, ygrid).value(point);
         double chi2 = 0;
         for(int i = 0; i < expectedValues.length; i++) {
-            chi2 += sqr(imageValues[i] - expectedValues[i]) / imageValues[i];
+            double weight = 1;
+            if(weighted) {
+                weight = 1 / imageValues[i];
+                if(Double.isInfinite(weight) || Double.isNaN(weight) || weight > maxWeight) {
+                    weight = maxWeight;
+                }
+            }
+            chi2 += sqr(imageValues[i] - expectedValues[i]) * weight;
         }
         return chi2;
     }

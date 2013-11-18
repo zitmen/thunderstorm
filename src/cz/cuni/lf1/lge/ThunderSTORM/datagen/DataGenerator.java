@@ -65,22 +65,17 @@ public class DataGenerator {
         double gPpx = Units.NANOMETER_SQUARED.convertTo(Units.MICROMETER_SQUARED, sqr(CameraSetupPlugIn.getPixelSize())) * density, p_px, p, fwhm0;
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
-                p_px = gPpx * mask.getf(x, y);  // probability that a molecule appears inside the pixel
-                p = rand.nextUniform(0.0, 1.0);
-                while(p <= p_px) {
+                p_px = gPpx * mask.getf(x, y);  //expected number of molecules inside a pixel
+                int nMols = (int)rand.nextPoisson(p_px); //actual number of molecules inside a pixel
+                for(int i = 0; i < nMols; i++){
                     fwhm0 = rand.nextUniform(fwhm.from, fwhm.to);
                     params[PSFModel.Params.X] = x + 0.5 + rand.nextUniform(-0.5, +0.5);
                     params[PSFModel.Params.Y] = y + 0.5 + rand.nextUniform(-0.5, +0.5);
                     params[PSFModel.Params.SIGMA] = fwhm0 / FWHM_factor;
-//                    if(CameraSetupPlugIn.isIsEmGain()) {
-//                        params[PSFModel.Params.INTENSITY] = rand.nextGamma(rand.nextUniform(intensity_photons.from, intensity_photons.to), CameraSetupPlugIn.getGain()) / CameraSetupPlugIn.getPhotons2ADU();
-//                    } else {
-                        params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
-//                    }
+                    params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
                     PSFModel model = new IntegratedSymmetricGaussianPSF(params[PSFModel.Params.SIGMA]);
                     molist.add(new EmitterModel(model, model.newInstanceFromParams(params), fwhm0));
                     //
-                    p_px -= 1.0;
                 }
             }
         }

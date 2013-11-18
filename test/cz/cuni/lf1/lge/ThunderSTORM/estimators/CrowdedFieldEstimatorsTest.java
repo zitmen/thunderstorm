@@ -83,7 +83,7 @@ public class CrowdedFieldEstimatorsTest {
     public void testEstimator(OneLocationFitter fitter) {
         Molecule fit;
         double [][] tol = new double[][] {
-            { 0.001, 0.001, 0.1 },
+            { 0.001, 0.1, 0.1 },
             { 0.025, 0.100, 0.1 },
             { 0.050, 0.100, 0.1 }
         };
@@ -164,8 +164,10 @@ public class CrowdedFieldEstimatorsTest {
                 idx++;
             }
         }
-        
-        return fitter.fit(new OneLocationFitter.SubImage(2*FITRADIUS+1, xgrid, ygrid, values[dataset-1], 0.0, 0.0));
+
+        return ((MFA_AbstractFitter) fitter).eliminateBadFits(
+                fitter.fit(new OneLocationFitter.SubImage(2 * FITRADIUS + 1, xgrid, ygrid, values[dataset - 1], 0.0, 0.0)),
+                FITRADIUS);
     }
 
 }

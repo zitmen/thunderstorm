@@ -56,7 +56,7 @@ public class LSQFitter implements OneLocationFitter {
 
         pv = optimizer.optimize(
                 MaxEval.unlimited(),
-                new MaxIter(MAX_ITERATIONS),
+                new MaxIter(MAX_ITERATIONS+1),
                 new ModelFunction(psfModel.getValueFunction(subimage.xgrid, subimage.ygrid)),
                 new ModelFunctionJacobian(psfModel.getJacobianFunction(subimage.xgrid, subimage.ygrid)),
                 new Target(subimage.values),

@@ -12,7 +12,7 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
     Range expectedIntensity;
     double pValueThr;
     boolean sameI;
-    final static int MODEL_SELECTION_ITERATIONS = 1500; // full fitting takes ~15000 iterations (--> this is 10%)
+    final static int MODEL_SELECTION_ITERATIONS = 5000; // full fitting takes ~50000 iterations (--> this is 10%)
     
     public MFA_MLEFitter(PSFModel basePsfModel, double defaultSigma, int maxN, double pValueThr, boolean sameI, Range expI) {
         super(basePsfModel, defaultSigma, maxN);
@@ -39,8 +39,8 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
                 fittedParams = fitter.fittedParameters;
                 logLik = model.getLikelihoodFunction(subimage.xgrid, subimage.ygrid, subimage.values).value(fittedParams);
                 if(n > 1) {
-                    pValue = 1.0 - new ChiSquaredDistribution(model.getDoF() - modelBest.getDoF()).cumulativeProbability(2 * (logLikPrevBest - logLik));
-                    if(!Double.isNaN(pValue) && (pValue < pValueThr) && !isOutOfRegion(mol, ((double)subimage.size) / 2.0)) {
+                    pValue = 1.0 - new ChiSquaredDistribution(model.getDoF() - modelBest.getDoF()).cumulativeProbability(-2 * (logLikPrevBest - logLik));
+                    if(!Double.isNaN(pValue) && (pValue < pValueThr) ) {//&& !isOutOfRegion(mol, ((double)subimage.size) / 2.0)
                         logLikPrevBest = logLik;
                         modelBest = model;
                     }
@@ -55,7 +55,7 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
             modelBest.setFixedIntensities(sameI);
         }
         // fitting with the selected model
-        MLEFitter fitter = new MLEFitter(modelBest);
+        MLEFitter fitter = new MLEFitter(modelBest, MLEFitter.MAX_ITERATIONS - MODEL_SELECTION_ITERATIONS);
         mol = fitter.fit(subimage);
         assert (mol != null);    // this is implication of `assert(maxN >= 1)`
         if(!mol.isSingleMolecule()) {
