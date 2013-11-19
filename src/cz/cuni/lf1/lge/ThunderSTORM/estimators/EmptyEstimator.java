@@ -23,7 +23,7 @@ public class EmptyEstimator extends IEstimatorUI implements IEstimator  {
 
         for (Point detection : detections) {
             locations.add(new Molecule(new PSFModel.Params(new int[]{PSFModel.Params.X, PSFModel.Params.Y},
-                    new double[]{detection.x.doubleValue(), detection.y.doubleValue()}, false)));
+                    new double[]{detection.x.doubleValue()+0.5, detection.y.doubleValue()+0.5}, false)));
         }
         return locations;
     }
