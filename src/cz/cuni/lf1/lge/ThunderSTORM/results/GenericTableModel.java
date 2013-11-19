@@ -206,6 +206,9 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
 
     public void setColumnUnits(int columnIndex, Units new_units) {
         MoleculeDescriptor.Units old_units = getColumnUnits(columnIndex);
+        if(old_units.equals(new_units)){
+            return;
+        }
         for(int row = 0, max = getRowCount(); row < max; row++) {
             setValueAt(old_units.convertTo(new_units, getValueAt(row, columnIndex)), row, columnIndex);
         }
@@ -341,36 +344,20 @@ class GenericTableModel extends AbstractTableModel implements Cloneable {
     
     public void convertAllColumnsToAnalogUnits() {
         for(String colName : getColumnNames()) {
-            switch(getColumnUnits(colName)) {
-                case PIXEL:
-                case MICROMETER: // this is of course analog unit, but we need all units to be the same
-                    setColumnUnits(colName, NANOMETER);
-                    break;
-                case PIXEL_SQUARED:
-                case MICROMETER_SQUARED: // this is of course analog unit, but we need all units to be the same
-                    setColumnUnits(colName, NANOMETER_SQUARED);
-                    break;
-                case DIGITAL:
-                    setColumnUnits(colName, PHOTON);
-                    break;
+            Units columnUnits = getColumnUnits(colName);
+            Units analogUnits = Units.getAnalogUnits(columnUnits);
+            if(!columnUnits.equals(analogUnits)){
+                setColumnUnits(colName, analogUnits);
             }
         }
     }
     
     public void convertAllColumnsToDigitalUnits() {
         for(String colName : getColumnNames()) {
-            switch(getColumnUnits(colName)) {
-                case NANOMETER:
-                case MICROMETER:
-                    setColumnUnits(colName, PIXEL);
-                    break;
-                case NANOMETER_SQUARED:
-                case MICROMETER_SQUARED:
-                    setColumnUnits(colName, PIXEL_SQUARED);
-                    break;
-                case PHOTON:
-                    setColumnUnits(colName, DIGITAL);
-                    break;
+            Units columnUnits = getColumnUnits(colName);
+            Units digitalUnits = Units.getDigitalUnits(columnUnits);
+            if(!columnUnits.equals(digitalUnits)){
+                setColumnUnits(colName, digitalUnits);
             }
         }
     }

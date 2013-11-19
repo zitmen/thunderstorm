@@ -66,7 +66,7 @@ public class LSQFitter implements OneLocationFitter {
         // estimate background and return an instance of the `Molecule`
         fittedParameters = pv.getPointRef();
         fittedParameters[PSFModel.Params.BACKGROUND] = stddev(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
-        return psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters));
+        return psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters), subimage.units);
     }
 
     private void computeWeights(SubImage subimage) {

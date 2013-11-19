@@ -190,9 +190,14 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
     }
 
     @Override
-    public Molecule newInstanceFromParams(double[] params) {
+    public Molecule newInstanceFromParams(double[] params, MoleculeDescriptor.Units subImageUnits) {
         params[Params.SIGMA] = abs(params[Params.SIGMA]);
-        return new Molecule(new Params(new int[]{Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND}, params, true));
+        Molecule mol = new Molecule(new Params(new int[]{Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND}, params, true));
+        MoleculeDescriptor descriptor = mol.descriptor;
+        descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_INTENSITY));
+        descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_OFFSET));
+        descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_BACKGROUND));
+        return mol;
     }
 
     // fractional error in math formula less than 1.2 * 10 ^ -7.

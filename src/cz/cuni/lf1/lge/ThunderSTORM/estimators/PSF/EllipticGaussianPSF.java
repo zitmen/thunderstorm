@@ -125,9 +125,14 @@ public class EllipticGaussianPSF extends PSFModel {
         return guess;
     }
     
-    @Override
-    public Molecule newInstanceFromParams(double[] params) {
-        return new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA1, Params.SIGMA2, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND }, params, true));
+    @Override 
+    public Molecule newInstanceFromParams(double[] params, MoleculeDescriptor.Units subImageUnits) {
+        Molecule mol = new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA1, Params.SIGMA2, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND }, params, true));
+        MoleculeDescriptor descriptor = mol.descriptor;
+        descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_INTENSITY));
+        descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_OFFSET));
+        descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_BACKGROUND));
+        return mol;
     }
 
     @Override

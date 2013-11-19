@@ -74,7 +74,7 @@ public class DataGenerator {
                     params[PSFModel.Params.SIGMA] = fwhm0 / FWHM_factor;
                     params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
                     PSFModel model = new IntegratedSymmetricGaussianPSF(params[PSFModel.Params.SIGMA]);
-                    molist.add(new EmitterModel(model, model.newInstanceFromParams(params), fwhm0));
+                    molist.add(new EmitterModel(model, model.newInstanceFromParams(params, Units.PHOTON), fwhm0));
                     //
                 }
             }

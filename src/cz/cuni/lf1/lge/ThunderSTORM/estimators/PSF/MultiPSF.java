@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import java.util.Arrays;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
@@ -204,13 +205,13 @@ public class MultiPSF extends PSFModel {
     }
 
     @Override
-    public Molecule newInstanceFromParams(double[] params) {    // returns one `macro-molecule`
+    public Molecule newInstanceFromParams(double[] params, Units subImageUnits) {    // returns one `macro-molecule`
         double [] tmp = Arrays.copyOfRange(params, 0, Params.PARAMS_LENGTH);
-        Molecule macroMol = psf.newInstanceFromParams(tmp);  // init...if there is more than one molecule, the values of macro-molecule are ignored anyway
+        Molecule macroMol = psf.newInstanceFromParams(tmp, subImageUnits);  // init...if there is more than one molecule, the values of macro-molecule are ignored anyway
         macroMol.addDetection(macroMol);  // i = 0
         for(int i = 1; i < nmol; i++) {
             tmp = Arrays.copyOfRange(params, i*Params.PARAMS_LENGTH, (i+1)*Params.PARAMS_LENGTH);
-            macroMol.addDetection(psf.newInstanceFromParams(tmp));
+            macroMol.addDetection(psf.newInstanceFromParams(tmp, subImageUnits));
         }
         return macroMol;
     }

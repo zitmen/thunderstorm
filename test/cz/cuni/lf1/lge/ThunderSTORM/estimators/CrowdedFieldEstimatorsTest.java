@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_INTENSITY;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_OFFSET;
@@ -166,7 +167,7 @@ public class CrowdedFieldEstimatorsTest {
         }
 
         return ((MFA_AbstractFitter) fitter).eliminateBadFits(
-                fitter.fit(new OneLocationFitter.SubImage(2 * FITRADIUS + 1, xgrid, ygrid, values[dataset - 1], 0.0, 0.0)),
+                fitter.fit(new OneLocationFitter.SubImage(2 * FITRADIUS + 1, xgrid, ygrid, values[dataset - 1], 0.0, 0.0, MoleculeDescriptor.Units.DIGITAL)),
                 FITRADIUS);
     }
 

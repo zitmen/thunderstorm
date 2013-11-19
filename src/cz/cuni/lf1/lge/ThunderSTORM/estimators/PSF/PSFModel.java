@@ -284,5 +284,5 @@ public abstract class PSFModel {
 
     public abstract double[] getInitialParams(OneLocationFitter.SubImage subImage);
 
-    public abstract Molecule newInstanceFromParams(double[] params);
+    public abstract Molecule newInstanceFromParams(double[] params, MoleculeDescriptor.Units subImageUnits);
 }

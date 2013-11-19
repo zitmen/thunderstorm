@@ -583,6 +583,34 @@ public class MoleculeDescriptor implements Cloneable {
                 return Units.UNITLESS;
             }
         }
+        
+        public static Units getDigitalUnits(Units analogUnit){
+            switch(analogUnit) {
+                case NANOMETER:
+                case MICROMETER:
+                     return PIXEL;
+                case NANOMETER_SQUARED:
+                case MICROMETER_SQUARED:
+                    return PIXEL_SQUARED;
+                case PHOTON:
+                    return DIGITAL;
+            }
+            return analogUnit;
+        }
+        
+        public static Units getAnalogUnits(Units digitalUnit){
+            switch(digitalUnit) {
+                case PIXEL:
+                case MICROMETER: // this is of course analog unit, but we need all units to be the same
+                    return NANOMETER;
+                case PIXEL_SQUARED:
+                case MICROMETER_SQUARED: // this is of course analog unit, but we need all units to be the same
+                    return NANOMETER_SQUARED;
+                case DIGITAL:
+                    return PHOTON;
+            }
+            return digitalUnit;
+        }
 
         @Override
         public String toString() {

@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MultiPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
@@ -20,6 +21,7 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
         this.sameI = sameI;
         this.pValueThr = pValueThr;
         this.expectedIntensity = expI;
+        this.expectedIntensity.convert(MoleculeDescriptor.Units.PHOTON, MoleculeDescriptor.Units.DIGITAL);
     }
 
     @Override

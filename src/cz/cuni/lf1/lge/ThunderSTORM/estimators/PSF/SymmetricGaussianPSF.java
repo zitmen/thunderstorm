@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import java.util.Arrays;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import static org.apache.commons.math3.util.FastMath.PI;
@@ -113,8 +114,13 @@ public class SymmetricGaussianPSF extends PSFModel {
     }
 
     @Override
-    public Molecule newInstanceFromParams(double[] params) {
-        return new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND }, params, true));
+    public Molecule newInstanceFromParams(double[] params, Units subImageUnits) {
+        Molecule mol = new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND }, params, true));
+        MoleculeDescriptor descriptor = mol.descriptor;
+        descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_INTENSITY));
+        descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_OFFSET));
+        descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_BACKGROUND));
+        return mol;
     }
 
     @Override
