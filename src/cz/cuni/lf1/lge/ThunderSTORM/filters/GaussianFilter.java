@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.gauss;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.gauss;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
 import java.util.HashMap;

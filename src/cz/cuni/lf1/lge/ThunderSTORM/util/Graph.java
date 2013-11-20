@@ -1,7 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.mean;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sum;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -45,7 +43,7 @@ public class Graph {
                 yarr[i] = p.getY().doubleValue();
                 valarr[i] = p.getVal().doubleValue();
             }
-            return new Point(mean(xarr), mean(yarr), sum(valarr));
+            return new Point(VectorMath.mean(xarr), VectorMath.mean(yarr), VectorMath.sum(valarr));
         }
     }
     

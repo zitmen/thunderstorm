@@ -8,13 +8,13 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.ceil;
+import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.ceil;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import ij.process.FloatProcessor;
 import org.apache.commons.math3.random.RandomDataGenerator;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import ij.process.ShortProcessor;
 import java.util.Vector;
 import static org.apache.commons.math3.util.FastMath.log;
@@ -130,11 +130,11 @@ public class DataGenerator {
         // Additive Poisson-distributed noise...we stopped distinguishing read-out
         // and sample noise, because it might be confusing and it would not change
         // the results of simulation anyway.
-        frame = ImageProcessor.add(frame, backgroundMeanIntensity);
-        frame = ImageProcessor.divide(frame, (float)CameraSetupPlugIn.getPhotons2ADU());
+        frame = ImageMath.add(frame, backgroundMeanIntensity);
+        frame = ImageMath.divide(frame, (float)CameraSetupPlugIn.getPhotons2ADU());
         frame = addPoissonAndGamma(frame);
         
-        frame = ImageProcessor.add((float)CameraSetupPlugIn.getOffset(), frame);
+        frame = ImageMath.add((float)CameraSetupPlugIn.getOffset(), frame);
         //
         return (ShortProcessor)frame.convertToShort(false);
     }

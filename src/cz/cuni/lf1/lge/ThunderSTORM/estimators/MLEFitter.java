@@ -2,12 +2,10 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.optimizers.NelderMead;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sub;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.stddev;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 
 public class MLEFitter implements OneLocationFitter {
 
@@ -47,7 +45,7 @@ public class MLEFitter implements OneLocationFitter {
         fittedParameters = nm.xmin;
 
         // estimate background and return an instance of the `Molecule`
-        fittedParameters[Params.BACKGROUND] = stddev(sub(fittedModelValues, subimage.values,
+        fittedParameters[Params.BACKGROUND] = VectorMath.stddev(VectorMath.sub(fittedModelValues, subimage.values,
                 psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
 
         Molecule mol = psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters), subimage.units);

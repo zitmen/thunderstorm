@@ -9,7 +9,8 @@ import ij.process.FHT;
 import ij.process.FloatProcessor;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
@@ -60,8 +61,8 @@ public class CrossCorrelationDriftCorrection {
         this.binCount = steps;
         this.magnification = renderingMagnification;
         this.saveCorrelationImages = saveCorrelationImages;
-        this.imageWidth = (roiWidth < 1) ? (int) Math.ceil(Math.max(x)) : roiWidth;
-        this.imageHeight = (roiHeight < 1) ? (int) Math.ceil(Math.max(y)) : roiHeight;
+        this.imageWidth = (roiWidth < 1) ? (int) MathProxy.ceil(VectorMath.max(x)) : roiWidth;
+        this.imageHeight = (roiHeight < 1) ? (int) MathProxy.ceil(VectorMath.max(y)) : roiHeight;
 
         run();
     }
@@ -99,8 +100,8 @@ public class CrossCorrelationDriftCorrection {
     }
 
     private void run() {
-        int paddedSize = nextPowerOf2(Math.max((int) (imageWidth * magnification), (int) (imageHeight * magnification)));
-        int originalImageSize = Math.max(imageWidth, imageHeight);
+        int paddedSize = nextPowerOf2(MathProxy.max((int) (imageWidth * magnification), (int) (imageHeight * magnification)));
+        int originalImageSize = MathProxy.max(imageWidth, imageHeight);
         double minRoi = 0 - ((double) paddedSize / magnification - originalImageSize) / 2;
         double maxRoi = originalImageSize + ((double) paddedSize / magnification - originalImageSize) / 2;
 //    double ymin = 0 - ((double) paddedSize / magnification - imageHeight) / 2;

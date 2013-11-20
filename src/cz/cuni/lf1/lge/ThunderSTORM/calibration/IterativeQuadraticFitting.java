@@ -6,7 +6,7 @@ import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 import org.apache.commons.math3.fitting.CurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.*;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 
 /**
  *

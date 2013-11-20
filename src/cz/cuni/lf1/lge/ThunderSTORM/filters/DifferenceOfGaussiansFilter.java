@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
+import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
 import java.util.HashMap;
@@ -103,7 +103,7 @@ public final class DifferenceOfGaussiansFilter implements IFilter {
         input = image;
         result_g1 = g1.filterImage(image);
         result_g2 = g2.filterImage(image);
-        result = ImageProcessor.subtract(result_g1, result_g2);
+        result = ImageMath.subtract(result_g1, result_g2);
         return result;
     }
 

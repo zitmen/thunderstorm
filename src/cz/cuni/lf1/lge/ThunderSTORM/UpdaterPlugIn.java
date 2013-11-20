@@ -51,8 +51,8 @@ public class UpdaterPlugIn implements PlugIn {
             return;
         }
         saveJar(file, getJar(urls[choice]));
-        ModuleLoader.setUseCaching(false);
         IJ.showMessage("Updater", "Please restart ImageJ to complete ThunderSTORM update.");
+        ModuleLoader.setUseCaching(false);
         updateMenus();
     }
 

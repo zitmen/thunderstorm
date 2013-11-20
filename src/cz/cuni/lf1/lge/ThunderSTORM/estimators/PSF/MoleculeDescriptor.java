@@ -2,13 +2,9 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.genIntSequence;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.min;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sum;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.mean;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.genIntSequence;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.PI;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA1;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA2;
@@ -16,6 +12,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_BACKGROUND;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -653,16 +650,16 @@ public class MoleculeDescriptor implements Cloneable {
             }
             switch(allParams.get(paramName)) {
                 case MIN:
-                    molecule.setParam(paramName, min(Molecule.extractParamToArray(detections, paramName)));
+                    molecule.setParam(paramName, VectorMath.min(Molecule.extractParamToArray(detections, paramName)));
                     break;
                 case MAX:
-                    molecule.setParam(paramName, max(Molecule.extractParamToArray(detections, paramName)));
+                    molecule.setParam(paramName, VectorMath.max(Molecule.extractParamToArray(detections, paramName)));
                     break;
                 case SUM:
-                    molecule.setParam(paramName, sum(Molecule.extractParamToArray(detections, paramName)));
+                    molecule.setParam(paramName, VectorMath.sum(Molecule.extractParamToArray(detections, paramName)));
                     break;
                 case MEAN:
-                    molecule.setParam(paramName, mean(Molecule.extractParamToArray(detections, paramName)));
+                    molecule.setParam(paramName, VectorMath.mean(Molecule.extractParamToArray(detections, paramName)));
                     break;
                 case COUNT:
                     molecule.setParam(paramName, detections.size());

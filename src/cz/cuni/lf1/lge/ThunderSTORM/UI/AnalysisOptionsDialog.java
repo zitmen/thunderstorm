@@ -10,7 +10,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtract;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.subtract;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;

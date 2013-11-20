@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -26,7 +25,7 @@ public class Loop {
   }
 
   public static void withIndex(int start, int stop, final BodyWithIndex body) {
-    int chunksize = Math.max((stop - start + CPUs - 1) / CPUs, 1);
+    int chunksize = MathProxy.max((stop - start + CPUs - 1) / CPUs, 1);
     int loops = (stop - start + chunksize - 1) / chunksize;
     Future<?>[] futures = new Future<?>[loops];
     int fi = 0;

@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.max;
 import ags.utils.dataStructures.MaxHeap;
 import ags.utils.dataStructures.trees.thirdGenKD.KdTree;
 import ags.utils.dataStructures.trees.thirdGenKD.SquareEuclideanDistanceFunction;
@@ -12,6 +12,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.measure.ResultsTable;
@@ -199,8 +200,8 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
     }
 
     private int getFrameCount() {
-        return (int) max(max(IJResultsTable.getResultsTable().getColumnAsDoubles(MoleculeDescriptor.LABEL_FRAME)),
-            max(IJGroundTruthTable.getGroundTruthTable().getColumnAsDoubles(MoleculeDescriptor.LABEL_FRAME)));
+        return (int) max(VectorMath.max(IJResultsTable.getResultsTable().getColumnAsDoubles(MoleculeDescriptor.LABEL_FRAME)),
+            VectorMath.max(IJGroundTruthTable.getGroundTruthTable().getColumnAsDoubles(MoleculeDescriptor.LABEL_FRAME)));
     }
     
     // ------------------------------------------------------------------------

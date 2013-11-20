@@ -1,9 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.log;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.log;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
@@ -259,7 +259,7 @@ public abstract class PSFModel {
 
     public double getChiSquared(final int[] xgrid, final int[] ygrid, final double[] imageValues, double[] point, boolean weighted) {
         
-        double minWeight = 1.0 / max(imageValues);
+        double minWeight = 1.0 / VectorMath.max(imageValues);
         double maxWeight = 1000 * minWeight;
 
         double[] expectedValues = getValueFunction(xgrid, ygrid).value(point);

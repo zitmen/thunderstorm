@@ -7,7 +7,7 @@ import static org.apache.commons.math3.util.FastMath.PI;
 import static org.apache.commons.math3.util.FastMath.abs;
 import static org.apache.commons.math3.util.FastMath.exp;
 import static org.apache.commons.math3.util.FastMath.sqrt;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
 
 /**

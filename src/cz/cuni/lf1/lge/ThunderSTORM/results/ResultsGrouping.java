@@ -9,7 +9,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 import ij.IJ;
 import java.awt.Color;
 import java.awt.GridBagConstraints;

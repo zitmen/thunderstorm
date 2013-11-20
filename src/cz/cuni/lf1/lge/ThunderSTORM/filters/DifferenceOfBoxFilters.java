@@ -1,8 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.DifferenceOfBoxFiltersUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtract;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.subtract;
 import ij.process.FloatProcessor;
 import java.util.HashMap;
 

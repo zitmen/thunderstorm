@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
@@ -11,7 +11,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
+import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import cz.cuni.lf1.lge.ThunderSTORM.util.RangeValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
@@ -223,7 +223,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                 return fmask;
             }
         }
-        return ImageProcessor.ones(width, height);
+        return ImageMath.ones(width, height);
     }
 
     private boolean getInput() {

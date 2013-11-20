@@ -11,6 +11,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
@@ -101,14 +102,14 @@ public class CalibrationProcess {
         List<Double> sins = new ArrayList<Double>(angles);
         List<Double> coss = new ArrayList<Double>(angles);
         for(int i = 0; i < angles.size(); i++) {
-            double sin = cz.cuni.lf1.lge.ThunderSTORM.util.Math.sin(cz.cuni.lf1.lge.ThunderSTORM.util.Math.toRadians(sins.get(i) * 4));
-            double cos = cz.cuni.lf1.lge.ThunderSTORM.util.Math.cos(cz.cuni.lf1.lge.ThunderSTORM.util.Math.toRadians(coss.get(i) * 4));
+            double sin = MathProxy.sin(MathProxy.toRadians(sins.get(i) * 4));
+            double cos = MathProxy.cos(MathProxy.toRadians(coss.get(i) * 4));
             sins.set(i, sin);
             coss.set(i, cos);
         }
         double sin = bootstrapMeanEstimation(sins, 100, angles.size());
         double cos = bootstrapMeanEstimation(coss, 100, angles.size());
-        angle = Math.toDegrees(cz.cuni.lf1.lge.ThunderSTORM.util.Math.atan2(sin, cos)) / 4;
+        angle = MathProxy.toDegrees(MathProxy.atan2(sin, cos)) / 4;
     }
 
     public void fitQuadraticPolynomials() {
@@ -232,7 +233,7 @@ public class CalibrationProcess {
     }
 
     private boolean hasEnoughData(double[] framesArray, double intersection) {
-        int minPts = (int) cz.cuni.lf1.lge.ThunderSTORM.util.Math.max(10, 0.3 * framesArray.length);
+        int minPts = (int) MathProxy.max(10, 0.3 * framesArray.length);
 
         int smallerThanCenterSigma1 = 0;
         int smallerThanCenterSigma2 = 0;

@@ -1,9 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree;
 
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import ij.process.FloatProcessor;
-import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
+import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 
 public class RetVal {
 
@@ -62,25 +63,25 @@ public class RetVal {
             if(b.isValue()) {   // scalar + scalar
                 return new RetVal(val.doubleValue() + b.val.doubleValue());
             } else if(b.isVector()) { // scalar + vector
-                return new RetVal(Math.add(val.doubleValue(), b.vec));
+                return new RetVal(MathProxy.add(val.doubleValue(), b.vec));
             } else {    // scalar + matrix
-                return new RetVal(ImageProcessor.add(val.floatValue(), b.mat));
+                return new RetVal(ImageMath.add(val.floatValue(), b.mat));
             }
         } else if(isVector()) {
             if(b.isValue()) {   // vector + scalar
-                return new RetVal(Math.add(vec, b.val.doubleValue()));
+                return new RetVal(VectorMath.add(vec, b.val.doubleValue()));
             } else if(b.isVector()) { // vector + vector
-                return new RetVal(Math.add(vec, b.vec));
+                return new RetVal(VectorMath.add(vec, b.vec));
             } else {    // vector + matrix
                 throw new FormulaParserException("Operation vector+matrix is not supported!");
             }
         } else {
             if(b.isValue()) {   // matrix + scalar
-                return new RetVal(ImageProcessor.add(val.floatValue(), b.mat));
+                return new RetVal(ImageMath.add(val.floatValue(), b.mat));
             } else if(b.isVector()) {   // matrix + vector
                 throw new FormulaParserException("Operation matrix+vector is not supported!");
             } else {    // matrix + matrix
-                return new RetVal(ImageProcessor.add(mat, b.mat));
+                return new RetVal(ImageMath.add(mat, b.mat));
             }
         }
     }
@@ -90,25 +91,25 @@ public class RetVal {
             if(b.isValue()) {   // scalar - scalar
                 return new RetVal(val.doubleValue() - b.val.doubleValue());
             } else if(b.isVector()) {   // scalar - vector
-                return new RetVal(Math.sub(val, b.vec));
+                return new RetVal(VectorMath.sub(val, b.vec));
             } else {    // scalar - matrix
-                return new RetVal(ImageProcessor.subtract(val.floatValue(), b.mat));
+                return new RetVal(ImageMath.subtract(val.floatValue(), b.mat));
             }
         } else if(isVector()) {
             if(b.isValue()) {   // vector - scalar
-                return new RetVal(Math.sub(vec, b.val.doubleValue()));
+                return new RetVal(VectorMath.sub(vec, b.val.doubleValue()));
             } else if(b.isVector()) { // vector - vector
-                return new RetVal(Math.sub(vec, b.vec));
+                return new RetVal(VectorMath.sub(vec, b.vec));
             } else {    // vector - matrix
                 throw new FormulaParserException("Operation vector-matrix is not supported!");
             }
         } else {
             if(b.isValue()) {   // matrix - scalar
-                return new RetVal(ImageProcessor.subtract(mat, b.val.floatValue()));
+                return new RetVal(ImageMath.subtract(mat, b.val.floatValue()));
             } else if(b.isVector()) {   // matrix - vector
                 throw new FormulaParserException("Operation matrix-vector is not supported!");
             } else {    // matrix - matrix
-                return new RetVal(ImageProcessor.subtract(mat, b.mat));
+                return new RetVal(ImageMath.subtract(mat, b.mat));
             }
         }
     }
@@ -118,25 +119,25 @@ public class RetVal {
             if(b.isValue()) {   // scalar * scalar
                 return new RetVal(val.doubleValue() * b.val.doubleValue());
             } else if(b.isVector()) {   // scalar * vector
-                return new RetVal(Math.mul(val, b.vec));
+                return new RetVal(VectorMath.mul(val, b.vec));
             } else {    // scalar * matrix
-                return new RetVal(ImageProcessor.multiply(val.floatValue(), b.mat));
+                return new RetVal(ImageMath.multiply(val.floatValue(), b.mat));
             }
         } else if(isVector()) {
             if(b.isValue()) {   // vector * scalar
-                return new RetVal(Math.mul(vec, b.val.doubleValue()));
+                return new RetVal(VectorMath.mul(vec, b.val.doubleValue()));
             } else if(b.isVector()) { // vector * vector
-                return new RetVal(Math.mul(vec, b.vec));
+                return new RetVal(VectorMath.mul(vec, b.vec));
             } else {    // vector * matrix
                 throw new FormulaParserException("Operation vector*matrix is not supported!");
             }
         } else {
             if(b.isValue()) {   // matrix * scalar
-                return new RetVal(ImageProcessor.multiply(val.floatValue(), b.mat));
+                return new RetVal(ImageMath.multiply(val.floatValue(), b.mat));
             } else if(b.isVector()) {   // matrix * vector
                 throw new FormulaParserException("Operation matrix*vector is not supported!");
             } else {    // matrix * matrix
-                return new RetVal(ImageProcessor.multiply(mat, b.mat));
+                return new RetVal(ImageMath.multiply(mat, b.mat));
             }
         }
     }
@@ -146,25 +147,25 @@ public class RetVal {
             if(b.isValue()) {   // scalar / scalar
                 return new RetVal(val.doubleValue() / b.val.doubleValue());
             } else if(b.isVector()) {   // scalar / vector
-                return new RetVal(Math.div(val, b.vec));
+                return new RetVal(VectorMath.div(val, b.vec));
             } else {    // scalar / matrix
-                return new RetVal(ImageProcessor.divide(val.floatValue(), b.mat));
+                return new RetVal(ImageMath.divide(val.floatValue(), b.mat));
             }
         } else if(isVector()) {
             if(b.isValue()) {   // vector / scalar
-                return new RetVal(Math.div(vec, b.val.doubleValue()));
+                return new RetVal(VectorMath.div(vec, b.val.doubleValue()));
             } else if(b.isVector()) { // vector / vector
-                return new RetVal(Math.div(vec, b.vec));
+                return new RetVal(VectorMath.div(vec, b.vec));
             } else {    // vector / matrix
                 throw new FormulaParserException("Operation vector/matrix is not supported!");
             }
         } else {
             if(b.isValue()) {   // matrix / scalar
-                return new RetVal(ImageProcessor.divide(mat, b.val.floatValue()));
+                return new RetVal(ImageMath.divide(mat, b.val.floatValue()));
             } else if(b.isVector()) {   // matrix / vector
                 throw new FormulaParserException("Operation matrix/vector is not supported!");
             } else {    // matrix / matrix
-                return new RetVal(ImageProcessor.divide(mat, b.mat));
+                return new RetVal(ImageMath.divide(mat, b.mat));
             }
         }
     }
@@ -174,25 +175,25 @@ public class RetVal {
             if(b.isValue()) {   // scalar % scalar
                 return new RetVal(val.doubleValue() % b.val.doubleValue());
             } else if(b.isVector()) {   // scalar % vector
-                return new RetVal(Math.mod(val, b.vec));
+                return new RetVal(VectorMath.mod(val, b.vec));
             } else {    // scalar % matrix
-                return new RetVal(ImageProcessor.modulo(val.floatValue(), b.mat));
+                return new RetVal(ImageMath.modulo(val.floatValue(), b.mat));
             }
         } else if(isVector()) {
             if(b.isValue()) {   // vector % scalar
-                return new RetVal(Math.mod(vec, b.val.doubleValue()));
+                return new RetVal(VectorMath.mod(vec, b.val.doubleValue()));
             } else if(b.isVector()) { // vector % vector
-                return new RetVal(Math.mod(vec, b.vec));
+                return new RetVal(VectorMath.mod(vec, b.vec));
             } else {    // vector % matrix
                 throw new FormulaParserException("Operation vector%matrix is not supported!");
             }
         } else {
             if(b.isValue()) {   // matrix % scalar
-                return new RetVal(ImageProcessor.modulo(mat, b.val.floatValue()));
+                return new RetVal(ImageMath.modulo(mat, b.val.floatValue()));
             } else if(b.isVector()) {   // matrix % vector
                 throw new FormulaParserException("Operation matrix%vector is not supported!");
             } else {    // matrix % matrix
-                return new RetVal(ImageProcessor.modulo(mat, b.mat));
+                return new RetVal(ImageMath.modulo(mat, b.mat));
             }
         }
     }
@@ -200,7 +201,7 @@ public class RetVal {
     public RetVal pow(RetVal b) {
         if(isValue()) {
             if(b.isValue()) {   // scalar ^ scalar
-                return new RetVal(Math.pow(val.doubleValue(), b.val.doubleValue()));
+                return new RetVal(MathProxy.pow(val.doubleValue(), b.val.doubleValue()));
             } else if(b.isVector()) {   // scalar ^ vector
                 throw new FormulaParserException("Operation scalar^vector is not supported!");
             } else {    // scalar ^ matrix
@@ -208,7 +209,7 @@ public class RetVal {
             }
         } else if(isVector()) {
             if(b.isValue()) {   // vector ^ scalar
-                return new RetVal(Math.pow(vec, b.val.doubleValue()));
+                return new RetVal(VectorMath.pow(vec, b.val.doubleValue()));
             } else if(b.isVector()) { // vector ^ vector
                 throw new FormulaParserException("Operation vector^vector is not supported!");
             } else {    // vector ^ matrix
@@ -216,7 +217,7 @@ public class RetVal {
             }
         } else {
             if(b.isValue()) {   // matrix ^ scalar
-                return new RetVal(ImageProcessor.power(mat, b.val.floatValue()));
+                return new RetVal(ImageMath.power(mat, b.val.floatValue()));
             } else if(b.isVector()) {   // matrix ^ vector
                 throw new FormulaParserException("Operation matrix^vector is not supported!");
             } else {    // matrix ^ matrix
@@ -229,9 +230,9 @@ public class RetVal {
         if(isValue() && b.isValue()) {
             return new RetVal((val.doubleValue() != 0.0) && (b.val.doubleValue() != 0.0));
         } else if(isVector() && b.isVector()) {
-            return new RetVal(Math.logAnd(vec, b.vec));
+            return new RetVal(VectorMath.logAnd(vec, b.vec));
         } else if(isMatrix() && b.isMatrix()) {
-            return new RetVal(ImageProcessor.logAnd(mat, b.mat));
+            return new RetVal(ImageMath.logAnd(mat, b.mat));
         } else {
             throw new FormulaParserException("Operator `&` can be used only with variables of the same type, i.e., scalar&scalar, vector&vector, or matrix&matrix!");
         }
@@ -241,9 +242,9 @@ public class RetVal {
         if(isValue() && b.isValue()) {
             return new RetVal((val.doubleValue() != 0.0) || (b.val.doubleValue() != 0.0));
         } else if(isVector() && b.isVector()) {
-            return new RetVal(Math.logOr(vec, b.vec));
+            return new RetVal(VectorMath.logOr(vec, b.vec));
         } else if(isMatrix() && b.isMatrix()) {
-            return new RetVal(ImageProcessor.logOr(mat, b.mat));
+            return new RetVal(ImageMath.logOr(mat, b.mat));
         } else {
             throw new FormulaParserException("Operator `|` can be used only with variables of the same type, i.e., scalar&scalar, vector&vector, or matrix&matrix!");
         }
@@ -254,25 +255,25 @@ public class RetVal {
             if(b.isValue()) {   // scalar < scalar
                 return new RetVal(val.doubleValue() < b.val.doubleValue());
             } else if(b.isVector()) { // scalar < vector
-                return new RetVal(Math.relLt(val, b.vec));
+                return new RetVal(VectorMath.relLt(val, b.vec));
             } else {    // scalar < matrix
-                return new RetVal(ImageProcessor.relLt(val, b.mat));
+                return new RetVal(ImageMath.relLt(val, b.mat));
             }
         } else if(isVector()) {
             if(b.isValue()) {   // vector < scalar
-                return new RetVal(Math.relLt(vec, b.val));
+                return new RetVal(VectorMath.relLt(vec, b.val));
             } else if(b.isVector()) {   // vector < vector
-                return new RetVal(Math.relLt(vec, b.vec));
+                return new RetVal(VectorMath.relLt(vec, b.vec));
             } else {    // vector < matrix
                 throw new FormulaParserException("Operation vector<matrix is not supported!");
             }
         } else {  // matrix
             if(b.isValue()) {   // matrix < scalar
-                return new RetVal(ImageProcessor.relLt(mat, b.val));
+                return new RetVal(ImageMath.relLt(mat, b.val));
             } else if(b.isVector()) { // matrix < vector
                 throw new FormulaParserException("Operation matrix<vector is not supported!");
             } else {    // matrix < matrix
-                return new RetVal(ImageProcessor.relLt(mat, b.mat));
+                return new RetVal(ImageMath.relLt(mat, b.mat));
             }
         }
     }
@@ -282,25 +283,25 @@ public class RetVal {
             if(b.isValue()) {   // scalar > scalar
                 return new RetVal(val.doubleValue() > b.val.doubleValue());
             } else if(b.isVector()) { // scalar > vector
-                return new RetVal(Math.relGt(val, b.vec));
+                return new RetVal(VectorMath.relGt(val, b.vec));
             } else {    // scalar > matrix
-                return new RetVal(ImageProcessor.relGt(val, b.mat));
+                return new RetVal(ImageMath.relGt(val, b.mat));
             }
         } else if(isVector()) {
             if(b.isValue()) {   // vector > scalar
-                return new RetVal(Math.relGt(vec, b.val));
+                return new RetVal(VectorMath.relGt(vec, b.val));
             } else if(b.isVector()) {   // vector > vector
-                return new RetVal(Math.relGt(vec, b.vec));
+                return new RetVal(VectorMath.relGt(vec, b.vec));
             } else {    // vector > matrix
                 throw new FormulaParserException("Operation vector>matrix is not supported!");
             }
         } else {  // matrix
             if(b.isValue()) {   // matrix > scalar
-                return new RetVal(ImageProcessor.relGt(mat, b.val));
+                return new RetVal(ImageMath.relGt(mat, b.val));
             } else if(b.isVector()) { // matrix > vector
                 throw new FormulaParserException("Operation matrix>vector is not supported!");
             } else {    // matrix > matrix
-                return new RetVal(ImageProcessor.relGt(mat, b.mat));
+                return new RetVal(ImageMath.relGt(mat, b.mat));
             }
         }
     }
@@ -310,25 +311,25 @@ public class RetVal {
             if(b.isValue()) {   // scalar == scalar
                 return new RetVal(val.doubleValue() == b.val.doubleValue());
             } else if(b.isVector()) {   // scalar == vector
-                return new RetVal(Math.relEq(val, b.vec));
+                return new RetVal(VectorMath.relEq(val, b.vec));
             } else {    // scalar == matrix
-                return new RetVal(ImageProcessor.relEq(val, b.mat));
+                return new RetVal(ImageMath.relEq(val, b.mat));
             }
         } else if(isVector()) {
             if(b.isValue()) {   // vector == scalar
-                return new RetVal(Math.relEq(vec, b.val));
+                return new RetVal(VectorMath.relEq(vec, b.val));
             } else if(b.isVector()) {   // vector == vector
-                return new RetVal(Math.relEq(vec, b.vec));
+                return new RetVal(VectorMath.relEq(vec, b.vec));
             } else {    // vector == matrix
                 throw new FormulaParserException("Operation vector=matrix is not supported!");
             }
         } else {
             if(b.isValue()) {  // matrix == scalar
-                return new RetVal(ImageProcessor.relEq(mat, b.val));
+                return new RetVal(ImageMath.relEq(mat, b.val));
             } else if(b.isVector()) {   // matrix == vector
                 throw new FormulaParserException("Operation matrix=vector is not supported!");
             } else {   // matrix == matrix
-                return new RetVal(ImageProcessor.relEq(mat, b.mat));
+                return new RetVal(ImageMath.relEq(mat, b.mat));
             }
         }
     }
@@ -338,25 +339,25 @@ public class RetVal {
             if(b.isValue()) {   // scalar != scalar
                 return new RetVal(val.doubleValue() != b.val.doubleValue());
             } else if(b.isVector()) {   // scalar != vector
-                return new RetVal(Math.relNeq(val, b.vec));
+                return new RetVal(VectorMath.relNeq(val, b.vec));
             } else {    // scalar != matrix
-                return new RetVal(ImageProcessor.relNeq(val, b.mat));
+                return new RetVal(ImageMath.relNeq(val, b.mat));
             }
         } else if(isVector()) {
             if(b.isValue()) {   // vector != scalar
-                return new RetVal(Math.relNeq(vec, b.val));
+                return new RetVal(VectorMath.relNeq(vec, b.val));
             } else if(b.isVector()) {   // vector != vector
-                return new RetVal(Math.relNeq(vec, b.vec));
+                return new RetVal(VectorMath.relNeq(vec, b.vec));
             } else {    // vector != matrix
                 throw new FormulaParserException("Operation vector=matrix is not supported!");
             }
         } else {
             if(b.isValue()) {  // matrix != scalar
-                return new RetVal(ImageProcessor.relNeq(mat, b.val));
+                return new RetVal(ImageMath.relNeq(mat, b.val));
             } else if(b.isVector()) {   // matrix != vector
                 throw new FormulaParserException("Operation matrix=vector is not supported!");
             } else {   // matrix != matrix
-                return new RetVal(ImageProcessor.relNeq(mat, b.mat));
+                return new RetVal(ImageMath.relNeq(mat, b.mat));
             }
         }
     }

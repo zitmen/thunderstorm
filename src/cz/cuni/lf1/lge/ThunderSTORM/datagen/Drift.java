@@ -1,8 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.datagen;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.PI;
-import static org.apache.commons.math3.util.FastMath.cos;
-import static org.apache.commons.math3.util.FastMath.sin;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.PI;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.cos;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sin;
 
 public class Drift {
 

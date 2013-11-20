@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.*;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
 import org.apache.commons.math3.optim.InitialGuess;

@@ -1,8 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtract;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.crop;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.subtract;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.crop;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
 import java.util.HashMap;

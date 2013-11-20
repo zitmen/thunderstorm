@@ -3,9 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.min;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sum;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 
 public interface OneLocationFitter {
 
@@ -37,15 +35,15 @@ public interface OneLocationFitter {
         }
 
         public double getMax() {
-            return max(values);
+            return VectorMath.max(values);
         }
 
         public double getMin() {
-            return min(values);
+            return VectorMath.min(values);
         }
         
         public double getSum() {
-            return sum(values);
+            return VectorMath.sum(values);
         }
         
         // note: the function changes the input array!

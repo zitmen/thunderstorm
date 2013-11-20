@@ -13,7 +13,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.CalibrationProcess;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.QuadraticFunction;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Macro;
@@ -214,8 +214,8 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         RenderingOverlay.showPointsInImage(imp, xCentroids, yCentroids, Color.red, RenderingOverlay.MARKER_CIRCLE);
         for(Position p : allPositions) {
             double[] frame = p.getFramesAsArray();
-            double[] x = Math.add(p.getXAsArray(), roiBounds.x);
-            double[] y = Math.add(p.getYAsArray(), roiBounds.y);
+            double[] x = VectorMath.add(p.getXAsArray(), roiBounds.x);
+            double[] y = VectorMath.add(p.getYAsArray(), roiBounds.y);
             for(int i = 0; i < frame.length; i++) {
                 RenderingOverlay.showPointsInImage(imp, new double[]{x[i]}, new double[]{y[i]}, (int) frame[i], Color.BLUE, RenderingOverlay.MARKER_CROSS);
             }

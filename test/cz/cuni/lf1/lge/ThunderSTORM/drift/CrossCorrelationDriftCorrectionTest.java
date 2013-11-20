@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.drift;
 
 import org.junit.Test;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.ImageStack;
 import static org.junit.Assert.*;
 
@@ -25,8 +25,8 @@ public class CrossCorrelationDriftCorrectionTest {
 //    new ImagePlus("corr", driftCorrection.getCorrelationImages()).show();
 //    Thread.sleep(200000);
 
-    assertEquals(driftCorrection.getMinFrame(), Math.min(frame), 0.00001);
-    assertEquals(driftCorrection.getMaxFrame(), Math.max(frame), 0.00001);
+    assertEquals(driftCorrection.getMinFrame(), VectorMath.min(frame), 0.00001);
+    assertEquals(driftCorrection.getMaxFrame(), VectorMath.max(frame), 0.00001);
 
     ImageStack correlationStack = driftCorrection.getCorrelationImages();
     assertNotNull(correlationStack);

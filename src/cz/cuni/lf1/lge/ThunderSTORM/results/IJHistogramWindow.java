@@ -14,8 +14,8 @@ import ij.process.*;
 import ij.measure.*;
 import ij.plugin.filter.Analyzer;
 import ij.text.TextWindow;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.min;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.max;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.min;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.max;
 
 /**
  * This class is an extended ImageWindow that displays histograms.

@@ -1,8 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree;
 
-import cz.cuni.lf1.lge.ThunderSTORM.util.Math;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
-import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
+import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.measure.Measurements;
 import ij.process.FloatProcessor;
 import ij.process.FloatStatistics;
@@ -48,7 +49,7 @@ public class Function extends Node {
         if(val.isMatrix()) {    // FloatProcessor
             return (FloatStatistics.getStatistics((FloatProcessor)val.get(), Measurements.MIN_MAX, null)).max;
         } else if(val.isVector()) {
-            return Math.max((Number[])val.get()).doubleValue();
+            return VectorMath.max((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
             return ((Double)val.get()).doubleValue();
         }
@@ -60,7 +61,7 @@ public class Function extends Node {
         if(val.isMatrix()) {    // FloatProcessor
             return (FloatStatistics.getStatistics((FloatProcessor)val.get(), Measurements.MIN_MAX, null)).min;
         } else if(val.isVector()) {
-            return Math.min((Number[])val.get()).doubleValue();
+            return VectorMath.min((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
             return ((Double)val.get()).doubleValue();
         }
@@ -70,9 +71,9 @@ public class Function extends Node {
     protected double sum(Object param) {
         RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
-            return Math.sum((float [])((FloatProcessor)val.get()).getPixels());
+            return VectorMath.sum((float [])((FloatProcessor)val.get()).getPixels());
         } else if(val.isVector()) {
-            return Math.sum((Number[])val.get()).doubleValue();
+            return VectorMath.sum((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
             return ((Double)val.get()).doubleValue();
         }
@@ -80,7 +81,7 @@ public class Function extends Node {
     }
     
     protected double var(Object param) {
-        return Math.sqr(std(param));
+        return MathProxy.sqr(std(param));
     }
     
     protected double std(Object param) {
@@ -88,7 +89,7 @@ public class Function extends Node {
         if(val.isMatrix()) {    // FloatProcessor
             return (FloatStatistics.getStatistics((FloatProcessor)val.get(), Measurements.STD_DEV, null)).stdDev;
         } else if(val.isVector()) {
-            return Math.stddev((Number[])val.get()).doubleValue();
+            return VectorMath.stddev((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
             return ((Double)val.get()).doubleValue();
         }
@@ -100,7 +101,7 @@ public class Function extends Node {
         if(val.isMatrix()) {    // FloatProcessor
             return (FloatStatistics.getStatistics((FloatProcessor)val.get(), Measurements.MEAN, null)).mean;
         } else if(val.isVector()) {
-            return Math.mean((Number[])val.get()).doubleValue();
+            return VectorMath.mean((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
             return ((Double)val.get()).doubleValue();
         }
@@ -112,7 +113,7 @@ public class Function extends Node {
         if(val.isMatrix()) {    // FloatProcessor
             return (FloatStatistics.getStatistics((FloatProcessor)val.get(), Measurements.MEDIAN, null)).median;
         } else if(val.isVector()) {
-            return Math.median((Number[])val.get()).doubleValue();
+            return VectorMath.median((Number[])val.get()).doubleValue();
         } else if(val.isValue()) {    // Double
             return ((Double)val.get()).doubleValue();
         }
@@ -122,11 +123,11 @@ public class Function extends Node {
     protected RetVal abs(Object param) {
         RetVal val = arg.eval(param);
         if(val.isMatrix()) {    // FloatProcessor
-            return new RetVal(ImageProcessor.abs((FloatProcessor)val.get()));
+            return new RetVal(ImageMath.abs((FloatProcessor)val.get()));
         } else if(val.isVector()) { // Double []
-            return new RetVal(Math.abs((Double[])val.get()));
+            return new RetVal(VectorMath.abs((Double[])val.get()));
         } else if(val.isValue()) {    // Double
-            return new RetVal(Math.abs(((Double)val.get()).doubleValue()));
+            return new RetVal(MathProxy.abs(((Double)val.get()).doubleValue()));
         }
         throw new FormulaParserException("Variables can be only scalars, vectors, or matrices!");
     }

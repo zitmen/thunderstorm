@@ -1,9 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.mean;
-import cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor;
+import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.process.FloatProcessor;
 import java.util.HashMap;
 
@@ -36,7 +36,7 @@ public final class LoweredGaussianFilter implements IFilter {
     
     private void updateKernel() {
         g = new GaussianFilter(size, sigma, padding);
-        u = new UniformFilter(size, mean((float []) g.getKernelX().getPixels()), padding);
+        u = new UniformFilter(size, VectorMath.mean((float []) g.getKernelX().getPixels()), padding);
     }
     
     public LoweredGaussianFilter() {
@@ -78,7 +78,7 @@ public final class LoweredGaussianFilter implements IFilter {
     @Override
     public FloatProcessor filterImage(FloatProcessor image) {
         input = image;
-        result = ImageProcessor.subtract(g.filterImage(image), u.filterImage(image));
+        result = ImageMath.subtract(g.filterImage(image), u.filterImage(image));
         return result;
     }
 

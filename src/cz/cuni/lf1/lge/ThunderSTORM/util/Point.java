@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.round;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.ceil;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.round;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.ceil;
 import ij.gui.Roi;
 import java.util.Comparator;
 import java.util.Vector;

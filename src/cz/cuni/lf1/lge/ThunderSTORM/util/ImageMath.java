@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import ij.process.FloatProcessor;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.pow;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.pow;
 import ij.process.ByteProcessor;
 import ij.process.ImageStatistics;
 import java.util.Arrays;
@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * Helper class to offer some additional functionality over the ImageProcessor from ImageJ.
  */
-public class ImageProcessor {
+public class ImageMath {
     
     public static FloatProcessor ones(int width, int height) {
         float [] matrix = new float[height*width];

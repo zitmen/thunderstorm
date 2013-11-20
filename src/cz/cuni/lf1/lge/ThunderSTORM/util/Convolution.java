@@ -26,7 +26,7 @@ public class Convolution {
      */
     public static FloatProcessor convolve2D(FloatProcessor image, FloatProcessor kernel, int padding_type) {
 
-        int kw = kernel.getWidth(), kh = kernel.getHeight(), padsize = (int)Math.ceil(java.lang.Math.max(kw, kh) / 2.0);
+        int kw = kernel.getWidth(), kh = kernel.getHeight(), padsize = (int)MathProxy.ceil(java.lang.Math.max(kw, kh) / 2.0);
         int iw = image.getWidth(), ih = image.getHeight(), idx;
         //if(padding_type == Padding.PADDING_NONE) { iw -= 2*padsize; ih -= 2*padsize; }
         FloatProcessor img = (FloatProcessor) Padding.addBorder(image, padding_type, padsize);

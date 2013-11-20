@@ -2,8 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sub;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.stddev;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath.sub;
 import java.util.Arrays;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
@@ -65,7 +65,7 @@ public class LSQFitter implements OneLocationFitter {
 
         // estimate background and return an instance of the `Molecule`
         fittedParameters = pv.getPointRef();
-        fittedParameters[PSFModel.Params.BACKGROUND] = stddev(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
+        fittedParameters[PSFModel.Params.BACKGROUND] = VectorMath.stddev(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
         return psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters), subimage.units);
     }
 

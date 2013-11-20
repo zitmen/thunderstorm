@@ -1,8 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.min;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.subtract;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageProcessor.add;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.subtract;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.add;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
@@ -22,6 +21,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.MeasurementProtocol;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -246,7 +246,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         //
         ip.setRoi(roi);
         FloatProcessor fp = subtract((FloatProcessor) ip.crop().convertToFloat(), (float) CameraSetupPlugIn.getOffset());
-        float minVal = min((float[]) fp.getPixels());
+        float minVal = VectorMath.min((float[]) fp.getPixels());
         if(minVal < 0) {
             IJ.log("Camera base level is set higher than values in the image!");
             fp = add(-minVal, fp);
