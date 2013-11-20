@@ -20,8 +20,10 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
         super(basePsfModel, defaultSigma, maxN);
         this.sameI = sameI;
         this.pValueThr = pValueThr;
-        this.expectedIntensity = expI;
-        this.expectedIntensity.convert(MoleculeDescriptor.Units.PHOTON, MoleculeDescriptor.Units.DIGITAL);
+        expectedIntensity = expI;
+        if(expectedIntensity!= null){
+            this.expectedIntensity.convert(MoleculeDescriptor.Units.PHOTON, MoleculeDescriptor.Units.DIGITAL);
+        }
     }
 
     @Override
