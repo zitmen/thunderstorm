@@ -2,6 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.datagen;
 
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
@@ -14,7 +16,6 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqr;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.Math.sqrt;
 import ij.process.ShortProcessor;
-import java.util.Arrays;
 import java.util.Vector;
 import static org.apache.commons.math3.util.FastMath.log;
 
@@ -57,24 +58,32 @@ public class DataGenerator {
         IFilter filter = new BoxFilter(1+2*(int)(((double)Math.min(width, width))/8.0));
         return filter.filterImage(img);
     }
-    
+
     public Vector<EmitterModel> generateMolecules(int width, int height, FloatProcessor mask, double density, Range intensity_photons, Range fwhm) {
-        double [] params = new double[PSFModel.Params.PARAMS_LENGTH];
-        Arrays.fill(params, 0.0);
+        MoleculeDescriptor descriptor = null;
+        double[] params = new double[PSFModel.Params.PARAMS_LENGTH];
         Vector<EmitterModel> molist = new Vector<EmitterModel>();
-        double gPpx = Units.NANOMETER_SQUARED.convertTo(Units.MICROMETER_SQUARED, sqr(CameraSetupPlugIn.getPixelSize())) * density, p_px, p, fwhm0;
-        for(int x = 0; x < width; x++) {
-            for(int y = 0; y < height; y++) {
+        double gPpx = Units.NANOMETER_SQUARED.convertTo(Units.MICROMETER_SQUARED, sqr(CameraSetupPlugIn.getPixelSize())*width*height/(mask.getWidth()*mask.getHeight())) * density, p_px, p, fwhm0;
+        for(int x = 0; x < mask.getWidth(); x++) {
+            for(int y = 0; y < mask.getHeight(); y++) {
                 p_px = gPpx * mask.getf(x, y);  //expected number of molecules inside a pixel
-                int nMols = (int)rand.nextPoisson(p_px); //actual number of molecules inside a pixel
-                for(int i = 0; i < nMols; i++){
+                int nMols = p_px > 0 ? (int) rand.nextPoisson(p_px) : 0; //actual number of molecules inside a pixel
+                for(int i = 0; i < nMols; i++) {
                     fwhm0 = rand.nextUniform(fwhm.from, fwhm.to);
-                    params[PSFModel.Params.X] = x + 0.5 + rand.nextUniform(-0.5, +0.5);
-                    params[PSFModel.Params.Y] = y + 0.5 + rand.nextUniform(-0.5, +0.5);
+                    params[PSFModel.Params.X] = (x + 0.5 + rand.nextUniform(-0.5, +0.5)) * width / mask.getWidth();
+                    params[PSFModel.Params.Y] = (y + 0.5 + rand.nextUniform(-0.5, +0.5)) * height / mask.getHeight();
                     params[PSFModel.Params.SIGMA] = fwhm0 / FWHM_factor;
                     params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
                     PSFModel model = new IntegratedSymmetricGaussianPSF(params[PSFModel.Params.SIGMA]);
-                    molist.add(new EmitterModel(model, model.newInstanceFromParams(params, Units.PHOTON), fwhm0));
+                    Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
+                    
+                    //set a common MoleculeDescriptor for all molecules in a frame to save memory
+                    if(descriptor != null){
+                        mol.descriptor = descriptor;
+                    }else{
+                        descriptor = mol.descriptor;
+                    }
+                    molist.add(new EmitterModel(model, mol, fwhm0));
                     //
                 }
             }
@@ -104,7 +113,6 @@ public class DataGenerator {
         //frame.setRoi((int)ceil(drift.dist), (int)ceil(drift.dist), width, height);    // see generateBackground
         //frame = (FloatProcessor)frame.crop();
         float [] zeros = new float[width*height];
-        Arrays.fill(zeros, 0.0f);
         FloatProcessor frame = new FloatProcessor(width, height, zeros, null);
         for(EmitterModel mol : molecules) {
             mol.moveXY(dx, dy);

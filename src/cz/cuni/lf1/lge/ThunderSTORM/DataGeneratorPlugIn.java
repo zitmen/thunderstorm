@@ -209,16 +209,15 @@ public class DataGeneratorPlugIn implements PlugIn {
         if((imagePath != null) && (imagePath.trim().length() > 0)) {
             ImagePlus imp = IJ.openImage(imagePath);
             if(imp != null) {
-                if((imp.getWidth() != width) || (imp.getHeight() != height)) {
-                    throw new RuntimeException("Mask must have the same size as the generated images!");
-                }
                 // ensure that the maximum value cannot be more than 1.0 !
                 FloatProcessor fmask = (FloatProcessor) imp.getProcessor().convertToFloat();
-                float min = (float) fmask.getMin();
+                float min = 0;
                 float max = (float) fmask.getMax();
-                for(int x = 0; x < width; x++) {
-                    for(int y = 0; y < height; y++) {
-                        fmask.setf(x, y, (fmask.getf(x, y) - min) / (max - min));
+                if(max > 0) {
+                    for(int x = 0; x < fmask.getWidth(); x++) {
+                        for(int y = 0; y < fmask.getHeight(); y++) {
+                            fmask.setf(x, y, (fmask.getf(x, y) - min) / (max - min));
+                        }
                     }
                 }
                 return fmask;
