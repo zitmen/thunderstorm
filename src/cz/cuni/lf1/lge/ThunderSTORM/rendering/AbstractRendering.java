@@ -218,8 +218,8 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         if(colorizeZ) {
             image.setDimensions(zSlices, 1, 1);
             CompositeImage image2 = new CompositeImage(image);
-            setupLuts();
             image = image2;
+            setupLuts();
         }
     }
 
