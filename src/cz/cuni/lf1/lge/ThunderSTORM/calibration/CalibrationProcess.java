@@ -99,17 +99,26 @@ public class CalibrationProcess {
                 IJ.showStatus("Determining angle: frame " + framesProcessed + " of " + stack.getSize() + "...");
             }
         });
+        //calculation of circular mean
         List<Double> sins = new ArrayList<Double>(angles);
         List<Double> coss = new ArrayList<Double>(angles);
         for(int i = 0; i < angles.size(); i++) {
-            double sin = MathProxy.sin(MathProxy.toRadians(sins.get(i) * 4));
-            double cos = MathProxy.cos(MathProxy.toRadians(coss.get(i) * 4));
-            sins.set(i, sin);
-            coss.set(i, cos);
+            double fittedAngle = angles.get(i);
+            //modulo 2PI/4
+            fittedAngle = fittedAngle % (MathProxy.PI / 2);
+            //modulo of a negative number is defined to be negative in java, so translate it to range [0,pi/2]
+            if(fittedAngle < 0) {
+                fittedAngle += MathProxy.PI / 2;
+            }
+            //*4
+            fittedAngle *= 4;
+            
+            sins.set(i, MathProxy.sin(fittedAngle));
+            coss.set(i, MathProxy.cos(fittedAngle));
         }
         double sin = bootstrapMeanEstimation(sins, 100, angles.size());
         double cos = bootstrapMeanEstimation(coss, 100, angles.size());
-        angle = MathProxy.toDegrees(MathProxy.atan2(sin, cos)) / 4;
+        angle = MathProxy.atan2(sin, cos) / 4;
     }
 
     public void fitQuadraticPolynomials() {
