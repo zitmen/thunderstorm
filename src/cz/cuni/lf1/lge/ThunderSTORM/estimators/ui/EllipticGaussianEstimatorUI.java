@@ -13,6 +13,7 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFacto
 import ij.IJ;
 import ij.Prefs;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -60,7 +61,12 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
                 }
             }
         });
-        JPanel calibrationPanel = new JPanel(new BorderLayout());
+        JPanel calibrationPanel = new JPanel(new BorderLayout()){
+            @Override
+            public Dimension getPreferredSize(){
+                return ((JTextField)parameters.getRegisteredComponent(SIGMA)).getPreferredSize();
+            }
+        };
         calibrationPanel.add(calibrationFileTextField, BorderLayout.CENTER);
         calibrationPanel.add(findCalibrationButton, BorderLayout.EAST);
         GridBagConstraints gbc = GridBagHelper.rightCol();
