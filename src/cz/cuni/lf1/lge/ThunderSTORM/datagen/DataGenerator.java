@@ -69,11 +69,15 @@ public class DataGenerator {
                 p_px = gPpx * mask.getf(x, y);  //expected number of molecules inside a pixel
                 int nMols = p_px > 0 ? (int) rand.nextPoisson(p_px) : 0; //actual number of molecules inside a pixel
                 for(int i = 0; i < nMols; i++) {
-                    fwhm0 = rand.nextUniform(fwhm.from, fwhm.to);
+                    fwhm0 = fwhm.from < fwhm.to
+                            ? rand.nextUniform(fwhm.from, fwhm.to)
+                            : fwhm.from;
                     params[PSFModel.Params.X] = (x + 0.5 + rand.nextUniform(-0.5, +0.5)) * width / mask.getWidth();
                     params[PSFModel.Params.Y] = (y + 0.5 + rand.nextUniform(-0.5, +0.5)) * height / mask.getHeight();
                     params[PSFModel.Params.SIGMA] = fwhm0 / FWHM_factor;
-                    params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
+                    params[PSFModel.Params.INTENSITY] = intensity_photons.from < intensity_photons.to
+                            ? rand.nextUniform(intensity_photons.from, intensity_photons.to)
+                            : intensity_photons.from;
                     PSFModel model = new IntegratedSymmetricGaussianPSF(params[PSFModel.Params.SIGMA]);
                     Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
                     
