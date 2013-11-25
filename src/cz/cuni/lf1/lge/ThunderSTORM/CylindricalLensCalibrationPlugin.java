@@ -30,7 +30,20 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import org.yaml.snakeyaml.Yaml;
 import ij.gui.Roi;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 public class CylindricalLensCalibrationPlugin implements PlugIn {
 
@@ -103,7 +116,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
 
             //perform the calibration
-            CalibrationProcess process = new CalibrationProcess(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, stageStep, imp, roi);
+            final CalibrationProcess process = new CalibrationProcess(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, stageStep, imp, roi);
 
             process.estimateAngle();
             IJ.log("angle = " + process.getAngle());
@@ -117,23 +130,66 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
                     process.getPolynomS1Final().convertToFrames(stageStep), process.getPolynomS2Final().convertToFrames(stageStep),
                     process.getAllFrames(), process.getAllSigma1s(), process.getAllSigma2s());
 
-            saveToFile(savePath, process.getCalibration());
-        } catch(IOException ex) {
-            IJ.error("Could not write calibration file: " + ex.getMessage());
+            try {
+                saveToFile(savePath, process.getCalibration());
+            } catch(IOException ex) {
+                showAnotherLocationDialog(ex, process);
+            }
         } catch(Exception ex) {
             IJ.handleException(ex);
         }
     }
 
+    private void showAnotherLocationDialog(IOException ex, final CalibrationProcess process) {
+        final JDialog dialog = new JDialog(IJ.getInstance(), "Error");
+        dialog.getContentPane().setLayout(new BorderLayout(0, 10));
+        dialog.getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        dialog.add(new JLabel("Could not save calibration file. " + ex.getMessage(), SwingConstants.CENTER));
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        JButton ok = new JButton("OK");
+        ok.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+        JButton newLocation = new JButton("Save to other path");
+        newLocation.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser jfc = new JFileChooser(IJ.getDirectory("image"));
+                jfc.showSaveDialog(null);
+                File f = jfc.getSelectedFile();
+                if(f != null) {
+                    try {
+                        saveToFile(f.getAbsolutePath(), process.getCalibration());
+                    } catch(IOException ex) {
+                        showAnotherLocationDialog(ex, process);
+                    }
+                }
+                dialog.dispose();
+            }
+        });
+        buttonsPane.add(newLocation);
+        buttonsPane.add(ok);
+        dialog.getContentPane().add(buttonsPane, BorderLayout.SOUTH);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.getRootPane().setDefaultButton(ok);
+        dialog.pack();
+        ok.requestFocusInWindow();
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
+    }
+
     private void saveToFile(String path, PolynomialCalibration calibration) throws IOException {
         FileWriter fw = null;
         try {
+            File file = new File(path);
             Yaml yaml = new Yaml();
-            fw = new FileWriter(path);
+            fw = new FileWriter(file);
             yaml.dump(calibration, fw);
-            IJ.showStatus("Calibration file saved to " + path);
-        } catch(IOException e) {
-            throw e;
+            IJ.log("Calibration file saved to: " + file.getAbsolutePath());
+            IJ.showStatus("Calibration file saved to " + file.getAbsolutePath());
         } finally {
             if(fw != null) {
                 fw.close();
