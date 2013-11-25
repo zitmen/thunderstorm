@@ -15,6 +15,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JLabel;
 
@@ -37,51 +40,62 @@ public class UpdaterPlugIn implements PlugIn {
             return;
         }
         IJ.showStatus("Looking for new versions...");
-        String[] list = openUrlAsList(ThunderSTORM.URL_DAILY + "/list.txt");
-        int count = list.length;
-        String[] versions = new String[count];
-        String[] urls = new String[count];
-        for (int i = 0; i < count; i++) {
-            versions[i] = list[i];
-            urls[i] = ThunderSTORM.URL_DAILY + "/" + versions[i] + ".jar";
+        String[] dailyList = openUrlAsList(ThunderSTORM.URL_DAILY + "/list.txt");
+        String[] stableList = openUrlAsList(ThunderSTORM.URL_STABLE + "/list.txt");
+        List<Version> allVersions = new ArrayList<Version>(dailyList.length+ stableList.length);
+        for(String filename :dailyList){
+            allVersions.add(new Version(filename));
         }
-        IJ.showStatus("");
-        int choice = showDialog(versions);
+        for(String filename :stableList){
+            allVersions.add(new Version(filename));
+        }
+        Collections.sort(allVersions, Collections.reverseOrder());
+        
+        int choice = showDialog(allVersions);
         if (choice == -1) {
             return;
         }
-        saveJar(file, getJar(urls[choice]));
+        saveJar(file, getJar(allVersions.get(choice).getUrl()));
         IJ.showMessage("Updater", "Please restart ImageJ to complete ThunderSTORM update.");
         ModuleLoader.setUseCaching(false);
         updateMenus();
     }
 
-    int showDialog(String[] versions) {
-        String newerAvailable = null;
+    int showDialog(List<Version> versions) {
+        Version newestVersion;
         Version current = new Version(version());
-        for(String ver : versions) {
-            if(current.compareTo(new Version(ver)) < 0) {
-                newerAvailable = ver;
-                break;
-            }
+        boolean upToDate;
+        if(current.isStable()){
+            newestVersion = getNewestStable(versions);
+            upToDate = !(current.compareTo(newestVersion) < 0);
+        }else{
+            newestVersion = getNewestDev(versions);
+            upToDate = !(current.compareTo(newestVersion) < 0);
         }
         //
         GenericDialogPlus gd = new GenericDialogPlus("ThunderSTORM Updater");
-        if(newerAvailable == null) {
-            JLabel label = new JLabel("ThunderSTORM is up to date!");
+        String branch = current.isStable() ? "stable" : "development";
+        if(upToDate) {
+            JLabel label = new JLabel("ThunderSTORM is up to date! (" + branch + ")");
             label.setForeground(new Color(0, 128, 0));
             gd.addComponent(label);
         } else {
-            JLabel label = new JLabel("New version of ThunderSTORM is available!");
+            JLabel label = new JLabel("New " + branch + " version of ThunderSTORM is available!");
             label.setForeground(new Color(128, 0, 0));
             gd.addComponent(label);
         }
-        gd.addChoice("Available versions:", versions, newerAvailable);
+        
+        String[] versionStrings = new String[versions.size()];
+        for(int i = 0; i < versions.size(); i ++){
+            versionStrings[i] = versions.get(i).toString();
+        }
+        
+        gd.addChoice("Available versions:", versionStrings, newestVersion.toString());
         String msg =
-                "You are currently running version " + version() + ".\n"
+                "You are currently running version " + current.toString() + ".\n"
                 + " \n"
                 + "If you click \"OK\", ImageJ will download the selected\n"
-                + "version and reload the ThunderSTORM.\n";
+                + "version and reload ThunderSTORM.\n";
         gd.addMessage(msg);
         gd.showDialog();
         if (gd.wasCanceled()) {
@@ -183,23 +197,61 @@ public class UpdaterPlugIn implements PlugIn {
         }
     }
     
+    private Version getNewestStable(List<Version> versions){
+        
+        for(Version version : versions) {
+            if(version.isStable()){
+                return version;
+            }
+        }
+        return null;
+    }
+    
+    private Version getNewestDev(List<Version> versions){
+        for(Version version : versions) {
+            if(!version.isStable()){
+                return version;
+            }
+        }
+        return null;
+    }
+    
     class Version implements Comparable<Version> {
         
+        public String fileName;
         public String version;
-        public String lastStable;
         public int year;
         public int month;
         public int day;
         public int buildOfTheDay;
         
+        
         public Version(String ver) {
-            this.version = ver;
+            this.fileName = ver;
             String [] tokens = ver.split("-");
-            this.lastStable = tokens[0];
+            this.version = tokens[0];
             this.year = Integer.parseInt(tokens[1]);
             this.month = Integer.parseInt(tokens[2]);
             this.day = Integer.parseInt(tokens[3]);
-            this.buildOfTheDay = Integer.parseInt(tokens[4].substring(1));
+            if(tokens.length > 4) {
+                this.buildOfTheDay = Integer.parseInt(tokens[4].substring(1));
+            }
+        }
+
+        @Override
+        public String toString() {
+            if("dev".equals(version)){
+                return fileName;
+            }else{
+                return version + " (" + year+ "-" + month + "-" + day + ")";
+            }
+        }
+        boolean isStable(){
+            return !"dev".equals(version);
+        }
+        
+        public String getUrl(){
+            return (isStable()? ThunderSTORM.URL_STABLE : ThunderSTORM.URL_DAILY) + "/" + fileName + ".jar";
         }
         
         @Override
@@ -210,7 +262,25 @@ public class UpdaterPlugIn implements PlugIn {
             if(cmp != 0) return cmp;
             cmp = day - v.day;
             if(cmp != 0) return cmp;
-            return (buildOfTheDay - v.buildOfTheDay);
+            cmp =  (buildOfTheDay - v.buildOfTheDay);
+            if(cmp != 0) return cmp;
+            if(isStable() && !v.isStable())
+                return 1;
+            if(!isStable() && v.isStable())
+                return -1;
+            if(isStable() && v.isStable()){
+                String[] tokens1 = version.split("\\.");
+                String[] tokens2 = v.version.split("\\.");
+                for(int i = 0; i < tokens1.length || i < tokens2.length; i++){
+                    int num1 = Integer.parseInt(tokens1[i]);
+                    int num2 = Integer.parseInt(tokens2[i]);
+                    cmp = Integer.compare(num1, num2);
+                    if(cmp != 0){
+                        return cmp;
+                    }
+                }
+            }
+            return 0;
         }
     }
 }
