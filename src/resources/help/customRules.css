@@ -35,6 +35,8 @@ div > .ltx_listingblock + .ltx_p {
 /*remove default margin for paragraphs*/
 .ltx_p{
     margin: 0px;
+    /* make line spacing smaller, for some odd reason Swingbox has it bigger than it should be */
+    line-height: 0.9;
 }
 /*margins around equations*/
 .ltx_equation, .ltx_equationgroup {

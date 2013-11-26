@@ -1,0 +1,502 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\usepackage{upgreek}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+About ThunderSTORM
+\end_layout
+
+\begin_layout Standard
+ThunderSTORM is an open-source plug-in for ImageJ, which provides automated
+ processing of data acquired by single molecule localization microscopy
+ methods such as PALM or STORM.
+ The plugin includes a collection of methods for reducing noise, detection
+ and sub-pixel localization of molecules, as well as post-processing steps
+ such as drift correction, removing molecules with poor localization accuracy,
+ and rendering of super-resolution images.
+ ThunderSTORM also offers a set of tools for creation and analysis of simulated
+ data.
+ Our philosophy in developing ThunderSTORM has been to offer a collection
+ of processing and post-processing methods so that users can adapt the analysis
+ process to their data and to use all the advantages of ImageJ including
+ its rich collection of other plug-ins, simple macro language and scripting
+ support.
+\end_layout
+
+\begin_layout Subsubsection*
+Project site
+\end_layout
+
+\begin_layout Standard
+The latest version of ThunderSTORM, including source code and documentation,
+ is available at 
+\begin_inset CommandInset href
+LatexCommand href
+name "Google code"
+target "https://code.google.com/p/thunder-storm/"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Report a bug
+\end_layout
+
+\begin_layout Standard
+In the case of malfunction, please let us know by using the 
+\begin_inset CommandInset href
+LatexCommand href
+name "issue tracking"
+target "https://code.google.com/p/thunder-storm/issues/list"
+
+\end_inset
+
+ system.
+ Specify the malfunction and describe the procedure to reproduce the error.
+ If an exception occurs, copy the stacktrace into the description box.
+ In addition, specify your platform, i.e.
+ Java version, ImageJ version, ThunderSTORM version, and possibly the version
+ of your operating system.
+\end_layout
+
+\begin_layout Subsubsection*
+Authors
+\end_layout
+
+\begin_layout Standard
+This software is being developped at Institute of Cellular Biology and Pathology
+, First Faculty of Medicine, Charles University in Prague, Czech Republic
+ by: Martin Ovesný, Pavel Křížek, Josef Borkovec, Zdeněk Švindrych, and
+ Guy M.
+ Hagen.
+\end_layout
+
+\begin_layout Subsubsection*
+Citation
+\end_layout
+
+\begin_layout Standard
+If you use ThunderSTORM to process your data, please consider citing our
+ paper: 
+\end_layout
+
+\begin_layout Standard
+!!!Insert formatted citation here!!!
+\end_layout
+
+\begin_layout Subsubsection*
+License
+\end_layout
+
+\begin_layout Standard
+ThunderSTORM is licensed under the terms of GPLv3.
+ Get a copy 
+\begin_inset CommandInset href
+LatexCommand href
+name "here"
+target "http://www.gnu.org/licenses/gpl.html"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Redistributed third-party libraries
+\end_layout
+
+\begin_layout Standard
+The binary release includes theese dependencies:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Commons Math"
+target "http://commons.apache.org/proper/commons-math/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Commons Primitives"
+target "http://commons.apache.org/proper/commons-primitives/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Commons lang"
+target "http://commons.apache.org/proper/commons-lang/"
+
+\end_inset
+
+ , 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "ImageJ"
+target "http://rsb.info.nih.gov/ij/"
+
+\end_inset
+
+, Public domain
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Gson"
+target "https://code.google.com/p/google-gson/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "OpenCSV"
+target "http://opencsv.sourceforge.net/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Protocol Buffers"
+target "https://code.google.com/p/protobuf/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "BSD New"
+target "http://opensource.org/licenses/BSD-3-Clause"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Snakeyaml"
+target "https://code.google.com/p/snakeyaml/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Balloon tip"
+target "https://balloontip.java.net/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "BSD New"
+target "http://opensource.org/licenses/BSD-3-Clause"
+
+\end_inset
+
+ license
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "CSSBox + SwingBox + jStyleParser"
+target "http://cssbox.sourceforge.net/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "LGPLv3"
+target "http://www.gnu.org/licenses/lgpl.html"
+
+\end_inset
+
+ license
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "NekoHTML "
+target "http://nekohtml.sourceforge.net/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Xerces"
+target "http://xerces.apache.org/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "XML Commons"
+target "http://xerces.apache.org/xml-commons/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+ + 
+\begin_inset CommandInset href
+LatexCommand href
+name "W3C"
+target "http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "ANTLR runtime "
+target "http://www.antlr3.org/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "BSD"
+target "http://www.antlr3.org/license.html"
+
+\end_inset
+
+ license
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "SLF4J api"
+target "http://www.slf4j.org/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "MIT"
+target "http://www.slf4j.org/license.html"
+
+\end_inset
+
+ license
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Commons IO"
+target "http://commons.apache.org/proper/commons-io/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Question mark icon by 
+\begin_inset CommandInset href
+LatexCommand href
+name "Yusuke Kamiyamane"
+target "http://p.yusukekamiyamane.com/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Creative commons attribution 3.0"
+target "http://creativecommons.org/licenses/by/3.0/"
+
+\end_inset
+
+ license
+\end_layout
+
+\end_body
+\end_document

@@ -18,8 +18,7 @@ import org.fit.cssbox.swingbox.SwingBoxEditorKit;
 
 public class AboutPlugIn implements PlugIn {
 
-    public static final String FILE_NAME = "about.png";
-    private static final String url = "resources/help/help.html";
+    private static final String url = "resources/help/about.html";
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 600;
 
