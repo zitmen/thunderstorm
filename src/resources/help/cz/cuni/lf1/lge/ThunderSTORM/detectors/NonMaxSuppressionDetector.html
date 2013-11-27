@@ -17,10 +17,11 @@
 <h1 class="ltx_title ltx_title_section">Non-maximum suppression</h1>
 
 <div id="Sx1.p1" class="ltx_para">
-<p class="ltx_p">Non-maximum suppression is a way to eliminate all image information
-that is not part of the local maxima by setting all non-maximal pixels
-to zero. Our implementation is based on morphological gray-scale dilation
-defined by the formula</p>
+<p class="ltx_p">Non-maximum suppression <cite class="ltx_cite">[]</cite> is a way to eliminate all
+image information that is not part of the local intensity maxima by
+setting all non-maximal pixels to zero. Our implementation is based
+on morphological gray-scale dilation <cite class="ltx_cite">[]</cite> defined by the
+formula</p>
 </div>
 <div id="Sx1.p2" class="ltx_para">
 <table id="Sx1.E1" class="ltx_equation">
@@ -36,8 +37,8 @@ defined by the formula</p>
 </table>
 <p class="ltx_p">where <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi2.png" width="18" height="16" alt="F"> is an input image, <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi10.png" width="15" height="16" alt="S"> is a structuring element, and <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi9.png" width="29" height="18" alt="D_{S}">
 is the domain of <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi10.png" width="15" height="16" alt="S">. Gray-scale dilation is a more general approach
-than the local maximum method described above, because the structuring
-element can be of any form in principle.</p>
+than the method of detection of <a href="LocalMaximaDetector.html" title="" class="ltx_ref">local intensity maxima</a>,
+because the structuring element can have an arbitrary form.</p>
 </div>
 <div id="Sx1.p3" class="ltx_para">
 <p class="ltx_p">We first perform a gray-scale dilation of the input image using a
@@ -46,8 +47,8 @@ where <img id="Sx1.p3.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/m
 molecular positions are extracted by finding pixels in the original
 image that have intensities equal to corresponding pixels in the dilated
 image and also have an intensity greater than a user-specified threshold.
-Essentially, a binary image can be built with all non-maximum pixels
-set to zero and with all local maxima set to one.</p>
+Essentially, a binary image is built with all non-maximum pixels set
+to zero and with all local maxima set to one.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">Threshold</h2>

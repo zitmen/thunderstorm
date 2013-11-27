@@ -68,10 +68,23 @@ Non-maximum suppression
 \end_layout
 
 \begin_layout Standard
-Non-maximum suppression is a way to eliminate all image information that
- is not part of the local maxima by setting all non-maximal pixels to zero.
- Our implementation is based on morphological gray-scale dilation defined
- by the formula
+Non-maximum suppression 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SHB2007"
+
+\end_inset
+
+ is a way to eliminate all image information that is not part of the local
+ intensity maxima by setting all non-maximal pixels to zero.
+ Our implementation is based on morphological gray-scale dilation 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SHB2007"
+
+\end_inset
+
+ defined by the formula
 \end_layout
 
 \begin_layout Standard
@@ -99,9 +112,21 @@ where
 \end_inset
 
 .
- Gray-scale dilation is a more general approach than the local maximum method
- described above, because the structuring element can be of any form in
- principle.
+ Gray-scale dilation is a more general approach than the method of detection
+ of 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{LocalMaximaDetector.html}{local intensity maxima}
+\end_layout
+
+\end_inset
+
+, because the structuring element can have an arbitrary form.
 \end_layout
 
 \begin_layout Standard
@@ -119,8 +144,8 @@ We first perform a gray-scale dilation of the input image using a structuring
  the original image that have intensities equal to corresponding pixels
  in the dilated image and also have an intensity greater than a user-specified
  threshold.
- Essentially, a binary image can be built with all non-maximum pixels set
- to zero and with all local maxima set to one.
+ Essentially, a binary image is built with all non-maximum pixels set to
+ zero and with all local maxima set to one.
 \end_layout
 
 \begin_layout Subsection*

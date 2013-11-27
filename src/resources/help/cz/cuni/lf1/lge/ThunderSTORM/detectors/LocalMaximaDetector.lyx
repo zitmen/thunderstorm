@@ -77,7 +77,7 @@ This method passes through each pixel of the input image
 \end_inset
 
  is greater than a user-specified threshold and at the same time greater
- than or equal to all values within a 4 or 8-connected neighborhood.
+ than or equal to all values within a 4- or 8-connected neighborhood.
  If this condition holds, the point is accepted as a candidate molecule
  for further processing.
 \end_layout

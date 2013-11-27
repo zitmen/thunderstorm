@@ -68,9 +68,9 @@ Removing molecules with poor localization
 ThunderSTORM can remove unwanted molecules according to user-defined criteria.
  The criteria is formulated as an expression combining mathematical and
  logical functions and operators with parameters from the table of results
- obtained by previous data analysis.
+ obtained from previous data analysis.
  Users can also display histograms of particular measured parameters and
- select thresholds to create the filtering criteria.
+ select thresholds to define the filtering criteria.
  All molecules with parameters not accepted by the criteria are removed.
 \end_layout
 
@@ -80,7 +80,7 @@ Filter formula syntax
 
 \begin_layout Standard
 The filtering criteria can be specified using a formula built-up from a
- combination of the built-in functions, operators and variables.
+ combination of functions, operators and variables.
  The result of the formula must be a vector of boolean values containing
  1 for each row that should stay in the results table and 0 for the rows
  that should be deleted.

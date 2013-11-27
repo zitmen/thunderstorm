@@ -85,7 +85,7 @@ key "Huang2008"
  If the molecule is slightly above or below the focal plane, its image appears
  ellipsoidal.
  Calibration of the imaging system is needed to determine the orientation
- of the imaged ellipsoid (the camera chip may not be aligned with cylindrical
+ of the imaged ellipsoid (the camera chip might not be aligned with cylindrical
  lens) and the relationships between the axial position and ellipticity
  of the imaged molecules.
 \end_layout
@@ -111,11 +111,11 @@ where
 \begin_inset Formula $\mathrm{PSF}_{\mathrm{EG}}\left(x,y\mid\boldsymbol{\theta},\phi\right)$
 \end_inset
 
- gives the expected photon count at pixel 
+ gives the expected photon count at the integer pixel position 
 \begin_inset Formula $\left(x,y\right)$
 \end_inset
 
- for PSF coefficients 
+ for a vector of parameters 
 \begin_inset Formula $\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{\sigma_{1}},\theta_{\sigma_{2}},\theta_{N},\theta_{b}\right]$
 \end_inset
 
@@ -128,7 +128,7 @@ y' & = & \left(x-\theta_{x}\right)\sin\phi+\left(y-\theta_{y}\right)\cos\phi\,.
 
 \end_inset
 
- The entries of the coefficient vector 
+The entries of the vector 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -221,8 +221,8 @@ Crowded-field
 \end_layout
 
 \begin_layout Standard
-ThunderSTORM supports fitting of multiple PSF models simultaneously in a
- single fitting region.
+ThunderSTORM supports fitting of multiple PSF models in a single fitting
+ region.
  See 
 \begin_inset ERT
 status open
@@ -244,19 +244,36 @@ Estimating axial position
 \end_layout
 
 \begin_layout Standard
-The axial position of a molecule is determined by minimizing the distance
- between the fitted values 
-\begin_inset Formula $\sigma_{1},\sigma_{2}$
+The estimate of the axial position 
+\begin_inset Formula $\hat{z}$
+\end_inset
+
+ of a moleculeis determined by minimizing the distance between the fitted
+ values 
+\begin_inset Formula $\hat{\theta}_{\sigma_{1}},\hat{\theta}_{\sigma_{2}}$
 \end_inset
 
  and the calibration curves 
 \begin_inset Formula $\hat{\sigma}_{1}\left(z\right),\hat{\sigma}_{2}\left(z\right)$
 \end_inset
 
-, thus by
+, obtained during the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{CalibrationEstimatorUI.html}{calibration}
+\end_layout
+
+\end_inset
+
+ process, thus by
 \begin_inset Formula 
 \begin{equation}
-\hat{z}=\argmin_{z}\left(\sigma_{1}^{1/2}-\hat{\sigma}_{1}^{1/2}\left(z\right)\right)^{2}+\left(\sigma_{2}^{1/2}-\hat{\sigma}_{2}^{1/2}\left(z\right)\right)^{2}\,.
+\hat{z}=\argmin_{z}\left(\left(\hat{\theta}_{\sigma_{1}}^{1/2}-\hat{\sigma}_{1}^{1/2}\left(z\right)\right)^{2}+\left(\hat{\theta}_{\sigma_{2}}^{1/2}-\hat{\sigma}_{2}^{1/2}\left(z\right)\right)^{2}\right)\,.
 \end{equation}
 
 \end_inset
@@ -385,7 +402,7 @@ key "Quan2010"
 \begin_layout Standard
 We use the same equations for three dimensional localization but we use
  
-\begin_inset Formula $\sigma^{2}=\sigma_{1}\sigma_{2}$
+\begin_inset Formula $\sigma^{2}=\hat{\theta}_{\sigma_{1}}\hat{\theta}_{\sigma_{2}}$
 \end_inset
 
 .

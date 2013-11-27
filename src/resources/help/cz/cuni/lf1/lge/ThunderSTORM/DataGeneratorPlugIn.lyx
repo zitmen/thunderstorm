@@ -76,9 +76,29 @@ name "sec:Image-formation-model"
 \end_layout
 
 \begin_layout Standard
-The synthetic data generator forms images using a probabilistic model based
- on user-supplied parameters.
- In addition to the image dimensions and sequence length, 
+ThunderSTORM is capable of generating a
+\begin_inset space ~
+\end_inset
+
+sequence of SMLM-like images in which the ground-truth positions of the
+ molecules are known.
+ This allows users to perform Monte Carlo simulations 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Walter2010,Krizek2011"
+
+\end_inset
+
+ and to quantitatively evaluate the performance of applied localization
+ algorithms by calculating, e.g., the Jaccard index or 
+\begin_inset Formula $F_{1}$
+\end_inset
+
+ score using the Performance evaluation plugin.
+ In addition to the image size and sequence length, users can specify the
+ intensity, imaged size, and spatial density of the generated molecules.
+ The resulting images can be subjected to a sample drift.
+ Noise in the generated images simulates the behavior of CCD or EMCCD cameras.
 \end_layout
 
 \begin_layout Subsection*
@@ -86,103 +106,14 @@ Image formation
 \end_layout
 
 \begin_layout Standard
-users can choose the pixel-size 
-\begin_inset Formula $a$
-\end_inset
-
- (nm), the density of molecules 
-\begin_inset Formula $D$
-\end_inset
-
- (molecules per 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $\upmu\textrm{m}^{2}$
-\end_inset
-
-
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-), the emitter intensity range 
-\begin_inset Formula $I$
-\end_inset
-
- (photons), the emitter FWHM range (pixels), and the variance of additive
- Poisson noise 
-\begin_inset Formula $\lambda$
-\end_inset
-
- (photons).
- The software can also simulate linear drift of the sample over time.
- We first generate a background which is static for all the images in the
- sequence.
- Then for each frame a set of molecules is generated and added to the image.
- If drift was specified, the image is shifted.
- Additive noise is then applied.
- The process can be summarized as follows 
-\begin_inset Formula 
-\begin{equation}
-image=\mathrm{{drift}}(\mathrm{PSF_{IG}}(X\mid\theta))+\mathcal{P}(\lambda)\,,
-\end{equation}
-
-\end_inset
-
-where 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $\mathcal{P}(\lambda)$
-\end_inset
-
- is a Poisson distributed variable with parameter 
-\begin_inset Formula $\lambda$
-\end_inset
-
- and
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
- 
-\begin_inset Formula $\mathrm{PSF_{IG}}(X\mid\theta)$
-\end_inset
-
- is an 
+For each frame, we first create an ideal, noise free, SMLM-like image to
+ simulate the expected number of photons detected in each camera pixel.
+ Image formation starts by creating a list of molecules with FWHM and intensity
+ chosen randomly in user-specified ranges, and with random positions given
+ by a user-specified spatial density (see below).
+ An offset with user-specified variance is added to the generated image
+ sequence to simulate photon background.
+ Imaged molecules are modeled by an 
 \begin_inset ERT
 status open
 
@@ -190,127 +121,149 @@ status open
 
 
 \backslash
-href{estimators/ui/IntSymmetricGaussianEstimatorUI.html}{integrated bi-variate
- Gaussian PSF}
+href{estimators/ui/IntSymmetricGaussianEstimatorUI.html}{integrated form
+ of a symmetric 2D Gaussian function}
 \end_layout
 
 \end_inset
 
-.
- 
+, and the generated molecules are added sequentially to the final image
+ as in the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{rendering/ui/DensityRenderingUI.html}{Gaussian rendering}
 \end_layout
 
-\begin_layout Standard
-The parameters 
-\begin_inset Formula $\theta$
 \end_inset
 
- are picked randomly from a uniform distribution 
-\begin_inset Formula $\mathcal{U}$
-\end_inset
-
- within the range of user-specified values.
- Thus 
-\begin_inset Formula 
-\begin{equation}
-\theta=\{\mathcal{U}(x_{0}),\mathcal{U}(y_{0}),\mathcal{U}(I),\mathrm{\mathcal{U}({FWHM}/(2\sqrt{{2\ln2}})})\}\,.
-\end{equation}
-
-\end_inset
-
-
+ method.
 \end_layout
 
 \begin_layout Standard
-To simulate the EM gain, we use a stochastic model described in 
+In order to simulate the photon counting process in the generated images,
+ each pixel value expressed in photons is modified by a Poisson random number
+ generator.
+ We use this simplification for CCD cameras.
+ The data generator can optionally simulate EM gain of EMCCD cameras.
+ In this case we use a stochastic model described in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Hirsch2013"
 
 \end_inset
 
-.
- The EM register is modeled using the Gamma distribution 
+, where the camera register is modeled by the Gamma distribution 
 \begin_inset Formula $\Gamma(k,g)$
 \end_inset
 
- with its shape determined by the number of photo-electrons in the register
- 
+.
+ The shape 
 \begin_inset Formula $k$
 \end_inset
 
- and scale given by the value of gain 
+ is given by the number of photons detected in the simulated CCD register
+ and the scale 
 \begin_inset Formula $g$
 \end_inset
 
-.
-\end_layout
-
-\begin_layout Subsection*
-Spatial density of molecules
+ is given by the user-specified value of gain.
 \end_layout
 
 \begin_layout Standard
-Users can specify a fixed density of molecules for the whole image or a
- varying density by supplying a gray-scale mask 
+Finally, the signal in the camera register is digitized by converting photons
+ to A/D counts.
+ The CCD sensitivity (in photons per A/D count), and the camera digitizer
+ offset (in A/D counts) are user-specified in the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{CameraSetupPlugIn.html}{camera setup}
+\end_layout
+
+\end_inset
+
+, as well as the camera pixel size (in nanometers) as projected to the sample
+ plane.
+\end_layout
+
+\begin_layout Subsection*
+Fixed or spatially varying density of molecules
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Fixed-and-varying-spatial-density"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Users can specify a fixed or spatially varying density of simulated molecules
+ in the generated images.
+ The variability is achieved by a user-supplied gray-scale mask 
 \begin_inset Formula $M$
 \end_inset
 
- in which the intensities are used in the probability model which determine
- the probability of a molecule to appear at any given pixel,
+, in which each pixel value is normalized to the interval 
+\begin_inset Formula $\left[0,1\right]$
+\end_inset
+
+ and used to represent the weighting factor .
+ The average number of molecules at a given integer pixel position 
+\begin_inset Formula $\left(x,y\right)$
+\end_inset
+
+ is then computed as
 \begin_inset Formula 
 \begin{equation}
-\mathbb{P}=a^{2}D\cdot M_{i}\,.
+\overline{d}\left(x,y\right)=a^{2}M\left(x,y\right)d_{\mathrm{max}}\,,
 \end{equation}
 
 \end_inset
 
-
-\begin_inset Formula $M_{i}$
+where 
+\begin_inset Formula $a$
 \end_inset
 
- is the intensity of the 
-\begin_inset Formula $i$
+ is the camera pixel size as projected to the sample plane, and 
+\begin_inset Formula $d_{\mathrm{max}}$
 \end_inset
 
--th pixel in mask 
-\begin_inset Formula $M,$
+ is the maximum spatial density of molecules per unit area.
+\end_layout
+
+\begin_layout Standard
+The process of generating molecular positions follows the Poisson distribution.
+ Thus for each value 
+\begin_inset Formula $\overline{d}\left(x,y\right)$
 \end_inset
 
- normalized to the interval 
-\begin_inset Formula $(0,1)$
+, a random number of events (molecules) is created in the pixel 
+\begin_inset Formula $\left(x,y\right)$
 \end_inset
 
- to represent a probability.
- For each pixel, the generator randomly picks a uniformly distributed value
- 
-\begin_inset Formula $p\in(0,1)$
-\end_inset
+ using a Poisson random number generator.
+ Molecular centers are placed uniformly and randomly within that pixel.
+\end_layout
 
- and if 
-\begin_inset Formula $p\leq\mathbb{P}$
-\end_inset
+\begin_layout Subsection*
+Additional sample drift
+\end_layout
 
- a molecule is placed inside the pixel with a random offset from its center.
- If the density in a single pixel is higher than one molecule, the value
- 
-\begin_inset Formula $\mathbb{P}$
-\end_inset
-
- is greater than one.
- In that case the generator renders a molecule, updates 
-\begin_inset Formula $\mathbb{P}=\mathbb{P}-1$
-\end_inset
-
-, picks a new 
-\begin_inset Formula $p$
-\end_inset
-
-, and continues generating new molecules until 
-\begin_inset Formula $p>\mathbb{P}$
-\end_inset
-
-.
+\begin_layout Standard
+The generated molecular positions in the image sequence can be subjected
+ to a lateral sample drift.
+ Users need to specify the speed and direction of the drift, which is constant
+ throughout the image sequence.
 \end_layout
 
 \begin_layout Standard

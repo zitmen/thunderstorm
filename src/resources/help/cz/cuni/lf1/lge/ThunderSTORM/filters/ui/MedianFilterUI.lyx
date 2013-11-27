@@ -76,7 +76,7 @@ A median filter is a non-linear image filter often used to remove impulse
  middle element of all numerically sorted entries.
  For an even number of entries, the median is calculated as the mean of
  the two entries in the middle.
- Users need to input the kernel size and the type of the neighborhood mask
+ Users need to input the kernel size and the type of neighborhood mask,
  which can be a cross (4-connected) or box (8-connected) pattern.
 \end_layout
 

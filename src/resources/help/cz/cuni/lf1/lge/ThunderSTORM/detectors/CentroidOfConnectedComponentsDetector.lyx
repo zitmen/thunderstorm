@@ -74,12 +74,20 @@ This algorithm is based on segmentation of molecules which is performed
 \end_inset
 
 .
- Users also have an option to combine the thresholded image with the result
- of a watershed algorithm applied to the image 
+ Users also have the option to combine the thresholded image with the result
+ of a watershed algorithm 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SHB2007"
+
+\end_inset
+
+ applied to the image 
 \begin_inset Formula $F$
 \end_inset
 
- 
+.
+ This procedure was proposed in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Izeddin2012"
@@ -115,9 +123,16 @@ Here
 \begin_inset Formula $y_{i,p}$
 \end_inset
 
- are the pixel coordinates within each object.
+ are the integer pixel coordinates within each object.
  Segmented objects are determined as connected components by an algorithm
- based on a breadth-first search.
+ based on a breadth-first search 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Knuth1997"
+
+\end_inset
+
+.
  The watershed algorithm is based on the ImageJ 
 \begin_inset Quotes eld
 \end_inset

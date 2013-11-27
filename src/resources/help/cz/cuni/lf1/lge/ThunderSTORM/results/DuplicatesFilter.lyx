@@ -68,7 +68,7 @@ Removing duplicates
 If two molecules are localized in the same image and their mutual distance
  is smaller than their localization uncertainty, then the molecule with
  lower localization uncertainty is kept and the other one is rejected.
- This post-processing method is suggested by Huang et.
+ This post-processing method is suggested by Huang et
 \begin_inset space ~
 \end_inset
 

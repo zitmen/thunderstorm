@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage{erf}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -65,40 +68,41 @@ Gaussian rendering
 \end_layout
 
 \begin_layout Standard
-This method draws a normalized Gaussian blob for every localized molecule.
- The standard deviation of the blobs is equal to their computed, or user-specifi
-ed localization uncertainty.
- Contributions from all accepted molecules are plotted together in the final
- super-resolution image.
-\end_layout
-
-\begin_layout Standard
-The blobs are rendered using a symmetric Gaussian function integrated over
- the voxel volume.
+This method draws a normalized symmetric 2D Gaussian function integrated
+ over the voxel volume for every localized molecule, with a standard deviation
+ equal to the computed, or user-specified localization uncertainty.
+ The rendered molecules are added sequentially to the final super-resolution
+ images.
  The contribution of one molecule to the voxel intensity at the integer
  position 
 \begin_inset Formula $\left(x,y,z\right)$
 \end_inset
 
  is computed as
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
-\begin{eqnarray}
-v_{x,y,z} & =\frac{1}{8} & \left(\text{erf}\left(\frac{x-\hat{x}_{p}+\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy,p}}\right)-\text{erf}\left(\frac{x-\hat{x}_{p}-\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy,p}}\right)\right)\nonumber \\
- &  & \left(\text{erf}\left(\frac{y-\hat{y}_{p}+\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy,p}}\right)-\text{erf}\left(\frac{y-\hat{y}_{p}-\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy,p}}\right)\right)\nonumber \\
- &  & \left(\text{erf}\left(\frac{z-\hat{z}_{p}+\frac{\triangle_{z}}{2}}{\sqrt{2}\hat{\sigma}_{z,p}}\right)-\text{erf}\left(\frac{z-\hat{z}_{p}-\frac{\triangle_{z}}{2}}{\sqrt{2}\hat{\sigma}_{z,p}}\right)\right)\,.
-\end{eqnarray}
+\begin{equation}
+v\left(x,y,z\mid\boldsymbol{\theta}_{p}\right)=E_{x}E_{y}E_{z}\,,
+\end{equation}
 
 \end_inset
 
-Here 
-\begin_inset Formula $\hat{x}_{p},\hat{y}_{p},\hat{z}_{p}$
-\end_inset
-
- is the position of a molecule, 
+where 
 \begin_inset Formula $p$
 \end_inset
 
- indexes the molecules, 
+ indexes the molecules, and the parameters 
+\begin_inset Formula $\boldsymbol{\theta}_{p}=\left[\hat{x}_{p},\hat{y}_{p},\hat{z}_{p},\hat{\sigma}_{xy,p},\hat{\sigma}_{z,p}\right]$
+\end_inset
+
+.
+ Here 
+\begin_inset Formula $\hat{x}_{p},\hat{y}_{p},\hat{z}_{p}$
+\end_inset
+
+ is the estimated position of a molecule, 
 \begin_inset Formula $\hat{\sigma}_{xy,p}$
 \end_inset
 
@@ -106,11 +110,24 @@ Here
 \begin_inset Formula $\hat{\sigma}_{z,p}$
 \end_inset
 
- is the axial localization uncertainty, and 
+ is the axial localization uncertainty,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+E_{x} & = & \frac{1}{2}\erf\left(\frac{x-\hat{x}+\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy}}\right)-\frac{1}{2}\erf\left(\frac{x-\hat{x}-\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy}}\right)\,,\\
+E_{y} & = & \frac{1}{2}\erf\left(\frac{y-\hat{y}+\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy}}\right)-\frac{1}{2}\erf\left(\frac{y-\hat{y}-\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy}}\right)\,,\\
+E_{z} & = & \frac{1}{2}\erf\left(\frac{z-\hat{z}+\frac{\Delta_{z}}{2}}{\sqrt{2}\hat{\sigma}_{z}}\right)-\frac{1}{2}\erf\left(\frac{z-\hat{z}-\frac{\Delta_{z}}{2}}{\sqrt{2}\hat{\sigma}_{z}}\right)\,,
+\end{eqnarray}
+
+\end_inset
+
+and 
 \begin_inset Formula $\triangle_{z}$
 \end_inset
 
- is the proportional size of a voxel in the axial direction.
+ is the size of a voxel in the axial direction.
  Contributions from one molecule are limited to an interval given by a circle
  with radius of 
 \family roman
@@ -181,6 +198,27 @@ and by
 \end_inset
 
  in axial direction.
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+For rendering in the 2D case, 
+\begin_inset Formula $z=0$
+\end_inset
+
+ and the term 
+\begin_inset Formula $E_{z}=1$
+\end_inset
+
+.
 \end_layout
 
 \end_body

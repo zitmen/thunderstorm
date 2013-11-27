@@ -19,10 +19,11 @@
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">This algorithm is based on segmentation of molecules which is performed
 by applying a user-defined threshold on the filtered input image <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi2.png" width="18" height="16" alt="F">.
-Users also have an option to combine the thresholded image with the
-result of a watershed algorithm applied to the image <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi2.png" width="18" height="16" alt="F"> <cite class="ltx_cite">[<a href="#bib.bib10" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>.
-The position of each molecule is determined by computing the centroid
-of the relevant segmented object using</p>
+Users also have the option to combine the thresholded image with the
+result of a watershed algorithm <cite class="ltx_cite">[<a href="#bib.bib1" title="Image Processing, Analysis, and Machine Vision" class="ltx_ref">3</a>]</cite> applied to the image
+<img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi2.png" width="18" height="16" alt="F">. This procedure was proposed in <cite class="ltx_cite">[<a href="#bib.bib13" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>. The position
+of each molecule is determined by computing the centroid of the relevant
+segmented object using</p>
 </div>
 <div id="Sx1.p2" class="ltx_para">
 <table id="Sx1.E1" class="ltx_equation">
@@ -36,10 +37,11 @@ of the relevant segmented object using</p>
 </tr>
 </table>
 <p class="ltx_p">Here <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi4.png" width="13" height="15" alt="p"> indexes the objects, <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi3.png" width="19" height="17" alt="c_{p}"> is the number of elements
-in each object, and <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi5.png" width="31" height="17" alt="x_{i,p}"> and <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-7px" src="mi/mi6.png" width="30" height="17" alt="y_{i,p}"> are the pixel coordinates
-within each object. Segmented objects are determined as connected
-components by an algorithm based on a breadth-first search. The watershed
-algorithm is based on the ImageJ ‘‘Find Maxima’’ function.</p>
+in each object, and <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi5.png" width="31" height="17" alt="x_{i,p}"> and <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-7px" src="mi/mi6.png" width="30" height="17" alt="y_{i,p}"> are the integer pixel
+coordinates within each object. Segmented objects are determined as
+connected components by an algorithm based on a breadth-first search
+<cite class="ltx_cite">[<a href="#bib.bib16" title="The Art Of Computer Programming" class="ltx_ref">2</a>]</cite>. The watershed algorithm is based on the ImageJ
+‘‘Find Maxima’’ function.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">Threshold</h2>
@@ -55,16 +57,37 @@ for more information.</p>
 <h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib10" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib13" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">I. Izeddin, J. Boulanger, V. Racine, C. G. Specht, A. Kechkar, D. Nair, A. Triller, D. Choquet, M. Dahan and J. B. Sibarita</span><span class="ltx_text ltx_bib_year">(2012-01)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">I. Izeddin, J. Boulanger, V. Racine, C. G. Specht, A. Kechkar, D. Nair, A. Triller, D. Choquet, M. Dahan and J. B. Sibarita</span><span class="ltx_text ltx_bib_year">(2012)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Wavelet analysis for single molecule localization microscopy</span>,
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Optics express</span> <span class="ltx_text ltx_bib_volume">20</span> (<span class="ltx_text ltx_bib_number">3</span>), <span class="ltx_text ltx_bib_pages"> pp. 2081–95</span>.
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Optics Express</span> <span class="ltx_text ltx_bib_volume">20</span> (<span class="ltx_text ltx_bib_number">3</span>), <span class="ltx_text ltx_bib_pages"> pp. 2081–95</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/OE.20.002081" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
-<span class="ltx_text issn ltx_bib_external">ISSN 1094-4087</span></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/OE.20.002081" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Centroid of connected components" class="ltx_ref"><span class="ltx_text ltx_ref_title">Centroid of connected components</span></a>.
+</span>
+</li>
+<li id="bib.bib16" class="ltx_bibitem ltx_bib_book">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">D. E. Knuth</span><span class="ltx_text ltx_bib_year">(1997)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">The Art Of Computer Programming</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_edition">3rd edition</span>, Vol. <span class="ltx_text ltx_bib_volume">1</span>,  <span class="ltx_text ltx_bib_publisher">Addison-Wesley</span>, <span class="ltx_text ltx_bib_place">Boston</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p2" title="Centroid of connected components" class="ltx_ref"><span class="ltx_text ltx_ref_title">Centroid of connected components</span></a>.
+</span>
+</li>
+<li id="bib.bib1" class="ltx_bibitem ltx_bib_book">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. Šonka, V. Hlaváč and R. Boyle</span><span class="ltx_text ltx_bib_year">(2007)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Image Processing, Analysis, and Machine Vision</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_edition">3rd edition edition</span>,  <span class="ltx_text ltx_bib_publisher">Cengage Learning</span>.
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Centroid of connected components" class="ltx_ref"><span class="ltx_text ltx_ref_title">Centroid of connected components</span></a>.
 </span>

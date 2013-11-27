@@ -76,7 +76,7 @@ A two-dimensional discrete convolution is defined as
 
 \end_inset
 
- where 
+where 
 \begin_inset Formula $I$
 \end_inset
 
@@ -88,11 +88,7 @@ A two-dimensional discrete convolution is defined as
 \begin_inset Formula $K$
 \end_inset
 
- is a convolution kernel of size 
-\begin_inset Formula $o\times p$
-\end_inset
-
-.
+ is a convolution kernel of arbitrary size.
  Values outside the domains of 
 \begin_inset Formula $I$
 \end_inset
@@ -105,8 +101,8 @@ A two-dimensional discrete convolution is defined as
 \end_layout
 
 \begin_layout Standard
-Convolution can be a time demanding operation when implemented from the
- definition in Equation 
+Convolution can be a time demanding operation when implemented according
+ to the definition in Equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:conv"
@@ -114,8 +110,8 @@ reference "eq:conv"
 \end_inset
 
 .
- To speed up the algorithms, we used a method known as convolution with
- separable kernels.
+ To speed up the algorithms, we use a method known as convolution with separable
+ kernels.
  This allows one to calculate the convolution of the image 
 \begin_inset Formula $I$
 \end_inset
@@ -127,7 +123,7 @@ reference "eq:conv"
  as 
 \begin_inset Formula 
 \begin{equation}
-F=I*K=I*\boldsymbol{k}*\boldsymbol{k}^{\top}\label{eq:conv-separable}
+F=I*K=\left(I*\boldsymbol{k}\right)*\boldsymbol{k}^{\top}\label{eq:conv-separable}
 \end{equation}
 
 \end_inset
@@ -154,7 +150,7 @@ if the kernel
 \end_inset
 
 .
- Using the method of separable kernals reduces the time complexity of the
+ Using the method of separable kernels reduces the time complexity of the
  convolution from 
 \begin_inset Formula $O\left(mnl^{2}\right)$
 \end_inset

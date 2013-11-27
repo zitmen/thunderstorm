@@ -19,7 +19,7 @@
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">The wavelet transform is commonly used in modern signal-processing
 applications. This type of wavelet filter applies the <em class="ltx_emph">à trous</em>
-algorithm <cite class="ltx_cite">[<a href="#bib.bib21" title="Astronomical Image and Data Analysis" class="ltx_ref">2</a>, <a href="#bib.bib10" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite> which is an undecimated scheme
+algorithm <cite class="ltx_cite">[<a href="#bib.bib29" title="Astronomical Image and Data Analysis" class="ltx_ref">2</a>, <a href="#bib.bib13" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite> which is an undecimated scheme
 in which the filter responses are up-sampled, thereby inserting holes
 (<em class="ltx_emph">trous</em> in French) between the filter coefficients. The output
 of each filter level therefore contains the same number of samples
@@ -34,7 +34,7 @@ to obtain the smoothed approximations</p>
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi9.png" width="159" height="25" alt="V_{i}=V_{i-1}*\boldsymbol{k}_{i}*\boldsymbol{k}_{i}^{\top}\,,"></td>
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi9.png" width="173" height="25" alt="V_{i}=\left(V_{i-1}*\boldsymbol{k}_{i}\right)*\boldsymbol{k}_{i}^{\top}\,,"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
@@ -42,7 +42,7 @@ to obtain the smoothed approximations</p>
 <p class="ltx_p">where <img id="Sx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi15.png" width="55" height="18" alt="V_{0}=I"> is the input image, <img id="Sx1.p3.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi20.png" width="98" height="19" alt="i=1,\ldots,N">, and <img id="Sx1.p3.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi19.png" width="21" height="19" alt="\boldsymbol{k}_{i}">
 is a filter kernel at the corresponding level. The number of levels
 is given by <img id="Sx1.p3.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi14.png" width="20" height="16" alt="N">. The convolution kernel is usually based on a third-order
-B-spline scaling function <cite class="ltx_cite">[<a href="#bib.bib21" title="Astronomical Image and Data Analysis" class="ltx_ref">2</a>, <a href="#bib.bib10" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>, where <img id="Sx1.p3.m5" class="ltx_Math" style="vertical-align:-8px" src="mi/mi16.png" width="175" height="29" alt="\boldsymbol{k}_{1}=\left[\frac{1}{16},\frac{1}{4},\frac{3}{8},\frac{1}{4},%
+B-spline scaling function <cite class="ltx_cite">[<a href="#bib.bib29" title="Astronomical Image and Data Analysis" class="ltx_ref">2</a>, <a href="#bib.bib13" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>, where <img id="Sx1.p3.m5" class="ltx_Math" style="vertical-align:-8px" src="mi/mi16.png" width="175" height="29" alt="\boldsymbol{k}_{1}=\left[\frac{1}{16},\frac{1}{4},\frac{3}{8},\frac{1}{4},%
 \frac{1}{16}\right]^{\top}">,
 <img id="Sx1.p3.m6" class="ltx_Math" style="vertical-align:-8px" src="mi/mi17.png" width="242" height="29" alt="\boldsymbol{k}_{2}=\left[\frac{1}{16},0,\frac{1}{4},0,\frac{3}{8},0,\frac{1}{4%
 },0,\frac{1}{16}\right]^{\top}">,
@@ -76,7 +76,7 @@ this level, most localization microscopy data contains structures
 with sizes close to the diffraction limit of the microscope (we note
 that this depends on the effective camera pixel size). The wavelet
 filter is the default option in ThunderSTORM as it performs very well
-on many of localization microscopy data sets we have experimented
+on many of the localization microscopy data sets we have experimented
 with.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
@@ -124,24 +124,23 @@ wavelet levels <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-
 <h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib10" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib13" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">I. Izeddin, J. Boulanger, V. Racine, C. G. Specht, A. Kechkar, D. Nair, A. Triller, D. Choquet, M. Dahan and J. B. Sibarita</span><span class="ltx_text ltx_bib_year">(2012-01)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">I. Izeddin, J. Boulanger, V. Racine, C. G. Specht, A. Kechkar, D. Nair, A. Triller, D. Choquet, M. Dahan and J. B. Sibarita</span><span class="ltx_text ltx_bib_year">(2012)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Wavelet analysis for single molecule localization microscopy</span>,
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Optics express</span> <span class="ltx_text ltx_bib_volume">20</span> (<span class="ltx_text ltx_bib_number">3</span>), <span class="ltx_text ltx_bib_pages"> pp. 2081–95</span>.
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Optics Express</span> <span class="ltx_text ltx_bib_volume">20</span> (<span class="ltx_text ltx_bib_number">3</span>), <span class="ltx_text ltx_bib_pages"> pp. 2081–95</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/OE.20.002081" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
-<span class="ltx_text issn ltx_bib_external">ISSN 1094-4087</span></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/OE.20.002081" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>,
 <a href="#Sx1.p3" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>.
 </span>
 </li>
-<li id="bib.bib21" class="ltx_bibitem ltx_bib_book">
+<li id="bib.bib29" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. Starck and F. Murtagh</span><span class="ltx_text ltx_bib_year">(2002)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J.-L. Starck and F. Murtagh</span><span class="ltx_text ltx_bib_year">(2002)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Astronomical Image and Data Analysis</span>,
 </span>

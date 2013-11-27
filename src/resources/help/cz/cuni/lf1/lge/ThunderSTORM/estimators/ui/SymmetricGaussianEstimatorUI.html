@@ -17,17 +17,17 @@
 <h1 class="ltx_title ltx_title_section">Fitting PSF models: Symmetric 2D Gaussian function</h1>
 
 <div id="Sx1.p1" class="ltx_para">
-<p class="ltx_p">A single molecule emitter can be treated as a point source in SMLM
-data. The impulse response of a microscope to a point-like source
-is described by the point-spread function (PSF). The result of fitting
-a PSF model to an image of a single molecule is an estimate of the
-position of the molecule, its imaged size, and its intensity.</p>
+<p class="ltx_p">The impulse response of a microscope to a point-like source is described
+by the point-spread function (PSF). Because a single molecule emitter
+can be treated as an incoherent point source in SMLM data, the result
+of fitting a PSF model to an image of a single molecule is an estimate
+of the molecular position, its imaged size, and its intensity.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">PSF model</h2>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
-<p class="ltx_p">It has been shown <cite class="ltx_cite">[<a href="#bib.bib24" title="Precise nanometer localization analysis for individual fluorescent probes" class="ltx_ref">3</a>, <a href="#bib.bib20" title="Accuracy of the gaussian point spread function model in 2D localization microscopy" class="ltx_ref">2</a>]</cite> that the Gaussian
+<p class="ltx_p">It has been shown <cite class="ltx_cite">[<a href="#bib.bib32" title="Precise nanometer localization analysis for individual fluorescent probes" class="ltx_ref">4</a>, <a href="#bib.bib28" title="Accuracy of the gaussian point spread function model in 2D localization microscopy" class="ltx_ref">3</a>]</cite> that the Gaussian
 function provides a very good approximation of the real PSF of a microscope.
 This is mainly due to pixelation effects and the presence of noise,
 which makes the difference between the Gaussian function and the real
@@ -43,22 +43,22 @@ Gaussian function given by the formula</p>
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-24px" src="mi/mi120.png" width="469" height="57" alt="\mathrm{PSF_{G}}\left(x,y\mid\boldsymbol{\theta}\right)=\frac{\theta_{N}}{2\pi%
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-24px" src="mi/mi140.png" width="469" height="57" alt="\mathrm{PSF_{G}}\left(x,y\mid\boldsymbol{\theta}\right)=\frac{\theta_{N}}{2\pi%
 \theta_{\sigma}^{2}}\exp{\left(-\frac{\left(x-\theta_{x}\right)^{2}+\left(y-%
 \theta_{y}\right)^{2}}{2\theta_{\sigma}^{2}}\right)}+\theta_{b}\,,"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.SSx1.p3.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi121.png" width="118" height="21" alt="\mathrm{PSF_{G}}\left(x,y\mid\boldsymbol{\theta}\right)"> gives
-the expected photon count at the pixel <img id="Sx1.SSx1.p3.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi20.png" width="45" height="21" alt="\left(x,y\right)"> for coefficients
-<img id="Sx1.SSx1.p3.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi85.png" width="168" height="22" alt="\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{\sigma},\theta_{N},%
+<p class="ltx_p">where <img id="Sx1.SSx1.p3.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi141.png" width="118" height="21" alt="\mathrm{PSF_{G}}\left(x,y\mid\boldsymbol{\theta}\right)"> gives
+the expected photon count at the integer pixel position <img id="Sx1.SSx1.p3.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi21.png" width="45" height="21" alt="\left(x,y\right)">
+for a vector of parameters <img id="Sx1.SSx1.p3.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi105.png" width="168" height="22" alt="\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{\sigma},\theta_{N},%
 \theta_{b}\right]">.
-The entries of the coefficient vector <img id="Sx1.SSx1.p3.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}"> are follows:
-<img id="Sx1.SSx1.p3.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi29.png" width="21" height="19" alt="\theta_{x}"> and <img id="Sx1.SSx1.p3.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi30.png" width="20" height="21" alt="\theta_{y}"> are the sub-pixel molecular coordinates,
-<img id="Sx1.SSx1.p3.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi76.png" width="22" height="19" alt="\theta_{\sigma}"> is the imaged size of the molecule, <img id="Sx1.SSx1.p3.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi25.png" width="25" height="19" alt="\theta_{N}">
-corresponds to the total number of photons emitted by the molecule,
-and <img id="Sx1.SSx1.p3.m9" class="ltx_Math" style="vertical-align:-5px" src="mi/mi28.png" width="19" height="19" alt="\theta_{b}"> corresponds to the background signal level.</p>
+The entries of the vector <img id="Sx1.SSx1.p3.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}"> are as follows: <img id="Sx1.SSx1.p3.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi30.png" width="21" height="19" alt="\theta_{x}">
+and <img id="Sx1.SSx1.p3.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi31.png" width="20" height="21" alt="\theta_{y}"> are the sub-pixel molecular coordinates, <img id="Sx1.SSx1.p3.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi94.png" width="22" height="19" alt="\theta_{\sigma}">
+is the imaged size of the molecule, <img id="Sx1.SSx1.p3.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi26.png" width="25" height="19" alt="\theta_{N}"> corresponds to the
+total number of photons emitted by the molecule, and <img id="Sx1.SSx1.p3.m9" class="ltx_Math" style="vertical-align:-5px" src="mi/mi29.png" width="19" height="19" alt="\theta_{b}">
+corresponds to the background signal level.</p>
 </div>
 </div>
 <div id="Sx1.SSx2" class="ltx_subsection">
@@ -74,29 +74,28 @@ for more information.</p>
 <h2 class="ltx_title ltx_title_subsection">Crowded-field</h2>
 
 <div id="Sx1.SSx3.p1" class="ltx_para">
-<p class="ltx_p">ThunderSTORM supports fitting of multiple PSF models simultaneously
-in a single fitting region. See <a href="CrowdedField.html" title="" class="ltx_ref">crowded field</a>
-for more information.</p>
+<p class="ltx_p">ThunderSTORM supports fitting of multiple PSF models in a single fitting
+region. See <a href="CrowdedField.html" title="" class="ltx_ref">crowded field</a> for more information.</p>
 </div>
 </div>
 <div id="Sx1.SSx4" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">Localization uncertainty</h2>
 
 <div id="Sx1.SSx4.p1" class="ltx_para">
-<p class="ltx_p">Let <img id="Sx1.SSx4.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi56.png" width="14" height="11" alt="\sigma"> be the standard deviation of a fitted Gaussian blob
-in nm, <img id="Sx1.SSx4.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi58.png" width="13" height="11" alt="a"> is the (backprojected) pixel size in nm, <img id="Sx1.SSx4.p1.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi44.png" width="20" height="16" alt="N"> is the number
-of photons detected for a given molecule, and <img id="Sx1.SSx4.p1.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi59.png" width="11" height="16" alt="b"> is the background
+<p class="ltx_p">Let <img id="Sx1.SSx4.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi72.png" width="14" height="11" alt="\sigma"> be the standard deviation of a fitted Gaussian PSF in
+nm, <img id="Sx1.SSx4.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi74.png" width="13" height="11" alt="a"> is the (backprojected) pixel size in nm, <img id="Sx1.SSx4.p1.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi46.png" width="20" height="16" alt="N"> is the number
+of photons detected for a given molecule, and <img id="Sx1.SSx4.p1.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi75.png" width="11" height="16" alt="b"> is the background
 signal level in photons calculated as the standard deviation of the
-residuals between the raw data and the fitted PSF model. The uncertainty
-in the lateral position of a molecule can be approximated by the formula
-<cite class="ltx_cite">[<a href="#bib.bib24" title="Precise nanometer localization analysis for individual fluorescent probes" class="ltx_ref">3</a>]</cite></p>
+residuals between the raw data and the fitted PSF model <cite class="ltx_cite">[<a href="#bib.bib14" title="Minimizing detection errors in single molecule localization microscopy" class="ltx_ref">1</a>]</cite>.
+The uncertainty in the lateral position of a molecule can be approximated
+by the formula <cite class="ltx_cite">[<a href="#bib.bib32" title="Precise nanometer localization analysis for individual fluorescent probes" class="ltx_ref">4</a>]</cite></p>
 </div>
 <div id="Sx1.SSx4.p2" class="ltx_para">
 <table id="Sx1.E2" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi54.png" width="267" height="42" alt="\left\langle(\Delta x)^{2}\right\rangle=\frac{\sigma^{2}+a^{2}/12}{N}+\frac{8%
+<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi68.png" width="267" height="42" alt="\left\langle(\Delta x)^{2}\right\rangle=\frac{\sigma^{2}+a^{2}/12}{N}+\frac{8%
 \pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,."></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
@@ -105,12 +104,12 @@ in the lateral position of a molecule can be approximated by the formula
 </div>
 <div id="Sx1.SSx4.p3" class="ltx_para">
 <p class="ltx_p">The previous equation can be further adjusted to take EM gain of EMCCD
-cameras into account <cite class="ltx_cite">[<a href="#bib.bib15" title="Localization capability and limitation of electron-multiplying charge-coupled, scientific complementary metal-oxide semiconductor, and charge-coupled devices for superresolution imaging" class="ltx_ref">1</a>]</cite>, giving the expression</p>
+cameras into account <cite class="ltx_cite">[<a href="#bib.bib22" title="Localization capability and limitation of electron-multiplying charge-coupled, scientific complementary metal-oxide semiconductor, and charge-coupled devices for superresolution imaging" class="ltx_ref">2</a>]</cite>, giving the expression</p>
 <table id="Sx1.E3" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi53.png" width="275" height="42" alt="\left\langle(\Delta x)^{2}\right\rangle=\frac{2\sigma^{2}+a^{2}/12}{N}+\frac{8%
+<td class="ltx_align_center"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi67.png" width="275" height="42" alt="\left\langle(\Delta x)^{2}\right\rangle=\frac{2\sigma^{2}+a^{2}/12}{N}+\frac{8%
 \pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,."></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(3)</span></td>
@@ -123,22 +122,34 @@ cameras into account <cite class="ltx_cite">[<a href="#bib.bib15" title="Localiz
 <h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib15" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib14" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">T. Quan, S. Zeng and Z. Huang</span><span class="ltx_text ltx_bib_year">(2010-01)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. Křížek, I. Raška and G. M. Hagen</span><span class="ltx_text ltx_bib_year">(2011)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Minimizing detection errors in single molecule localization microscopy</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Optics Express</span> <span class="ltx_text ltx_bib_volume">19</span> (<span class="ltx_text ltx_bib_number">4</span>), <span class="ltx_text ltx_bib_pages"> pp. 3226–35</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/OE.19.003226" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx4.p1" title="Localization uncertainty ‣ Fitting PSF models: Symmetric 2D Gaussian function" class="ltx_ref"><span class="ltx_text ltx_ref_title">Localization uncertainty</span></a>.
+</span>
+</li>
+<li id="bib.bib22" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">T. Quan, S. Zeng and Z.-L. Huang</span><span class="ltx_text ltx_bib_year">(2010)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Localization capability and limitation of electron-multiplying charge-coupled, scientific complementary metal-oxide semiconductor, and charge-coupled devices for superresolution imaging</span>,
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Journal of biomedical optics</span> <span class="ltx_text ltx_bib_volume">15</span> (<span class="ltx_text ltx_bib_number">6</span>), <span class="ltx_text ltx_bib_pages"> pp. 066005</span>.
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Journal of Biomedical Optics</span> <span class="ltx_text ltx_bib_volume">15</span> (<span class="ltx_text ltx_bib_number">6</span>), <span class="ltx_text ltx_bib_pages"> pp. 066005</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1117/1.3505017" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
-<span class="ltx_text issn ltx_bib_external">ISSN 1560-2281</span></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1117/1.3505017" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx4.p3" title="Localization uncertainty ‣ Fitting PSF models: Symmetric 2D Gaussian function" class="ltx_ref"><span class="ltx_text ltx_ref_title">Localization uncertainty</span></a>.
 </span>
 </li>
-<li id="bib.bib20" class="ltx_bibitem ltx_bib_article">
-<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
+<li id="bib.bib28" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">S. Stallinga and B. Rieger</span><span class="ltx_text ltx_bib_year">(2010)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Accuracy of the gaussian point spread function model in 2D localization microscopy</span>,
@@ -150,16 +161,15 @@ cameras into account <cite class="ltx_cite">[<a href="#bib.bib15" title="Localiz
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p1" title="PSF model ‣ Fitting PSF models: Symmetric 2D Gaussian function" class="ltx_ref"><span class="ltx_text ltx_ref_title">PSF model</span></a>.
 </span>
 </li>
-<li id="bib.bib24" class="ltx_bibitem ltx_bib_article">
-<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. E. Thompson, D. R. Larson and W. W. Webb</span><span class="ltx_text ltx_bib_year">(2002-05)</span>
+<li id="bib.bib32" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[4]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. E. Thompson, D. R. Larson and W. W. Webb</span><span class="ltx_text ltx_bib_year">(2002)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Precise nanometer localization analysis for individual fluorescent probes</span>,
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Biophysical journal</span> <span class="ltx_text ltx_bib_volume">82</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 2775–83</span>.
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Biophysical Journal</span> <span class="ltx_text ltx_bib_volume">82</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 2775–83</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1016/S0006-3495(02)75618-X" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
-<span class="ltx_text issn ltx_bib_external">ISSN 0006-3495</span></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1016/S0006-3495(02)75618-X" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p1" title="PSF model ‣ Fitting PSF models: Symmetric 2D Gaussian function" class="ltx_ref"><span class="ltx_text ltx_ref_title">PSF model</span></a>,
 <a href="#Sx1.SSx4.p1" title="Localization uncertainty ‣ Fitting PSF models: Symmetric 2D Gaussian function" class="ltx_ref"><span class="ltx_text ltx_ref_title">Localization uncertainty</span></a>.

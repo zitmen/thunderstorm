@@ -68,14 +68,21 @@ Lowered Gaussian filter
 \end_layout
 
 \begin_layout Standard
-This filter was reported to perform well in the algorithm DAOPHOT 
+This filter was reported to perform well in DAOPHOT 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Stetson1987"
 
 \end_inset
 
-.
+ and DAOSTORM 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Holden2011"
+
+\end_inset
+
+ algorithms.
  The 
 \begin_inset ERT
 status open

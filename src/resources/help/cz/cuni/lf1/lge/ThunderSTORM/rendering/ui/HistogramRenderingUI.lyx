@@ -73,9 +73,8 @@ Histograms are used to estimate the density of data by counting the number
  In our case, a two-dimensional histogram of molecular positions is created
  with the bin size corresponding to the pixel size of the final super-resolution
  image.
- Thus, for every molecule, the bin value (i.
- e., the image brightness) at the corresponding molecular positions is incremente
-d by one.
+ Thus, for every localized molecule, the bin value (i.e., the image brightness)
+ at the corresponding molecular positions is incremented by one.
 \end_layout
 
 \begin_layout Standard
@@ -117,7 +116,7 @@ href{DensityRenderingUI.html}{Gaussian rendering}
 
 .
  For a small number of jitters, the histogram rendering is much faster than
- the Gaussian rendering but the resulting images appear noisy.
+ the Gaussian rendering but the resulting images may appear noisy.
 \end_layout
 
 \begin_layout Standard

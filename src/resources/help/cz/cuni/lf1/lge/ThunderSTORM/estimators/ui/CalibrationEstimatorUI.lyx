@@ -85,7 +85,7 @@ key "Huang2008"
  If the molecule is slightly above or below the focal plane, its image appears
  ellipsoidal.
  Calibration of the imaging system is needed to determine the orientation
- of the imaged ellipsoid (the camera chip may not be aligned with cylindrical
+ of the imaged ellipsoid (the camera chip might not be aligned with cylindrical
  lens) and the relationships between the axial position and ellipticity
  of the imaged molecules.
 \end_layout
@@ -111,11 +111,11 @@ where
 \begin_inset Formula $\mathrm{PSF}_{\mathrm{EG}}\left(x,y\mid\boldsymbol{\theta},\phi\right)$
 \end_inset
 
- gives the expected photon count at pixel 
+ gives the expected photon count at the integer pixel position 
 \begin_inset Formula $\left(x,y\right)$
 \end_inset
 
- for PSF coefficients 
+ for a vector of parameters 
 \begin_inset Formula $\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{\sigma_{1}},\theta_{\sigma_{2}},\theta_{N},\theta_{b}\right]$
 \end_inset
 
@@ -128,7 +128,7 @@ y' & = & \left(x-\theta_{x}\right)\sin\phi+\left(y-\theta_{y}\right)\cos\phi\,.
 
 \end_inset
 
- The entries of the coefficient vector 
+The entries of the vector 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -202,8 +202,12 @@ Calibration is a procedure which determines the orientation angle
 \begin_inset Formula $\phi$
 \end_inset
 
- of the imaged ellipsoids, and the relationship between the axial positions
- of molecules and their imaged widths 
+ of the imaged ellipsoids, and the relationship between the axial position
+ 
+\begin_inset Formula $z$
+\end_inset
+
+ of the molecules and their imaged widths 
 \begin_inset Formula $\sigma_{1},\sigma_{2}$
 \end_inset
 
@@ -300,7 +304,7 @@ The final orientation angle is calculated as the circular mean of all remaining
  measurements
 \begin_inset Formula 
 \begin{equation}
-\phi=\atantwo\left(\frac{1}{n}\sum_{i=1}^{n}{\sin\varphi_{i}},\,\frac{1}{n}\sum_{i=1}^{n}{\cos\varphi_{i}}\right)\,,
+\phi=\frac{1}{4}\atantwo\left(\frac{1}{n}\sum_{i=1}^{n}{\sin\varphi_{i}},\,\frac{1}{n}\sum_{i=1}^{n}{\cos\varphi_{i}}\right)\,,
 \end{equation}
 
 \end_inset
@@ -373,8 +377,12 @@ reference "eq:astigmatism_poly2"
 \end_layout
 
 \begin_layout Enumerate
-From the fitted models, we determine a common focal plane of the beads and
- shift the data along the 
+From the fitted models, we determine a common focal plane of the beads as
+ 
+\begin_inset Formula $\frac{c_{1}+c_{2}}{2}$
+\end_inset
+
+ and shift the data along the 
 \begin_inset Formula $z$
 \end_inset
 

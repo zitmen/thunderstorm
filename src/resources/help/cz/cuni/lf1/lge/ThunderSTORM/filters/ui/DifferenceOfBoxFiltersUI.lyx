@@ -81,8 +81,14 @@ href{DifferenceOfGaussiansFilterUI.html}{Difference of Gaussians}
 
 \end_inset
 
- filter, the difference of averaging filters is another type of a band-pass
- filter.
+ filter, the difference of averaging filters 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Huang2011"
+
+\end_inset
+
+ is another type of a band-pass filter.
  The filtered image is obtained by subtracting images filtered with two
  
 \begin_inset ERT
@@ -97,7 +103,7 @@ href{BoxFilterUI.html}{averaging filters}
 
 \end_inset
 
- having different size specified by users,
+ having different user-specified kernel sizes,
 \end_layout
 
 \begin_layout Standard

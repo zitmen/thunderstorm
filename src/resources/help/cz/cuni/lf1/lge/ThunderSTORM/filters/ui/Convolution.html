@@ -31,13 +31,13 @@
 </tr>
 </table>
 <p class="ltx_p">where <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi24.png" width="13" height="16" alt="I"> is an image of size <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-3px" src="mi/mi30.png" width="51" height="16" alt="m\times n">, and <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi26.png" width="20" height="16" alt="K"> is a convolution
-kernel of size <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi31.png" width="43" height="18" alt="o\times p">. Values outside the domains of <img id="Sx1.p2.m5" class="ltx_Math" style="vertical-align:-2px" src="mi/mi24.png" width="13" height="16" alt="I"> and
-<img id="Sx1.p2.m6" class="ltx_Math" style="vertical-align:-2px" src="mi/mi26.png" width="20" height="16" alt="K"> are set to zero.</p>
+kernel of arbitrary size. Values outside the domains of <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi24.png" width="13" height="16" alt="I"> and <img id="Sx1.p2.m5" class="ltx_Math" style="vertical-align:-2px" src="mi/mi26.png" width="20" height="16" alt="K">
+are set to zero.</p>
 </div>
 <div id="Sx1.p3" class="ltx_para">
-<p class="ltx_p">Convolution can be a time demanding operation when implemented from
-the definition in Equation (<a href="#Sx1.E1" title="(1) ‣ Convolution" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>). To speed up the algorithms,
-we used a method known as convolution with separable kernels. This
+<p class="ltx_p">Convolution can be a time demanding operation when implemented according
+to the definition in Equation (<a href="#Sx1.E1" title="(1) ‣ Convolution" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>). To speed up the algorithms,
+we use a method known as convolution with separable kernels. This
 allows one to calculate the convolution of the image <img id="Sx1.p3.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi24.png" width="13" height="16" alt="I"> with the
 kernel <img id="Sx1.p3.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi26.png" width="20" height="16" alt="K"> as
 </p>
@@ -45,14 +45,14 @@ kernel <img id="Sx1.p3.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi22.png" width="183" height="20" alt="F=I*K=I*\boldsymbol{k}*\boldsymbol{k}^{\top}"></td>
+<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi22.png" width="197" height="25" alt="F=I*K=\left(I*\boldsymbol{k}\right)*\boldsymbol{k}^{\top}"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
 </tr>
 </table>
 <p class="ltx_p">if the kernel <img id="Sx1.p3.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi26.png" width="20" height="16" alt="K"> can be written as <img id="Sx1.p3.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi25.png" width="78" height="20" alt="K=\boldsymbol{k}\boldsymbol{k}^{\top}">.
 Here the kernel <img id="Sx1.p3.m5" class="ltx_Math" style="vertical-align:-2px" src="mi/mi26.png" width="20" height="16" alt="K"> is an <img id="Sx1.p3.m6" class="ltx_Math" style="vertical-align:-3px" src="mi/mi7.png" width="37" height="18" alt="l\times l"> matrix and <img id="Sx1.p3.m7" class="ltx_Math" style="vertical-align:-6px" src="mi/mi29.png" width="156" height="26" alt="\boldsymbol{k}=\left[k_{1},k_{2},\ldots,k_{l}\right]^{\top}">.
-Using the method of separable kernals reduces the time complexity
+Using the method of separable kernels reduces the time complexity
 of the convolution from <img id="Sx1.p3.m8" class="ltx_Math" style="vertical-align:-8px" src="mi/mi28.png" width="77" height="25" alt="O\left(mnl^{2}\right)"> to <img id="Sx1.p3.m9" class="ltx_Math" style="vertical-align:-6px" src="mi/mi27.png" width="66" height="21" alt="O\left(mnl\right)">.</p>
 </div>
 </div>

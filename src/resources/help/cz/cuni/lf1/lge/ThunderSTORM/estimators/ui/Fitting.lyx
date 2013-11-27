@@ -72,13 +72,48 @@ Least-squares
 \end_layout
 
 \begin_layout Standard
-Least-squares methods minimize the sum of squared residuals to obtain an
- estimate of the coefficient vector 
-\begin_inset Formula $\boldsymbol{\hat{\theta}}$
+To approximate the data with a point-spread function, least-squares methods
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kendall1979,Bevington2003,Mortensen-NM-2010"
+
 \end_inset
 
- of the point-spread function that approximates the data.
- The residual value for the 
+ are employed to minimize the sum of (weighted) squared residuals defined
+ by
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\begin{equation}
+\chi^{2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)=\sum_{x,y\in\mathcal{D}}{w\left(\tilde{I}\left(x,y\right)-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)\right)^{2}}\,.\label{eq:chi2}
+\end{equation}
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+Here the residual value for the 
 \begin_inset Formula $\left(x,y\right)$
 \end_inset
 
@@ -91,24 +126,72 @@ Least-squares methods minimize the sum of squared residuals to obtain an
 \begin_inset Formula $\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)$
 \end_inset
 
-.
- The optimization problem is formulated as
+, where 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ is the vector of parameters.
+ The residual value can be further weighted by 
+\begin_inset Formula $w=1$
+\end_inset
+
+, making all measurements equally significant, or 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+weighted by 
+\begin_inset Formula $w=1/\tilde{I}\left(x,y\right)$
+\end_inset
+
+, which takes into account the uncertainty in the number of
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ detected photons.
+\end_layout
+
+\begin_layout Standard
+The search for a vector of parameters 
+\begin_inset Formula $\boldsymbol{\hat{\theta}}$
+\end_inset
+
+, which minimizes 
+\begin_inset Formula $\chi^{2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)$
+\end_inset
+
+, leads to an optimization problem formulated as 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{\hat{\theta}}=\argmin_{\boldsymbol{\theta}}\sum_{x,y\in\mathcal{D}}{\left(\tilde{I}\left(x,y\right)-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)\right)^{2}}\label{eq:lsq}
+\boldsymbol{\hat{\theta}}=\argmin_{\boldsymbol{\theta}}\chi^{2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)\,,\label{eq:lsq}
 \end{equation}
 
 \end_inset
 
-which we solve using the Levenberg\SpecialChar \nobreakdash-
-Marquardt algorithm as implemented in
- the Apache Commons Math library 
+which we solve by the Levenberg\SpecialChar \nobreakdash-
+Marquardt algorithm as implemented in the
+ Apache Commons Math library 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Apache"
+key "MathApache"
 
 \end_inset
 
@@ -126,13 +209,12 @@ key "Apache"
 \end_inset
 
 .
- Depending on the chosen PSF model, users need to set a starting point for
+ Depending on the chosen PSF model, users have to set a starting point for
  the optimization process, e.g., the approximate width 
 \begin_inset Formula $\theta_{\sigma}$
 \end_inset
 
  for the Gaussian PSF.
- 
 \end_layout
 
 \begin_layout Subsection*
@@ -146,7 +228,7 @@ This approach assumes that the number of photons collected by a single camera
 \begin_inset Formula $\kappa$
 \end_inset
 
- photons arriving at the detector, where the expected number of photons
+ photons arriving at a camera pixel, where the expected number of photons
  is 
 \begin_inset Formula $\lambda$
 \end_inset
@@ -171,30 +253,30 @@ Suppose that samples are drawn independently from the Poisson distribution,
 \begin_inset Formula $\lambda=\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)$
 \end_inset
 
- given by the point-spread function model and the observed photon count
+ given by the point-spread function model, and the observed photon count
  
 \begin_inset Formula $\kappa=\tilde{I}\left(x,y\right)$
 \end_inset
 
- given by the image intensity.
- The likelihood of coefficients 
+ given by the image intensity expressed in photons.
+ The likelihood 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kendall1979,Mortensen-NM-2010,Smith2010,Huang2011"
+
+\end_inset
+
+ of the vector of parameters 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
  can be modeled as 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Smith2010,Huang2011"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-L(\boldsymbol{\theta}\mid\mathcal{D})=\prod_{x,y\in\mathcal{D}}\frac{\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)^{\tilde{I}\left(x,y\right)}\exp{\left(-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)\right)}}{\tilde{I}\left(x,y\right)!}\,.
+L(\boldsymbol{\theta}\mid\mathcal{D})=\prod_{x,y\in\mathcal{D}}\frac{\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)^{\tilde{I}\left(x,y\right)}\mathrm{e}^{-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)}}{\tilde{I}\left(x,y\right)!}\,.
 \end{equation}
 
 \end_inset
@@ -203,20 +285,20 @@ L(\boldsymbol{\theta}\mid\mathcal{D})=\prod_{x,y\in\mathcal{D}}\frac{\mathrm{PSF
 \end_layout
 
 \begin_layout Standard
-The maximum likelihood estimate of 
+The maximum likelihood estimate of the vector of parameters 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
- is, by definition, the value 
-\begin_inset Formula $\boldsymbol{\hat{\theta}}$
-\end_inset
-
- that maximizes 
+ is, by definition, the value that maximizes the likelihood 
 \begin_inset Formula $L(\boldsymbol{\theta}\mid\mathcal{D})$
 \end_inset
 
 .
- Intuitively, the estimate corresponds to the value 
+ Intuitively, the estimate 
+\begin_inset Formula $\boldsymbol{\hat{\theta}}$
+\end_inset
+
+ corresponds to the value 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -227,7 +309,7 @@ The maximum likelihood estimate of
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{\hat{\theta}}=\argmax_{\boldsymbol{\theta}}\sum_{x,y\in\mathcal{D}}{\left[\tilde{I}\left(x,y\right)\ln{\left(\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)\right)}-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)\right]}\label{eq:loglik}
+\boldsymbol{\hat{\theta}}=\argmax_{\boldsymbol{\theta}}\sum_{x,y\in\mathcal{D}}{\left[\tilde{I}\left(x,y\right)\ln{\left(\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)\right)}-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)\right]}\,,\label{eq:loglik}
 \end{equation}
 
 \end_inset
@@ -253,13 +335,12 @@ key "NelderMead"
 \end_inset
 
 .
- Depending on the chosen PSF model, users need to set a starting point for
+ Depending on the chosen PSF model, users have to set a starting point for
  the optimization process, e.g., the approximate width 
 \begin_inset Formula $\theta_{\sigma}$
 \end_inset
 
  for the Gaussian PSF.
- 
 \end_layout
 
 \begin_layout Subsection*
@@ -268,16 +349,16 @@ Constraining parameters of PSF models
 
 \begin_layout Standard
 The Levenberg-Marquardt algorithm and the Nelder-Mead method used above
- search for the coefficient vector 
+ search for values the vector of parameters 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
  over an infinite interval.
  The optimization process can therefore converge to a solution with negative
- values which is impossible for coefficient values corresponding to image
- intensity or to the standard deviation of a Gaussian PSF.
+ values which is impossible for variables corresponding to image intensity
+ or to the standard deviation of a Gaussian PSF.
  We therefore limit the interval of possible values by transforming the
- relevant coefficients and using 
+ relevant parameters and using 
 \begin_inset Formula $\mathrm{PSF}\left(x,y\mid\boldsymbol{\tilde{\theta}}\right)$
 \end_inset
 
@@ -306,8 +387,12 @@ reference "eq:loglik"
 
 .
  The optimization process is still unconstrained but will result in positive
- PSF coefficients.
- Such a transformation also improves the stability of the fit.
+ PSF parameters.
+ Such a
+\begin_inset space ~
+\end_inset
+
+transformation also improves the stability of the fit.
 \end_layout
 
 \begin_layout Standard

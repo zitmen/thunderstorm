@@ -1,0 +1,9 @@
+
+use LaTeXML::Package;
+use strict;
+RequirePackage('amsmath');
+
+RawTeX('\DeclareMathOperator*{\erf}{erf}');
+
+
+1;

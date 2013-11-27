@@ -20,32 +20,50 @@
 <h2 class="ltx_title ltx_title_subsection">Least-squares</h2>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
-<p class="ltx_p">Least-squares methods minimize the sum of squared residuals to obtain
-an estimate of the coefficient vector <img id="Sx1.SSx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi66.png" width="14" height="20" alt="\boldsymbol{\hat{\theta}}">
-of the point-spread function that approximates the data. The residual
-value for the <img id="Sx1.SSx1.p1.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi20.png" width="45" height="21" alt="\left(x,y\right)"> data point is defined as the difference
-between the observed image intensity <img id="Sx1.SSx1.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi77.png" width="57" height="24" alt="\tilde{I}\left(x,y\right)">
-and the value approximated by the <img id="Sx1.SSx1.p1.m4" class="ltx_Math" style="vertical-align:-6px" src="mi/mi74.png" width="106" height="21" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">.
-The optimization problem is formulated as</p>
-</div>
-<div id="Sx1.SSx1.p2" class="ltx_para">
+<p class="ltx_p">To approximate the data with a point-spread function, least-squares
+methods <cite class="ltx_cite">[<a href="#bib.bib15" title="The Advanced Theory of Statistics" class="ltx_ref">4</a>, <a href="#bib.bib3" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>, <a href="#bib.bib18" title="Optimized localization analysis for single-molecule tracking and super-resolution microscopy" class="ltx_ref">5</a>]</cite> are employed
+to minimize the sum of (weighted) squared residuals defined by</p>
 <table id="Sx1.E1" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-27px" src="mi/mi62.png" width="349" height="53" alt="\boldsymbol{\hat{\theta}}=\argmin_{\boldsymbol{\theta}}\sum_{x,y\in\mathcal{D}%
-}{\left(\tilde{I}\left(x,y\right)-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}%
-\right)\right)^{2}}"></td>
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-27px" src="mi/mi79.png" width="377" height="53" alt="\chi^{2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)=\sum_{x,y\in\mathcal{D%
+}}{w\left(\tilde{I}\left(x,y\right)-\mathrm{PSF}\left(x,y\mid\boldsymbol{%
+\theta}\right)\right)^{2}}\,."></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">which we solve using the Levenberg-Marquardt algorithm
-as implemented in the Apache Commons Math library <cite class="ltx_cite">[<a href="#bib.bib25" title="Commons Math: The Apache Commons Mathematics Library; version 3.2" class="ltx_ref">1</a>]</cite>.
-The sub-pixel refinement of the coordinates is obtained as <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi68.png" width="63" height="23" alt="\hat{x}_{0}=\hat{\theta}_{x}">
-and <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi69.png" width="61" height="26" alt="\hat{y}_{0}=\hat{\theta}_{y}">, where <img id="Sx1.SSx1.p2.m3" class="ltx_Math" style="vertical-align:-14px" src="mi/mi65.png" width="125" height="36" alt="\boldsymbol{\hat{\theta}}=\left[\hat{\theta}_{x},\hat{\theta}_{y},\ldots\right]">.
-Depending on the chosen PSF model, users need to set a starting point
-for the optimization process, e.g., the approximate width <img id="Sx1.SSx1.p2.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi76.png" width="22" height="19" alt="\theta_{\sigma}">
+<p class="ltx_p">Here the residual value for the <img id="Sx1.SSx1.p1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi21.png" width="45" height="21" alt="\left(x,y\right)"> data point is
+defined as the difference between the observed image intensity <img id="Sx1.SSx1.p1.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi95.png" width="57" height="24" alt="\tilde{I}\left(x,y\right)">
+and the value approximated by the <img id="Sx1.SSx1.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi92.png" width="106" height="21" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">,
+where <img id="Sx1.SSx1.p1.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}"> is the vector of parameters. The residual
+value can be further weighted by <img id="Sx1.SSx1.p1.m5" class="ltx_Math" style="vertical-align:-2px" src="mi/mi97.png" width="49" height="15" alt="w=1">, making all measurements equally
+significant, or weighted by <img id="Sx1.SSx1.p1.m6" class="ltx_Math" style="vertical-align:-6px" src="mi/mi96.png" width="111" height="24" alt="w=1/\tilde{I}\left(x,y\right)">, which
+takes into account the uncertainty in the number of detected photons.</p>
+</div>
+<div id="Sx1.SSx1.p2" class="ltx_para">
+<p class="ltx_p">The search for a vector of parameters <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi83.png" width="14" height="20" alt="\boldsymbol{\hat{\theta}}">,
+which minimizes <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi85.png" width="79" height="22" alt="\chi^{2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)">,
+leads to an optimization problem formulated as</p>
+</div>
+<div id="Sx1.SSx1.p3" class="ltx_para">
+<table id="Sx1.E2" class="ltx_equation">
+
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi78.png" width="184" height="37" alt="\boldsymbol{\hat{\theta}}=\argmin_{\boldsymbol{\theta}}\chi^{2}\left(%
+\boldsymbol{\theta}\mid\mathcal{D}\right)\,,"></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
+</tr>
+</table>
+<p class="ltx_p">which we solve by the Levenberg-Marquardt algorithm as
+implemented in the Apache Commons Math library <cite class="ltx_cite">[<a href="#bib.bib4" title="The Apache Commons Mathematics Library; version 3.2" class="ltx_ref">2</a>]</cite>.
+The sub-pixel refinement of the coordinates is obtained as <img id="Sx1.SSx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi86.png" width="63" height="23" alt="\hat{x}_{0}=\hat{\theta}_{x}">
+and <img id="Sx1.SSx1.p3.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi87.png" width="61" height="26" alt="\hat{y}_{0}=\hat{\theta}_{y}">, where <img id="Sx1.SSx1.p3.m3" class="ltx_Math" style="vertical-align:-14px" src="mi/mi82.png" width="125" height="36" alt="\boldsymbol{\hat{\theta}}=\left[\hat{\theta}_{x},\hat{\theta}_{y},\ldots\right]">.
+Depending on the chosen PSF model, users have to set a starting point
+for the optimization process, e.g., the approximate width <img id="Sx1.SSx1.p3.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi94.png" width="22" height="19" alt="\theta_{\sigma}">
 for the Gaussian PSF.</p>
 </div>
 </div>
@@ -55,67 +73,69 @@ for the Gaussian PSF.</p>
 <div id="Sx1.SSx2.p1" class="ltx_para">
 <p class="ltx_p">This approach assumes that the number of photons collected by a single
 camera pixel follows the Poisson distribution. Thus, the probability
-of <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi71.png" width="14" height="11" alt="\kappa"> photons arriving at the detector, where the expected
-number of photons is <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi73.png" width="14" height="16" alt="\lambda">, is given by</p>
+of <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi89.png" width="14" height="11" alt="\kappa"> photons arriving at a camera pixel, where the expected
+number of photons is <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi91.png" width="14" height="16" alt="\lambda">, is given by</p>
 </div>
 <div id="Sx1.SSx2.p2" class="ltx_para">
-<table id="Sx1.E2" class="ltx_equation">
-
-<tr class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi63.png" width="148" height="43" alt="p\left(\kappa\mid\lambda\right)=\frac{\lambda^{\kappa}\mathrm{e}^{-\lambda}}{%
-\kappa!}\,."></td>
-<td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
-</tr>
-</table>
-</div>
-<div id="Sx1.SSx2.p3" class="ltx_para">
-<p class="ltx_p">Suppose that samples are drawn independently from the Poisson distribution,
-with the expected photon count <img id="Sx1.SSx2.p3.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi72.png" width="140" height="21" alt="\lambda=\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">
-given by the point-spread function model and the observed photon count
-<img id="Sx1.SSx2.p3.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi70.png" width="91" height="24" alt="\kappa=\tilde{I}\left(x,y\right)"> given by the image intensity.
-The likelihood of coefficients <img id="Sx1.SSx2.p3.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}"> can be modeled
-as <cite class="ltx_cite">[<a href="#bib.bib19" title="Fast, single-molecule localization that achieves theoretically minimum uncertainty" class="ltx_ref">4</a>, <a href="#bib.bib9" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite></p>
-</div>
-<div id="Sx1.SSx2.p4" class="ltx_para">
 <table id="Sx1.E3" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-27px" src="mi/mi60.png" width="453" height="61" alt="L(\boldsymbol{\theta}\mid\mathcal{D})=\prod_{x,y\in\mathcal{D}}\frac{\mathrm{%
-PSF}\left(x,y\mid\boldsymbol{\theta}\right)^{\tilde{I}\left(x,y\right)}\exp{%
-\left(-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)\right)}}{\tilde{I}%
-\left(x,y\right)!}\,."></td>
+<td class="ltx_align_center"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi80.png" width="148" height="43" alt="p\left(\kappa\mid\lambda\right)=\frac{\lambda^{\kappa}\mathrm{e}^{-\lambda}}{%
+\kappa!}\,."></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(3)</span></td>
 </tr>
 </table>
 </div>
-<div id="Sx1.SSx2.p5" class="ltx_para">
-<p class="ltx_p">The maximum likelihood estimate of <img id="Sx1.SSx2.p5.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}"> is, by definition,
-the value <img id="Sx1.SSx2.p5.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi66.png" width="14" height="20" alt="\boldsymbol{\hat{\theta}}"> that maximizes <img id="Sx1.SSx2.p5.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi64.png" width="69" height="21" alt="L(\boldsymbol{\theta}\mid\mathcal{D})">.
-Intuitively, the estimate corresponds to the value <img id="Sx1.SSx2.p5.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}">
-that best agrees with the data. The maximization problem has the form</p>
+<div id="Sx1.SSx2.p3" class="ltx_para">
+<p class="ltx_p">Suppose that samples are drawn independently from the Poisson distribution,
+with the expected photon count <img id="Sx1.SSx2.p3.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi90.png" width="140" height="21" alt="\lambda=\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">
+given by the point-spread function model, and the observed photon
+count <img id="Sx1.SSx2.p3.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi88.png" width="91" height="24" alt="\kappa=\tilde{I}\left(x,y\right)"> given by the image intensity
+expressed in photons. The likelihood <cite class="ltx_cite">[<a href="#bib.bib15" title="The Advanced Theory of Statistics" class="ltx_ref">4</a>, <a href="#bib.bib18" title="Optimized localization analysis for single-molecule tracking and super-resolution microscopy" class="ltx_ref">5</a>, <a href="#bib.bib27" title="Fast, single-molecule localization that achieves theoretically minimum uncertainty" class="ltx_ref">7</a>, <a href="#bib.bib12" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">3</a>]</cite>
+of the vector of parameters <img id="Sx1.SSx2.p3.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}"> can be modeled
+as</p>
 </div>
-<div id="Sx1.SSx2.p6" class="ltx_para">
+<div id="Sx1.SSx2.p4" class="ltx_para">
 <table id="Sx1.E4" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E4.m1" class="ltx_Math" style="vertical-align:-27px" src="mi/mi61.png" width="477" height="49" alt="\boldsymbol{\hat{\theta}}=\argmax_{\boldsymbol{\theta}}\sum_{x,y\in\mathcal{D}%
-}{\left[\tilde{I}\left(x,y\right)\ln{\left(\mathrm{PSF}\left(x,y\mid%
-\boldsymbol{\theta}\right)\right)}-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta%
-}\right)\right]}"></td>
+<td class="ltx_align_center"><img id="Sx1.E4.m1" class="ltx_Math" style="vertical-align:-27px" src="mi/mi76.png" width="383" height="61" alt="L(\boldsymbol{\theta}\mid\mathcal{D})=\prod_{x,y\in\mathcal{D}}\frac{\mathrm{%
+PSF}\left(x,y\mid\boldsymbol{\theta}\right)^{\tilde{I}\left(x,y\right)}\mathrm%
+{e}^{-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)}}{\tilde{I}\left(x,y%
+\right)!}\,."></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(4)</span></td>
 </tr>
 </table>
-<p class="ltx_p">which we solve by the Nelder-Mead method <cite class="ltx_cite">[<a href="#bib.bib13" title="Algorithm AS 47–Function Minimization Using a Simplex Procedure" class="ltx_ref">3</a>]</cite>. The sub-pixel
-refinement of the coordinates is obtained as <img id="Sx1.SSx2.p6.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi68.png" width="63" height="23" alt="\hat{x}_{0}=\hat{\theta}_{x}">
-and <img id="Sx1.SSx2.p6.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi69.png" width="61" height="26" alt="\hat{y}_{0}=\hat{\theta}_{y}">, where <img id="Sx1.SSx2.p6.m3" class="ltx_Math" style="vertical-align:-14px" src="mi/mi65.png" width="125" height="36" alt="\boldsymbol{\hat{\theta}}=\left[\hat{\theta}_{x},\hat{\theta}_{y},\ldots\right]">.
-Depending on the chosen PSF model, users need to set a starting point
-for the optimization process, e.g., the approximate width <img id="Sx1.SSx2.p6.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi76.png" width="22" height="19" alt="\theta_{\sigma}">
+</div>
+<div id="Sx1.SSx2.p5" class="ltx_para">
+<p class="ltx_p">The maximum likelihood estimate of the vector of parameters <img id="Sx1.SSx2.p5.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}">
+is, by definition, the value that maximizes the likelihood <img id="Sx1.SSx2.p5.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi81.png" width="69" height="21" alt="L(\boldsymbol{\theta}\mid\mathcal{D})">.
+Intuitively, the estimate <img id="Sx1.SSx2.p5.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi83.png" width="14" height="20" alt="\boldsymbol{\hat{\theta}}"> corresponds
+to the value <img id="Sx1.SSx2.p5.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}"> that best agrees with the data.
+The maximization problem has the form</p>
+</div>
+<div id="Sx1.SSx2.p6" class="ltx_para">
+<table id="Sx1.E5" class="ltx_equation">
+
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.E5.m1" class="ltx_Math" style="vertical-align:-27px" src="mi/mi77.png" width="485" height="49" alt="\boldsymbol{\hat{\theta}}=\argmax_{\boldsymbol{\theta}}\sum_{x,y\in\mathcal{D}%
+}{\left[\tilde{I}\left(x,y\right)\ln{\left(\mathrm{PSF}\left(x,y\mid%
+\boldsymbol{\theta}\right)\right)}-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta%
+}\right)\right]}\,,"></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(5)</span></td>
+</tr>
+</table>
+<p class="ltx_p">which we solve by the Nelder-Mead method <cite class="ltx_cite">[<a href="#bib.bib20" title="Algorithm AS 47–Function Minimization Using a Simplex Procedure" class="ltx_ref">6</a>]</cite>. The sub-pixel
+refinement of the coordinates is obtained as <img id="Sx1.SSx2.p6.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi86.png" width="63" height="23" alt="\hat{x}_{0}=\hat{\theta}_{x}">
+and <img id="Sx1.SSx2.p6.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi87.png" width="61" height="26" alt="\hat{y}_{0}=\hat{\theta}_{y}">, where <img id="Sx1.SSx2.p6.m3" class="ltx_Math" style="vertical-align:-14px" src="mi/mi82.png" width="125" height="36" alt="\boldsymbol{\hat{\theta}}=\left[\hat{\theta}_{x},\hat{\theta}_{y},\ldots\right]">.
+Depending on the chosen PSF model, users have to set a starting point
+for the optimization process, e.g., the approximate width <img id="Sx1.SSx2.p6.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi94.png" width="22" height="19" alt="\theta_{\sigma}">
 for the Gaussian PSF.</p>
 </div>
 </div>
@@ -124,17 +144,17 @@ for the Gaussian PSF.</p>
 
 <div id="Sx1.SSx3.p1" class="ltx_para">
 <p class="ltx_p">The Levenberg-Marquardt algorithm and the Nelder-Mead method used
-above search for the coefficient vector <img id="Sx1.SSx3.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}"> over
-an infinite interval. The optimization process can therefore converge
-to a solution with negative values which is impossible for coefficient
-values corresponding to image intensity or to the standard deviation
+above search for values the vector of parameters <img id="Sx1.SSx3.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}">
+over an infinite interval. The optimization process can therefore
+converge to a solution with negative values which is impossible for
+variables corresponding to image intensity or to the standard deviation
 of a Gaussian PSF. We therefore limit the interval of possible values
-by transforming the relevant coefficients and using <img id="Sx1.SSx3.p1.m2" class="ltx_Math" style="vertical-align:-14px" src="mi/mi75.png" width="114" height="36" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\tilde{\theta}}\right)">
-in Equations (<a href="#Sx1.E1" title="(1) ‣ Least-squares ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>) and (<a href="#Sx1.E4" title="(4) ‣ Maximum-likelihood estimation ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_tag">4</span></a>) instead of <img id="Sx1.SSx3.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi74.png" width="106" height="21" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">.
-The transformation for a 2D Gaussian PSF model is <img id="Sx1.SSx3.p1.m4" class="ltx_Math" style="vertical-align:-8px" src="mi/mi67.png" width="174" height="27" alt="\boldsymbol{\tilde{\theta}}=\left[\theta_{x},\theta_{y},\theta_{\sigma}^{2},%
+by transforming the relevant parameters and using <img id="Sx1.SSx3.p1.m2" class="ltx_Math" style="vertical-align:-14px" src="mi/mi93.png" width="114" height="36" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\tilde{\theta}}\right)">
+in Equations (<a href="#Sx1.E2" title="(2) ‣ Least-squares ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>) and (<a href="#Sx1.E5" title="(5) ‣ Maximum-likelihood estimation ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_tag">5</span></a>) instead of <img id="Sx1.SSx3.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi92.png" width="106" height="21" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">.
+The transformation for a 2D Gaussian PSF model is <img id="Sx1.SSx3.p1.m4" class="ltx_Math" style="vertical-align:-8px" src="mi/mi84.png" width="174" height="27" alt="\boldsymbol{\tilde{\theta}}=\left[\theta_{x},\theta_{y},\theta_{\sigma}^{2},%
 \theta_{N}^{2},\theta_{b}^{2}\right]">.
 The optimization process is still unconstrained but will result in
-positive PSF coefficients. Such a transformation also improves the
+positive PSF parameters. Such a transformation also improves the
 stability of the fit.</p>
 </div>
 </div>
@@ -143,52 +163,89 @@ stability of the fit.</p>
 <h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib25" class="ltx_bibitem ltx_bib_misc">
+<li id="bib.bib3" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_year">(2013-04)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. R. Bevington and D. K. Robinson</span><span class="ltx_text ltx_bib_year">(2003)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Commons Math: The Apache Commons Mathematics Library; version 3.2</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Data reduction and error analysis for the physical science</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_series">McGraw-Hill Higher Education</span>,  <span class="ltx_text ltx_bib_publisher">McGraw-Hill</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><span class="ltx_text isbn ltx_bib_external">ISBN 9780072472271</span></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p1" title="Least-squares ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Least-squares</span></a>.
+</span>
+</li>
+<li id="bib.bib4" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">Commons-Math</span><span class="ltx_text ltx_bib_year">(2013-04)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">The Apache Commons Mathematics Library; version 3.2</span>,
 </span>
 <span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://commons.apache.org/proper/commons-math/" title="" class="ltx_ref ltx_bib_external">Link</a></span>.
 </span>
-<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p2" title="Least-squares ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Least-squares</span></a>.
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p3" title="Least-squares ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Least-squares</span></a>.
 </span>
 </li>
-<li id="bib.bib9" class="ltx_bibitem ltx_bib_article">
-<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. Huang, S. L. Schwartz, J. M. Byars and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2011-01)</span>
+<li id="bib.bib12" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. Huang, S. L. Schwartz, J. M. Byars and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2011)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Simultaneous multiple-emitter fitting for single molecule super-resolution imaging</span>,
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Biomedical optics express</span> <span class="ltx_text ltx_bib_volume">2</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 1377–93</span>.
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Biomedical Optics Express</span> <span class="ltx_text ltx_bib_volume">2</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 1377–93</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/BOE.2.001377" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
-<span class="ltx_text issn ltx_bib_external">ISSN 2156-7085</span></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/BOE.2.001377" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx2.p3" title="Maximum-likelihood estimation ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
 </span>
 </li>
-<li id="bib.bib13" class="ltx_bibitem ltx_bib_article">
-<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
+<li id="bib.bib15" class="ltx_bibitem ltx_bib_book">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[4]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. Kendall and A. Stuart</span><span class="ltx_text ltx_bib_year">(1979)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">The Advanced Theory of Statistics</span>,
+</span>
+<span class="ltx_bibblock"> <span class="ltx_text ltx_bib_publisher">London: Charles Griffin</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p1" title="Least-squares ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Least-squares</span></a>,
+<a href="#Sx1.SSx2.p3" title="Maximum-likelihood estimation ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
+</span>
+</li>
+<li id="bib.bib18" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[5]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">K. I. Mortensen, L. S. Churchman, J. A. Spudich and H. Flyvbjerg</span><span class="ltx_text ltx_bib_year">(2010)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Optimized localization analysis for single-molecule tracking and super-resolution microscopy</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Nature Methods</span> <span class="ltx_text ltx_bib_volume">7</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 377–381</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/doi:10.1038/nmeth.1447" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p1" title="Least-squares ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Least-squares</span></a>,
+<a href="#Sx1.SSx2.p3" title="Maximum-likelihood estimation ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
+</span>
+</li>
+<li id="bib.bib20" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[6]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. O’Neill</span><span class="ltx_text ltx_bib_year">(1971)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Algorithm AS 47–Function Minimization Using a Simplex Procedure</span>,
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Applied Statistics</span> <span class="ltx_text ltx_bib_volume">20</span>, <span class="ltx_text ltx_bib_pages"> pp. 338–45</span>.
 </span>
-<span class="ltx_bibblock">Note: <span class="ltx_text ltx_bib_note">With subsequent comments by Chambers+Ertel(1974, 23, 250-1), Benyon(1976,
-25, 97) and Hill(1978, 27, 380-2)</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://www.jstor.org/stable/2346772" title="" class="ltx_ref ltx_bib_external">Link</a></span>.
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx2.p6" title="Maximum-likelihood estimation ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
 </span>
 </li>
-<li id="bib.bib19" class="ltx_bibitem ltx_bib_article">
-<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[4]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. S. Smith, N. Joseph, B. Rieger and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2010-05)</span>
+<li id="bib.bib27" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[7]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. S. Smith, N. Joseph, B. Rieger and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2010)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Fast, single-molecule localization that achieves theoretically minimum uncertainty</span>,
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Nature methods</span> <span class="ltx_text ltx_bib_volume">7</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 373–5</span>.
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Nature Methods</span> <span class="ltx_text ltx_bib_volume">7</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 373–5</span>.
 </span>
 <span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1038/nmeth.1449" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
 <span class="ltx_text issn ltx_bib_external">ISSN 1548-7105</span></span>.

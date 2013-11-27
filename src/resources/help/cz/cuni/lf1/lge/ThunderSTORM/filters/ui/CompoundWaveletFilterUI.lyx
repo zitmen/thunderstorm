@@ -110,7 +110,7 @@ href{Convolution.html}{convolution}
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-V_{i}=V_{i-1}*\boldsymbol{k}_{i}*\boldsymbol{k}_{i}^{\top}\,,
+V_{i}=\left(V_{i-1}*\boldsymbol{k}_{i}\right)*\boldsymbol{k}_{i}^{\top}\,,
 \end{equation}
 
 \end_inset
@@ -221,7 +221,7 @@ In our implementation, the output of the wavelet filter is the second wavelet
  with sizes close to the diffraction limit of the microscope (we note that
  this depends on the effective camera pixel size).
  The wavelet filter is the default option in ThunderSTORM as it performs
- very well on many of localization microscopy data sets we have experimented
+ very well on many of the localization microscopy data sets we have experimented
  with.
 \end_layout
 

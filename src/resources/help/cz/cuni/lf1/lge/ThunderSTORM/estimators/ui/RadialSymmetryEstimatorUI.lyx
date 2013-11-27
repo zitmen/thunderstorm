@@ -88,24 +88,28 @@ key "Parthasarathy2012"
 \end_layout
 
 \begin_layout Standard
-The calculation starts by determining the intensity co-gradient for every
- point from the set 
-\begin_inset Formula $\mathcal{D}$
-\end_inset
-
-, thus by 
+The calculation starts by determining the intensity co-gradient 
 \begin_inset Formula 
 \begin{equation}
-\nabla\tilde{I}_{x,y}=\left[\frac{\partial\tilde{I}\left(x,y\right)}{\partial u},\frac{\partial\tilde{I}\left(x,y\right)}{\partial v}\right]^{\top}\,,
+\nabla\tilde{I}_{x,y}=\left[\frac{\partial\tilde{I}\left(x,y\right)}{\partial u},\frac{\partial\tilde{I}\left(x,y\right)}{\partial v}\right]^{\top}
 \end{equation}
 
 \end_inset
 
-where 
+for every integer point 
+\begin_inset Formula $\left(x,y\right)$
+\end_inset
+
+ from the set 
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+.
+ Here 
 \begin_inset Formula $uv$
 \end_inset
 
- coordinates are rotated 
+ coordinates are rotated by 
 \begin_inset Formula $45^{\circ}$
 \end_inset
 
@@ -114,7 +118,14 @@ where
 \end_inset
 
  coordinate system of the image, because partial derivatives are determined
- using the Roberts cross operator as
+ using the Roberts cross operator 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SHB2007"
+
+\end_inset
+
+ as
 \begin_inset Formula 
 \begin{eqnarray*}
 \frac{\partial\tilde{I}\left(x,y\right)}{\partial u} & = & \tilde{I}\left(x+1,y+1\right)-\tilde{I}\left(x,y\right)\,,\\
@@ -127,11 +138,11 @@ where
 \end_layout
 
 \begin_layout Standard
-Co-gradients 
+The computed co-gradient 
 \begin_inset Formula $\nabla\tilde{I}_{x,y}$
 \end_inset
 
- are computed at points 
+ corresponds to the point 
 \begin_inset Formula $A_{x,y}=\left(x+0.5,y+0.5\right)$
 \end_inset
 
@@ -172,7 +183,7 @@ key "Parthasarathy2012"
 \end_inset
 
  that the problem has an analytical solution.
- For simplicity, let 
+ For simplicity, let index 
 \begin_inset Formula $j=x\left(2r+1\right)+y$
 \end_inset
 
@@ -223,10 +234,6 @@ where
 \end_inset
 
 , where 
-\begin_inset Formula $\left|\nabla\tilde{I}_{x,y}\right|$
-\end_inset
-
- is the gradient magnitude and 
 \begin_inset Formula $d\left(A_{x,y},C\right)$
 \end_inset
 
@@ -234,7 +241,12 @@ where
 \begin_inset Formula $A_{x,y}$
 \end_inset
 
- to the gradient intensity centroid computed as in the 
+ to the centroid 
+\begin_inset Formula $C$
+\end_inset
+
+.
+ The centroid is computed analogously to the 
 \begin_inset ERT
 status open
 
@@ -245,6 +257,10 @@ status open
 href{CenterOfMassEstimatorUI.html}{centroid estimator}
 \end_layout
 
+\end_inset
+
+ from the gradient magnitudes 
+\begin_inset Formula $\left|\nabla\tilde{I}_{x,y}\right|$
 \end_inset
 
 .

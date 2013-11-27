@@ -69,7 +69,7 @@ Difference-of-Gaussians filter
 
 \begin_layout Standard
 The difference-of-Gaussians filter is a feature enhancement algorithm in
- image processing which works as a band-pass filter.
+ image processing which acts as a band-pass filter.
  The 
 \begin_inset ERT
 status open
@@ -138,8 +138,8 @@ Although the kernel
 \begin_inset Formula $K_{\mathrm{DoG}}$
 \end_inset
 
- is not separable, the filtered image can obtained by subtracting two images
- filtered with Gaussian kernels having different standard deviations,
+ is not separable, the filtered image can be obtained by subtracting two
+ images filtered with Gaussian kernels having different standard deviations,
 \begin_inset Formula 
 \begin{equation}
 F=I*K_{\mathrm{DoG}}=I*K_{\mathrm{G}1}-I*K_{\mathrm{G}2}\,.

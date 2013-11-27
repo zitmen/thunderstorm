@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -65,7 +68,7 @@ The Crowded-field problem
 \end_layout
 
 \begin_layout Standard
-To solve the 
+High spatial densities of activated molecules can result in a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -73,10 +76,11 @@ crowded field problem,
 \begin_inset Quotes erd
 \end_inset
 
- i.e., analysis of a dense local distribution of molecules which can not be
- adequately resolved by one of the methods described above, ThunderSTORM
- uses a multiple-emitter fitting method similar to the algorithm described
- in 
+ in which single molecules are not adequately resolved.
+ The reason for this is the limitation of the PSF models to fit only a single
+ molecule.
+ To help solve this problem, ThunderSTORM uses a multiple-emitter fitting
+ analysis (MFA) approach similar to the algorithm described in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Huang2011"
@@ -84,53 +88,17 @@ key "Huang2011"
 \end_inset
 
 .
- This algorithm can use any of the PSF fitting algorithms, including the
- 3D approach, described above.
- First, users need to specify the maximum number of molecules allowed in
- one fitting region 
-\begin_inset Formula $N_{max}$
-\end_inset
+\end_layout
 
-.
- Next, the algorithm fits a single molecule in the image, then subtracts
- the fitted molecule from the image and finds the maximum in the residual
- image which is taken as the approximate position of a second molecule.
- The algorithm then fits two molecules to the imaged spot.
- This routine is repeated until it reaches a model with 
-\begin_inset Formula $N_{max}$
-\end_inset
-
- molecules.
- Because a model with 
-\begin_inset Formula $n+1$
-\end_inset
-
- parameters will fit at least as well as a model with 
-\begin_inset Formula $n$
-\end_inset
-
- parameters, we must determine whether the extra parameters are statistically
- justified.
- 
+\begin_layout Subsection*
+Multiple-emitter fitting analysis
 \end_layout
 
 \begin_layout Standard
-When using least-squares methods, we use a model selection criteria based
- on an 
-\begin_inset Formula $F$
-\end_inset
-
- test 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Bevington2003"
-
-\end_inset
-
- 
+The multiple-emitter fitting analysis approach uses a PSF defined by a model
 \begin_inset Formula 
 \begin{equation}
-F_{\chi}=\frac{\chi^{2}(\,|\hat{\theta}_{n}|\,)-\chi^{2}(\,|\hat{\theta}_{n+1}|\,)/(|\hat{\theta}_{n+1}|-|\hat{\theta}_{n}|)}{\chi^{2}(\,|\hat{\theta}_{n+1}|\,)/(N-|\hat{\theta}_{n}|-1)}\,,
+\mathrm{PSF}_{N}\left(x,y\mid\boldsymbol{\Theta}\right)=\sum_{i=1}^{N}\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}_{i}\right)\,,\label{eq:psf-multimodal}
 \end{equation}
 
 \end_inset
@@ -139,101 +107,541 @@ where
 \begin_inset Formula $N$
 \end_inset
 
- is the number of pixels in the sub-region and 
-\begin_inset Formula $|\cdot|$
+ is a number of molecules allowed in the fitting region, and 
+\begin_inset Formula $\boldsymbol{\Theta}=\left[\boldsymbol{\theta}_{1},\ldots,\boldsymbol{\theta}_{N}\right]$
 \end_inset
 
- is the total number of fitted parameters for each model.
- The model with 
-\begin_inset Formula $n+1$
-\end_inset
-
- molecules is accepted if the calculated value of 
-\begin_inset Formula $F_{\chi}$
-\end_inset
-
-is greater than 
-\begin_inset Formula $F_{critical}$
-\end_inset
-
- at a user-specified p-value.
- 
+ is a vector of parameters describing position and shape of the imaged molecules
+ modeled by the PSF.
 \end_layout
 
 \begin_layout Standard
-When using maximum-likelihood estimation, we use another model selection
- criteria based on the log-likelihood ratio 
+The fitting of multiple-emitter models to the raw data proceeds according
+ to the following algorithm.
+ First, the algorithm fits 
+\begin_inset Formula $\mathrm{PSF}_{1}$
+\end_inset
+
+ (a single molecule model) with an initial molecular position obtained by
+ one of the detectors.
+ The fitted PSF is subtracted from the raw data and the position of the
+ maximum intensity value in the residual image is taken as an approximate
+ position of a second molecule.
+ The fitting is now repeated on the raw data with 
+\begin_inset Formula $\mathrm{PSF}_{2}$
+\end_inset
+
+ (a model containing two molecules) and with the initial positions estimated
+ in the previous steps.
+ The result of the fit is subtracted from the raw data to find an approximate
+ position of a third molecule in the residual image.
+ This routine is repeated until the maximum number of molecules allowed
+ in the fitting region is reached.
+ Note that initial positions of the molecules are further adjusted, during
+ the multiple-emitter fitting analysis, by a 
+\begin_inset Quotes eld
+\end_inset
+
+Push&Pull" process 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Huang2011"
+
+\end_inset
+
+.
+ To find the optimal number of molecules, statistical tests are required
+ (see below).
+\end_layout
+
+\begin_layout Standard
+Users can specify the size of the fitting region, the maximum number of
+ molecules allowed in one fitting region, the type of PSF, and the fitting
+ method (least-squares methods or maximum likelihood estimation).
+ Optionally, users can constrain the multiple-emitter fitting algorithm
+ such that all fitted molecules have the same intensity or an intensity
+ in a given range.
+ The background signal level (offset) is constrained to the same intensity
+ for all fitted molecules.
+\end_layout
+
+\begin_layout Subsection*
+Model selection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Model-selection"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because a model with more parameters will always be able to fit the data
+ at least as well as a model with fewer parameters 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kendall1979,Bevington2003"
+
+\end_inset
+
+, statistical tests are required to determine whether the more complex model
+ provides a significantly better fit of the underlying data.
+ Statistical tests are usually based on pair-wise model comparison.
+ Here a fit by 
+\begin_inset Formula $\mathrm{PSF}_{1}$
+\end_inset
+
+ is compared with a fit by 
+\begin_inset Formula $\mathrm{PSF}_{2}$
+\end_inset
+
+, the better of the two is compared with a fit by 
+\begin_inset Formula $\mathrm{PSF}_{3}$
+\end_inset
+
+, etc.
+ Pair-wise comparisons are based on an F-test 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kendall1979,Bevington2003"
+
+\end_inset
+
+ or on a log-likelihood ratio test 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kendall1979,Huang2011"
+
+\end_inset
+
+ as described below.
+\end_layout
+
+\begin_layout Subsubsection*
+F-test
+\end_layout
+
+\begin_layout Standard
+An F-test 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kendall1979,Bevington2003"
+
+\end_inset
+
+ arises in the case of fitting by least squares methods, when we need to
+ compare significance of the fit between two models, where one model (the
+ null model) is a special case of the other (the alternative model) for
+ some choice of parameters.
+ The F-test statistic computed from the data is given by the formula
 \begin_inset Formula 
 \begin{equation}
-\lambda=-2\ln\left[\frac{L(\hat{\mathbf{\boldsymbol{\theta}}}_{n}\mid\mathcal{D})}{L(\hat{\boldsymbol{\theta}}_{n+1}\mid\mathcal{D})}\right]\,,
+F_{\chi^{2}}\left(\mathcal{D}\right)=\frac{\left(\chi^{2}\left(\boldsymbol{\Theta}_{0}\mid\mathcal{D}\right)-\chi^{2}\left(\boldsymbol{\Theta}_{1}\mid\mathcal{D}\right)\right)/\left(v_{1}-v_{0}\right)}{\chi^{2}\left(\boldsymbol{\Theta}_{1}\mid\mathcal{D}\right)/\left(n-v_{1}\right)}\,,\label{eq:Fchi2}
 \end{equation}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-where and 
-\begin_inset Formula $\hat{\boldsymbol{\theta}}_{n}$
+where 
+\begin_inset Formula $\chi^{2}\left(\boldsymbol{\Theta}\mid\mathcal{D}\right)$
 \end_inset
 
- and 
-\begin_inset Formula $\hat{\boldsymbol{\theta}}_{n+1}$
-\end_inset
 
- are the estimated set of parameters for 
-\begin_inset Formula $n$
-\end_inset
-
- and 
-\begin_inset Formula $n+1$
-\end_inset
-
- molecules respectively.
- When the number of measurements is large, the log-likelihood ratio approximates
- a chi-square distribution.
- The model with 
-\begin_inset Formula $n+1$
-\end_inset
-
- molecules is accepted if the calculated value of 
-\begin_inset Formula $\lambda\approx\chi^{2}$
-\end_inset
-
- is greater than 
-\begin_inset Formula $\chi_{critical}^{2}$
-\end_inset
-
-at a user-specified p-value.
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
  
-\end_layout
-
-\begin_layout Standard
-(
-\emph on
-!!p-value is probability or p=1-confidence level, 
-\begin_inset Formula $\chi_{critical}^{2}$
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+is 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+the sum of squared residuals
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ computed
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ for a model with 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+parameters 
+\begin_inset Formula $\boldsymbol{\Theta}$
 \end_inset
 
- is calculated by apache or looked up in a table
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ (see 
+\family default
+\series default
+\shape default
+\size default
 \emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{fitting methods}
+\end_layout
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
 )
-\end_layout
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+, vectors 
+\begin_inset Formula $\boldsymbol{\Theta}_{0}$
+\end_inset
 
-\begin_layout Standard
-Users can constrain the multiple-emitter fitting algorithm so that all the
- molecules have the same intensity.
- In our hands, this was necessary to ensure stability of the fit.
-\end_layout
+ and 
+\begin_inset Formula $\boldsymbol{\Theta}_{1}$
+\end_inset
 
-\begin_layout Standard
+ are parameters of the null and alternative model, respectively, 
+\begin_inset Formula $v_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $v_{1}$
+\end_inset
+
+ (where 
+\begin_inset Formula $v_{0}<v_{1}$
+\end_inset
+
+) represent the number of free parameters of the null and alternative model,
+ respectively, and 
+\begin_inset Formula $n=l^{2}$
+\end_inset
+
+ is the number of data points within the fitting region 
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
 .
 \end_layout
 
 \begin_layout Standard
-see Motulsky2003, p.
- 141
+Assuming the null hypothesis that the alternative model does not provide
+ a significantly better fit than the null model, the F-test statistics computed
+ in Equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Fchi2"
+
+\end_inset
+
+ has an F-distribution with 
+\begin_inset Formula $\left(v_{1}-v_{0},n-v_{1}\right)$
+\end_inset
+
+ degrees of freedom.
+ The null hypothesis is rejected if 
+\begin_inset Formula $F_{\chi^{2}}\left(\mathcal{D}\right)$
+\end_inset
+
+ computed from the data is greater than the critical value of the 
+\begin_inset Formula $F_{v_{1}-v_{0},n-v_{1}}$
+\end_inset
+
+ distribution for a user-specified 
+\begin_inset Formula $p$
+\end_inset
+
+-value.
+\end_layout
+
+\begin_layout Subsubsection*
+Log-likelihood ratio test
+\end_layout
+
+\begin_layout Standard
+To compare between the fits of two models, in the case of fitting by the
+ maximum likelihood estimation method, we use a model selection criteria
+ based on a log-likelihood ratio test 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kendall1979,Huang2011"
+
+\end_inset
+
+
+\emph on
+.
+
+\emph default
+ Assuming that one model (the null model) is a special case of the other
+ (the alternative model) for some choice of parameters, the log-likelihood
+ ratio is given by the formula
+\begin_inset Formula 
+\begin{equation}
+\Lambda\left(\mathcal{D}\right)=-2\ln\left[\frac{L\left(\boldsymbol{\Theta}_{0}\mid\mathcal{D}\right)}{L\left(\boldsymbol{\Theta}_{1}\mid\mathcal{D}\right)}\right]\,,\label{eq:loglikX2}
+\end{equation}
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $L\left(\boldsymbol{\Theta}\mid\mathcal{D}\right)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ is the likelihood of parameters 
+\begin_inset Formula $\boldsymbol{\Theta}$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+(see 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{fitting methods}
+\end_layout
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+)
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+, 
+\begin_inset Formula $\boldsymbol{\Theta}_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $\boldsymbol{\Theta}_{1}$
+\end_inset
+
+ are vectors of parameters of the null and alternative model, respectively,
+ and 
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+ is a
+\begin_inset space ~
+\end_inset
+
+fitting region.
+\end_layout
+
+\begin_layout Standard
+The probability distribution of the log-likelihood ratio computed in Equation
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:loglikX2"
+
+\end_inset
+
+, assuming the null hypothesis that the alternative model does not provide
+ a significantly better fit than the null model, can be approximated by
+ the 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ distribution with 
+\begin_inset Formula $v_{1}-v_{0}$
+\end_inset
+
+ degrees of freedom.
+ This approximation is usually valid even for small sample sizes 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kendall1979"
+
+\end_inset
+
+.
+ Here 
+\begin_inset Formula $v_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $v_{1}$
+\end_inset
+
+ (where 
+\begin_inset Formula $v_{0}<v_{1}$
+\end_inset
+
+) represent the number of free parameters of the null and alternative model,
+ respectively.
+ The null hypothesis is rejected if the log-likelihood ratio 
+\begin_inset Formula $\Lambda\left(\mathcal{D}\right)$
+\end_inset
+
+ computed from the data is greater than the critical value of the 
+\begin_inset Formula $\chi_{v_{1}-v_{0}}^{2}$
+\end_inset
+
+ distribution for some 
+\begin_inset Formula $p$
+\end_inset
+
+-value specified by the users.
 \end_layout
 
 \begin_layout Standard

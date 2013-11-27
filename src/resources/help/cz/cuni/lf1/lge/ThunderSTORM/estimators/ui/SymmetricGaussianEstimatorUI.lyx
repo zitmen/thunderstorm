@@ -68,11 +68,12 @@ Fitting PSF models: Symmetric 2D Gaussian function
 \end_layout
 
 \begin_layout Standard
-A single molecule emitter can be treated as a point source in SMLM data.
- The impulse response of a microscope to a point-like source is described
+The impulse response of a microscope to a point-like source is described
  by the point-spread function (PSF).
- The result of fitting a PSF model to an image of a single molecule is an
- estimate of the position of the molecule, its imaged size, and its intensity.
+ Because a single molecule emitter can be treated as an incoherent point
+ source in SMLM data, the result of fitting a PSF model to an image of a
+ single molecule is an estimate of the molecular position, its imaged size,
+ and its intensity.
 \end_layout
 
 \begin_layout Subsection*
@@ -136,20 +137,20 @@ where
 \uwave default
 \noun default
 \color inherit
- gives the expected photon count at the pixel 
+ gives the expected photon count at the integer pixel position 
 \begin_inset Formula $\left(x,y\right)$
 \end_inset
 
- for coefficients 
+ for a vector of parameters 
 \begin_inset Formula $\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{\sigma},\theta_{N},\theta_{b}\right]$
 \end_inset
 
 .
- The entries of the coefficient vector 
+ The entries of the vector 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
- are follows: 
+ are as follows: 
 \begin_inset Formula $\theta_{x}$
 \end_inset
 
@@ -201,8 +202,8 @@ Crowded-field
 \end_layout
 
 \begin_layout Standard
-ThunderSTORM supports fitting of multiple PSF models simultaneously in a
- single fitting region.
+ThunderSTORM supports fitting of multiple PSF models in a single fitting
+ region.
  See 
 \begin_inset ERT
 status open
@@ -228,7 +229,7 @@ Let
 \begin_inset Formula $\sigma$
 \end_inset
 
- be the standard deviation of a fitted Gaussian blob in nm, 
+ be the standard deviation of a fitted Gaussian PSF in nm, 
 \begin_inset Formula $a$
 \end_inset
 
@@ -241,7 +242,14 @@ Let
 \end_inset
 
  is the background signal level in photons calculated as the standard deviation
- of the residuals between the raw data and the fitted PSF model.
+ of the residuals between the raw data and the fitted PSF model 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Krizek2011"
+
+\end_inset
+
+.
  The uncertainty in the lateral position of a molecule can be approximated
  by the formula 
 \begin_inset CommandInset citation

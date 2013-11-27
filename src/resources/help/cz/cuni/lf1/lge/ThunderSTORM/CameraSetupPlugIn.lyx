@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -161,7 +164,20 @@ EM gain for EMCCD cameras.
  is different.
  Different formulas for calculating localization uncertainty are used for
  CCD and EMCCD cameras.
- Also the stochastic nature of EM gain is modelled in artificial data generator.
+ Also the stochastic nature of EM gain is modelled in 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{DataGeneratorPlugIn.html}{artificial data generator}
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \end_body

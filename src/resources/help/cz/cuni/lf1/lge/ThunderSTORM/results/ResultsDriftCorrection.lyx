@@ -68,8 +68,8 @@ Lateral drift correction
 \end_layout
 
 \begin_layout Standard
-ThunderSTROM supports lateral drift correction using the method of Mlodzianoski,
- et.
+ThunderSTORM supports lateral drift correction using the method of Mlodzianoski
+ et
 \begin_inset space ~
 \end_inset
 
@@ -86,7 +86,7 @@ key "Mlodzianoski2011"
 \begin_inset Formula $n+1$
 \end_inset
 
- batches based on the frame, in which they appeared.
+ batches based on the frame in which they appeared.
  Each batch is used to render one super-resolution sub-image.
  The presumption of this method is that similar structures will appear in
  all reconstructed sub-images.
@@ -99,12 +99,12 @@ key "Mlodzianoski2011"
  cross-correlation images, where the shift in the position caused by the
  drift corresponds to the relative position between the global intensity
  maximum peaks.
- The localized peaks are assigned to central frame of each batch sequence
+ The localized peaks are assigned to the central frame of each batch sequence
  and the drift for intermediate frames is determined by local regression
  using third degree polynomials.
  The original molecular coordinates are corrected for the drift using the
  estimated values.
- The cross-correlation calculation can be limited to a region interest,
+ The cross-correlation calculation can be limited to a region of interest,
  allowing users to use a fiducial marker for drift correction.
 \end_layout
 
