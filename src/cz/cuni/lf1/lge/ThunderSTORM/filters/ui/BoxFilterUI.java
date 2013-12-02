@@ -12,7 +12,7 @@ import javax.swing.JTextField;
 
 public class BoxFilterUI extends IFilterUI {
 
-    private final String name = "Average filter";
+    private final String name = "Averaging (Box) filter";
     private transient ParameterName.Integer size;
 
     public BoxFilterUI() {

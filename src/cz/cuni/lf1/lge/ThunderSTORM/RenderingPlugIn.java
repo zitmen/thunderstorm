@@ -187,9 +187,9 @@ class RenderingDialog extends JDialog {
         JPanel sizePanel = new JPanel(new GridBagLayout());
         sizeXTextField = new JTextField(Integer.toString(sizeX), 20);
         sizeYTextField = new JTextField(Integer.toString(sizeY), 20);
-        sizePanel.add(new JLabel("Image size X [px]:"), GridBagHelper.leftCol());
+        sizePanel.add(new JLabel("Original image width [px]:"), GridBagHelper.leftCol());
         sizePanel.add(sizeXTextField, GridBagHelper.rightCol());
-        sizePanel.add(new JLabel("Image size Y [px]:"), GridBagHelper.leftCol());
+        sizePanel.add(new JLabel("Original image height [px]:"), GridBagHelper.leftCol());
         sizePanel.add(sizeYTextField, GridBagHelper.rightCol());
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

@@ -12,7 +12,7 @@ import javax.swing.JTextField;
 
 public class DifferenceOfBoxFiltersUI extends IFilterUI {
 
-    private final String name = "Difference of box (mean) filters";
+    private final String name = "Difference of averaging filters";
     private transient ParameterName.Integer size1;
     private transient ParameterName.Integer size2;
 

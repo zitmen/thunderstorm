@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 
 public class DifferenceOfGaussiansFilterUI extends IFilterUI {
 
-    private final String name = "Difference of Gaussians";
+    private final String name = "Difference-of-Gaussians filter";
     private transient ParameterName.Integer size;
     private transient ParameterName.Double sigmaG1;
     private transient ParameterName.Double sigmaG2;
