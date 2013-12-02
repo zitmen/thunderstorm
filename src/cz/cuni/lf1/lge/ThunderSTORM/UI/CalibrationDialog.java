@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
+import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
@@ -24,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -31,7 +33,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 public class CalibrationDialog extends JDialog implements ActionListener {
@@ -39,7 +40,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
     private CardsPanel<IFilterUI> filters;
     private CardsPanel<IDetectorUI> detectors;
     private CardsPanel<IEstimatorUI> estimators;
-    private JButton defaults, preview, ok, cancel, findCalibrationButton;
+    private JButton cameraSetup, defaults, preview, ok, cancel, findCalibrationButton;
     private JTextField calibrationFileTextField, stageStepTextField;
     private double stageStep;
     JTextField fitRegionTextArea;
@@ -53,6 +54,13 @@ public class CalibrationDialog extends JDialog implements ActionListener {
         this.filters = new CardsPanel<IFilterUI>(filters, Integer.parseInt(Prefs.get("thunderstorm.filters.index", "0")));
         this.detectors = new CardsPanel<IDetectorUI>(detectors, Integer.parseInt(Prefs.get("thunderstorm.detectors.index", "0")));
         this.estimators = new CardsPanel<IEstimatorUI>(estimators, 0);
+        this.cameraSetup = new JButton("Camera setup");
+        this.cameraSetup.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new CameraSetupPlugIn().run(null);
+            }
+        });
         semaphore = new Semaphore(0);
         addComponentsToPane();
     }
@@ -63,20 +71,25 @@ public class CalibrationDialog extends JDialog implements ActionListener {
         pane.setLayout(new GridBagLayout());
         GridBagConstraints componentConstraints = new GridBagConstraints();
         componentConstraints.gridx = 0;
-        componentConstraints.insets = new Insets(10, 5, 10, 5);
         componentConstraints.fill = GridBagConstraints.BOTH;
         componentConstraints.weightx = 1;
-        GridBagConstraints lineConstraints = (GridBagConstraints) componentConstraints.clone();
-        lineConstraints.insets = new Insets(0, 0, 0, 0);
 
-        pane.add(filters.getPanel("Filters: "), componentConstraints);
-        pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-        pane.add(detectors.getPanel("Detectors: "), componentConstraints);
-        pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-        pane.add(estimators.getPanel("Estimator: "), componentConstraints);
-        pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
+        JPanel cameraPanel = new JPanel(new BorderLayout());
+        cameraPanel.add(cameraSetup);
+        cameraPanel.setBorder(BorderFactory.createTitledBorder("Camera"));
+        pane.add(cameraPanel, componentConstraints);
+        JPanel p = filters.getPanel("Filter:");
+        p.setBorder(BorderFactory.createTitledBorder("Image filtering"));
+        pane.add(p, componentConstraints);
+        p = detectors.getPanel("Method:");
+        p.setBorder(BorderFactory.createTitledBorder("Approximate localization of molecules"));
+        pane.add(p, componentConstraints);
+        p = estimators.getPanel("Method:");
+        p.setBorder(BorderFactory.createTitledBorder("Sub-pixel localization of molecules"));
+        pane.add(p, componentConstraints);
 
         JPanel aditionalOptions = new JPanel(new GridBagLayout());
+        aditionalOptions.setBorder(BorderFactory.createTitledBorder("Additional options"));
         aditionalOptions.add(new JLabel("Z stage step [nm]:"), GridBagHelper.leftCol());
         stageStepTextField = new JTextField(Prefs.get("thunderstorm.calibration.step", "10"), 20);
         aditionalOptions.add(stageStepTextField, GridBagHelper.rightCol());
@@ -92,8 +105,6 @@ public class CalibrationDialog extends JDialog implements ActionListener {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         aditionalOptions.add(calibrationPanel, gbc);
         pane.add(aditionalOptions, componentConstraints);
-
-        pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
 
         defaults = new JButton("Defaults");
         preview = new JButton("Preview");
@@ -114,6 +125,7 @@ public class CalibrationDialog extends JDialog implements ActionListener {
         buttons.add(cancel);
         pane.add(buttons, componentConstraints);
         getRootPane().setDefaultButton(ok);
+        getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setResizable(false);
         pack();
     }

@@ -298,9 +298,9 @@ public class DataGeneratorPlugIn implements PlugIn {
             params.registerComponent(intensityRangeParam, intensityTextField);
             //Noise
             JPanel noisePanel = new JPanel(new GridBagLayout());
-            noisePanel.setBorder(BorderFactory.createTitledBorder("Noise"));
+            noisePanel.setBorder(BorderFactory.createTitledBorder("Background noise"));
 
-            noisePanel.add(new JLabel("Poisson noise variance [photons]:"), GridBagHelper.leftCol());
+            noisePanel.add(new JLabel("Mean photon background [photons]:"), GridBagHelper.leftCol());
             final JTextField noiseVarTextField = new JTextField(20);
             noisePanel.add(noiseVarTextField, GridBagHelper.rightCol());
             params.registerComponent(addPoissonVarParam, noiseVarTextField);

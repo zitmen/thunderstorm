@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import ij.IJ;
 import ij.plugin.BrowserLauncher;
@@ -24,7 +25,8 @@ public class AboutPlugIn implements PlugIn {
 
     @Override
     public void run(String arg) {
-        JDialog dialog = new JDialog(IJ.getInstance(), "About ThunderSTORM");
+        GUI.setLookAndFeel();
+        JDialog dialog = new JDialog(IJ.getInstance(), "About ThunderSTORM (" + ThunderSTORM.VERSION + ")");
         if(IJ.isJava17()) {
             dialog.setType(Window.Type.UTILITY);
         }

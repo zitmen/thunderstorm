@@ -64,7 +64,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             ie = ModuleLoader.getModules(IImportExport.class);
 
             // Create and show the dialog
-            GenericDialogPlus gd = new GenericDialogPlus(commands[0] + " " + commands[1]);
+            GenericDialogPlus gd = new GenericDialogPlus(capitalizeFirstLetter(commands[0]) + " " + commands[1]);
 
             modules = new String[ie.size()];
             suffix = new String[ie.size()];
@@ -188,9 +188,8 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 for(int i = 0; i < openedImagesIds.length; i++) {
                     openedImagesTitles[i + 1] = WindowManager.getImage(openedImagesIds[i]).getTitle();
                 }
-                gd.addMessage("If the input image for the imported results is opened, which one is it?\n"
-                        + " It can be used for overlay preview of detected molecules.");
-                gd.addChoice("The input image: ", openedImagesTitles, "");
+                gd.addMessage("(Optional) Select window with raw data to show localizations in overlay.");
+                gd.addChoice("Raw image:", openedImagesTitles, "");
             }
         }
     }
@@ -300,4 +299,11 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         Prefs.set("thunderstorm.io.saveMeasurementProtocol", Boolean.toString(saveMeasurementProtocol));
     }
 
+    private static String capitalizeFirstLetter(String s){
+        if(s != null && s.length() > 0){
+            return (s.charAt(0) + "").toUpperCase() + s.substring(1);
+        } else {
+            return s;
+        }
+    }
 }

@@ -13,11 +13,11 @@ public class CompoundWaveletFilterUI extends IFilterUI {
 
     private final String name = "Wavelet filter";
     private transient ParameterName.Choice plane;
-    private transient static final String secondPlane = "use 2nd wavelet plane";
-    private transient static final String thirdPlane = "use 3rd wavelet plane";
+    private transient static final String secondPlane = "use 2nd wavelet level";
+    private transient static final String thirdPlane = "use 3rd wavelet level";
 
     public CompoundWaveletFilterUI() {
-        plane = parameters.createChoice("thirdplane", null, secondPlane);
+        plane = parameters.createChoice("level", null, secondPlane);
     }
 
     @Override

@@ -18,11 +18,11 @@ import ij.Prefs;
 import ij.gui.Roi;
 import ij.measure.Calibration;
 import ij.process.FloatProcessor;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -31,12 +31,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 
 /**
  * Dialog with settings of filters, detectors, estimators, and other parameters
@@ -93,7 +93,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         //
         this.imp = imp;
         //
-        this.cameraSetup = new JButton("Camera setup...");
+        this.cameraSetup = new JButton("Camera setup");
         this.cameraSetup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -133,22 +133,25 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         pane.setLayout(new GridBagLayout());
         GridBagConstraints componentConstraints = new GridBagConstraints();
         componentConstraints.gridx = 0;
-        componentConstraints.insets = new Insets(10, 5, 10, 5);
         componentConstraints.fill = GridBagConstraints.BOTH;
         componentConstraints.weightx = 1;
-        GridBagConstraints lineConstraints = (GridBagConstraints) componentConstraints.clone();
-        lineConstraints.insets = new Insets(0, 0, 0, 0);
 
-        pane.add(cameraSetup, componentConstraints);
-        pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-        pane.add(filtersPanel.getPanel("Image denoising: "), componentConstraints);
-        pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-        pane.add(detectorsPanel.getPanel("Rough detection of molecules: "), componentConstraints);
-        pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-        pane.add(estimatorsPanel.getPanel("Sub-pixel localization of molecules: "), componentConstraints);
-        pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
-        pane.add(renderersPanel.getPanel("Rendering of the results: "), componentConstraints);
-        pane.add(new JSeparator(JSeparator.HORIZONTAL), lineConstraints);
+        JPanel cameraPanel = new JPanel(new BorderLayout());
+        cameraPanel.add(cameraSetup);
+        cameraPanel.setBorder(BorderFactory.createTitledBorder("Camera"));
+        pane.add(cameraPanel, componentConstraints);
+        JPanel p = filtersPanel.getPanel("Filter:");
+        p.setBorder(BorderFactory.createTitledBorder("Image filtering"));
+        pane.add(p, componentConstraints);
+        p = detectorsPanel.getPanel("Method:");
+        p.setBorder(BorderFactory.createTitledBorder("Approximate localization of molecules"));
+        pane.add(p, componentConstraints);
+        p = estimatorsPanel.getPanel("Method:");
+        p.setBorder(BorderFactory.createTitledBorder("Sub-pixel localization of molecules"));
+        pane.add(p, componentConstraints);
+        p = renderersPanel.getPanel("Method:");
+        p.setBorder(BorderFactory.createTitledBorder("Rendering of the results"));
+        pane.add(p, componentConstraints);
         //
         defaults.addActionListener(this);
         preview.addActionListener(this);
@@ -164,6 +167,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         buttons.add(cancel);
         pane.add(buttons, componentConstraints);
         getRootPane().setDefaultButton(ok);
+        getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setResizable(false);
         pack();
     }

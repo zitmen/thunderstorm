@@ -82,9 +82,9 @@ public class CrowdedFieldEstimatorUI {
         final JTextField nMaxTextField = new JTextField("");
         final JLabel nMaxLabel = new JLabel("Maximum of molecules per fitting region:");
         final JTextField pValueTextField = new JTextField("");
-        final JLabel pValueLabel = new JLabel("Threshold for more complicated model (p-value):");
-        final JCheckBox keepSameIntensityCheckBox = new JCheckBox("Keep the same intensity of all molecules", false);
-        final JCheckBox isFixedIntensityCheckBox = new JCheckBox("Fix intensity to the range [photons]:", true);
+        final JLabel pValueLabel = new JLabel("Model selection threshold (p-value):");
+        final JCheckBox keepSameIntensityCheckBox = new JCheckBox("Same intensity for all molecules", false);
+        final JCheckBox isFixedIntensityCheckBox = new JCheckBox("Limit intensity range [photons]:", true);
         final JTextField expectedIntensityTextField = new JTextField("");
         isEnabledCheckbox.addActionListener(new ActionListener() {
             @Override
