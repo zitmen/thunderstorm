@@ -231,7 +231,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         ParameterName.Integer widthParam = params.createIntField("width", IntegerValidatorFactory.positiveNonZero(), Defaults.WIDTH);
         ParameterName.Integer heightParam = params.createIntField("height", IntegerValidatorFactory.positiveNonZero(), Defaults.WIDTH);
         ParameterName.Integer framesParam = params.createIntField("frames", IntegerValidatorFactory.positiveNonZero(), Defaults.FRAMES);
-        ParameterName.Double densityParam = params.createDoubleField("density", DoubleValidatorFactory.positiveNonZero(), Defaults.DENSITY);
+        ParameterName.Double densityParam = params.createDoubleField("density", DoubleValidatorFactory.positive(), Defaults.DENSITY);
         ParameterName.Double addPoissonVarParam = params.createDoubleField("addPoisssonVar", DoubleValidatorFactory.positive(), Defaults.ADD_POISSON_VAR);
         ParameterName.String fwhmRangeParam = params.createStringField("fwhmRange", RangeValidatorFactory.fromTo(), Defaults.FWHM_RANGE);
         ParameterName.String intensityRangeParam = params.createStringField("intensityRange", RangeValidatorFactory.fromTo(), Defaults.INTENSITY_RANGE);
