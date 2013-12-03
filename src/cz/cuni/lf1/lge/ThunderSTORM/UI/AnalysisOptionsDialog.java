@@ -150,7 +150,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         p.setBorder(BorderFactory.createTitledBorder("Sub-pixel localization of molecules"));
         pane.add(p, componentConstraints);
         p = renderersPanel.getPanel("Method:");
-        p.setBorder(BorderFactory.createTitledBorder("Rendering of the results"));
+        p.setBorder(BorderFactory.createTitledBorder("Visualisation of the results"));
         pane.add(p, componentConstraints);
         //
         defaults.addActionListener(this);
