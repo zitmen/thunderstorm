@@ -38,10 +38,21 @@ public abstract class AbstractRenderingUI extends IRendererUI {
             return new ParameterName[]{threeD};
         }
     };
+    protected boolean showRepaintFrequency = true;
 
     public AbstractRenderingUI() {
         magnification = parameters.createDoubleField("magnification", DoubleValidatorFactory.positiveNonZero(), 5);
-        repaintFrequency = parameters.createIntField("repaint", IntegerValidatorFactory.positive(), 50);
+        repaintFrequency = parameters.createIntField("repaint", IntegerValidatorFactory.positive(), 50, new ParameterTracker.Condition() {
+            @Override
+            public boolean isSatisfied() {
+                return showRepaintFrequency;
+            }
+
+            @Override
+            public ParameterName[] dependsOn() {
+                return null;
+            }
+        });
         threeD = parameters.createBooleanField("threeD", null, false);
         colorizeZ = parameters.createBooleanField("colorizeZ", null, false);
         zRange = parameters.createStringField("zrange", new Validator<String>() {
@@ -79,6 +90,10 @@ public abstract class AbstractRenderingUI extends IRendererUI {
     public int getRepaintFrequency() {
         return repaintFrequency.getValue();
     }
+    
+    public void setShowRepaintFrequency(boolean show){
+        this.showRepaintFrequency = show;
+    }
 
     @Override
     public JPanel getOptionsPanel() {
@@ -91,8 +106,10 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         panel.add(new JLabel("Magnification:"), GridBagHelper.leftCol());
         panel.add(resolutionTextField, GridBagHelper.rightCol());
 
-        panel.add(new JLabel("Repaint frequency [frames]:"), GridBagHelper.leftCol());
-        panel.add(repaintFrequencyTextField, GridBagHelper.rightCol());
+        if(showRepaintFrequency){
+            panel.add(new JLabel("Update frequency [frames]:"), GridBagHelper.leftCol());
+            panel.add(repaintFrequencyTextField, GridBagHelper.rightCol());
+        }
 
         final JLabel zRangeLabel = new JLabel("Z range (from:step:to) [nm]:");
         final JTextField zRangeTextField = new JTextField("", 20);

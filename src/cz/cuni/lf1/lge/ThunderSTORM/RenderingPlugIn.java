@@ -11,6 +11,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.AbstractRenderingUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
@@ -76,8 +77,11 @@ public class RenderingPlugIn implements PlugIn {
         List<IRendererUI> knownRenderers = ModuleLoader.getUIModules(IRendererUI.class);
         //do not show EmptyRenderer
         for(Iterator<IRendererUI> it = knownRenderers.iterator(); it.hasNext();) {
-            if(it.next() instanceof EmptyRendererUI) {
+            IRendererUI rendererUI = it.next();
+            if(rendererUI instanceof EmptyRendererUI) {
                 it.remove();
+            }else if(rendererUI instanceof AbstractRenderingUI){
+                ((AbstractRenderingUI)rendererUI).setShowRepaintFrequency(false);
             }
         }
         IRendererUI selectedRendererUI;
