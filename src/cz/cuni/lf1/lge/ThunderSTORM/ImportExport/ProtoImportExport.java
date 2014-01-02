@@ -36,6 +36,7 @@ public class ProtoImportExport implements IImportExport {
             if(mol.hasX()) fields.add(PSFModel.Params.LABEL_X);
             if(mol.hasY()) fields.add(PSFModel.Params.LABEL_Y);
             if(mol.hasZ()) fields.add(PSFModel.Params.LABEL_Z);
+            if(mol.hasZRel()) fields.add(PSFModel.Params.LABEL_Z_REL);
             if(mol.hasSigma()) fields.add(PSFModel.Params.LABEL_SIGMA);
             if(mol.hasSigma1()) fields.add(PSFModel.Params.LABEL_SIGMA1);
             if(mol.hasSigma2()) fields.add(PSFModel.Params.LABEL_SIGMA2);
@@ -63,6 +64,7 @@ public class ProtoImportExport implements IImportExport {
             if(mol.hasX()) { values[i] = mol.getX(); i++; }
             if(mol.hasY()) { values[i] = mol.getY(); i++; }
             if(mol.hasZ()) { values[i] = mol.getZ(); i++; }
+            if(mol.hasZRel())  { values[i] = mol.getZRel(); i++; }
             if(mol.hasSigma()) { values[i] = mol.getSigma(); i++; }
             if(mol.hasSigma1()) { values[i] = mol.getSigma1(); i++; }
             if(mol.hasSigma2()) { values[i] = mol.getSigma2(); i++; }
@@ -106,6 +108,8 @@ public class ProtoImportExport implements IImportExport {
                     units.setY(unit);
                 } else if(PSFModel.Params.LABEL_Z.equals(name)) {
                     units.setZ(unit);
+                } else if(PSFModel.Params.LABEL_Z_REL.equals(name)) {
+                    units.setZRel(unit);
                 } else if(PSFModel.Params.LABEL_SIGMA.equals(name)) {
                     units.setSigma(unit);
                 } else if(PSFModel.Params.LABEL_SIGMA1.equals(name)) {
@@ -147,6 +151,8 @@ public class ProtoImportExport implements IImportExport {
                     mol.setY(value);
                 } else if(PSFModel.Params.LABEL_Z.equals(name)) {
                     mol.setZ(value);
+                } else if(PSFModel.Params.LABEL_Z_REL.equals(name)) {
+                    mol.setZRel(value);
                 } else if(PSFModel.Params.LABEL_SIGMA.equals(name)) {
                     mol.setSigma(value);
                 } else if(PSFModel.Params.LABEL_SIGMA1.equals(name)) {
@@ -197,6 +203,7 @@ public class ProtoImportExport implements IImportExport {
             if(u.hasX()) table.setColumnUnits(PSFModel.Params.LABEL_X, Units.fromString(u.getX()));
             if(u.hasY()) table.setColumnUnits(PSFModel.Params.LABEL_Y, Units.fromString(u.getY()));
             if(u.hasZ()) table.setColumnUnits(PSFModel.Params.LABEL_Z, Units.fromString(u.getZ()));
+            if(u.hasZRel()) table.setColumnUnits(PSFModel.Params.LABEL_Z_REL, Units.fromString(u.getZRel()));
             if(u.hasSigma()) table.setColumnUnits(PSFModel.Params.LABEL_SIGMA, Units.fromString(u.getSigma()));
             if(u.hasSigma1()) table.setColumnUnits(PSFModel.Params.LABEL_SIGMA1, Units.fromString(u.getSigma1()));
             if(u.hasSigma2()) table.setColumnUnits(PSFModel.Params.LABEL_SIGMA2, Units.fromString(u.getSigma2()));

@@ -220,6 +220,21 @@ public final class ResultsTable {
      */
     com.google.protobuf.ByteString
         getThompsonEmccdBytes();
+
+    // optional string z_rel = 15;
+    /**
+     * <code>optional string z_rel = 15;</code>
+     */
+    boolean hasZRel();
+    /**
+     * <code>optional string z_rel = 15;</code>
+     */
+    java.lang.String getZRel();
+    /**
+     * <code>optional string z_rel = 15;</code>
+     */
+    com.google.protobuf.ByteString
+        getZRelBytes();
   }
   /**
    * Protobuf type {@code cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units}
@@ -340,6 +355,11 @@ public final class ResultsTable {
             case 114: {
               bitField0_ |= 0x00002000;
               thompsonEmccd_ = input.readBytes();
+              break;
+            }
+            case 122: {
+              bitField0_ |= 0x00004000;
+              zRel_ = input.readBytes();
               break;
             }
           }
@@ -984,6 +1004,49 @@ public final class ResultsTable {
       }
     }
 
+    // optional string z_rel = 15;
+    public static final int Z_REL_FIELD_NUMBER = 15;
+    private java.lang.Object zRel_;
+    /**
+     * <code>optional string z_rel = 15;</code>
+     */
+    public boolean hasZRel() {
+      return ((bitField0_ & 0x00004000) == 0x00004000);
+    }
+    /**
+     * <code>optional string z_rel = 15;</code>
+     */
+    public java.lang.String getZRel() {
+      java.lang.Object ref = zRel_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          zRel_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string z_rel = 15;</code>
+     */
+    public com.google.protobuf.ByteString
+        getZRelBytes() {
+      java.lang.Object ref = zRel_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        zRel_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
       id_ = "";
       frame_ = "";
@@ -999,6 +1062,7 @@ public final class ResultsTable {
       offset_ = "";
       thompsonCcd_ = "";
       thompsonEmccd_ = "";
+      zRel_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1053,6 +1117,9 @@ public final class ResultsTable {
       }
       if (((bitField0_ & 0x00002000) == 0x00002000)) {
         output.writeBytes(14, getThompsonEmccdBytes());
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        output.writeBytes(15, getZRelBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -1118,6 +1185,10 @@ public final class ResultsTable {
       if (((bitField0_ & 0x00002000) == 0x00002000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(14, getThompsonEmccdBytes());
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(15, getZRelBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1263,6 +1334,8 @@ public final class ResultsTable {
         bitField0_ = (bitField0_ & ~0x00001000);
         thompsonEmccd_ = "";
         bitField0_ = (bitField0_ & ~0x00002000);
+        zRel_ = "";
+        bitField0_ = (bitField0_ & ~0x00004000);
         return this;
       }
 
@@ -1347,6 +1420,10 @@ public final class ResultsTable {
           to_bitField0_ |= 0x00002000;
         }
         result.thompsonEmccd_ = thompsonEmccd_;
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+          to_bitField0_ |= 0x00004000;
+        }
+        result.zRel_ = zRel_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1431,6 +1508,11 @@ public final class ResultsTable {
         if (other.hasThompsonEmccd()) {
           bitField0_ |= 0x00002000;
           thompsonEmccd_ = other.thompsonEmccd_;
+          onChanged();
+        }
+        if (other.hasZRel()) {
+          bitField0_ |= 0x00004000;
+          zRel_ = other.zRel_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -2496,6 +2578,80 @@ public final class ResultsTable {
         return this;
       }
 
+      // optional string z_rel = 15;
+      private java.lang.Object zRel_ = "";
+      /**
+       * <code>optional string z_rel = 15;</code>
+       */
+      public boolean hasZRel() {
+        return ((bitField0_ & 0x00004000) == 0x00004000);
+      }
+      /**
+       * <code>optional string z_rel = 15;</code>
+       */
+      public java.lang.String getZRel() {
+        java.lang.Object ref = zRel_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          zRel_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string z_rel = 15;</code>
+       */
+      public com.google.protobuf.ByteString
+          getZRelBytes() {
+        java.lang.Object ref = zRel_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          zRel_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string z_rel = 15;</code>
+       */
+      public Builder setZRel(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00004000;
+        zRel_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string z_rel = 15;</code>
+       */
+      public Builder clearZRel() {
+        bitField0_ = (bitField0_ & ~0x00004000);
+        zRel_ = getDefaultInstance().getZRel();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string z_rel = 15;</code>
+       */
+      public Builder setZRelBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00004000;
+        zRel_ = value;
+        onChanged();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Units)
     }
 
@@ -2649,6 +2805,16 @@ public final class ResultsTable {
      * <code>optional double thompson_emccd = 14;</code>
      */
     double getThompsonEmccd();
+
+    // optional double z_rel = 15;
+    /**
+     * <code>optional double z_rel = 15;</code>
+     */
+    boolean hasZRel();
+    /**
+     * <code>optional double z_rel = 15;</code>
+     */
+    double getZRel();
   }
   /**
    * Protobuf type {@code cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.Molecule}
@@ -2769,6 +2935,11 @@ public final class ResultsTable {
             case 113: {
               bitField0_ |= 0x00002000;
               thompsonEmccd_ = input.readDouble();
+              break;
+            }
+            case 121: {
+              bitField0_ |= 0x00004000;
+              zRel_ = input.readDouble();
               break;
             }
           }
@@ -3035,6 +3206,22 @@ public final class ResultsTable {
       return thompsonEmccd_;
     }
 
+    // optional double z_rel = 15;
+    public static final int Z_REL_FIELD_NUMBER = 15;
+    private double zRel_;
+    /**
+     * <code>optional double z_rel = 15;</code>
+     */
+    public boolean hasZRel() {
+      return ((bitField0_ & 0x00004000) == 0x00004000);
+    }
+    /**
+     * <code>optional double z_rel = 15;</code>
+     */
+    public double getZRel() {
+      return zRel_;
+    }
+
     private void initFields() {
       id_ = 0;
       frame_ = 0;
@@ -3050,6 +3237,7 @@ public final class ResultsTable {
       offset_ = 0D;
       thompsonCcd_ = 0D;
       thompsonEmccd_ = 0D;
+      zRel_ = 0D;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3104,6 +3292,9 @@ public final class ResultsTable {
       }
       if (((bitField0_ & 0x00002000) == 0x00002000)) {
         output.writeDouble(14, thompsonEmccd_);
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        output.writeDouble(15, zRel_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3169,6 +3360,10 @@ public final class ResultsTable {
       if (((bitField0_ & 0x00002000) == 0x00002000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(14, thompsonEmccd_);
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(15, zRel_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3314,6 +3509,8 @@ public final class ResultsTable {
         bitField0_ = (bitField0_ & ~0x00001000);
         thompsonEmccd_ = 0D;
         bitField0_ = (bitField0_ & ~0x00002000);
+        zRel_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00004000);
         return this;
       }
 
@@ -3398,6 +3595,10 @@ public final class ResultsTable {
           to_bitField0_ |= 0x00002000;
         }
         result.thompsonEmccd_ = thompsonEmccd_;
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+          to_bitField0_ |= 0x00004000;
+        }
+        result.zRel_ = zRel_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3455,6 +3656,9 @@ public final class ResultsTable {
         }
         if (other.hasThompsonEmccd()) {
           setThompsonEmccd(other.getThompsonEmccd());
+        }
+        if (other.hasZRel()) {
+          setZRel(other.getZRel());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -3941,6 +4145,39 @@ public final class ResultsTable {
       public Builder clearThompsonEmccd() {
         bitField0_ = (bitField0_ & ~0x00002000);
         thompsonEmccd_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      // optional double z_rel = 15;
+      private double zRel_ ;
+      /**
+       * <code>optional double z_rel = 15;</code>
+       */
+      public boolean hasZRel() {
+        return ((bitField0_ & 0x00004000) == 0x00004000);
+      }
+      /**
+       * <code>optional double z_rel = 15;</code>
+       */
+      public double getZRel() {
+        return zRel_;
+      }
+      /**
+       * <code>optional double z_rel = 15;</code>
+       */
+      public Builder setZRel(double value) {
+        bitField0_ |= 0x00004000;
+        zRel_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional double z_rel = 15;</code>
+       */
+      public Builder clearZRel() {
+        bitField0_ = (bitField0_ & ~0x00004000);
+        zRel_ = 0D;
         onChanged();
         return this;
       }
@@ -4850,25 +5087,25 @@ public final class ResultsTable {
   static {
     java.lang.String[] descriptorData = {
       "\n\rresults.proto\022/cz.cuni.lf1.lge.Thunder" +
-      "STORM.ImportExport.proto\"\353\001\n\005Units\022\n\n\002id" +
+      "STORM.ImportExport.proto\"\372\001\n\005Units\022\n\n\002id" +
       "\030\001 \001(\t\022\r\n\005frame\030\002 \001(\t\022\t\n\001x\030\003 \001(\t\022\t\n\001y\030\004 " +
       "\001(\t\022\t\n\001z\030\005 \001(\t\022\r\n\005sigma\030\006 \001(\t\022\016\n\006sigma1\030" +
       "\007 \001(\t\022\016\n\006sigma2\030\010 \001(\t\022\021\n\tintensity\030\t \001(\t" +
       "\022\022\n\nbackground\030\n \001(\t\022\022\n\ndetections\030\013 \001(\t" +
       "\022\016\n\006offset\030\014 \001(\t\022\024\n\014thompson_ccd\030\r \001(\t\022\026" +
-      "\n\016thompson_emccd\030\016 \001(\t\"\356\001\n\010Molecule\022\n\n\002i" +
-      "d\030\001 \001(\r\022\r\n\005frame\030\002 \001(\r\022\t\n\001x\030\003 \001(\001\022\t\n\001y\030\004" +
-      " \001(\001\022\t\n\001z\030\005 \001(\001\022\r\n\005sigma\030\006 \001(\001\022\016\n\006sigma1",
-      "\030\007 \001(\001\022\016\n\006sigma2\030\010 \001(\001\022\021\n\tintensity\030\t \001(" +
-      "\001\022\022\n\nbackground\030\n \001(\001\022\022\n\ndetections\030\013 \001(" +
-      "\r\022\016\n\006offset\030\014 \001(\001\022\024\n\014thompson_ccd\030\r \001(\001\022" +
-      "\026\n\016thompson_emccd\030\016 \001(\001\"\235\001\n\007Results\022E\n\005u" +
-      "nits\030\001 \001(\01326.cz.cuni.lf1.lge.ThunderSTOR" +
-      "M.ImportExport.proto.Units\022K\n\010molecule\030\002" +
-      " \003(\01329.cz.cuni.lf1.lge.ThunderSTORM.Impo" +
-      "rtExport.proto.MoleculeB?\n/cz.cuni.lf1.l" +
-      "ge.ThunderSTORM.ImportExport.protoB\014Resu" +
-      "ltsTable"
+      "\n\016thompson_emccd\030\016 \001(\t\022\r\n\005z_rel\030\017 \001(\t\"\375\001" +
+      "\n\010Molecule\022\n\n\002id\030\001 \001(\r\022\r\n\005frame\030\002 \001(\r\022\t\n" +
+      "\001x\030\003 \001(\001\022\t\n\001y\030\004 \001(\001\022\t\n\001z\030\005 \001(\001\022\r\n\005sigma\030",
+      "\006 \001(\001\022\016\n\006sigma1\030\007 \001(\001\022\016\n\006sigma2\030\010 \001(\001\022\021\n" +
+      "\tintensity\030\t \001(\001\022\022\n\nbackground\030\n \001(\001\022\022\n\n" +
+      "detections\030\013 \001(\r\022\016\n\006offset\030\014 \001(\001\022\024\n\014thom" +
+      "pson_ccd\030\r \001(\001\022\026\n\016thompson_emccd\030\016 \001(\001\022\r" +
+      "\n\005z_rel\030\017 \001(\001\"\235\001\n\007Results\022E\n\005units\030\001 \001(\013" +
+      "26.cz.cuni.lf1.lge.ThunderSTORM.ImportEx" +
+      "port.proto.Units\022K\n\010molecule\030\002 \003(\01329.cz." +
+      "cuni.lf1.lge.ThunderSTORM.ImportExport.p" +
+      "roto.MoleculeB?\n/cz.cuni.lf1.lge.Thunder" +
+      "STORM.ImportExport.protoB\014ResultsTable"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4880,13 +5117,13 @@ public final class ResultsTable {
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Units_descriptor,
-              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma1", "Sigma2", "Intensity", "Background", "Detections", "Offset", "ThompsonCcd", "ThompsonEmccd", });
+              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma1", "Sigma2", "Intensity", "Background", "Detections", "Offset", "ThompsonCcd", "ThompsonEmccd", "ZRel", });
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Molecule_descriptor,
-              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma1", "Sigma2", "Intensity", "Background", "Detections", "Offset", "ThompsonCcd", "ThompsonEmccd", });
+              new java.lang.String[] { "Id", "Frame", "X", "Y", "Z", "Sigma", "Sigma1", "Sigma2", "Intensity", "Background", "Detections", "Offset", "ThompsonCcd", "ThompsonEmccd", "ZRel", });
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Results_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_cz_cuni_lf1_lge_ThunderSTORM_ImportExport_proto_Results_fieldAccessorTable = new

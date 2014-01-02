@@ -18,6 +18,7 @@ message Units {
 	optional string offset = 12;
 	optional string thompson_ccd = 13;
 	optional string thompson_emccd = 14;
+	optional string z_rel = 15;
 }
 
 message Molecule {
@@ -35,6 +36,7 @@ message Molecule {
 	optional double offset = 12;
 	optional double thompson_ccd = 13;
 	optional double thompson_emccd = 14;
+	optional double z_rel = 15;
 }
 
 message Results {
