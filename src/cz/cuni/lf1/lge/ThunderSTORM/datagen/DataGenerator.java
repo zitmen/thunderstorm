@@ -95,51 +95,63 @@ public class DataGenerator {
         return molist;
     }
     
-    public FloatProcessor addPoissonAndGamma(FloatProcessor fp){
+    /**
+     * Replaces each pixel value with a sample from a poisson distribution with mean value equal to the pixel original value.
+     */
+    FloatProcessor samplePoisson(FloatProcessor fp){
         for(int i = 0; i < fp.getPixelCount(); i ++){
             float mean =  fp.getf(i);
 
             double value = mean > 0 ? (rand.nextPoisson(mean)) : 0;
-            if(CameraSetupPlugIn.isIsEmGain()) {
-                value = rand.nextGamma(value + 1e-10, CameraSetupPlugIn.getGain());
-            }
+            fp.setf(i, (float)value);
+        }
+        return fp;
+    }
+    
+    /**
+     * Replaces each pixel value with a sample from a Gamma distribution with shape equal to the original pixel value and scale equal to the gain parameter.
+     */
+    FloatProcessor sampleGamma(FloatProcessor fp, double gain){
+        for(int i = 0; i < fp.getPixelCount(); i ++){
+            double value = fp.getf(i);
+            value = rand.nextGamma(value + 1e-10, gain);
             fp.setf(i, (float)value);
         }
         return fp;
     }
 
-    public ShortProcessor renderFrame(int width, int height, int frame_no, Drift drift, Vector<EmitterModel> molecules, /*FloatProcessor bkg, */FloatProcessor backgroundMeanIntensity) {
-        // 1. acquisition (with drift)
+    public ShortProcessor renderFrame(int width, int height, int frame_no, Drift drift, Vector<EmitterModel> molecules, FloatProcessor backgroundMeanIntensity) {
+        //get drift for current frame
         double dx = drift.getDriftX(frame_no), dy = drift.getDriftY(frame_no);
-        //FloatProcessor frame = (FloatProcessor)bkg.duplicate();
-        //frame.setInterpolationMethod(BILINEAR);
-        //frame.translate(dx, dy);
-        //frame.setRoi((int)ceil(drift.dist), (int)ceil(drift.dist), width, height);    // see generateBackground
-        //frame = (FloatProcessor)frame.crop();
+
+        //add expected photon count of molecules into an image
         float [] zeros = new float[width*height];
         FloatProcessor frame = new FloatProcessor(width, height, zeros, null);
         for(EmitterModel mol : molecules) {
-            mol.moveXY(dx, dy);
+            mol.moveXY(dx, dy);                     // add drift
             if(mol.isOutOfRoi(frame.getRoi())) {    // does the molecule get out of ROI due to the drift?
                 deleteLater.add(mol);
             } else {
                 mol.generate(frame);
             }
         }
-        // remove the out-of-roi molecules
+        //remove the out-of-roi molecules
         for(EmitterModel mol : deleteLater) {
             molecules.remove(mol);
         }
         deleteLater.clear();
-        // Additive Poisson-distributed noise...we stopped distinguishing read-out
-        // and sample noise, because it might be confusing and it would not change
-        // the results of simulation anyway.
-        frame = ImageMath.add(frame, backgroundMeanIntensity);
-        frame = ImageMath.divide(frame, (float)CameraSetupPlugIn.getPhotons2ADU());
-        frame = addPoissonAndGamma(frame);
         
+        //add expected photon background
+        frame = ImageMath.add(frame, backgroundMeanIntensity);
+        //simulates poisson distributed photon arrival (and EM gain using Gamma distribution if it is enabled)
+        frame = samplePoisson(frame);
+        if(CameraSetupPlugIn.isIsEmGain()){
+            frame = sampleGamma(frame, CameraSetupPlugIn.getGain());
+        }
+        //convert to AD units
+        frame = ImageMath.divide(frame, (float)CameraSetupPlugIn.getPhotons2ADU());
         frame = ImageMath.add((float)CameraSetupPlugIn.getOffset(), frame);
-        //
+        //convert to integer
         return (ShortProcessor)frame.convertToShort(false);
     }
 

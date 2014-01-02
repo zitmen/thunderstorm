@@ -183,7 +183,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                 backgroundMeanIntensity = new FloatProcessor(width, height, data, null);
 
                 Vector<EmitterModel> molecules = datagen.generateMolecules(width, height, mask, density, intensity_range, fwhm_range);
-                ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, /*bkg, */ backgroundMeanIntensity);
+                ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, backgroundMeanIntensity);
                 local_stack.add(slice);
                 local_table.add(molecules);
             }
