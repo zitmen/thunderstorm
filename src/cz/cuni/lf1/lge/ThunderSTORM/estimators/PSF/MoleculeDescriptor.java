@@ -305,7 +305,7 @@ public class MoleculeDescriptor implements Cloneable {
             bkgStd = molecule.getParam(LABEL_BACKGROUND, Units.PHOTON);
             //
             double xyVar = ((psfSigma2 + pixelSize * pixelSize / 12) / psfEnergy)
-                    + ((8 * PI * psfSigma2 * psfSigma2 * bkgStd) / (pixelSize * pixelSize * psfEnergy * psfEnergy));
+                    + ((8 * PI * psfSigma2 * psfSigma2 * bkgStd * bkgStd) / (pixelSize * pixelSize * psfEnergy * psfEnergy));
             return sqrt(xyVar);
         }
 
@@ -326,7 +326,7 @@ public class MoleculeDescriptor implements Cloneable {
             bkgStd = molecule.getParam(LABEL_BACKGROUND, Units.PHOTON);
             //
             double xyVar = ((2 * psfSigma2 + pixelSize * pixelSize / 12) / psfEnergy)
-                    + ((8 * PI * psfSigma2 * psfSigma2 * bkgStd) / (pixelSize * pixelSize * psfEnergy * psfEnergy));
+                    + ((8 * PI * psfSigma2 * psfSigma2 * bkgStd * bkgStd) / (pixelSize * pixelSize * psfEnergy * psfEnergy));
             //
             return sqrt(xyVar);
         }
