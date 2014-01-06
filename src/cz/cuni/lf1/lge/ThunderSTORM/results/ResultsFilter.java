@@ -75,11 +75,12 @@ class ResultsFilter {
             applyButton.setEnabled(false);
             final OperationsHistoryPanel opHistory = table.getOperationHistoryPanel();
             if(opHistory.getLastOperation() instanceof FilteringOperation) {
-                model.copyUndoToActual();
+                if(!opHistory.isLastOperationUndone()){
+                    model.swapUndoAndActual();
+                }
                 opHistory.removeLastOperation();
-            } else {
-                model.copyActualToUndo();
-            }
+            } 
+            model.copyActualToUndo();
             model.setActualState();
             final int all = model.getRowCount();
             new SwingWorker() {

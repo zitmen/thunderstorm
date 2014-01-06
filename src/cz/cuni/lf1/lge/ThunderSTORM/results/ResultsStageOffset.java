@@ -106,11 +106,12 @@ class ResultsStageOffset {
         try {
             final OperationsHistoryPanel opHistory = table.getOperationHistoryPanel();
             if(opHistory.getLastOperation() instanceof ResultsStageOffset.StageOffsetOperation) {
-                model.copyUndoToActual();
+                if(!opHistory.isLastOperationUndone()) {
+                    model.swapUndoAndActual();
+                }
                 opHistory.removeLastOperation();
-            } else {
-                model.copyActualToUndo();
-            }
+            } 
+            model.copyActualToUndo();
             model.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
 
             applyToModel(framesPerStagePosition, stagePositions, stageStep, firstPositionOffset);

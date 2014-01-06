@@ -92,11 +92,12 @@ class ResultsGrouping {
             applyButton.setEnabled(false);
             final OperationsHistoryPanel opHistory = table.getOperationHistoryPanel();
             if(opHistory.getLastOperation() instanceof ResultsGrouping.MergingOperation) {
-                model.copyUndoToActual();
+                if(!opHistory.isLastOperationUndone()) {
+                    model.swapUndoAndActual();
+                }
                 opHistory.removeLastOperation();
-            } else {
-                model.copyActualToUndo();
             }
+            model.copyActualToUndo();
             model.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
             final int merged = model.getRowCount();
             new SwingWorker() {

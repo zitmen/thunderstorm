@@ -57,6 +57,14 @@ public class OperationsHistoryPanel extends JPanel {
     public Operation getLastOperation() {
         return stack.isEmpty() ? null : stack.get(stack.size() - 1).getOperation();
     }
+    
+    public boolean isLastOperationUndone() {
+        if(!stack.isEmpty()) {
+            return !stack.get(stack.size() - 1).isChecked();
+        } else {
+            return false;
+        }
+    }
 
     public void removeAllOperations() {
         stack.clear();

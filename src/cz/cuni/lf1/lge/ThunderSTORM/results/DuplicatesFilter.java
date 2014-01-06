@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -77,11 +78,12 @@ class DuplicatesFilter {
             applyButton.setEnabled(false);
             final OperationsHistoryPanel opHistory = table.getOperationHistoryPanel();
             if(opHistory.getLastOperation() instanceof DuplicatesRemovalOperation) {
-                model.copyUndoToActual();
+                if(!opHistory.isLastOperationUndone()) {
+                    model.swapUndoAndActual();
+                }
                 opHistory.removeLastOperation();
-            } else {
-                model.copyActualToUndo();
             }
+            model.copyActualToUndo();
             model.setActualState();
             final int all = model.getRowCount();
             new SwingWorker() {
@@ -216,30 +218,27 @@ class DuplicatesFilter {
         private HashMap<Integer,Double> radii;
         private Vector<Molecule> molecules;
         private SortedSet frames;
-        private int maxId;
+        private Map<Integer, Integer> idToOrder;
 
         public FrameSequence() {
             detections = new HashMap<Integer, Vector<Molecule>>();
             molecules = new Vector<Molecule>();
             frames = new TreeSet();
-            maxId = 0;
             radii = new HashMap<Integer,Double>();
+            idToOrder = new HashMap<Integer, Integer>();
         }
 
         public void insertMolecule(Molecule mol, Double uncertainty) {
             int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME);
-            radii.put((int)mol.getParam(MoleculeDescriptor.LABEL_ID), uncertainty);
+            int id = (int)mol.getParam(MoleculeDescriptor.LABEL_ID);
+            radii.put(id, uncertainty);
+            idToOrder.put(id, idToOrder.size());
             //
             if(!detections.containsKey(frame)) {
                 detections.put(frame, new Vector<Molecule>());
             }
             detections.get(frame).add(mol);
             frames.add(frame);
-            //
-            int id = (int)mol.getParam(MoleculeDescriptor.LABEL_ID);
-            if(id > maxId) {
-                maxId = id;
-            }
         }
 
         public Vector<Molecule> getAllMolecules() {
@@ -259,7 +258,7 @@ class DuplicatesFilter {
             molecules.clear();
             Integer[] frno = new Integer[frames.size()];
             frames.toArray(frno);
-            boolean [] filter = new boolean[maxId]; // zero-based indexing
+            boolean [] filter = new boolean[radii.size()]; // zero-based indexing
             Arrays.fill(filter, true);
             //
             for(int fi = 0; fi < frno.length; fi++) {
@@ -268,31 +267,31 @@ class DuplicatesFilter {
                 //
                 for(int i = 0, count = frmol.size(); i < count; i++) {
                     Molecule mol = frmol.get(i);
-                    int id = (int)mol.getParam(MoleculeDescriptor.LABEL_ID)-1;  // zero-based indexing
+                    int id = (int)mol.getParam(MoleculeDescriptor.LABEL_ID);  // zero-based indexing
                     double uncertainty = sqr(getUncertaintyNm(mol));
                     double radius = sqr(getRadiusNm(mol));
                     //
-                    if(filter[id] == false) continue;
+                    if(filter[idToOrder.get(id)] == false) continue;
                     for(int j = i - 1; j >= 0; j--) {
                         if(sqr(frmol.get(j).getX() - mol.getX()) > radius) {
                             break;
                         }
                         if(mol.dist2xy(frmol.get(j), NANOMETER) < radius) {
                             if(uncertainty >= sqr(getUncertaintyNm(frmol.get(j)))) {
-                                filter[id] = false;
+                                filter[idToOrder.get(id)] = false;
                                 break;
                             }
                         }
                     }
                     //
-                    if(filter[id] == false) continue;
+                    if(filter[idToOrder.get(id)] == false) continue;
                     for(int j = i + 1; j < count; j++) {
                         if(sqr(frmol.get(j).getX() - mol.getX()) > radius) {
                             break;
                         }
                         if(mol.dist2xy(frmol.get(j), NANOMETER) < radius) {
                             if(uncertainty >= sqr(getUncertaintyNm(frmol.get(j)))) {
-                                filter[id] = false;
+                                filter[idToOrder.get(id)] = false;
                                 break;
                             }
                         }

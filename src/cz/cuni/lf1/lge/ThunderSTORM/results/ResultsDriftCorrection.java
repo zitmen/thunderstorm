@@ -74,12 +74,12 @@ public class ResultsDriftCorrection {
             final IJResultsTable rt = IJResultsTable.getResultsTable();
             final OperationsHistoryPanel history = rt.getOperationHistoryPanel();
             if(history.getLastOperation() instanceof DriftCorrectionOperation) {
-                rt.copyUndoToActual();  //replace last operation
+                if(!history.isLastOperationUndone()){
+                    rt.swapUndoAndActual(); //undo last operation
+                }
                 history.removeLastOperation();
-            } else {
-                rt.copyActualToUndo();  //save state for later undo
             }
-
+            rt.copyActualToUndo();  //save state for later undo
             getResultsFromTable();
 
             new SwingWorker<CrossCorrelationDriftCorrection, Void>() {
