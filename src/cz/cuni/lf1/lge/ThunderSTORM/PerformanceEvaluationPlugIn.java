@@ -11,6 +11,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import fiji.util.gui.GenericDialogPlus;
@@ -143,6 +144,8 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         double precision = tp / (tp + fp);
         double recall = tp / (tp + fn);
         double F1 = 2 * precision * recall / (precision + recall);
+        double calcRMSEx = calcRMSEx(TP, distUnits);
+        double calcRMSEy = calcRMSEy(TP, distUnits);
         double RMSExy = calcRMSExy(TP, distUnits);
         double RMSEz = calcRMSEz(TP, distUnits);
         double RMSExyz = calcRMSExyz(TP, distUnits);
@@ -157,9 +160,12 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         rt.addValue("precision", precision);
         rt.addValue("recall", recall);
         rt.addValue("F1-measure", F1);
+        rt.addValue("RMSE x [" + distUnits.getLabel() + "]", calcRMSEx);
+        rt.addValue("RMSE y [" + distUnits.getLabel() + "]", calcRMSEy);
         rt.addValue("RMSE lateral [" + distUnits.getLabel() + "]", RMSExy);
         rt.addValue("RMSE axial [" + distUnits.getLabel() + "]", RMSEz);
         rt.addValue("RMSE total [" + distUnits.getLabel() + "]", RMSExyz);
+        
         rt.show("Results");
         //
         IJResultsTable.getResultsTable().fireStructureChanged();
@@ -191,6 +197,22 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
             rmse += pair.first.dist2z(pair.second, units);
         }
         return sqrt(rmse / (double)pairs.size());
+    }
+    
+    private double calcRMSEx(Vector<Pair<Molecule, Molecule>> pairs, Units units){
+        double residualSumOfSquares = 0;
+        for(Pair<Molecule,Molecule> pair : pairs) {
+            residualSumOfSquares += MathProxy.sqr(pair.first.getX(units) - pair.second.getX(units));
+        }
+        return sqrt(residualSumOfSquares / (double)pairs.size());
+    }
+    
+    private double calcRMSEy(Vector<Pair<Molecule, Molecule>> pairs, Units units){
+        double residualSum = 0;
+        for(Pair<Molecule,Molecule> pair : pairs) {
+            residualSum += MathProxy.sqr(pair.first.getY(units) - pair.second.getY(units));
+        }
+        return sqrt(residualSum / (double)pairs.size());
     }
     
     private synchronized void processingNewFrame(String message) {
