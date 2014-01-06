@@ -4,7 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,8 +16,8 @@ import javax.swing.JTextField;
 public class ASHRenderingUI extends AbstractRenderingUI {
 
     public static final String name = "Averaged shifted histograms";
-    private ParameterName.Integer shifts;
-    private ParameterName.Integer zShifts;
+    private ParameterKey.Integer shifts;
+    private ParameterKey.Integer zShifts;
 
     private void initPars() {
         shifts = parameters.createIntField("shifts", IntegerValidatorFactory.positiveNonZero(), 2);

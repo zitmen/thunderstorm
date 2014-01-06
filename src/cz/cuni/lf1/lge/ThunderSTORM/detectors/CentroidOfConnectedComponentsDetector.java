@@ -8,7 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.applyMask;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.threshold;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import ij.plugin.filter.MaximumFinder;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
@@ -32,8 +32,8 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
     private String threshold;
     private boolean useWatershed;
     private transient float thresholdValue;
-    private transient ParameterName.String THRESHOLD;
-    private transient ParameterName.Boolean USE_WATERSHED;
+    private transient ParameterKey.String THRESHOLD;
+    private transient ParameterKey.Boolean USE_WATERSHED;
 
     public CentroidOfConnectedComponentsDetector() throws FormulaParserException {
         this("std(Wave.F1)", false);

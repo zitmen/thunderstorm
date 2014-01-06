@@ -7,7 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
@@ -25,12 +25,12 @@ public class CrowdedFieldEstimatorUI {
     ParameterTracker params;
     private final String name = "Multi-emitter fitting analysis";
     //parameters
-    protected transient ParameterName.Boolean ENABLED;
-    protected transient ParameterName.Integer NMAX;
-    protected transient ParameterName.Double PVALUE;
-    protected transient ParameterName.Boolean KEEP_SAME_INTENSITY;
-    protected transient ParameterName.Boolean FIXED_INTENSITY;
-    protected transient ParameterName.String INTENSITY_RANGE;
+    protected transient ParameterKey.Boolean ENABLED;
+    protected transient ParameterKey.Integer NMAX;
+    protected transient ParameterKey.Double PVALUE;
+    protected transient ParameterKey.Boolean KEEP_SAME_INTENSITY;
+    protected transient ParameterKey.Boolean FIXED_INTENSITY;
+    protected transient ParameterKey.String INTENSITY_RANGE;
 
     public CrowdedFieldEstimatorUI() {
         params = new ParameterTracker("thunderstorm.estimators.dense.mfa");
@@ -41,8 +41,8 @@ public class CrowdedFieldEstimatorUI {
             }
 
             @Override
-            public ParameterName[] dependsOn() {
-                return new ParameterName[]{ENABLED};
+            public ParameterKey[] dependsOn() {
+                return new ParameterKey[]{ENABLED};
             }
         };
         ParameterTracker.Condition enabledAndFixedIntensityCondition = new ParameterTracker.Condition() {
@@ -52,8 +52,8 @@ public class CrowdedFieldEstimatorUI {
             }
 
             @Override
-            public ParameterName[] dependsOn() {
-                return new ParameterName[]{ENABLED, FIXED_INTENSITY};
+            public ParameterKey[] dependsOn() {
+                return new ParameterKey[]{ENABLED, FIXED_INTENSITY};
             }
         };
         ENABLED = params.createBooleanField("mfaenabled", null, false);

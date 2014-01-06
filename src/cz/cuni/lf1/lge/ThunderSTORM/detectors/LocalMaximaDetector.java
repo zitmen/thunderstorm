@@ -6,7 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Graph;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
 import java.util.Vector;
@@ -27,8 +27,8 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
     private transient float thresholdValue;
     private transient final static String DEFAULT_THRESHOLD = "std(Wave.F1)";
     private transient final static int DEFAULT_CONNECTIVITY = Graph.CONNECTIVITY_8;
-    private transient ParameterName.String THRESHOLD;
-    private transient ParameterName.Choice CONNECTIVITY;
+    private transient ParameterKey.String THRESHOLD;
+    private transient ParameterKey.String CONNECTIVITY;
     private transient final static String con4 = "4-neighbourhood";
     private transient final static String con8 = "8-neighbourhood";
 
@@ -218,7 +218,7 @@ public class LocalMaximaDetector extends IDetectorUI implements IDetector {
         this.threshold = threshold;
 
         THRESHOLD = parameters.createStringField("threshold", null, DEFAULT_THRESHOLD);
-        CONNECTIVITY = parameters.createChoice("connectivity", null, con8);
+        CONNECTIVITY = parameters.createStringField("connectivity", null, con8);
     }
 
     @Override

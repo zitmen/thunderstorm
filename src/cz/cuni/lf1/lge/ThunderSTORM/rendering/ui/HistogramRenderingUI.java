@@ -5,7 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.HistogramRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
@@ -23,10 +23,10 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
 
     public static final String name = "Histograms";
     //parameter names
-    private ParameterName.Integer avg;
-    private ParameterName.Double dx;
-    private ParameterName.Boolean forceDx;
-    private ParameterName.Double dz;
+    private ParameterKey.Integer avg;
+    private ParameterKey.Double dx;
+    private ParameterKey.Boolean forceDx;
+    private ParameterKey.Double dz;
 
     public HistogramRenderingUI() {
         initPars();
@@ -46,8 +46,8 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
             }
 
             @Override
-            public ParameterName[] dependsOn() {
-                return new ParameterName[]{avg};
+            public ParameterKey[] dependsOn() {
+                return new ParameterKey[]{avg};
             }
         };
         ParameterTracker.Condition threeDAndAvgGTZeroCondition = new ParameterTracker.Condition() {
@@ -57,8 +57,8 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
             }
 
             @Override
-            public ParameterName[] dependsOn() {
-                return new ParameterName[]{avg, threeD};
+            public ParameterKey[] dependsOn() {
+                return new ParameterKey[]{avg, threeD};
             }
         };
         dx = parameters.createDoubleField("dx", DoubleValidatorFactory.positiveNonZero(), 20, avgGTZeroCondition);

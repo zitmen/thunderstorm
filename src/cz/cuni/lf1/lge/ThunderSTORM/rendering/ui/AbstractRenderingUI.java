@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
@@ -22,11 +22,11 @@ public abstract class AbstractRenderingUI extends IRendererUI {
     int sizeX;
     int sizeY;
     //parameters
-    protected ParameterName.Double magnification;
-    protected ParameterName.Integer repaintFrequency;
-    protected ParameterName.Boolean threeD;
-    protected ParameterName.Boolean colorizeZ;
-    protected ParameterName.String zRange;
+    protected ParameterKey.Double magnification;
+    protected ParameterKey.Integer repaintFrequency;
+    protected ParameterKey.Boolean threeD;
+    protected ParameterKey.Boolean colorizeZ;
+    protected ParameterKey.String zRange;
     protected ParameterTracker.Condition threeDCondition = new ParameterTracker.Condition() {
         @Override
         public boolean isSatisfied() {
@@ -34,8 +34,8 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         }
 
         @Override
-        public ParameterName[] dependsOn() {
-            return new ParameterName[]{threeD};
+        public ParameterKey[] dependsOn() {
+            return new ParameterKey[]{threeD};
         }
     };
     protected boolean showRepaintFrequency = true;
@@ -49,7 +49,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
             }
 
             @Override
-            public ParameterName[] dependsOn() {
+            public ParameterKey[] dependsOn() {
                 return null;
             }
         });

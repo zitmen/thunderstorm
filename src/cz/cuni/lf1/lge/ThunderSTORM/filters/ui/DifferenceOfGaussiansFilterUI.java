@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.DifferenceOfGaussiansFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import java.awt.GridBagLayout;
@@ -14,9 +14,9 @@ import javax.swing.JTextField;
 public class DifferenceOfGaussiansFilterUI extends IFilterUI {
 
     private final String name = "Difference-of-Gaussians filter";
-    private transient ParameterName.Integer size;
-    private transient ParameterName.Double sigmaG1;
-    private transient ParameterName.Double sigmaG2;
+    private transient ParameterKey.Integer size;
+    private transient ParameterKey.Double sigmaG1;
+    private transient ParameterKey.Double sigmaG2;
 
     public DifferenceOfGaussiansFilterUI() {
         size = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 11);

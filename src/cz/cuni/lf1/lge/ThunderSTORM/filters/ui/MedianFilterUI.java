@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.MedianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import java.awt.GridBagLayout;
 import javax.swing.ButtonGroup;
@@ -15,14 +15,14 @@ import javax.swing.JTextField;
 public class MedianFilterUI extends IFilterUI {
 
     private final String name = "Median filter";
-    private transient ParameterName.Integer size;
-    private transient ParameterName.Choice pattern;
+    private transient ParameterKey.Integer size;
+    private transient ParameterKey.String pattern;
     private transient static final String box = "box";
     private transient static final String cross = "cross";
 
     public MedianFilterUI() {
         size = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 3);
-        pattern = parameters.createChoice("pattern", null, box);
+        pattern = parameters.createStringField("pattern", null, box);
     }
 
     @Override

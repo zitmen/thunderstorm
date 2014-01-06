@@ -4,7 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.RadialSymmetryFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 public class RadialSymmetryEstimatorUI extends IEstimatorUI {
 
     private final String name = "Radial symmetry";
-    private transient ParameterName.Integer FITRAD;
+    private transient ParameterKey.Integer FITRAD;
 
     public RadialSymmetryEstimatorUI() {
         FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 5);

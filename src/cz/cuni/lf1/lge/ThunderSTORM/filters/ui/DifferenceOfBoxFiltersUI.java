@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.DifferenceOfBoxFilters;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
@@ -13,8 +13,8 @@ import javax.swing.JTextField;
 public class DifferenceOfBoxFiltersUI extends IFilterUI {
 
     private final String name = "Difference of averaging filters";
-    private transient ParameterName.Integer size1;
-    private transient ParameterName.Integer size2;
+    private transient ParameterKey.Integer size1;
+    private transient ParameterKey.Integer size2;
 
     public DifferenceOfBoxFiltersUI() {
         size1 = parameters.createIntField("size1", IntegerValidatorFactory.positiveNonZero(), 3);

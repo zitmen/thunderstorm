@@ -5,7 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.DensityRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -21,9 +21,9 @@ public class DensityRenderingUI extends AbstractRenderingUI {
 
     public static final String name = "Normalized Gaussian";
     //param names
-    private ParameterName.Double dx;
-    private ParameterName.Boolean forceDx;
-    private ParameterName.Double dz;
+    private ParameterKey.Double dx;
+    private ParameterKey.Boolean forceDx;
+    private ParameterKey.Double dz;
 
     public DensityRenderingUI() {
         super();

@@ -8,7 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
 import ij.IJ;
 import ij.Prefs;
@@ -30,7 +30,7 @@ import org.yaml.snakeyaml.Yaml;
 public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
 
     CylindricalLensCalibration calibration;
-    protected transient ParameterName.String CALIBRATION_PATH;
+    protected transient ParameterKey.String CALIBRATION_PATH;
 
     public EllipticGaussianEstimatorUI() {
         this.name = "PSF: Elliptical Gaussian (3D astigmatism)";

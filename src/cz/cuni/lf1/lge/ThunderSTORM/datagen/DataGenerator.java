@@ -95,6 +95,33 @@ public class DataGenerator {
         return molist;
     }
     
+    public Vector<EmitterModel> generateSingleFixedMolecule(int width, int height, double xOffset, double yOffset, Range intensity_photons, Range fwhm) {
+        MoleculeDescriptor descriptor = null;
+        double[] params = new double[PSFModel.Params.PARAMS_LENGTH];
+        Vector<EmitterModel> molist = new Vector<EmitterModel>();
+        double fwhm0 = fwhm.from < fwhm.to
+                ? rand.nextUniform(fwhm.from, fwhm.to)
+                : fwhm.from;
+        params[PSFModel.Params.X] = (xOffset + 0.5 + width/2.0);
+        params[PSFModel.Params.Y] = (yOffset + 0.5 + height/2.0);
+        params[PSFModel.Params.SIGMA] = fwhm0 / FWHM_factor;
+        params[PSFModel.Params.INTENSITY] = intensity_photons.from < intensity_photons.to
+                ? rand.nextUniform(intensity_photons.from, intensity_photons.to)
+                : intensity_photons.from;
+        PSFModel model = new IntegratedSymmetricGaussianPSF(params[PSFModel.Params.SIGMA]);
+        Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
+
+        //set a common MoleculeDescriptor for all molecules in a frame to save memory
+        if(descriptor != null) {
+            mol.descriptor = descriptor;
+        } else {
+            descriptor = mol.descriptor;
+        }
+        molist.add(new EmitterModel(model, mol, fwhm0));
+        //
+        return molist;
+    }
+    
     /**
      * Replaces each pixel value with a sample from a poisson distribution with mean value equal to the pixel original value.
      */

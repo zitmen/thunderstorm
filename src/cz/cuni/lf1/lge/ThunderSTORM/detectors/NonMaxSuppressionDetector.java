@@ -6,7 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Morphology;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import ij.process.FloatProcessor;
 import java.awt.GridBagLayout;
@@ -27,8 +27,8 @@ public final class NonMaxSuppressionDetector extends IDetectorUI implements IDet
     private transient float thresholdValue;
     private transient final static String DEFAULT_THRESHOLD = "std(Wave.F1)";
     private transient final static int DEFAULT_RADIUS = 3;
-    private transient ParameterName.Integer RADIUS;
-    private transient ParameterName.String THRESHOLD;
+    private transient ParameterKey.Integer RADIUS;
+    private transient ParameterKey.String THRESHOLD;
 
     public NonMaxSuppressionDetector() throws FormulaParserException {
         this(DEFAULT_RADIUS, DEFAULT_THRESHOLD);

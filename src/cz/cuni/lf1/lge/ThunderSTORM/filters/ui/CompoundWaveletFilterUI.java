@@ -2,7 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.filters.CompoundWaveletFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import java.awt.Component;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -12,12 +12,12 @@ import javax.swing.JRadioButton;
 public class CompoundWaveletFilterUI extends IFilterUI {
 
     private final String name = "Wavelet filter";
-    private transient ParameterName.Choice plane;
+    private transient ParameterKey.String plane;
     private transient static final String secondPlane = "use 2nd wavelet level";
     private transient static final String thirdPlane = "use 3rd wavelet level";
 
     public CompoundWaveletFilterUI() {
-        plane = parameters.createChoice("level", null, secondPlane);
+        plane = parameters.createStringField("level", null, secondPlane);
     }
 
     @Override

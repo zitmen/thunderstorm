@@ -6,7 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
@@ -24,14 +24,14 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
     protected transient static final String LSQ = "Least squares";
     protected transient static final String WLSQ = "Weighted Least squares";
     //params
-    protected transient ParameterName.Integer FITRAD;
-    protected transient ParameterName.Choice METHOD;
-    protected transient ParameterName.Double SIGMA;
+    protected transient ParameterKey.Integer FITRAD;
+    protected transient ParameterKey.String METHOD;
+    protected transient ParameterKey.Double SIGMA;
 
     public SymmetricGaussianEstimatorUI() {
         crowdedField = new CrowdedFieldEstimatorUI();
         FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
-        METHOD = parameters.createChoice("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), LSQ);
+        METHOD = parameters.createStringField("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), LSQ);
         SIGMA = parameters.createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
     }
 

@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 public class BoxFilterUI extends IFilterUI {
 
     private final String name = "Averaging (Box) filter";
-    private transient ParameterName.Integer size;
+    private transient ParameterKey.Integer size;
 
     public BoxFilterUI() {
         size = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 3);

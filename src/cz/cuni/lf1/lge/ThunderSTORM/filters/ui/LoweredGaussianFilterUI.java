@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.LoweredGaussianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterName;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import java.awt.GridBagLayout;
@@ -14,8 +14,8 @@ import javax.swing.JTextField;
 public class LoweredGaussianFilterUI extends IFilterUI {
 
     private final String name = "Lowered Gaussian filter";
-    private transient ParameterName.Integer size;
-    private transient ParameterName.Double sigma;
+    private transient ParameterKey.Integer size;
+    private transient ParameterKey.Double sigma;
 
     public LoweredGaussianFilterUI() {
         size = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 11);
