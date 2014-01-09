@@ -6,6 +6,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -22,24 +24,41 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-class ResultsStageOffset {
+class ResultsStageOffset extends PostProcessingModule {
 
-    private ResultsTableWindow table;
-    private TripleStateTableModel model;
-    private JPanel panel;
     private JButton applyButton;
     JTextField framesPerStagePositionTextField;
     JTextField stagePositionsTextField;
     JTextField stageStepTextField;
     JTextField firstPositionOffsetTextField;
 
+    ParameterKey.Integer framesPerStagePositionParam;
+    ParameterKey.Integer stagePositionsParam;
+    ParameterKey.Double stageStepParam;
+    ParameterKey.Double firstPositionOffsetParam;
+
     public ResultsStageOffset(ResultsTableWindow table, TripleStateTableModel model) {
         this.table = table;
         this.model = model;
+        framesPerStagePositionParam = params.createIntField("framesPerStagePos", IntegerValidatorFactory.positiveNonZero(), 1);
+        stagePositionsParam = params.createIntField("stagePositions", IntegerValidatorFactory.positiveNonZero(), 1);
+        stageStepParam = params.createDoubleField("stageStep", null, 0);
+        firstPositionOffsetParam = params.createDoubleField("firstPosOffset", null, 0);
     }
 
-    public JPanel createUIPanel() {
-        panel = new JPanel(new GridBagLayout());
+    @Override
+    public String getMacroName() {
+        return "offset";
+    }
+
+    @Override
+    public String getTabName() {
+        return "Z-stage offset";
+    }
+
+    @Override
+    protected JPanel createUIPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
         InputListener listener = new InputListener();
         framesPerStagePositionTextField = new JTextField("1");
         stagePositionsTextField = new JTextField("1");
@@ -50,6 +69,11 @@ class ResultsStageOffset {
         stagePositionsTextField.addKeyListener(listener);
         stageStepTextField.addKeyListener(listener);
         firstPositionOffsetTextField.addKeyListener(listener);
+
+        framesPerStagePositionParam.registerComponent(framesPerStagePositionTextField);
+        stagePositionsParam.registerComponent(stagePositionsTextField);
+        stageStepParam.registerComponent(stageStepTextField);
+        firstPositionOffsetParam.registerComponent(firstPositionOffsetTextField);
 
         applyButton = new JButton("Apply");
         applyButton.addActionListener(listener);
@@ -71,52 +95,23 @@ class ResultsStageOffset {
         return panel;
     }
 
-    private class InputListener extends KeyAdapter implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent ev) {
-            //parse
-            try {
-                int framesPerStagePosition = Integer.parseInt(framesPerStagePositionTextField.getText());
-                int stagePositions = Integer.parseInt(stagePositionsTextField.getText());
-                double stageStep = Double.parseDouble(stageStepTextField.getText());
-                double firstPositionOffset = Double.parseDouble(firstPositionOffsetTextField.getText());
-                runAddStageOffset(framesPerStagePosition, stagePositions, stageStep, firstPositionOffset);
-            } catch(Exception e) {
-                GUI.showBalloonTip(applyButton, "Illegal argument vaue. " + e.getMessage());
-            }
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-                applyButton.doClick();
-            }
-        }
-    }
-
     /**
      * sets undo state and adds offset to the results table
      */
-    public void runAddStageOffset(int framesPerStagePosition, int stagePositions, double stageStep, double firstPositionOffset) {
-        if(!applyButton.isEnabled()) {
-            return;
-        }
-        GUI.closeBalloonTip();
+    @Override
+    public void runImpl() {
         try {
-            final OperationsHistoryPanel opHistory = table.getOperationHistoryPanel();
-            if(opHistory.getLastOperation() instanceof ResultsStageOffset.StageOffsetOperation) {
-                if(!opHistory.isLastOperationUndone()) {
-                    model.swapUndoAndActual();
-                }
-                opHistory.removeLastOperation();
-            } 
-            model.copyActualToUndo();
-            model.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
+            GUI.closeBalloonTip();
+
+            int framesPerStagePosition = framesPerStagePositionParam.getValue();
+            int stagePositions = stagePositionsParam.getValue();
+            double stageStep = stageStepParam.getValue();
+            double firstPositionOffset = firstPositionOffsetParam.getValue();
+
+            saveStateForUndo(StageOffsetOperation.class);
 
             applyToModel(framesPerStagePosition, stagePositions, stageStep, firstPositionOffset);
-            opHistory.addOperation(new StageOffsetOperation(framesPerStagePosition, stagePositions, stageStep, firstPositionOffset));
-            TableHandlerPlugin.recordStageOffset(framesPerStagePosition, stagePositions, stageStep, firstPositionOffset);
+            addOperationToHistory(new StageOffsetOperation(framesPerStagePosition, stagePositions, stageStep, firstPositionOffset));
         } catch(Exception ex) {
             GUI.showBalloonTip(applyButton, ex.toString());
         }
@@ -137,7 +132,7 @@ class ResultsStageOffset {
         //
         Vector<Molecule> molecules = IJResultsTable.getResultsTable().getData();
         for(Molecule molecule : molecules) {
-            double z = model.columnExists(PSFModel.Params.LABEL_Z_REL)? molecule.getParam(PSFModel.Params.LABEL_Z_REL): 0;
+            double z = model.columnExists(PSFModel.Params.LABEL_Z_REL) ? molecule.getParam(PSFModel.Params.LABEL_Z_REL) : 0;
             int frame = (int) molecule.getParam(MoleculeDescriptor.LABEL_FRAME);
             double newZ = (((frame - 1) / framesPerStagePosition) % stagePositions) * stageStep + firstPositionOffset + z;
             molecule.setZ(newZ);
@@ -145,6 +140,21 @@ class ResultsStageOffset {
         model.fireTableStructureChanged();
         model.fireTableDataChanged();
         table.showPreview();
+    }
+
+    private class InputListener extends KeyAdapter implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent ev) {
+            run();
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                applyButton.doClick();
+            }
+        }
     }
 
     class StageOffsetOperation extends OperationsHistoryPanel.Operation {
@@ -174,9 +184,9 @@ class ResultsStageOffset {
 
         @Override
         protected void clicked() {
-            if(panel.getParent() instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) panel.getParent();
-                tabbedPane.setSelectedComponent(panel);
+            if(uiPanel.getParent() instanceof JTabbedPane) {
+                JTabbedPane tabbedPane = (JTabbedPane) uiPanel.getParent();
+                tabbedPane.setSelectedComponent(uiPanel);
 
                 framesPerStagePositionTextField.setText(framesPerStagePosition + "");
                 stagePositionsTextField.setText(stagePositions + "");

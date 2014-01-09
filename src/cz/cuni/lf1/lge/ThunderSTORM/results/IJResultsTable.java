@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.List;
 import javax.swing.SwingUtilities;
 
 /**
@@ -123,28 +124,13 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
         tableWindow.setStatus(text);
     }
 
-    ResultsFilter getFilter() {
-        return tableWindow.getFilter();
-    }
-
-    DuplicatesFilter getDuplicatesFilter() {
-        return tableWindow.getDuplicatesFilter();
-    }
-
-    ResultsGrouping getGrouping() {
-        return tableWindow.getGrouping();
-    }
-
-    ResultsDriftCorrection getDriftCorrection() {
-        return tableWindow.getDriftCorrection();
-    }
-
-    ResultsStageOffset getStageOffset() {
-        return tableWindow.getStageOffset();
+    public List<? extends PostProcessingModule> getPostProcessingModules() {
+        return tableWindow.getPostProcessingModules();
     }
 
     void addNewFilter(String paramName, double greaterThan, double lessThan) {
-        String formula = tableWindow.getFilterFormula().trim();
+        ResultsFilter filter = tableWindow.getFilter();
+        String formula = filter.getFilterFormula().trim();
         StringBuilder sb = new StringBuilder(formula);
         if(!formula.isEmpty()) {
             sb.append(" & ");
@@ -154,7 +140,7 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
         sb.append(" & ");
         sb.append(paramName).append(" < ").append(BigDecimal.valueOf(lessThan).round(new MathContext(6)).toString());
         sb.append(")");
-        tableWindow.setFilterFormula(sb.toString());
+        filter.setFilterFormula(sb.toString());
     }
 
     @Override

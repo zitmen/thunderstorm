@@ -29,7 +29,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -43,7 +45,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 class ResultsTableWindow extends GenericTableWindow {
-    
+
     private JButton io_import;
     private JButton io_export;
     private JButton showHist;
@@ -56,16 +58,12 @@ class ResultsTableWindow extends GenericTableWindow {
     private JButton resetButton;
     private JTabbedPane tabbedPane;
     private OperationsHistoryPanel operationsStackPanel;
-    ResultsFilter resultsFilter;
-    DuplicatesFilter removeDuplicates;
-    ResultsGrouping resultsGrouping;
-    ResultsDriftCorrection resultsDriftCorrection;
-    ResultsStageOffset resultsStageOffset;
-    
+    List<? extends PostProcessingModule> postProcessingModules;
+
     public ResultsTableWindow(String frameTitle) {
         super(frameTitle);
     }
-    
+
     @Override
     protected void packFrame() {
         frame.setPreferredSize(new Dimension(600, 750));
@@ -132,24 +130,18 @@ class ResultsTableWindow extends GenericTableWindow {
         buttons.add(Box.createHorizontalStrut(3));
         buttons.add(io_export);
         //
-        resultsFilter = new ResultsFilter(this, model);
-        removeDuplicates = new DuplicatesFilter(this, model);
-        resultsGrouping = new ResultsGrouping(this, model);
-        resultsDriftCorrection = new ResultsDriftCorrection();
-        resultsStageOffset = new ResultsStageOffset(this, model);
-        JPanel grouping = resultsGrouping.createUIPanel();
-        JPanel duplicates = removeDuplicates.createUIPanel();
-        JPanel filter = resultsFilter.createUIPanel();
-        JPanel drift = resultsDriftCorrection.createUIPanel();
-        JPanel offset = resultsStageOffset.createUIPanel();
+        postProcessingModules = Arrays.asList(
+                new ResultsFilter(this, model),
+                new DuplicatesFilter(this, model),
+                new ResultsGrouping(this, model),
+                new ResultsDriftCorrection(this, model),
+                new ResultsStageOffset(this, model));
 
         //fill tabbed pane
         tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Filter", filter);
-        tabbedPane.addTab("Remove duplicates", duplicates);
-        tabbedPane.addTab("Merging", grouping);
-        tabbedPane.addTab("Drift correction", drift);
-        tabbedPane.addTab("Z-stage offset", offset);
+        for(PostProcessingModule module : postProcessingModules) {
+            tabbedPane.addTab(module.getTabName(), module.getUIPanel());
+        }
 
         //history pane
         JPanel historyPane = new JPanel(new GridBagLayout());
@@ -168,11 +160,11 @@ class ResultsTableWindow extends GenericTableWindow {
         });
         historyPane.add(operationsStackPanel, new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.BASELINE, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
         historyPane.add(resetButton);
-        
+
         Container contentPane = frame.getContentPane();
         JPanel controlsPane = new JPanel();
         controlsPane.setLayout(new BoxLayout(controlsPane, BoxLayout.PAGE_AXIS));
-        
+
         contentPane.add(tableScrollPane, BorderLayout.CENTER);
         contentPane.add(controlsPane, BorderLayout.SOUTH);
 
@@ -186,7 +178,7 @@ class ResultsTableWindow extends GenericTableWindow {
         frame.setContentPane(contentPane);
         frame.pack();
     }
-    
+
     public void setLivePreview(boolean enabled) {
         livePreview = enabled;
         preview.setSelected(enabled);
@@ -201,17 +193,17 @@ class ResultsTableWindow extends GenericTableWindow {
             }
             if(previewRenderer == null) {
                 IRendererUI renderer = new ASHRenderingUI();
-            ImagePlus analyzedImage = rt.getAnalyzedImage();
-            if(analyzedImage != null) {
-                renderer.setSize(analyzedImage.getWidth(), analyzedImage.getHeight());
-            }else{
-                renderer.setSize((int)Math.ceil(VectorMath.max(rt.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL))) + 1,
-                                 (int)Math.ceil(VectorMath.max(rt.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL))) + 1);
-            }
+                ImagePlus analyzedImage = rt.getAnalyzedImage();
+                if(analyzedImage != null) {
+                    renderer.setSize(analyzedImage.getWidth(), analyzedImage.getHeight());
+                } else {
+                    renderer.setSize((int) Math.ceil(VectorMath.max(rt.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL))) + 1,
+                            (int) Math.ceil(VectorMath.max(rt.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL))) + 1);
+                }
                 IncrementalRenderingMethod rendererImplementation = renderer.getImplementation();
                 previewRenderer = new RenderingQueue(rendererImplementation,
                         new RenderingQueue.DefaultRepaintTask(rendererImplementation.getRenderedImage()),
-                                renderer.getRepaintFrequency());
+                        renderer.getRepaintFrequency());
             }
             //
             previewRenderer.resetLater();
@@ -220,7 +212,7 @@ class ResultsTableWindow extends GenericTableWindow {
         }
         rt.repaintAnalyzedImageOverlay();
     }
-    
+
     public void setPreviewRenderer(RenderingQueue renderer) {
         previewRenderer = renderer;
         livePreview = (renderer != null);
@@ -233,43 +225,30 @@ class ResultsTableWindow extends GenericTableWindow {
         }
         this.status.setText(text);
     }
-    
-    public String getFilterFormula() {
-        return resultsFilter.getFilterFormula();
-    }
-    
-    public void setFilterFormula(String formula) {
-        resultsFilter.setFilterFormula(formula);
+
+    public ResultsFilter getFilter() {
+        if(postProcessingModules != null) {
+            for(PostProcessingModule module : postProcessingModules) {
+                if(module instanceof ResultsFilter) {
+                    return (ResultsFilter) module;
+                }
+            }
+        }
+        return null;
     }
 
     public OperationsHistoryPanel getOperationHistoryPanel() {
         return operationsStackPanel;
     }
 
-    public ResultsFilter getFilter(){
-        return resultsFilter;
+    public List<? extends PostProcessingModule> getPostProcessingModules() {
+        return postProcessingModules;
     }
-    
-    public DuplicatesFilter getDuplicatesFilter() {
-        return removeDuplicates;
-    }
-    
-    public ResultsGrouping getGrouping(){
-        return resultsGrouping;
-    }
-    
-    public ResultsDriftCorrection getDriftCorrection(){
-        return resultsDriftCorrection;
-    }
-    
-    public ResultsStageOffset getStageOffset(){
-        return resultsStageOffset;
-    }
-    
+
     @Override
     protected void tableMouseClicked(MouseEvent e) {
         if(SwingUtilities.isLeftMouseButton(e)) {
-            if (e.getClickCount() == 2) {
+            if(e.getClickCount() == 2) {
                 IJResultsTable rt = IJResultsTable.getResultsTable();
                 int row = table.getSelectedRow();
                 int rowIndex = rt.convertViewRowIndexToModel(row);

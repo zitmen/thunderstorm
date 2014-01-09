@@ -83,6 +83,7 @@ public class OperationsHistoryPanel extends JPanel {
             }
             remove(last);
             revalidate();
+            repaint();
             return last.getOperation();
         }
         return null;

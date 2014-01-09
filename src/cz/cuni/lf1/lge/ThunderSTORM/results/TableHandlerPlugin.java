@@ -6,6 +6,7 @@ import ij.IJ;
 import ij.Macro;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.Recorder;
+import java.util.List;
 
 public class TableHandlerPlugin implements PlugIn {
 
@@ -21,23 +22,6 @@ public class TableHandlerPlugin implements PlugIn {
             IJResultsTable resultsTable = IJResultsTable.getResultsTable();
             if("show".equals(action)) {
                 resultsTable.show();
-            } else if("drift".equals(action)) {
-                int steps = Integer.parseInt(Macro.getValue(options, "steps", "5"));
-                double magnification = Double.parseDouble(Macro.getValue(options, "magnification", "5"));
-                boolean showCorrelations = Boolean.parseBoolean(Macro.getValue(options, "showCorrelations", "true"));
-                boolean showDrift = Boolean.parseBoolean(Macro.getValue(options, "showDrift", "true"));
-
-                resultsTable.getDriftCorrection().runDriftCorrection(steps, magnification, showCorrelations, showDrift);
-            } else if("merge".equals(action)) {
-                double dist = Double.parseDouble(Macro.getValue(options, "dist", "0"));
-
-                resultsTable.getGrouping().runGrouping(dist);
-            } else if("filter".equals(action)) {
-                String formula = Macro.getValue(options, "formula", "");
-
-                resultsTable.getFilter().runFilter(formula);
-            } else if("duplicates".equals(action)) {
-                resultsTable.getDuplicatesFilter().runFilter();
             } else if("reset".equals(action)) {
                 resultsTable.copyOriginalToActual();
                 resultsTable.getOperationHistoryPanel().removeAllOperations();
@@ -45,67 +29,26 @@ public class TableHandlerPlugin implements PlugIn {
                 resultsTable.showPreview();
             } else if("undo-redo".equals(action)) {
                 resultsTable.getOperationHistoryPanel().undoOrRedoLastOperation();
-            } else if("offset".equals(action)){
-                int framesPerStagePosition = Integer.parseInt(Macro.getValue(options, "framesPerStagePos", "0"));
-                int stagePositions = Integer.parseInt(Macro.getValue(options, "stagePositions", "0"));
-                double stageStep = Double.parseDouble(Macro.getValue(options, "stageStep", "0"));
-                double firstPositionOffset = Double.parseDouble(Macro.getValue(options, "firstPosOffset", "0"));
-                
-                resultsTable.getStageOffset().runAddStageOffset(framesPerStagePosition, stagePositions, stageStep, firstPositionOffset);
+
+            } else {
+                List<? extends PostProcessingModule> modules = resultsTable.getPostProcessingModules();
+
+                PostProcessingModule selectedModule = null;
+                for(PostProcessingModule module : modules) {
+                    if(module.getMacroName().equals(action)) {
+                        selectedModule = module;
+                        break;
+                    }
+                }
+                if(selectedModule != null) {
+                    selectedModule.run();
+                } else {
+                    throw new IllegalArgumentException("Post processing module not found for action: " + action);
+                }
             }
-            
+
         } catch(Exception e) {
             IJ.handleException(e);
-        }
-    }
-
-    public static void recordFilter(String formula) {
-        if(Recorder.record) {
-            Recorder.setCommand("Show results table");
-            Recorder.recordOption("action", "filter");
-            Recorder.recordOption("formula", formula);
-            Recorder.saveCommand();
-        }
-    }
-    
-    public static void recordRemoveDuplicates() {
-        if(Recorder.record) {
-            Recorder.setCommand("Show results table");
-            Recorder.recordOption("action", "duplicates");
-            Recorder.saveCommand();
-        }
-    }
-
-    public static void recordDrift(int steps, double magnification, boolean showCorrelations, boolean showDrift) {
-        if(Recorder.record) {
-            Recorder.setCommand("Show results table");
-            Recorder.recordOption("action", "drift");
-            Recorder.recordOption("steps", steps + "");
-            Recorder.recordOption("magnification", magnification + "");
-            Recorder.recordOption("showCorrelations", showCorrelations + "");
-            Recorder.recordOption("showDrift", showDrift + "");
-            Recorder.saveCommand();
-        }
-    }
-
-    public static void recordMerging(double dist) {
-        if(Recorder.record) {
-            Recorder.setCommand("Show results table");
-            Recorder.recordOption("action", "merge");
-            Recorder.recordOption("dist", dist + "");
-            Recorder.saveCommand();
-        }
-    }
-
-    public static void recordStageOffset(int framesPerStagePosition, int stagePositions, double stageStep, double firstPositionOffset) {
-        if(Recorder.record) {
-            Recorder.setCommand("Show results table");
-            Recorder.recordOption("action", "offset");
-            Recorder.recordOption("framesPerStagePos", framesPerStagePosition + "");
-            Recorder.recordOption("stagePositions", stagePositions + "");
-            Recorder.recordOption("stageStep", stageStep + "");
-            Recorder.recordOption("firstPosOffset", firstPositionOffset + "");
-            Recorder.saveCommand();
         }
     }
 

@@ -10,6 +10,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import ij.IJ;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -33,25 +35,37 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
-class ResultsGrouping {
+class ResultsGrouping extends PostProcessingModule {
 
-    private ResultsTableWindow table;
-    private TripleStateTableModel model;
-    private JPanel grouping;
     private JTextField distanceTextField;
     private JButton applyButton;
     private JLabel groupThrLabel;
 
+    private ParameterKey.Double distParam;
+    
     public ResultsGrouping(ResultsTableWindow table, TripleStateTableModel model) {
         this.table = table;
         this.model = model;
+        distParam = params.createDoubleField("dist", DoubleValidatorFactory.positive(), 0);
     }
 
-    public JPanel createUIPanel() {
-        grouping = new JPanel(new GridBagLayout());
+    @Override
+    public String getMacroName() {
+        return "merge";
+    }
+
+    @Override
+    public String getTabName() {
+        return "Merging";
+    }
+
+    @Override
+    protected JPanel createUIPanel() {
+        JPanel grouping = new JPanel(new GridBagLayout());
         InputListener listener = new InputListener();
         distanceTextField = new JTextField();
         distanceTextField.addKeyListener(listener);
+        distParam.registerComponent(distanceTextField);
         groupThrLabel = new JLabel("Merge molecules in subsequent frames with mutual lateral distance \u2264 [current units of x,y]: ", SwingConstants.TRAILING);
         groupThrLabel.setLabelFor(distanceTextField);
         applyButton = new JButton("Merge");
@@ -63,26 +77,9 @@ class ResultsGrouping {
         return grouping;
     }
 
-    private class InputListener extends KeyAdapter implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-            runGrouping(distanceTextField.getText().isEmpty() ? 0.0 : Double.parseDouble(distanceTextField.getText()));
-            } catch(NumberFormatException ex) {
-                GUI.showBalloonTip(distanceTextField, "Illegal argument vaue. " + ex.getMessage());
-            }
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-                applyButton.doClick();
-            }
-        }
-    }
-
-    protected void runGrouping(final double dist) {
+    @Override
+    protected void runImpl() {
+        final double dist = distParam.getValue();
         if(!applyButton.isEnabled() || (dist == 0)) {
             return;
         }
@@ -90,15 +87,8 @@ class ResultsGrouping {
         GUI.closeBalloonTip();
         try {
             applyButton.setEnabled(false);
-            final OperationsHistoryPanel opHistory = table.getOperationHistoryPanel();
-            if(opHistory.getLastOperation() instanceof ResultsGrouping.MergingOperation) {
-                if(!opHistory.isLastOperationUndone()) {
-                    model.swapUndoAndActual();
-                }
-                opHistory.removeLastOperation();
-            }
-            model.copyActualToUndo();
-            model.setSelectedState(TripleStateTableModel.StateName.ACTUAL);
+            ResultsGrouping.this.saveStateForUndo(MergingOperation.class);
+            
             final int merged = model.getRowCount();
             new SwingWorker() {
                 @Override
@@ -112,7 +102,7 @@ class ResultsGrouping {
                     try {
                         get();
                         int into = model.getRowCount();
-                        opHistory.addOperation(new MergingOperation(dist));
+                        ResultsGrouping.this.addOperationToHistory(new MergingOperation(dist));
 
                         table.setStatus(Integer.toString(merged) + " molecules were merged into " + Integer.toString(into) + " molecules");
                         table.showPreview();
@@ -126,12 +116,25 @@ class ResultsGrouping {
                     }
                 }
             }.execute();
-            
-            TableHandlerPlugin.recordMerging(dist);
         } catch(Exception ex) {
             IJ.handleException(ex);
             distanceTextField.setBackground(new Color(255, 200, 200));
             GUI.showBalloonTip(distanceTextField, ex.toString());
+        }
+    }
+    
+    private class InputListener extends KeyAdapter implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            run();
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                applyButton.doClick();
+            }
         }
     }
 
@@ -156,9 +159,9 @@ class ResultsGrouping {
 
         @Override
         protected void clicked() {
-            if(grouping.getParent() instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) grouping.getParent();
-                tabbedPane.setSelectedComponent(grouping);
+            if(uiPanel.getParent() instanceof JTabbedPane) {
+                JTabbedPane tabbedPane = (JTabbedPane) uiPanel.getParent();
+                tabbedPane.setSelectedComponent(uiPanel);
             }
             distanceTextField.setText(Double.toString(threshold));
         }
@@ -205,7 +208,6 @@ class ResultsGrouping {
     //
     // ===================================================================
     //
-
     static class FrameSequence {
 
         // <Frame #, List of Molecules>
@@ -220,7 +222,7 @@ class ResultsGrouping {
         }
 
         public void InsertMolecule(Molecule mol) {
-            int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME);
+            int frame = (int) mol.getParam(MoleculeDescriptor.LABEL_FRAME);
             // molecule itself has to be added to the list of detections,
             // because the parameters can change during the merging
             mol.addDetection(mol.clone(mol.descriptor));
@@ -240,12 +242,13 @@ class ResultsGrouping {
         }
 
         /**
-         * The method matches molecules at the same positions
-         * lasting for more than just 1 frame.
-         * 
-         * The method works in 3D, thus calculating distance
-         * {@mathjax (x_1-x_2)^2+(y_1-y_2)^2+(z_1-z_2)^2}.
-         * Note: this method makes changes into `detections`!
+         * The method matches molecules at the same positions lasting for more
+         * than just 1 frame.
+         *
+         * The method works in 3D, thus calculating distance {
+         *
+         * @mathjax (x_1-x_2)^2+(y_1-y_2)^2+(z_1-z_2)^2}. Note: this method
+         * makes changes into `detections`!
          */
         public void matchMolecules(double dist2_thr) {
             molecules.clear();

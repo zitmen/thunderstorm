@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.RetVal;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import ij.IJ;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -24,20 +25,27 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
-class ResultsFilter {
+class ResultsFilter extends PostProcessingModule {
 
-    private JPanel filterPanel;
     private JTextField filterTextField;
     private JButton applyButton;
-    private ResultsTableWindow table;
-    private TripleStateTableModel model;
+
+    private ParameterKey.String formulaParameter;
+
+    @Override
+    public String getMacroName() {
+        return "filter";
+    }
+
+    @Override
+    public String getTabName() {
+        return "Filter";
+    }
 
     public ResultsFilter(ResultsTableWindow table, TripleStateTableModel model) {
         this.table = table;
         this.model = model;
-    }
-
-    public ResultsFilter() {
+        formulaParameter = params.createStringField("formula", null, "");
     }
 
     public void setFilterFormula(String formula) {
@@ -48,11 +56,13 @@ class ResultsFilter {
         return filterTextField.getText();
     }
 
-    public JPanel createUIPanel() {
-        filterPanel = new JPanel(new GridBagLayout());
+    @Override
+    protected JPanel createUIPanel() {
+        JPanel filterPanel = new JPanel(new GridBagLayout());
         filterTextField = new JTextField();
         InputListener listener = new InputListener();
         filterTextField.addKeyListener(listener);
+        formulaParameter.registerComponent(filterTextField);
         applyButton = new JButton("Apply");
         applyButton.addActionListener(listener);
         filterPanel.add(new JLabel("Filter: "), new GridBagHelper.Builder().gridxy(0, 0).anchor(GridBagConstraints.WEST).build());
@@ -65,7 +75,9 @@ class ResultsFilter {
         return filterPanel;
     }
 
-    protected void runFilter(final String filterText) {
+    @Override
+    protected void runImpl() {
+        final String filterText = formulaParameter.getValue();
         if((!applyButton.isEnabled()) || (filterText == null) || ("".equals(filterText))) {
             return;
         }
@@ -73,15 +85,7 @@ class ResultsFilter {
         GUI.closeBalloonTip();
         try {
             applyButton.setEnabled(false);
-            final OperationsHistoryPanel opHistory = table.getOperationHistoryPanel();
-            if(opHistory.getLastOperation() instanceof FilteringOperation) {
-                if(!opHistory.isLastOperationUndone()){
-                    model.swapUndoAndActual();
-                }
-                opHistory.removeLastOperation();
-            } 
-            model.copyActualToUndo();
-            model.setActualState();
+            saveStateForUndo(FilteringOperation.class);
             final int all = model.getRowCount();
             new SwingWorker() {
 
@@ -90,13 +94,13 @@ class ResultsFilter {
                     applyToModel(model, filterText);
                     return null;
                 }
-                
+
                 @Override
                 protected void done() {
                     try {
-                        get();  // throws an exception if doInBackground hasn't finished
+                        get();  // throws an exception if doInBackground hasn't finished succesfully
                         int filtered = all - model.getRowCount();
-                        opHistory.addOperation(new FilteringOperation(filterText));
+                        ResultsFilter.this.addOperationToHistory(new FilteringOperation(filterText));
                         String be = ((filtered > 1) ? "were" : "was");
                         String item = ((all > 1) ? "items" : "item");
                         table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
@@ -111,8 +115,6 @@ class ResultsFilter {
                     }
                 }
             }.execute();
-            
-            TableHandlerPlugin.recordFilter(filterText);
         } catch(Exception ex) {
             IJ.handleException(ex);
             filterTextField.setBackground(new Color(255, 200, 200));
@@ -120,7 +122,7 @@ class ResultsFilter {
         }
     }
 
-    static void applyToModel(GenericTableModel model, String text) {
+    private void applyToModel(GenericTableModel model, String text) {
         boolean[] results = new boolean[model.getRowCount()];
         if(text.isEmpty()) {
             Arrays.fill(results, true);
@@ -138,7 +140,7 @@ class ResultsFilter {
             model.filterRows(results);
         }
     }
-    
+
     class FilteringOperation extends OperationsHistoryPanel.Operation {
 
         final String name = "Filtering";
@@ -160,9 +162,9 @@ class ResultsFilter {
 
         @Override
         protected void clicked() {
-            if(filterPanel.getParent() instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) filterPanel.getParent();
-                tabbedPane.setSelectedComponent(filterPanel);
+            if(uiPanel.getParent() instanceof JTabbedPane) {
+                JTabbedPane tabbedPane = (JTabbedPane) uiPanel.getParent();
+                tabbedPane.setSelectedComponent(uiPanel);
             }
             filterTextField.setText(filterText);
         }
@@ -186,13 +188,13 @@ class ResultsFilter {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            runFilter(filterTextField.getText());
+            run();
         }
 
         @Override
         public void keyPressed(KeyEvent e) {
             if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-                runFilter(filterTextField.getText());
+                run();
             }
         }
     }

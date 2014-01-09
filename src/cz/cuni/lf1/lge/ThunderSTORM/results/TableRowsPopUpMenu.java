@@ -155,8 +155,9 @@ final class TableRowsPopUpMenu implements ActionListener {
         }
         //
         String formula = sb.toString();
-        tableWindow.resultsFilter.setFilterFormula(formula);
-        tableWindow.resultsFilter.runFilter(formula);
+        ResultsFilter filter = tableWindow.getFilter();
+        filter.setFilterFormula(formula);
+        filter.run();
     }
 
     private void showMergedMolecules() {

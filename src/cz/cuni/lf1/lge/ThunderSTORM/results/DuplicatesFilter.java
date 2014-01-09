@@ -14,6 +14,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import ij.IJ;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -37,25 +38,34 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
-class DuplicatesFilter {
+class DuplicatesFilter extends PostProcessingModule {
 
     private JPanel filterPanel;
     private JTextField distTextField;
     private JButton applyButton;
-    private ResultsTableWindow table;
-    private TripleStateTableModel model;
+    private ParameterKey.String distFormula;
 
     public DuplicatesFilter(ResultsTableWindow table, TripleStateTableModel model) {
         this.table = table;
         this.model = model;
+        distFormula = params.createStringField("distFormula", null, "");
     }
 
-    public DuplicatesFilter() {
+    @Override
+    public String getMacroName() {
+        return "duplicates";
     }
 
-    public JPanel createUIPanel() {
+    @Override
+    public String getTabName() {
+        return "Remove duplicates";
+    }
+
+    @Override
+    protected JPanel createUIPanel() {
         filterPanel = new JPanel(new GridBagLayout());
         distTextField = new JTextField(MoleculeDescriptor.Fitting.LABEL_THOMPSON);
+        distFormula.registerComponent(distTextField);
         InputListener listener = new InputListener();
         distTextField.addKeyListener(listener);
         applyButton = new JButton("Apply");
@@ -68,38 +78,33 @@ class DuplicatesFilter {
         return filterPanel;
     }
 
-    protected void runFilter() {
-        if(!applyButton.isEnabled()) {
-            return;
-        }
-        distTextField.setBackground(Color.WHITE);
-        GUI.closeBalloonTip();
+    @Override
+    protected void runImpl() {
         try {
-            applyButton.setEnabled(false);
-            final OperationsHistoryPanel opHistory = table.getOperationHistoryPanel();
-            if(opHistory.getLastOperation() instanceof DuplicatesRemovalOperation) {
-                if(!opHistory.isLastOperationUndone()) {
-                    model.swapUndoAndActual();
-                }
-                opHistory.removeLastOperation();
+            if(!applyButton.isEnabled()) {
+                return;
             }
-            model.copyActualToUndo();
-            model.setActualState();
+            distTextField.setBackground(Color.WHITE);
+            GUI.closeBalloonTip();
+            final String dist = distFormula.getValue();
+            applyButton.setEnabled(false);
+            
+            DuplicatesFilter.this.saveStateForUndo(DuplicatesRemovalOperation.class);
             final int all = model.getRowCount();
             new SwingWorker() {
 
                 @Override
                 protected Object doInBackground() throws Exception {
-                    applyToModel(model);
+                    applyToModel(model, dist);
                     return null;
                 }
-                
+
                 @Override
                 protected void done() {
                     try {
                         get();  // throws an exception if doInBackground hasn't finished
                         int filtered = all - model.getRowCount();
-                        opHistory.addOperation(new DuplicatesRemovalOperation());
+                        DuplicatesFilter.this.addOperationToHistory(new DuplicatesRemovalOperation());
                         String be = ((filtered > 1) ? "were" : "was");
                         String item = ((all > 1) ? "items" : "item");
                         table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
@@ -114,8 +119,6 @@ class DuplicatesFilter {
                     }
                 }
             }.execute();
-            
-            TableHandlerPlugin.recordRemoveDuplicates();
         } catch(Exception ex) {
             distTextField.setBackground(new Color(255, 200, 200));
             GUI.showBalloonTip(distTextField, ex.toString());
@@ -123,26 +126,26 @@ class DuplicatesFilter {
         }
     }
 
-    void applyToModel(GenericTableModel model) {
+    void applyToModel(GenericTableModel model, String formula) {
         if(!model.columnExists(PSFModel.Params.LABEL_X) || !model.columnExists(PSFModel.Params.LABEL_Y)) {
             throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y, model.getColumnNames()));
         }
         if(!model.columnExists(MoleculeDescriptor.Fitting.LABEL_THOMPSON)) {
             throw new RuntimeException(String.format("Fitting uncertainty not found in Results table. Looking for: %s. Found: %s.", MoleculeDescriptor.Fitting.LABEL_THOMPSON, model.getColumnNames()));
         }
-        Node tree = new FormulaParser(distTextField.getText(), FormulaParser.FORMULA_RESULTS_FILTER).parse();
+        Node tree = new FormulaParser(formula, FormulaParser.FORMULA_RESULTS_FILTER).parse();
         tree.semanticScan();
         RetVal retval = tree.eval(Units.NANOMETER);
-        Double [] dist;
+        Double[] dist;
         if(retval.isVector()) {
-            if(((Double [])retval.get()).length != model.getRowCount()) {
+            if(((Double[]) retval.get()).length != model.getRowCount()) {
                 throw new FormulaParserException("Semantic error: result of formula must be either a scalar value, or a numeric vector of the same length as the number of rows in the table!");
             } else {
-                dist = (Double[])retval.get();
+                dist = (Double[]) retval.get();
             }
         } else {
             dist = new Double[model.getRowCount()];
-            Arrays.fill(dist, (Double)retval.get());
+            Arrays.fill(dist, (Double) retval.get());
         }
         //
         FrameSequence frames = new FrameSequence();
@@ -153,6 +156,7 @@ class DuplicatesFilter {
     }
 
     class DuplicatesRemovalOperation extends OperationsHistoryPanel.Operation {
+
         final String name = "Remove duplicates";
 
         public DuplicatesRemovalOperation() {
@@ -171,9 +175,9 @@ class DuplicatesFilter {
 
         @Override
         protected void clicked() {
-            if(filterPanel.getParent() instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) filterPanel.getParent();
-                tabbedPane.setSelectedComponent(filterPanel);
+            if(uiPanel.getParent() instanceof JTabbedPane) {
+                JTabbedPane tabbedPane = (JTabbedPane) uiPanel.getParent();
+                tabbedPane.setSelectedComponent(uiPanel);
             }
         }
 
@@ -191,31 +195,30 @@ class DuplicatesFilter {
             table.showPreview();
         }
     }
-    
+
     private class InputListener extends KeyAdapter implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            runFilter();
+            run();
         }
 
         @Override
         public void keyPressed(KeyEvent e) {
             if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-                runFilter();
+                run();
             }
         }
     }
-    
+
     //
     // ===================================================================
     //
-    
     static class FrameSequence {
 
         // <Frame #, List of Molecules>
         private HashMap<Integer, Vector<Molecule>> detections;
-        private HashMap<Integer,Double> radii;
+        private HashMap<Integer, Double> radii;
         private Vector<Molecule> molecules;
         private SortedSet frames;
         private Map<Integer, Integer> idToOrder;
@@ -224,13 +227,13 @@ class DuplicatesFilter {
             detections = new HashMap<Integer, Vector<Molecule>>();
             molecules = new Vector<Molecule>();
             frames = new TreeSet();
-            radii = new HashMap<Integer,Double>();
+            radii = new HashMap<Integer, Double>();
             idToOrder = new HashMap<Integer, Integer>();
         }
 
         public void insertMolecule(Molecule mol, Double uncertainty) {
-            int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME);
-            int id = (int)mol.getParam(MoleculeDescriptor.LABEL_ID);
+            int frame = (int) mol.getParam(MoleculeDescriptor.LABEL_FRAME);
+            int id = (int) mol.getParam(MoleculeDescriptor.LABEL_ID);
             radii.put(id, uncertainty);
             idToOrder.put(id, idToOrder.size());
             //
@@ -249,16 +252,18 @@ class DuplicatesFilter {
         /**
          * The method matches molecules in their mutual distance smaller than
          * uncertainty with which their positions were estimated.
-         * 
-         * The method works just in 2D, since the Thompson formula applies only for
-         * lateral coordinates. Thus calculating distance
-         * {@mathjax (x_1-x_2)^2+(y_1-y_2)^2}.
+         *
+         * The method works just in 2D, since the Thompson formula applies only
+         * for lateral coordinates. Thus calculating distance
+         * {
+         *
+         * @mathjax (x_1-x_2)^2+(y_1-y_2)^2}.
          */
-        public boolean [] filterDuplicateMolecules() {
+        public boolean[] filterDuplicateMolecules() {
             molecules.clear();
             Integer[] frno = new Integer[frames.size()];
             frames.toArray(frno);
-            boolean [] filter = new boolean[radii.size()]; // zero-based indexing
+            boolean[] filter = new boolean[radii.size()]; // zero-based indexing
             Arrays.fill(filter, true);
             //
             for(int fi = 0; fi < frno.length; fi++) {
@@ -267,11 +272,13 @@ class DuplicatesFilter {
                 //
                 for(int i = 0, count = frmol.size(); i < count; i++) {
                     Molecule mol = frmol.get(i);
-                    int id = (int)mol.getParam(MoleculeDescriptor.LABEL_ID);  // zero-based indexing
+                    int id = (int) mol.getParam(MoleculeDescriptor.LABEL_ID);  // zero-based indexing
                     double uncertainty = sqr(getUncertaintyNm(mol));
                     double radius = sqr(getRadiusNm(mol));
                     //
-                    if(filter[idToOrder.get(id)] == false) continue;
+                    if(filter[idToOrder.get(id)] == false) {
+                        continue;
+                    }
                     for(int j = i - 1; j >= 0; j--) {
                         if(sqr(frmol.get(j).getX() - mol.getX()) > radius) {
                             break;
@@ -284,7 +291,9 @@ class DuplicatesFilter {
                         }
                     }
                     //
-                    if(filter[idToOrder.get(id)] == false) continue;
+                    if(filter[idToOrder.get(id)] == false) {
+                        continue;
+                    }
                     for(int j = i + 1; j < count; j++) {
                         if(sqr(frmol.get(j).getX() - mol.getX()) > radius) {
                             break;
@@ -302,16 +311,16 @@ class DuplicatesFilter {
         }
 
         private double getRadiusNm(Molecule mol) {
-            return radii.get((int)mol.getParam(MoleculeDescriptor.LABEL_ID)).doubleValue();
+            return radii.get((int) mol.getParam(MoleculeDescriptor.LABEL_ID)).doubleValue();
         }
-        
+
         private double getUncertaintyNm(Molecule mol) {
             if(mol.hasParam(MoleculeDescriptor.Fitting.LABEL_THOMPSON)) {
                 return mol.getParam(MoleculeDescriptor.Fitting.LABEL_THOMPSON, Units.NANOMETER);
             } else {
                 throw new RuntimeException("Fitting uncertainty not found in Results table.");
             }
-         }
+        }
     }
 
 }
