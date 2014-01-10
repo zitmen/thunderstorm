@@ -1,8 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
-import cz.cuni.lf1.lge.ThunderSTORM.PerformanceEvaluationPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
+import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -67,15 +68,15 @@ class GroundTruthTableWindow extends GenericTableWindow implements ActionListene
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == evaluation) {
-            new PerformanceEvaluationPlugIn().run(null);
+            MacroParser.runNestedWithRecording(PluginCommands.PERFORMANCE_EVALUATION, null);
         } else if(e.getSource() == rendering) {
             new RenderingPlugIn().run(IJGroundTruthTable.IDENTIFIER);
         } else if(e.getSource() == showHist) {
             new IJDistribution().run(IJGroundTruthTable.IDENTIFIER);
         } else if(e.getSource() == io_import) {
-            new ImportExportPlugIn().run(ImportExportPlugIn.IMPORT + ";" + IJGroundTruthTable.IDENTIFIER);
+            MacroParser.runNestedWithRecording(PluginCommands.IMPORT_GT, null);
         } else if(e.getSource() == io_export) {
-            new ImportExportPlugIn().run(ImportExportPlugIn.EXPORT + ";" + IJGroundTruthTable.IDENTIFIER);
+            MacroParser.runNestedWithRecording(PluginCommands.EXPORT_GT, null);
         }
     }
 

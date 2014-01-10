@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import ij.IJ;
 import ij.Macro;
@@ -13,8 +12,6 @@ public class TableHandlerPlugin implements PlugIn {
     @Override
     public void run(String arg) {
         GUI.setLookAndFeel();
-        CameraSetupPlugIn.loadPreferences();
-        //
         //
         String options = Macro.getOptions();
         String action = options == null ? "show" : Macro.getValue(options, "action", "show");

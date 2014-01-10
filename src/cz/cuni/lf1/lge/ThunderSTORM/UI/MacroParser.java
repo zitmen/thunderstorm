@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
+import ij.Executer;
 import ij.Macro;
 import ij.plugin.frame.Recorder;
 import java.util.List;
@@ -142,5 +143,20 @@ public class MacroParser {
 
     public static boolean isRanFromMacro() {
         return Macro.getOptions() != null;
+    }
+    
+    public static void runNestedWithRecording(String command, String options){
+        String oldCommand = Recorder.getCommand();
+        String oldOptions = Recorder.getCommandOptions();
+        if(oldOptions != null && oldOptions.length() > 0){
+            throw new IllegalStateException("Some macro options have already been recorder. Cannot record nested invocation without discarding curent macro options.");
+        }
+        
+        Recorder.setCommand(command);
+        Macro.setOptions(options);
+        Executer ex = new Executer(command);
+        ex.run();
+        
+        Recorder.setCommand(oldCommand);
     }
 }

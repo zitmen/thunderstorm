@@ -11,6 +11,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.subtract;
+import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
@@ -97,7 +98,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         this.cameraSetup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new CameraSetupPlugIn().run(null);
+                MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP, null);
             }
         });
         //

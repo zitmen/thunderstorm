@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.EmitterModel;
@@ -12,6 +13,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
+import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import cz.cuni.lf1.lge.ThunderSTORM.util.RangeValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
@@ -58,7 +60,6 @@ public class DataGeneratorPlugIn implements PlugIn {
     public void run(String command) {
         try {
             GUI.setLookAndFeel();
-            CameraSetupPlugIn.loadPreferences();
 
             if(getInput()) {
                 runGenerator();
@@ -257,7 +258,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                     cameraButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            new CameraSetupPlugIn().run(null);
+                            MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP, null);
                         }
                     });
                     cameraPanel.add(cameraButton);

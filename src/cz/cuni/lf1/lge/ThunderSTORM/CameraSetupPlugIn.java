@@ -39,6 +39,10 @@ public class CameraSetupPlugIn implements PlugIn {
     });
     private static ParameterKey.Double offset = params.createDoubleField("offset", null, 414);
     private static ParameterKey.Boolean isEmGain = params.createBooleanField("isEmGain", null, false);
+    
+    static{
+        loadPreferences();
+    }
 
     public static double getPixelSize() {
         return params.getDouble(pixelSize);
@@ -72,8 +76,6 @@ public class CameraSetupPlugIn implements PlugIn {
 
     @Override
     public void run(String arg) {
-        loadPreferences();
-        //
         String macroOptions = Macro.getOptions();
         if(macroOptions != null) {
             params.readMacroOptions();
@@ -124,6 +126,8 @@ public class CameraSetupPlugIn implements PlugIn {
                     buttons.add(createCancelButton());
                     add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
                     add(buttons, GridBagHelper.twoCols());
+                    
+                    params.updateComponents();
 
                     getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
                     pack();

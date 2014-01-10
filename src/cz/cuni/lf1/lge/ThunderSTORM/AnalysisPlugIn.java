@@ -96,7 +96,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     @Override
     public int setup(String command, ImagePlus imp) {
         GUI.setLookAndFeel();
-        CameraSetupPlugIn.loadPreferences();
         //
         if(command.equals("final")) {
             IJ.showStatus("ThunderSTORM is generating the results...");

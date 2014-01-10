@@ -1,8 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
-import cz.cuni.lf1.lge.ThunderSTORM.RenderingPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_DETECTIONS;
@@ -12,6 +11,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.ASHRenderingUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
+import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
 import ij.ImagePlus;
@@ -82,7 +82,7 @@ class ResultsTableWindow extends GenericTableWindow {
         setCamera.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new CameraSetupPlugIn().run(null);
+                MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP, null);
             }
         });
         showHist.addActionListener(new ActionListener() {
@@ -94,19 +94,19 @@ class ResultsTableWindow extends GenericTableWindow {
         io_import.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new ImportExportPlugIn().run(ImportExportPlugIn.IMPORT + ";" + IJResultsTable.IDENTIFIER);
+                MacroParser.runNestedWithRecording(PluginCommands.IMPORT_RESULTS, null);
             }
         });
         io_export.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new ImportExportPlugIn().run(ImportExportPlugIn.EXPORT + ";" + IJResultsTable.IDENTIFIER);
+                MacroParser.runNestedWithRecording(PluginCommands.EXPORT_RESULTS, null);
             }
         });
         render.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new RenderingPlugIn().run(IJResultsTable.IDENTIFIER);
+                MacroParser.runNestedWithRecording(PluginCommands.RENDERING, null);
             }
         });
         livePreview = false;
