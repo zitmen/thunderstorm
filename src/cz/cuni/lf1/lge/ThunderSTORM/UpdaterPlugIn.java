@@ -274,7 +274,7 @@ public class UpdaterPlugIn implements PlugIn {
                 for(int i = 0; i < tokens1.length || i < tokens2.length; i++){
                     int num1 = Integer.parseInt(tokens1[i]);
                     int num2 = Integer.parseInt(tokens2[i]);
-                    cmp = Integer.compare(num1, num2);
+                    cmp = Integer.valueOf(num1).compareTo(num2);
                     if(cmp != 0){
                         return cmp;
                     }
