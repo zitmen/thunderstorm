@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
+import cz.cuni.lf1.lge.ThunderSTORM.JarFirstClassLoader;
 import ij.IJ;
 import ij.plugin.BrowserLauncher;
 import java.awt.Cursor;
@@ -22,8 +23,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import org.fit.cssbox.swingbox.BrowserPane;
-import org.fit.cssbox.swingbox.SwingBoxEditorKit;
+import javax.swing.text.EditorKit;
 
 public class HelpButton extends JButton {
 
@@ -34,7 +34,7 @@ public class HelpButton extends JButton {
     URL url;
 
     public HelpButton(URL helpUrl) {
-        //TODO icon licence: CC 3.0, attribution required: http://p.yusukekamiyamane.com/icons/attribution/
+        //icon licence: CC 3.0, attribution required: http://p.yusukekamiyamane.com/icons/attribution/
         super(new ImageIcon(IJ.getClassLoader().getResource("resources/help/images/question-button-icon.png")));
         setBorder(BorderFactory.createEmptyBorder());
         setBorderPainted(false);
@@ -42,48 +42,65 @@ public class HelpButton extends JButton {
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         this.url = helpUrl;
         addActionListener(new HelpButtonActionListener());
+
     }
 
     private static JDialog constructFrame() {
         final JDialog frame = new JDialog();
-        frame.addWindowFocusListener(new WindowAdapter() {
-            @Override
-            public void windowLostFocus(WindowEvent e) {
-                frame.setVisible(false);
-            }
-        });
-        if(IJ.isJava17()) {
-            frame.setType(Window.Type.UTILITY);
-        }
-        frame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE); //for use within modal dialog
-        htmlBrowser = new BrowserPane();
-        htmlBrowser.setEditorKit(new SwingBoxEditorKit());
-        htmlBrowser.setBorder(BorderFactory.createEmptyBorder());
-        htmlBrowser.addHyperlinkListener(new HyperlinkListener() {
-            @Override
-            public void hyperlinkUpdate(HyperlinkEvent e) {
-                if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                    try {
-                        if("jar".equals(e.getURL().getProtocol())) {
-                            htmlBrowser.setPage(e.getURL());
-                        } else {
-                            BrowserLauncher.openURL(e.getURL().toString());
-                        }
-                    } catch(Exception ex) {
-                        IJ.handleException(ex);
-                    }
-                } else if(e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
-                    htmlBrowser.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                } else if(e.getEventType() == HyperlinkEvent.EventType.EXITED) {
-                    htmlBrowser.setCursor(Cursor.getDefaultCursor());
+        try {
+            frame.addWindowFocusListener(new WindowAdapter() {
+                @Override
+                public void windowLostFocus(WindowEvent e) {
+                    frame.setVisible(false);
                 }
-
+            });
+            if(IJ.isJava17()) {
+                frame.setType(Window.Type.UTILITY);
             }
-        });
-        JScrollPane scrollPane = new JScrollPane(htmlBrowser);
-        scrollPane.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
-        frame.getContentPane().add(scrollPane);
+            frame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE); //for use within modal dialog
+            htmlBrowser = createEditorUsingOurClassLoader();
+            htmlBrowser.setBorder(BorderFactory.createEmptyBorder());
+            htmlBrowser.addHyperlinkListener(new HyperlinkListener() {
+                @Override
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                        try {
+                            if("jar".equals(e.getURL().getProtocol())) {
+                                htmlBrowser.setPage(e.getURL());
+                            } else {
+                                BrowserLauncher.openURL(e.getURL().toString());
+                            }
+                        } catch(Exception ex) {
+                            IJ.handleException(ex);
+                        }
+                    } else if(e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+                        htmlBrowser.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    } else if(e.getEventType() == HyperlinkEvent.EventType.EXITED) {
+                        htmlBrowser.setCursor(Cursor.getDefaultCursor());
+                    }
+                }
+            });
+            JScrollPane scrollPane = new JScrollPane(htmlBrowser);
+            scrollPane.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+            frame.getContentPane().add(scrollPane);
+        } catch(Exception e) {
+            IJ.handleException(e);
+        }
         return frame;
+    }
+
+    /**
+     * Create a BrowserPane object using a custom classloader that prefers
+     * classes in our jar
+     */
+    public static JEditorPane createEditorUsingOurClassLoader() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        ClassLoader our = JarFirstClassLoader.getInstance();
+        Class c = Class.forName("org.fit.cssbox.swingbox.BrowserPane", true, our);
+        JEditorPane editor = (JEditorPane) c.newInstance();
+
+        Class c2 = Class.forName("org.fit.cssbox.swingbox.SwingBoxEditorKit", true, our);
+        editor.setEditorKit((EditorKit) c2.newInstance());
+        return editor;
     }
 
     /**
