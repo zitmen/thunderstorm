@@ -21,7 +21,7 @@ import ij.measure.Calibration;
 import ij.process.FloatProcessor;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -38,6 +38,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
  * Dialog with settings of filters, detectors, estimators, and other parameters
@@ -129,7 +130,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     }
 
     private void addComponentsToPane() {
-        Container pane = getContentPane();
+        JPanel pane = new JPanel();
         //
         pane.setLayout(new GridBagLayout());
         GridBagConstraints componentConstraints = new GridBagConstraints();
@@ -167,10 +168,16 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         buttons.add(ok);
         buttons.add(cancel);
         pane.add(buttons, componentConstraints);
+        pane.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        JScrollPane scrollPane = new JScrollPane(pane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        add(scrollPane);
         getRootPane().setDefaultButton(ok);
-        getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        setResizable(false);
         pack();
+        int maxScreenHeight = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height;
+        if(getHeight() > maxScreenHeight){
+            setSize(getWidth(), maxScreenHeight);
+        }
     }
 
     /**
