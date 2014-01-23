@@ -3,6 +3,10 @@ package ags.utils.dataStructures.trees.thirdGenKD;
 import ags.utils.dataStructures.BinaryHeap;
 import ags.utils.dataStructures.MaxHeap;
 import ags.utils.dataStructures.MinHeap;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 /**
  *
@@ -85,6 +89,75 @@ public class KdTree<T> extends KdNode<T> {
                     evaluatedPoints.offer(distance, value);
                 } else if (distance < evaluatedPoints.getMaxKey()) {
                     evaluatedPoints.replaceMax(distance, value);
+                }
+            }
+        }
+    }
+    
+    public static class DistAndValue<T>{
+        public double dist;
+        public T value;
+
+        public DistAndValue(double dist, T value) {
+            this.dist = dist;
+            this.value = value;
+        }
+    }
+    
+    public List<DistAndValue<T>> ballQuery(double[] searchPoint, double maxDistance, DistanceFunction distanceFunction) {
+        Deque<KdNode<T>> pendingPaths = new ArrayDeque<KdNode<T>>();
+        
+        List<DistAndValue<T>> evaluatedPoints = new ArrayList<DistAndValue<T>>();
+        pendingPaths.addFirst(this);
+
+        while (pendingPaths.size() > 0 ) {
+            ballQueryStep(pendingPaths, evaluatedPoints, maxDistance, distanceFunction, searchPoint);
+        }
+
+        return evaluatedPoints;
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected static <T> void ballQueryStep (
+            Deque<KdNode<T>> pendingPaths, List<DistAndValue<T>> evaluatedPoints, double maxDistance,
+            DistanceFunction distanceFunction, double[] searchPoint) {
+        // If there are pending paths possibly closer than the nearest evaluated point, check it out
+        KdNode<T> cursor = pendingPaths.removeFirst();
+
+        // Descend the tree, recording paths not taken
+        while (!cursor.isLeaf()) {
+            KdNode<T> pathNotTaken;
+            if (searchPoint[cursor.splitDimension] > cursor.splitValue) {
+                pathNotTaken = cursor.left;
+                cursor = cursor.right;
+            }
+            else {
+                pathNotTaken = cursor.right;
+                cursor = cursor.left;
+            }
+            double otherDistance = distanceFunction.distanceToRect(searchPoint, pathNotTaken.minBound, pathNotTaken.maxBound);
+            if (otherDistance <= maxDistance) {
+                pendingPaths.addFirst(pathNotTaken);
+            }
+        }
+
+        if (cursor.singlePoint) {
+            double nodeDistance = distanceFunction.distance(cursor.points[0], searchPoint);
+            if (nodeDistance <= maxDistance) {
+                for (int i = 0; i < cursor.size(); i++) {
+                    T value = (T) cursor.data[i];
+
+                    evaluatedPoints.add(new DistAndValue<T>(nodeDistance, value));
+                }
+            }
+        } else {
+            // Add the points at the cursor
+            for (int i = 0; i < cursor.size(); i++) {
+                double[] point = cursor.points[i];
+                T value = (T) cursor.data[i];
+                double distance = distanceFunction.distance(point, searchPoint);
+                if(distance <= maxDistance) {
+                    evaluatedPoints.add(new DistAndValue<T>(distance, value));
                 }
             }
         }
