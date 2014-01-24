@@ -85,7 +85,7 @@ public class DensityRenderingUI extends AbstractRenderingUI {
         if(threeD.getValue()) {
             Range r = Range.parseFromStepTo(zRange.getValue());
             return new DensityRendering.Builder()
-                    .roi(0, sizeX, 0, sizeY)
+                    .roi(left, left+sizeX, top, top+sizeY)
                     .resolution(1 / magnification.getValue())
                     .defaultDX(dx.getValue() / CameraSetupPlugIn.getPixelSize())
                     .forceDefaultDX(forceDx.getValue())
@@ -94,7 +94,7 @@ public class DensityRenderingUI extends AbstractRenderingUI {
                     .defaultDZ(dz.getValue()).build();
         } else {
             return new DensityRendering.Builder()
-                    .roi(0, sizeX, 0, sizeY)
+                    .roi(left, left+sizeX, top, top+sizeY)
                     .resolution(1 / magnification.getValue())
                     .defaultDX(dx.getValue() / CameraSetupPlugIn.getPixelSize())
                     .forceDefaultDX(forceDx.getValue()).build();

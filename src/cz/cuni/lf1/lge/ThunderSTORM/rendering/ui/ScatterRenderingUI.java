@@ -33,14 +33,14 @@ public class ScatterRenderingUI extends AbstractRenderingUI {
         if(threeD.getValue()) {
             Range zrange = Range.parseFromStepTo(zRange.getValue());
             return new ScatterRendering.Builder()
-                    .roi(0, sizeX, 0, sizeY)
+                    .roi(left, left+sizeX, top, top+sizeY)
                     .resolution(1 / magnification.getValue())
                     .colorizeZ(colorizeZ.getValue())
                     .zRange(zrange.from, zrange.to, zrange.step)
                     .build();
         } else {
             return new ScatterRendering.Builder()
-                    .roi(0, sizeX, 0, sizeY)
+                    .roi(left, left+sizeX, top, top+sizeY)
                     .resolution(1 / magnification.getValue())
                     .build();
         }

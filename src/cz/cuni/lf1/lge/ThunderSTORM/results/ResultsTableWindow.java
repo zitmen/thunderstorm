@@ -183,22 +183,28 @@ class ResultsTableWindow extends GenericTableWindow {
         livePreview = enabled;
         preview.setSelected(enabled);
     }
-
+    
     public void showPreview() {
+        showPreview(IJResultsTable.getResultsTable().getAnalyzedImage(), false);
+    }
+
+    public void showPreview(ImagePlus analyzedImage, boolean newInstance) {
         IJResultsTable rt = IJResultsTable.getResultsTable();
         if(livePreview && !rt.isEmpty()) {
             if(!rt.columnExists(LABEL_X) || !rt.columnExists(LABEL_Y)) {
                 IJ.error(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", LABEL_X, LABEL_Y, rt.getColumnNames()));
                 return;
             }
-            if(previewRenderer == null) {
+            if(previewRenderer == null || newInstance) {
                 IRendererUI renderer = new ASHRenderingUI();
-                ImagePlus analyzedImage = rt.getAnalyzedImage();
                 if(analyzedImage != null) {
                     renderer.setSize(analyzedImage.getWidth(), analyzedImage.getHeight());
                 } else {
-                    renderer.setSize((int) Math.ceil(VectorMath.max(rt.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL))) + 1,
-                            (int) Math.ceil(VectorMath.max(rt.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL))) + 1);
+                    int left   = Math.max((int) Math.floor(VectorMath.min(rt.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL))) - 1, 0);
+                    int top    = Math.max((int) Math.floor(VectorMath.min(rt.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL))) - 1, 0);
+                    int right  = (int) Math.ceil (VectorMath.max(rt.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL))) + 1;
+                    int bottom = (int) Math.ceil (VectorMath.max(rt.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL))) + 1;
+                    renderer.setSize(left, top, right-left+1, bottom-top+1);
                 }
                 IncrementalRenderingMethod rendererImplementation = renderer.getImplementation();
                 previewRenderer = new RenderingQueue(rendererImplementation,

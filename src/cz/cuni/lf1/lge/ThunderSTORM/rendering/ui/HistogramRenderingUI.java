@@ -114,7 +114,7 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
         if(threeD.getValue()) {
             Range zRange = Range.parseFromStepTo(this.zRange.getValue());
             return new HistogramRendering.Builder()
-                    .roi(0, sizeX, 0, sizeY)
+                    .roi(left, left+sizeX, top, top+sizeY)
                     .resolution(1 / magnification.getValue())
                     .average(avg.getValue())
                     .defaultDX(dx.getValue() / CameraSetupPlugIn.getPixelSize())
@@ -124,7 +124,7 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
                     .zRange(zRange.from, zRange.to, zRange.step).build();
         } else {
             return new HistogramRendering.Builder()
-                    .roi(0, sizeX, 0, sizeY)
+                    .roi(left, left+sizeX, top, top+sizeY)
                     .resolution(1 / magnification.getValue())
                     .average(avg.getValue())
                     .defaultDX(dx.getValue() / CameraSetupPlugIn.getPixelSize())

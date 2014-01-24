@@ -71,7 +71,7 @@ public class ASHRenderingUI extends AbstractRenderingUI {
         if(parameters.getBoolean(threeD)) {
             Range r = Range.parseFromStepTo(zRange.getValue());
             return new ASHRendering.Builder()
-                    .roi(0, sizeX, 0, sizeY)
+                    .roi(left, left+sizeX, top, top+sizeY)
                     .resolution(1 / magnification.getValue())
                     .shifts(shifts.getValue())
                     .zRange(r.from, r.to, r.step)
@@ -79,7 +79,7 @@ public class ASHRenderingUI extends AbstractRenderingUI {
                     .zShifts(zShifts.getValue()).build();
         } else {
             return new ASHRendering.Builder()
-                    .roi(0, sizeX, 0, sizeY)
+                    .roi(left, left+sizeX, top, top+sizeY)
                     .resolution(1 / magnification.getValue())
                     .shifts(shifts.getValue()).build();
         }

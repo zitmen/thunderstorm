@@ -85,27 +85,35 @@ public class RenderingPlugIn implements PlugIn {
             }
         }
         IRendererUI selectedRendererUI;
-        int sizeX, sizeY;
+        int sizeX, sizeY, left, top;
         boolean setAsPreview = false;
 
         if(MacroParser.isRanFromMacro()) {
             MacroParser parser = new MacroParser(null, null, null, knownRenderers);
             selectedRendererUI = parser.getRendererUI();
 
-            sizeX = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imwidth", "0"));
-            sizeY = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imheight", "0"));
+            left  = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imleft", "0"));
+            top   = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imtop", "0"));
+            sizeX = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imwidth", "0")) - left + 1;
+            sizeY = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imheight", "0")) - top + 1;
         } else {
+            int guessedLeft;
+            int guessedTop;
             int guessedWidth;
             int guessedHeight;
             ImagePlus im;
             if(IJResultsTable.IDENTIFIER.equals(table.getTableIdentifier()) && (im = ((IJResultsTable) table).getAnalyzedImage()) != null) {
+                guessedLeft = 0;
+                guessedTop = 0;
                 guessedWidth = im.getWidth();
                 guessedHeight = im.getHeight();
             } else {
-                guessedWidth = (int) Math.ceil(max(xpos)) + 1;
+                guessedLeft = Math.max((int) Math.floor(min(xpos)) - 1, 0);
+                guessedTop = Math.max((int) Math.floor(min(ypos)) - 1, 0);
+                guessedWidth = (int) Math.ceil(max(xpos))  + 1;
                 guessedHeight = (int) Math.ceil(max(ypos)) + 1;
             }
-            RenderingDialog dialog = new RenderingDialog(preview, knownRenderers, guessedWidth, guessedHeight);
+            RenderingDialog dialog = new RenderingDialog(preview, knownRenderers, guessedLeft, guessedTop, guessedWidth - guessedLeft, guessedHeight - guessedTop);
             dialog.setVisible(true);
             if(dialog.result == RenderingDialog.DialogResult.CANCELLED) {
                 return;
@@ -114,11 +122,13 @@ public class RenderingPlugIn implements PlugIn {
                 setAsPreview = true;
             }
             selectedRendererUI = dialog.getSelectedRendererUI();
+            left = dialog.left;
+            top = dialog.top;
             sizeX = dialog.sizeX;
             sizeY = dialog.sizeY;
         }
 
-        selectedRendererUI.setSize(sizeX, sizeY);
+        selectedRendererUI.setSize(left, top, sizeX, sizeY);
         IncrementalRenderingMethod method = selectedRendererUI.getImplementation();
 
         if(setAsPreview) {
@@ -127,6 +137,8 @@ public class RenderingPlugIn implements PlugIn {
             ((IJResultsTable) table).showPreview();
         } else {
             if(Recorder.record) {
+                Recorder.recordOption("imleft", Integer.toString(left));
+                Recorder.recordOption("imtop", Integer.toString(top));
                 Recorder.recordOption("imwidth", Integer.toString(sizeX));
                 Recorder.recordOption("imheight", Integer.toString(sizeY));
                 MacroParser.recordRendererUI(selectedRendererUI);
@@ -147,6 +159,16 @@ public class RenderingPlugIn implements PlugIn {
         }
         return max;
     }
+    
+    private double min(double[] arr) {
+        double min = arr[0];
+        for(int i = 0; i < arr.length; i++) {
+            if(arr[i] < min) {
+                min = arr[i];
+            }
+        }
+        return min;
+    }
 }
 
 class RenderingDialog extends JDialog {
@@ -157,9 +179,11 @@ class RenderingDialog extends JDialog {
     JButton cancelButton;
     JButton defaultsButton;
     DialogResult result = DialogResult.CANCELLED;
+    JTextField topTextField;
+    JTextField leftTextField;
     JTextField sizeXTextField;
     JTextField sizeYTextField;
-    int sizeX, sizeY;
+    int left, top, sizeX, sizeY;
     boolean enablePreview;
 
     enum DialogResult {
@@ -167,10 +191,12 @@ class RenderingDialog extends JDialog {
         CANCELLED, OK, PREVIEW;
     }
 
-    public RenderingDialog(boolean preview, List<IRendererUI> knownRenderers, int sizeX, int sizeY) {
+    public RenderingDialog(boolean preview, List<IRendererUI> knownRenderers, int left, int top, int sizeX, int sizeY) {
         super(IJ.getInstance(), "Rendering options", true);
         this.enablePreview = preview;
         this.cardsPanel = new CardsPanel<IRendererUI>(knownRenderers, 0);
+        this.left = left;
+        this.top = top;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         layoutComponents();
@@ -189,8 +215,14 @@ class RenderingDialog extends JDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new GridBagLayout());
         JPanel sizePanel = new JPanel(new GridBagLayout());
+        topTextField = new JTextField(Integer.toString(top), 20);
+        leftTextField = new JTextField(Integer.toString(left), 20);
         sizeXTextField = new JTextField(Integer.toString(sizeX), 20);
         sizeYTextField = new JTextField(Integer.toString(sizeY), 20);
+        sizePanel.add(new JLabel("Image left offset [px]:"), GridBagHelper.leftCol());
+        sizePanel.add(leftTextField, GridBagHelper.rightCol());
+        sizePanel.add(new JLabel("Image top offset [px]:"), GridBagHelper.leftCol());
+        sizePanel.add(topTextField, GridBagHelper.rightCol());
         sizePanel.add(new JLabel("Original image width [px]:"), GridBagHelper.leftCol());
         sizePanel.add(sizeXTextField, GridBagHelper.rightCol());
         sizePanel.add(new JLabel("Original image height [px]:"), GridBagHelper.leftCol());
@@ -259,6 +291,14 @@ class RenderingDialog extends JDialog {
     }
 
     private void validateFields() {
+        left = Integer.parseInt(leftTextField.getText());
+        if(left < 0) {
+            throw new IllegalArgumentException("Image offset must not be negative.");
+        }
+        top = Integer.parseInt(topTextField.getText());
+        if(top < 0) {
+            throw new IllegalArgumentException("Image offset must not be negative.");
+        }
         sizeX = Integer.parseInt(sizeXTextField.getText());
         if(sizeX < 1) {
             throw new IllegalArgumentException("Image width must be positive.");

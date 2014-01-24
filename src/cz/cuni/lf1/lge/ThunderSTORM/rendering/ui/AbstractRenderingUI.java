@@ -21,13 +21,15 @@ public abstract class AbstractRenderingUI extends IRendererUI {
 
     int sizeX;
     int sizeY;
+    int left;
+    int top;
     //parameters
-    protected ParameterKey.Double magnification;
-    protected ParameterKey.Integer repaintFrequency;
-    protected ParameterKey.Boolean threeD;
-    protected ParameterKey.Boolean colorizeZ;
-    protected ParameterKey.String zRange;
-    protected ParameterTracker.Condition threeDCondition = new ParameterTracker.Condition() {
+    public ParameterKey.Double magnification;
+    public ParameterKey.Integer repaintFrequency;
+    public ParameterKey.Boolean threeD;
+    public ParameterKey.Boolean colorizeZ;
+    public ParameterKey.String zRange;
+    public ParameterTracker.Condition threeDCondition = new ParameterTracker.Condition() {
         @Override
         public boolean isSatisfied() {
             return threeD.getValue();
@@ -79,9 +81,16 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
     }
-
+    
     @Override
     public void setSize(int sizeX, int sizeY) {
+        setSize(0, 0, sizeX, sizeY);
+    }
+    
+    @Override
+    public void setSize(int left, int top, int sizeX, int sizeY) {
+        this.left = left;
+        this.top = top;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
     }
@@ -90,8 +99,8 @@ public abstract class AbstractRenderingUI extends IRendererUI {
     public int getRepaintFrequency() {
         return repaintFrequency.getValue();
     }
-    
-    public void setShowRepaintFrequency(boolean show){
+
+    public void setShowRepaintFrequency(boolean show) {
         this.showRepaintFrequency = show;
     }
 
@@ -106,7 +115,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         panel.add(new JLabel("Magnification:"), GridBagHelper.leftCol());
         panel.add(resolutionTextField, GridBagHelper.rightCol());
 
-        if(showRepaintFrequency){
+        if(showRepaintFrequency) {
             panel.add(new JLabel("Update frequency [frames]:"), GridBagHelper.leftCol());
             panel.add(repaintFrequencyTextField, GridBagHelper.rightCol());
         }

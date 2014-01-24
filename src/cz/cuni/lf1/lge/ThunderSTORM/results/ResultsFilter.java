@@ -6,12 +6,17 @@ import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Node;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.RetVal;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import ij.IJ;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -29,6 +34,7 @@ class ResultsFilter extends PostProcessingModule {
 
     private JTextField filterTextField;
     private JButton applyButton;
+    private JButton restrictToROIButton;
 
     private ParameterKey.String formulaParameter;
 
@@ -65,13 +71,16 @@ class ResultsFilter extends PostProcessingModule {
         formulaParameter.registerComponent(filterTextField);
         applyButton = new JButton("Apply");
         applyButton.addActionListener(listener);
+        restrictToROIButton = new JButton("Restrict to ROI");
+        restrictToROIButton.addActionListener(listener);
         filterPanel.add(new JLabel("Filter: "), new GridBagHelper.Builder().gridxy(0, 0).anchor(GridBagConstraints.WEST).build());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
         filterPanel.add(filterTextField, new GridBagHelper.Builder().gridxy(0, 1).fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
-        filterPanel.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(1, 0).anchor(GridBagConstraints.EAST).build());
+        filterPanel.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(2, 0).anchor(GridBagConstraints.EAST).build());
         filterPanel.add(applyButton, new GridBagHelper.Builder().gridxy(1, 1).build());
+        filterPanel.add(restrictToROIButton, new GridBagHelper.Builder().gridxy(2, 1).build());
         return filterPanel;
     }
 
@@ -104,7 +113,9 @@ class ResultsFilter extends PostProcessingModule {
                         String be = ((filtered > 1) ? "were" : "was");
                         String item = ((all > 1) ? "items" : "item");
                         table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
-                        table.showPreview();
+                        // since filtering can significantly change dimensions of the image,
+                        // force a new renderer independent of the analyzed image
+                        table.showPreview(null, true);
                     } catch(ExecutionException ex) {
                         filterTextField.setBackground(new Color(255, 200, 200));
                         GUI.showBalloonTip(filterTextField, ex.getCause().getMessage());
@@ -120,6 +131,22 @@ class ResultsFilter extends PostProcessingModule {
             filterTextField.setBackground(new Color(255, 200, 200));
             GUI.showBalloonTip(filterTextField, ex.toString());
         }
+    }
+    
+    public void restrictToROIFilter() {
+        Rectangle roi = IJ.getImage().getProcessor().getRoi();
+        double mag = new EmptyRendererUI().magnification.getValue();
+        IJResultsTable rt = IJResultsTable.getResultsTable();
+        Units ux = rt.getColumnUnits(LABEL_X);
+        Units uy = rt.getColumnUnits(LABEL_Y);
+        //
+        double leftVal   = Units.PIXEL.convertTo(ux, Math.ceil(roi.getMinX() / mag));
+        double rightVal  = Units.PIXEL.convertTo(ux, Math.ceil(roi.getMaxX() / mag));
+        double topVal    = Units.PIXEL.convertTo(uy, Math.ceil(roi.getMinY() / mag));
+        double bottomVal = Units.PIXEL.convertTo(uy, Math.ceil(roi.getMaxY() / mag));
+        //
+        rt.addNewFilter("x", leftVal, rightVal);
+        rt.addNewFilter("y", topVal, bottomVal);
     }
 
     private void applyToModel(GenericTableModel model, String text) {
@@ -188,7 +215,12 @@ class ResultsFilter extends PostProcessingModule {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            run();
+            if(e.getSource() == applyButton) {
+                run();
+            } else if(e.getSource() == restrictToROIButton) {
+                restrictToROIFilter();
+                run();
+            }
         }
 
         @Override
