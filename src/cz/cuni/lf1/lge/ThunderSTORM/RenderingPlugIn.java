@@ -9,6 +9,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.AbstractRenderingUI;
@@ -17,6 +18,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Macro;
@@ -108,10 +110,10 @@ public class RenderingPlugIn implements PlugIn {
                 guessedWidth = im.getWidth();
                 guessedHeight = im.getHeight();
             } else {
-                guessedLeft = Math.max((int) Math.floor(min(xpos)) - 1, 0);
-                guessedTop = Math.max((int) Math.floor(min(ypos)) - 1, 0);
-                guessedWidth = (int) Math.ceil(max(xpos))  + 1;
-                guessedHeight = (int) Math.ceil(max(ypos)) + 1;
+                guessedLeft = Math.max((int) Math.floor(VectorMath.min(xpos)) - 1, 0);
+                guessedTop = Math.max((int) Math.floor(VectorMath.min(ypos)) - 1, 0);
+                guessedWidth = (int) Math.ceil(VectorMath.max(xpos))  + 1;
+                guessedHeight = (int) Math.ceil(VectorMath.max(ypos)) + 1;
             }
             RenderingDialog dialog = new RenderingDialog(preview, knownRenderers, guessedLeft, guessedTop, guessedWidth - guessedLeft, guessedHeight - guessedTop);
             dialog.setVisible(true);
@@ -149,31 +151,13 @@ public class RenderingPlugIn implements PlugIn {
             new RenderingQueue.DefaultRepaintTask(method.getRenderedImage()).run();
         }
     }
-
-    private double max(double[] arr) {
-        double max = arr[0];
-        for(int i = 0; i < arr.length; i++) {
-            if(arr[i] > max) {
-                max = arr[i];
-            }
-        }
-        return max;
-    }
-    
-    private double min(double[] arr) {
-        double min = arr[0];
-        for(int i = 0; i < arr.length; i++) {
-            if(arr[i] < min) {
-                min = arr[i];
-            }
-        }
-        return min;
-    }
 }
 
 class RenderingDialog extends JDialog {
 
     CardsPanel<IRendererUI> cardsPanel;
+    JButton sizeResultsButton;
+    JButton sizeAnalyzedImageButton;
     JButton previewButton;
     JButton okButton;
     JButton cancelButton;
@@ -214,6 +198,7 @@ class RenderingDialog extends JDialog {
     private void layoutComponents() {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new GridBagLayout());
+        
         JPanel sizePanel = new JPanel(new GridBagLayout());
         topTextField = new JTextField(Integer.toString(top), 20);
         leftTextField = new JTextField(Integer.toString(left), 20);
@@ -280,7 +265,44 @@ class RenderingDialog extends JDialog {
         }
         buttonsPanel.add(okButton);
         buttonsPanel.add(cancelButton);
+        
+        JPanel sizeButtonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        sizeAnalyzedImageButton = new JButton("Auto size by analyzed image");
+        sizeAnalyzedImageButton.setEnabled(IJResultsTable.getResultsTable().getAnalyzedImage() != null);
+        sizeAnalyzedImageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ImagePlus analyzedImage = IJResultsTable.getResultsTable().getAnalyzedImage();
+                left = top = 0;
+                sizeX = analyzedImage.getWidth();
+                sizeY = analyzedImage.getHeight();
+                leftTextField.setText(left + "");
+                topTextField.setText(top + "");
+                sizeXTextField.setText(sizeX + "");
+                sizeYTextField.setText(sizeY + "");
+            }
+        });
+        sizeResultsButton = new JButton("Auto size by results");
+        sizeResultsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                IJResultsTable rt = IJResultsTable.getResultsTable();
+                double [] xpos = rt.getColumnAsDoubles(LABEL_X, PIXEL);
+                double [] ypos = rt.getColumnAsDoubles(LABEL_Y, PIXEL);
+                left = Math.max((int) Math.floor(VectorMath.min(xpos)) - 1, 0);
+                top = Math.max((int) Math.floor(VectorMath.min(ypos)) - 1, 0);
+                sizeX = (int) Math.ceil(VectorMath.max(xpos))  + 1;
+                sizeY = (int) Math.ceil(VectorMath.max(ypos)) + 1;
+                leftTextField.setText(left + "");
+                topTextField.setText(top + "");
+                sizeXTextField.setText(sizeX - left + "");
+                sizeYTextField.setText(sizeY - top + "");
+            }
+        });
+        sizeButtonsPanel.add(sizeAnalyzedImageButton);
+        sizeButtonsPanel.add(sizeResultsButton);
 
+        add(sizeButtonsPanel, GridBagHelper.leftCol());
         add(sizePanel, GridBagHelper.leftCol());
         add(cardsPanel.getPanel("Renderer:"), GridBagHelper.leftCol());
         add(buttonsPanel, GridBagHelper.leftCol());
