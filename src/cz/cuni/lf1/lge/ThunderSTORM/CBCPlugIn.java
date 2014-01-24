@@ -3,11 +3,14 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.colocalization.CBC;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
+import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTableModel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.IValue;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
@@ -17,6 +20,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.Macro;
 import ij.plugin.PlugIn;
+import java.util.Vector;
 
 public class CBCPlugIn implements PlugIn {
 
@@ -32,7 +36,7 @@ public class CBCPlugIn implements PlugIn {
         try {
             if(Macro.getOptions() != null) {
                 params.readMacroOptions();
-            }else{
+            } else {
                 params.recordMacroOptions();
             }
 
@@ -69,7 +73,7 @@ public class CBCPlugIn implements PlugIn {
 
             IJ.showStatus("Calculating first channel CBC.");
             double[] firstChannelCBC = cbc.calculateFirstChannelCBC();
-
+            addColumnToModel(resultsTable.getModel(), firstChannelCBC, "cbc", Units.UNITLESS);
             double[] x1 = resultsTable.getColumnAsDoubles(PSFModel.Params.LABEL_X, MoleculeDescriptor.Units.PIXEL);
             double[] y1 = resultsTable.getColumnAsDoubles(PSFModel.Params.LABEL_Y, MoleculeDescriptor.Units.PIXEL);
 
@@ -102,6 +106,19 @@ public class CBCPlugIn implements PlugIn {
         } catch(Exception e) {
             IJ.handleException(e);
         }
+    }
+
+    private void addColumnToModel(GenericTableModel model, final double[] firstChannelCBC, String cbc, Units units) {
+            model.addColumn(cbc, units, new IValue<Double>() {
+                int i = 0;
+
+                @Override
+                public Double getValue() {
+                    return firstChannelCBC[i++];
+                }
+            });
+        model.fireTableStructureChanged();
+        model.fireTableDataChanged();
     }
 
 }

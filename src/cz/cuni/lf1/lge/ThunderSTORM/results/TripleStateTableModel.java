@@ -2,7 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import java.util.EnumMap;
 
-class TripleStateTableModel extends GenericTableModel {
+public class TripleStateTableModel extends GenericTableModel {
 
     public static enum StateName {
         ORIGINAL, UNDO, ACTUAL;
