@@ -107,6 +107,10 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
     public void showPreview() {
         tableWindow.showPreview();
     }
+    
+    public ImagePlus getPreviewImage() {
+        return tableWindow.getPreviewImage();
+    }
 
     public void setLivePreview(boolean enabled) {
         tableWindow.setLivePreview(enabled);

@@ -13,6 +13,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import ij.IJ;
+import ij.ImagePlus;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -113,9 +114,7 @@ class ResultsFilter extends PostProcessingModule {
                         String be = ((filtered > 1) ? "were" : "was");
                         String item = ((all > 1) ? "items" : "item");
                         table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
-                        // since filtering can significantly change dimensions of the image,
-                        // force a new renderer independent of the analyzed image
-                        table.showPreview(null, true);
+                        table.showPreview();
                     } catch(ExecutionException ex) {
                         filterTextField.setBackground(new Color(255, 200, 200));
                         GUI.showBalloonTip(filterTextField, ex.getCause().getMessage());
@@ -134,9 +133,17 @@ class ResultsFilter extends PostProcessingModule {
     }
     
     public void restrictToROIFilter() {
-        Rectangle roi = IJ.getImage().getProcessor().getRoi();
         double mag = new EmptyRendererUI().magnification.getValue();
         IJResultsTable rt = IJResultsTable.getResultsTable();
+        ImagePlus preview = rt.getPreviewImage();
+        Rectangle roi = null;
+        if(preview != null) {
+            roi = preview.getProcessor().getRoi();
+        }
+        if(roi == null) {
+            GUI.showBalloonTip(restrictToROIButton, "There is no ROI in the preview image!");
+            return;
+        }
         Units ux = rt.getColumnUnits(LABEL_X);
         Units uy = rt.getColumnUnits(LABEL_Y);
         //

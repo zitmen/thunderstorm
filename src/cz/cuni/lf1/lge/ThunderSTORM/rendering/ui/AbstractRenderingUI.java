@@ -78,6 +78,8 @@ public abstract class AbstractRenderingUI extends IRendererUI {
 
     public AbstractRenderingUI(int sizeX, int sizeY) {
         this();
+        this.left = 0;
+        this.top = 0;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
     }

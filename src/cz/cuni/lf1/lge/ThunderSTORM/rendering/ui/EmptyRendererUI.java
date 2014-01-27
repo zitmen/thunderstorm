@@ -4,6 +4,11 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import javax.swing.JPanel;
 
 public class EmptyRendererUI extends AbstractRenderingUI {
+    
+    public EmptyRendererUI() {
+        super();
+        parameters.loadPrefs();
+    }
 
     @Override
     public String getName() {

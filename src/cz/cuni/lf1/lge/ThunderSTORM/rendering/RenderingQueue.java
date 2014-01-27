@@ -17,7 +17,7 @@ public class RenderingQueue {
 
     private ThreadPoolExecutor executor = null;
     Runnable repaintTask;
-    IncrementalRenderingMethod method;
+    public IncrementalRenderingMethod method;
     int taskCounter = 0;
     int repaintFrequency;
 
