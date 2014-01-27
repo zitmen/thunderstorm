@@ -1,0 +1,109 @@
+package TSF;
+
+option java_package = "cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto";
+option java_outer_classname = "TSF";
+
+enum FitMode {
+   ONEAXIS = 0;
+   TWOAXIS = 1;
+   TWOAXISANDTHETA = 2;
+}
+
+enum IntensityUnits {
+   COUNTS = 0;
+   PHOTONS = 1;
+}
+
+enum LocationUnits {
+   NM = 0;
+   UM = 1;
+   PIXELS = 2;
+}
+
+// If units will always be the same for all spots, then use these units tags,
+message SpotList {
+   // UID for the application that generated these data
+   // Request a UID from nico at cmp.ucsf.edu or use 1 
+   required int32 application_id = 1 [default = 1];
+
+   optional string name = 2; // name identifying the original dataset 
+   optional string filepath = 3; // path to the image data used to generate these spot data
+   optional int64 uid = 4; // Unique ID, can be used by application to link to original data
+   optional int32 nr_pixels_x = 5; // nr pixels in x of original data
+   optional int32 nr_pixels_y = 6; // nr pixels in y of original data
+   optional float pixel_size = 7; // pixel size in nanometer
+   optional int64 nr_spots = 8; // number of spots in this data set
+   optional int32 box_size = 17; // size (in pixels) of rectangular box used in Gaussian fitting
+   optional int32 nr_channels = 18; // Nr of channels in the original data set
+   optional int32 nr_frames = 19; // Nr of frames in the original data set
+   optional int32 nr_slices = 20; // Nr of slices in the original data set
+   optional int32 nr_pos = 21; // Nr of positions in the original data set
+
+
+   // otherwise use the unit tags with each spot
+   optional LocationUnits location_units = 22;
+   optional IntensityUnits intensity_units = 23; // use only if different from SpotList
+
+   // If fitmode  will always be the same for all spots, then use this fitmode
+   // otherwise use the fitmode with each spot
+   optional FitMode fit_mode = 24;
+   optional bool is_track = 25 [default = false]; // flag indicating whether this is a sequence of spot data in consecutive time frames thought to originate from the same entity
+
+   //repeated Spot spot = 8;
+
+      
+}
+   
+message Spot {
+   required int32 molecule = 1; // ID for this spot
+   required int32 channel = 2; // channels are 1-based
+   required int32 frame = 3; // frames are 1-based
+   optional int32 slice = 4; // slices are 1-based
+   optional int32 pos = 5; // positions are 1-based
+
+   // xyz coordinates of the spot in location_units  after fitting and optional correction
+   optional LocationUnits location_units = 17;
+   required float x = 7;
+   required float y = 8;
+   optional float z = 9;
+
+   // Intensity values
+   optional IntensityUnits intensity_units = 18; // use only if different from SpotList
+   required float intensity = 10; // integrated spot density
+   optional float background = 11; // background determined in fit
+   optional float width = 12; // peak width at half height in location units
+      // for asymetric peaks, calculate the width as the square root of the 
+      // product of the widths of the long and short axes
+
+   optional float a = 13; // shape of the peak: width of the long axis 
+      // divided by width of the short axis
+   
+   optional float theta = 14; // rotation of assymetric peak, only used
+      // when fitmode == TWOAXISANDTHETA
+
+
+   optional int32 flag = 6; // flag to categorize spots. Implementation specific
+
+   // Original xyz coordinates from fitting before drift or other correction correction
+   optional float x_original = 101;
+   optional float y_original = 102;
+   optional float z_original = 103;
+
+   // localization precision
+   optional float x_precision = 104;
+   optional float y_precision = 105;
+   optional float z_precision = 106;
+ 
+   // position in the original image (in pixels) used for fitting
+   optional int32 x_position = 107;
+   optional int32 y_position = 108;
+
+   // These ids can be used in your own .proto derived from this one
+   extensions 1500 to 2047;
+
+}
+
+extend Spot {
+  optional float bkgstd = 1845;
+  optional int32 detections = 1846;
+}
