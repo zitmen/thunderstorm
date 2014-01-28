@@ -18,7 +18,7 @@ public class DifferenceOfBoxFiltersUI extends IFilterUI {
 
     public DifferenceOfBoxFiltersUI() {
         size1 = parameters.createIntField("size1", IntegerValidatorFactory.positiveNonZero(), 3);
-        size2 = parameters.createIntField("size2", IntegerValidatorFactory.positiveNonZero(), 6);
+        size2 = parameters.createIntField("size2", IntegerValidatorFactory.positiveNonZero(), 5);
     }
 
     @Override

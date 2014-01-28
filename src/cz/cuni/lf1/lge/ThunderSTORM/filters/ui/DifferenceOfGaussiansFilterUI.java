@@ -20,8 +20,8 @@ public class DifferenceOfGaussiansFilterUI extends IFilterUI {
 
     public DifferenceOfGaussiansFilterUI() {
         size = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 11);
-        sigmaG1 = parameters.createDoubleField("sigma1", DoubleValidatorFactory.positiveNonZero(), 1.6);
-        sigmaG2 = parameters.createDoubleField("sigma2", DoubleValidatorFactory.positiveNonZero(), 1);
+        sigmaG1 = parameters.createDoubleField("sigma1", DoubleValidatorFactory.positiveNonZero(), 1);
+        sigmaG2 = parameters.createDoubleField("sigma2", DoubleValidatorFactory.positiveNonZero(), 1.6);
     }
 
     @Override
