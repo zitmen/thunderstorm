@@ -33,11 +33,11 @@ class GroundTruthTableWindow extends GenericTableWindow implements ActionListene
         //
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        evaluation = new JButton("Performance evaluation...");
-        rendering = new JButton("Render...");
-        showHist = new JButton("Plot histogram...");
-        io_import = new JButton("Import...");
-        io_export = new JButton("Export...");
+        evaluation = new JButton("Performance evaluation");
+        rendering = new JButton("Visualization");
+        showHist = new JButton("Plot histogram");
+        io_import = new JButton("Import");
+        io_export = new JButton("Export");
         evaluation.addActionListener(this);
         rendering.addActionListener(this);
         showHist.addActionListener(this);

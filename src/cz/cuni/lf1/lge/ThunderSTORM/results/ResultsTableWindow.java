@@ -74,11 +74,11 @@ class ResultsTableWindow extends GenericTableWindow {
         //buttons
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        setCamera = new JButton("Camera setup...");
-        showHist = new JButton("Plot histogram...");
-        io_import = new JButton("Import...");
-        io_export = new JButton("Export...");
-        render = new JButton("Render...");
+        setCamera = new JButton("Camera setup");
+        showHist = new JButton("Plot histogram");
+        io_import = new JButton("Import");
+        io_export = new JButton("Export");
+        render = new JButton("Visualization");
         setCamera.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -176,7 +176,7 @@ class RenderingDialog extends JDialog {
     }
 
     public RenderingDialog(boolean preview, List<IRendererUI> knownRenderers, int left, int top, int sizeX, int sizeY) {
-        super(IJ.getInstance(), "Rendering options", true);
+        super(IJ.getInstance(), "Visualization options", true);
         this.enablePreview = preview;
         this.cardsPanel = new CardsPanel<IRendererUI>(knownRenderers, 0);
         this.left = left;
