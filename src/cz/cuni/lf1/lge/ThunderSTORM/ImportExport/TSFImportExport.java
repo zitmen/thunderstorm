@@ -108,15 +108,16 @@ public class TSFImportExport implements IImportExport {
                     columnNames.add(PSFModel.Params.LABEL_OFFSET);
                     values.add(spot.getBackground());
                 }
-                if(spot.hasWidth() && !spot.hasA()) {
-                    columnNames.add(PSFModel.Params.LABEL_SIGMA);
-                    values.add(spot.getWidth() / FWHM_factor);
-                }
-                if(spot.hasWidth() && spot.hasA()) {
-                    columnNames.add(PSFModel.Params.LABEL_SIGMA1);
-                    columnNames.add(PSFModel.Params.LABEL_SIGMA2);
-                    values.add(spot.getWidth() / FWHM_factor * MathProxy.sqrt(spot.getA()));
-                    values.add(spot.getWidth() / FWHM_factor / MathProxy.sqrt(spot.getA()));
+                if(spot.hasWidth()) {
+                    if(!spot.hasA() || (spotList.hasFitMode() && spotList.getFitMode() == TSF.FitMode.ONEAXIS)) {
+                        columnNames.add(PSFModel.Params.LABEL_SIGMA);
+                        values.add(spot.getWidth() / FWHM_factor);
+                    } else {
+                        columnNames.add(PSFModel.Params.LABEL_SIGMA1);
+                        columnNames.add(PSFModel.Params.LABEL_SIGMA2);
+                        values.add(spot.getWidth() / FWHM_factor * MathProxy.sqrt(spot.getA()));
+                        values.add(spot.getWidth() / FWHM_factor / MathProxy.sqrt(spot.getA()));
+                    }
                 }
                 if(spot.hasExtension(TSF.bkgstd)) {
                     columnNames.add(PSFModel.Params.LABEL_BACKGROUND);
@@ -145,12 +146,15 @@ public class TSFImportExport implements IImportExport {
                     if(spot.hasBackground()) {
                         table.setColumnUnits(PSFModel.Params.LABEL_OFFSET, intensityUnits);
                     }
-                    if(spot.hasWidth() && !spot.hasA()) {
-                        table.setColumnUnits(PSFModel.Params.LABEL_SIGMA, locationUnits);
+                    if(spot.hasWidth()) {
+                        if(!spot.hasA() || (spotList.hasFitMode() && spotList.getFitMode() == TSF.FitMode.ONEAXIS)) {
+                            table.setColumnUnits(PSFModel.Params.LABEL_SIGMA, locationUnits);
+                        } else {
+                            table.setColumnUnits(PSFModel.Params.LABEL_SIGMA1, locationUnits);
+                            table.setColumnUnits(PSFModel.Params.LABEL_SIGMA2, locationUnits);
+                        }
                     }
                     if(spot.hasWidth() && spot.hasA()) {
-                        table.setColumnUnits(PSFModel.Params.LABEL_SIGMA1, locationUnits);
-                        table.setColumnUnits(PSFModel.Params.LABEL_SIGMA2, locationUnits);
                     }
                     if(spot.hasExtension(TSF.bkgstd)) {
                         table.setColumnUnits(PSFModel.Params.LABEL_BACKGROUND, intensityUnits);
@@ -241,7 +245,7 @@ public class TSFImportExport implements IImportExport {
                     spotBuilder.setExtension(TSF.detections, (int) mol.getParam(MoleculeDescriptor.LABEL_DETECTIONS));
                 }
                 spotBuilder.build().writeDelimitedTo(outputStream);
-                IJ.showProgress((double)r / (double)nrows);
+                IJ.showProgress((double) r / (double) nrows);
             }
             //save spotlist offset
             outputStream.flush();
@@ -254,6 +258,7 @@ public class TSFImportExport implements IImportExport {
             spotlistBuilder.setPixelSize((float) CameraSetupPlugIn.getPixelSize());
             spotlistBuilder.setLocationUnits(translateLocationUnits(locationUnits));
             spotlistBuilder.setIntensityUnits(translateIntensityUnits(intensityUnits));
+            spotlistBuilder.setFitMode(determineFitMode(table));
             Rectangle r = getBounds(table);
             spotlistBuilder.setNrPixelsX(r.width + r.x);
             spotlistBuilder.setNrPixelsY(r.height + r.y);
