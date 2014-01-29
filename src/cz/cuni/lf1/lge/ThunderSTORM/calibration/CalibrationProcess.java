@@ -68,7 +68,7 @@ public class CalibrationProcess {
      */
     public void estimateAngle() {
         final List<Double> angles = Collections.synchronizedList(new ArrayList());
-        final ImageStack stack = IJ.getImage().getStack();
+        final ImageStack stack = imp.getStack();
         final AtomicInteger framesProcessed = new AtomicInteger(0);
         final IEstimatorUI threadLocalEstimatorUI = calibrationEstimatorUI;
         Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
