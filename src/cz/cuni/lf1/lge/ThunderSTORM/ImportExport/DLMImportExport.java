@@ -6,12 +6,16 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import ij.IJ;
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
-import java.io.FileReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Vector;
+import org.apache.commons.io.input.CountingInputStream;
 
 abstract public class DLMImportExport implements IImportExport {
     
@@ -26,19 +30,22 @@ abstract public class DLMImportExport implements IImportExport {
         assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
+        File file = new File(fp);
+        long fileSize = file.length();
+        //im using file size and counting bytes read to track progress (without having to know line count in advance)
+        CountingInputStream countingInputStream = new CountingInputStream(new BufferedInputStream(new FileInputStream(file)));
+        Reader fileReader = new InputStreamReader(countingInputStream);
         
-        CSVReader csvReader = new CSVReader(new FileReader(fp), separator);
-        List<String[]> lines;
-        lines = csvReader.readAll();
-        csvReader.close();
+        CSVReader csvReader = new CSVReader(fileReader, separator);
+        String[] firstLine = csvReader.readNext();
         
-        if(lines.size() < 1) return;
-        if(lines.get(0).length < 2) return; // header + at least 1 record!
+        if(firstLine == null) return;
+        if(firstLine.length < 2) return;
         
         Vector<Pair<String,Units>> cols = new Vector<Pair<String,Units>>();
         int c_id = -1;
-        for(int c = 0, cm = lines.get(0).length; c < cm; c++) {
-            Pair<String,Units> tmp = GenericTable.parseColumnLabel(lines.get(0)[c]);
+        for(int c = 0, cm = firstLine.length; c < cm; c++) {
+            Pair<String,Units> tmp = GenericTable.parseColumnLabel(firstLine[c]);
             if(MoleculeDescriptor.LABEL_ID.equals(tmp.first)) { c_id = c; continue; }
             cols.add(tmp);
         }
@@ -57,18 +64,21 @@ abstract public class DLMImportExport implements IImportExport {
         }
         //
         double [] values = new double[colnames.length];
-        for(int r = 1, rm = lines.size(); r < rm; r++) {
-            for(int c = 0, ci = 0, cm = lines.get(r).length; c < cm; c++) {
-                if(c == c_id) continue;
-                values[ci] = Double.parseDouble(lines.get(r)[c]);
+        String[] line;
+        while((line = csvReader.readNext()) != null){
+            for(int c = 0, ci = 0, cm = line.length; c < cm; c++) {
+                if(c == c_id)
+                    continue;
+                values[ci] = Double.parseDouble(line[c]);
                 if(MoleculeDescriptor.LABEL_FRAME.equals(colnames[ci])) {
-                    values[ci] += startingFrame-1;
+                    values[ci] += startingFrame - 1;
                 }
                 ci++;
             }
             table.addRow(values);
-            IJ.showProgress((double)r / (double)rm);
+            IJ.showProgress((double)countingInputStream.getByteCount() / (double)fileSize);
         }
+        csvReader.close();
         table.insertIdColumn();
         table.copyOriginalToActual();
         table.setActualState();

@@ -15,10 +15,14 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import ij.IJ;
 import java.awt.Rectangle;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,12 +42,12 @@ public class TSFImportExport implements IImportExport {
         assert (!fp.isEmpty());
 
         RandomAccessFile inputFile;
-        FileInputStream inputStream;
+        InputStream inputStream;
         double FWHM_factor = 2 * sqrt(2 * log(2));
 
         try {
             inputFile = new RandomAccessFile(fp, "r");
-            inputStream = new FileInputStream(inputFile.getFD());
+            inputStream = new BufferedInputStream(new FileInputStream(inputFile.getFD()));
 
             int magic = inputFile.readInt();
             assert magic == 0;
@@ -184,16 +188,16 @@ public class TSFImportExport implements IImportExport {
         int nrows = table.getRowCount();
         Set<String> columnsSet = new HashSet<String>(columns);
 
-        double FWHM_factor = 2 * sqrt(2 * log(2));
+        double FWHM_factor = 2 * sqrt(2 * log(2));  //tsf requires fwhm but we use stdev
         //use same units for all locations and same units for all intensities in TSF format
         Units locationUnits = table.getColumnUnits(PSFModel.Params.LABEL_X);
         Units intensityUnits = table.getColumnUnits(PSFModel.Params.LABEL_INTENSITY);
 
         RandomAccessFile outputFile = null;
-        FileOutputStream outputStream = null;
+        OutputStream outputStream = null;
         try {
             outputFile = new RandomAccessFile(fp, "rw");
-            outputStream = new FileOutputStream(outputFile.getFD());
+            outputStream = new BufferedOutputStream(new FileOutputStream(outputFile.getFD()));
             //dataOutputStream = new DataOutputStream(outputStream);
             outputFile.writeInt(0);   //magic
             outputFile.writeLong(0);  //offset will be rewritten later
@@ -265,6 +269,7 @@ public class TSFImportExport implements IImportExport {
             //spotlistBuilder.setFitMode(determineFitMode(table));
             spotlistBuilder.build().writeDelimitedTo(outputStream);
 
+            outputStream.flush();
             outputFile.seek(4);
             outputFile.writeLong(bytesWritten - 12); // bytes written minus one int and one long (magic and offset)
         } finally {
