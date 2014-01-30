@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.Vector;
 import org.apache.commons.collections.primitives.ArrayDoubleList;
 import org.apache.commons.collections.primitives.DoubleList;
+import org.apache.commons.io.IOUtils;
 import static org.apache.commons.math3.util.FastMath.log;
 
 public class TSFImportExport implements IImportExport {
@@ -41,8 +42,8 @@ public class TSFImportExport implements IImportExport {
         assert (fp != null);
         assert (!fp.isEmpty());
 
-        RandomAccessFile inputFile;
-        InputStream inputStream;
+        RandomAccessFile inputFile = null;
+        InputStream inputStream = null;
         double FWHM_factor = 2 * sqrt(2 * log(2));
 
         try {
@@ -170,11 +171,13 @@ public class TSFImportExport implements IImportExport {
                 table.addRow(values.toArray());
                 IJ.showProgress((double) (i) / (double) spotsCount);
             }
+            inputStream.close();
             table.copyOriginalToActual();
             table.setActualState();
             IJ.showProgress(1);
         } finally {
-
+            IOUtils.closeQuietly(inputFile);
+            IOUtils.closeQuietly(inputStream);
         }
     }
 
@@ -272,19 +275,10 @@ public class TSFImportExport implements IImportExport {
             outputStream.flush();
             outputFile.seek(4);
             outputFile.writeLong(bytesWritten - 12); // bytes written minus one int and one long (magic and offset)
+            outputStream.close();
         } finally {
-            try {
-                if(outputStream != null) {
-                    outputStream.close();
-                }
-            } catch(Exception ex) {
-            }
-            try {
-                if(outputFile != null) {
-                    outputFile.close();
-                }
-            } catch(Exception ex) {
-            }
+            IOUtils.closeQuietly(outputStream);
+            IOUtils.closeQuietly(outputFile);
         }
     }
 
