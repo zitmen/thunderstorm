@@ -2,6 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath.sub;
 import java.util.Arrays;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import static org.apache.commons.math3.util.FastMath.PI;

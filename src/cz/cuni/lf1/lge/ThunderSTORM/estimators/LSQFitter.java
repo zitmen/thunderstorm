@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath.sub;
 import java.util.Arrays;
@@ -25,17 +26,23 @@ public class LSQFitter implements OneLocationFitter {
     PSFModel psfModel;
     final static int MAX_ITERATIONS = 1000;
     private int maxIter;    // after `maxIter` iterations the algorithm converges
+    private int bkgStdColumn;
 
     public LSQFitter(PSFModel psfModel, boolean useWeighting) {
-        this(psfModel, useWeighting, MAX_ITERATIONS + 1 );
+        this(psfModel, useWeighting, MAX_ITERATIONS + 1, -1 );
+    }
+    
+    public LSQFitter(PSFModel psfModel, boolean useWeighting, int bkgStdIndex) {
+        this(psfModel, useWeighting, MAX_ITERATIONS + 1, Params.BACKGROUND );
     }
 
-    public LSQFitter(PSFModel psfModel, boolean useWeighting, int maxIter) {// throws an exception after `MAX_ITERATIONS` iterations
+    public LSQFitter(PSFModel psfModel, boolean useWeighting, int maxIter, int bkgStdIndex) {// throws an exception after `MAX_ITERATIONS` iterations
         this.psfModel = psfModel;
         this.fittedModelValues = null;
         this.fittedParameters = null;
         this.maxIter = maxIter;
         this.useWeighting = useWeighting;
+        this.bkgStdColumn = bkgStdIndex;
     }
 
     /**
@@ -65,7 +72,9 @@ public class LSQFitter implements OneLocationFitter {
 
         // estimate background and return an instance of the `Molecule`
         fittedParameters = pv.getPointRef();
-        fittedParameters[PSFModel.Params.BACKGROUND] = VectorMath.stddev(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
+        if(bkgStdColumn >= 0){
+            fittedParameters[bkgStdColumn] = VectorMath.stddev(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
+        }
         return psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters), subimage.units);
     }
 

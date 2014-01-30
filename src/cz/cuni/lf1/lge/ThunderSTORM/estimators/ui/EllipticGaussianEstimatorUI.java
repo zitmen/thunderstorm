@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
@@ -100,7 +101,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
                 IEstimator mfa = crowdedField.getLSQImplementation(psf, sigma, fitradius);
                 return new CylindricalLensZEstimator(calibration, mfa);
             } else {
-                LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method));
+                LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
                 return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
             }
         }
@@ -109,7 +110,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
                 IEstimator mfa = crowdedField.getMLEImplementation(psf, sigma, fitradius);
                 return new CylindricalLensZEstimator(calibration, mfa);
             } else {
-                MLEFitter fitter = new MLEFitter(psf);
+                MLEFitter fitter = new MLEFitter(psf, Params.BACKGROUND);
                 return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
             }
         }

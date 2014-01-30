@@ -8,6 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -17,52 +18,52 @@ public class OneLocationFittersTest {
     @Test
     public void testLSQSymmetric() {
         System.out.println("testLSQSymmetric");
-        testFitter(new LSQFitter(new SymmetricGaussianPSF(1.5), false));
-        testFitter(new LSQFitter(new SymmetricGaussianPSF(1.5), true));
+        testFitter(new LSQFitter(new SymmetricGaussianPSF(1.5), false, Params.BACKGROUND));
+        testFitter(new LSQFitter(new SymmetricGaussianPSF(1.5), true, Params.BACKGROUND));
     }
 
     @Test
     public void testLSQIntSymmetric() {
         System.out.println("testLSQIntSymmetric");
-        testFitter(new LSQFitter(new IntegratedSymmetricGaussianPSF(1.2), false));
-        testFitter(new LSQFitter(new IntegratedSymmetricGaussianPSF(1.2), true));
+        testFitter(new LSQFitter(new IntegratedSymmetricGaussianPSF(1.2), false, Params.BACKGROUND));
+        testFitter(new LSQFitter(new IntegratedSymmetricGaussianPSF(1.2), true, Params.BACKGROUND));
     }
 
     @Test
     public void testLSQEllipticWAngle() {
         System.out.println("testLSQEllipticWAngle");
-        testFitter(new LSQFitter(new EllipticGaussianWAnglePSF(1.2, 0), false));
-        testFitter(new LSQFitter(new IntegratedSymmetricGaussianPSF(1.2), true));
+        testFitter(new LSQFitter(new EllipticGaussianWAnglePSF(1.2, 0), false, Params.BACKGROUND));
+        testFitter(new LSQFitter(new IntegratedSymmetricGaussianPSF(1.2), true, Params.BACKGROUND));
     }
 
     @Test
     public void testLSQElliptic() {
         System.out.println("testLSQElliptic");
-        testFitter(new LSQFitter(new EllipticGaussianPSF(1.2, 0), false));
-        testFitter(new LSQFitter(new EllipticGaussianPSF(1.2, 0), true));
+        testFitter(new LSQFitter(new EllipticGaussianPSF(1.2, 0), false, Params.BACKGROUND));
+        testFitter(new LSQFitter(new EllipticGaussianPSF(1.2, 0), true, Params.BACKGROUND));
     }
 
     @Test
     public void testMLESymmetric() {
         System.out.println("testMLESymmetric");
-        testFitter(new MLEFitter(new SymmetricGaussianPSF(1.2)));
+        testFitter(new MLEFitter(new SymmetricGaussianPSF(1.2), Params.BACKGROUND));
     }
 
     public void testMLEIntSymmetric() {
         System.out.println("testMLEIntSymmetric");
-        testFitter(new MLEFitter(new IntegratedSymmetricGaussianPSF(1.2)));
+        testFitter(new MLEFitter(new IntegratedSymmetricGaussianPSF(1.2), Params.BACKGROUND));
     }
 
     @Test
     public void testMLEElliptic() {
         System.out.println("testMLEElliptic");
-        testFitter(new MLEFitter(new EllipticGaussianPSF(1.2, 0)));
+        testFitter(new MLEFitter(new EllipticGaussianPSF(1.2, 0), Params.BACKGROUND));
     }
 
     @Test
     public void testMLEEllipticWAngle() {
         System.out.println("testMLEEllipticWAngle");
-        testFitter(new MLEFitter(new EllipticGaussianWAnglePSF(1.2, 0)));
+        testFitter(new MLEFitter(new EllipticGaussianWAnglePSF(1.2, 0), Params.BACKGROUND));
     }
 
     @Test

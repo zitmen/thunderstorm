@@ -14,15 +14,17 @@ public class MLEFitter implements OneLocationFitter {
     public double[] fittedParameters;
     public final static int MAX_ITERATIONS = 50000;
     private int maxIter;
+    private int bkgStdColumn;
 
     public MLEFitter(PSFModel psfModel) {
-        this.psfModel = psfModel;
-        this.fittedModelValues = null;
-        this.fittedParameters = null;
-        this.maxIter = MAX_ITERATIONS + 1;    // throws an exception after `MAX_ITERATIONS` iterations
+        this(psfModel, MAX_ITERATIONS + 1, -1);
     }
 
-    public MLEFitter(PSFModel psfModel, int maxIter) {
+    public MLEFitter(PSFModel psfModel, int bkgStdIndex) {
+        this(psfModel, MAX_ITERATIONS + 1, bkgStdIndex);
+    }
+
+    public MLEFitter(PSFModel psfModel, int maxIter, int bkgStdIndex) {
         this.psfModel = psfModel;
         this.fittedModelValues = null;
         this.fittedParameters = null;
@@ -37,7 +39,7 @@ public class MLEFitter implements OneLocationFitter {
         if((fittedModelValues == null) || (fittedModelValues.length < subimage.values.length)) {
             fittedModelValues = new double[subimage.values.length];
         }
-        
+
         NelderMead nm = new NelderMead();
         double[] guess = psfModel.transformParametersInverse(psfModel.getInitialParams(subimage));
         nm.optimize(psfModel.getLikelihoodFunction(subimage.xgrid, subimage.ygrid, subimage.values),
@@ -49,17 +51,17 @@ public class MLEFitter implements OneLocationFitter {
                 psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
 
         Molecule mol = psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters), subimage.units);
-        
-        if(mol.isSingleMolecule()){
+
+        if(mol.isSingleMolecule()) {
             convertMoleculeToDigitalUnits(mol);
-        }else{
-            for(Molecule detection : mol.getDetections()){
+        } else {
+            for(Molecule detection : mol.getDetections()) {
                 convertMoleculeToDigitalUnits(detection);
             }
         }
         return mol;
     }
-    
+
     private void convertMoleculeToDigitalUnits(Molecule mol) {
         for(String param : mol.descriptor.names) {
             MoleculeDescriptor.Units paramUnits = mol.getParamUnits(param);

@@ -4,6 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MultiPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
@@ -34,7 +35,7 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
                 model = new MultiPSF(n, defaultSigma, basePsfModel, fittedParams);
                 model.setIntensityRange(expectedIntensity);
                 model.setFixedIntensities(sameI);
-                MLEFitter fitter = new MLEFitter(model, MODEL_SELECTION_ITERATIONS);
+                MLEFitter fitter = new MLEFitter(model, MODEL_SELECTION_ITERATIONS, Params.BACKGROUND);
                 mol = fitter.fit(subimage);
                 fittedParams = fitter.fittedParameters;
                 logLik = model.getLikelihoodFunction(subimage.xgrid, subimage.ygrid, subimage.values).value(fittedParams);
@@ -55,7 +56,7 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
             modelBest.setFixedIntensities(sameI);
         }
         // fitting with the selected model
-        MLEFitter fitter = new MLEFitter(modelBest, MLEFitter.MAX_ITERATIONS - MODEL_SELECTION_ITERATIONS);
+        MLEFitter fitter = new MLEFitter(modelBest, MLEFitter.MAX_ITERATIONS - MODEL_SELECTION_ITERATIONS, Params.BACKGROUND);
         mol = fitter.fit(subimage);
         assert (mol != null);    // this is implication of `assert(maxN >= 1)`
         if(!mol.isSingleMolecule()) {

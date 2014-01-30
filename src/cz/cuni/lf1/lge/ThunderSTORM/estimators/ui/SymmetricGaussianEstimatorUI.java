@@ -4,6 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
@@ -78,7 +79,7 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
             if(crowdedField.isEnabled()) {
                 return crowdedField.getLSQImplementation(psf, sigma, fitradius);
             } else {
-                LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method));
+                LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
                 return new MultipleLocationsImageFitting(fitradius, fitter);
             }
         }
@@ -86,7 +87,7 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
             if(crowdedField.isEnabled()) {
                 return crowdedField.getMLEImplementation(psf, sigma, fitradius);
             } else {
-                MLEFitter fitter = new MLEFitter(psf);
+                MLEFitter fitter = new MLEFitter(psf, Params.BACKGROUND);
                 return new MultipleLocationsImageFitting(fitradius, fitter);
             }
         }

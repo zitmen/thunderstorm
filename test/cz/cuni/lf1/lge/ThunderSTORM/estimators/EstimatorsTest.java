@@ -8,6 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.CompoundWaveletFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.util.CSV;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
@@ -26,46 +27,46 @@ public class EstimatorsTest {
 
     @Test
     public void testLSQSym() {
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new SymmetricGaussianPSF(1), false)));
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new SymmetricGaussianPSF(1), true)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new SymmetricGaussianPSF(1), false, Params.BACKGROUND)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new SymmetricGaussianPSF(1), true, Params.BACKGROUND)));
     }
 
     @Test
     public void testLSQIntSym() {
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new IntegratedSymmetricGaussianPSF(1), false)));
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new IntegratedSymmetricGaussianPSF(1), true)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new IntegratedSymmetricGaussianPSF(1), false, Params.BACKGROUND)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new IntegratedSymmetricGaussianPSF(1), true, Params.BACKGROUND)));
     }
 
     @Test
     public void testMLEIntSym() {
-        testEstimator(new MultipleLocationsImageFitting(5, new MLEFitter(new IntegratedSymmetricGaussianPSF(1))));
+        testEstimator(new MultipleLocationsImageFitting(5, new MLEFitter(new IntegratedSymmetricGaussianPSF(1), Params.BACKGROUND)));
     }
 
     @Test
     public void testMLESym() {
-        testEstimator(new MultipleLocationsImageFitting(5, new MLEFitter(new SymmetricGaussianPSF(1))));
+        testEstimator(new MultipleLocationsImageFitting(5, new MLEFitter(new SymmetricGaussianPSF(1), Params.BACKGROUND)));
     }
 
     @Test
     public void testLSQEllipticAngle() {
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianWAnglePSF(1, 0), false)));
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianWAnglePSF(1, 0), true)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianWAnglePSF(1, 0), false, Params.BACKGROUND)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianWAnglePSF(1, 0), true, Params.BACKGROUND)));
     }
 
     @Test
     public void testMLEEllipticAngle() {
-        testEstimator(new MultipleLocationsImageFitting(5, new MLEFitter(new EllipticGaussianWAnglePSF(1, 0))));
+        testEstimator(new MultipleLocationsImageFitting(5, new MLEFitter(new EllipticGaussianWAnglePSF(1, 0), Params.BACKGROUND)));
     }
 
     @Test
     public void testLSQElliptic() {
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianPSF(1, 45), false)));
-        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianPSF(1, 45), true)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianPSF(1, 45), false, Params.BACKGROUND)));
+        testEstimator(new MultipleLocationsImageFitting(5, new LSQFitter(new EllipticGaussianPSF(1, 45), true, Params.BACKGROUND)));
     }
 
     @Test
     public void testMLEElliptic() {
-        testEstimator(new MultipleLocationsImageFitting(5, new MLEFitter(new EllipticGaussianPSF(1, 45))));
+        testEstimator(new MultipleLocationsImageFitting(5, new MLEFitter(new EllipticGaussianPSF(1, 45), Params.BACKGROUND)));
     }
 
     private void testEstimator(IEstimator estimator) throws FormulaParserException {

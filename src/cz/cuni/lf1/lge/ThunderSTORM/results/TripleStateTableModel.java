@@ -5,6 +5,7 @@ import java.util.EnumMap;
 class TripleStateTableModel extends GenericTableModel {
 
     public static enum StateName {
+
         ORIGINAL, UNDO, ACTUAL;
     }
 
@@ -61,6 +62,7 @@ class TripleStateTableModel extends GenericTableModel {
         if(selectedState == StateName.ORIGINAL) {
             saveSelectedState();
         }
+        savedStates.put(StateName.ACTUAL, null);        //drop the reference to the state so it can be garabge collected before creating a copy
         savedStates.put(StateName.ACTUAL, savedStates.get(StateName.ORIGINAL).clone());
         savedStates.put(StateName.UNDO, savedStates.get(StateName.ORIGINAL));
         if(selectedState == StateName.ACTUAL) {

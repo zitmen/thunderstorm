@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.LSQ;
 import javax.swing.JPanel;
 
@@ -82,11 +83,11 @@ public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
         int fitradius = FITRAD.getValue();
         PSFModel psf = angleWasSet ? new EllipticGaussianPSF(sigma, angle) : new EllipticGaussianWAnglePSF(sigma, 0);
         if(LSQ.equals(method) || WLSQ.equals(method)) {
-            LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method));
+            LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
             return new MultipleLocationsImageFitting(fitradius, fitter);
         }
         if(MLE.equals(method)) {
-            MLEFitter fitter = new MLEFitter(psf);
+            MLEFitter fitter = new MLEFitter(psf, Params.BACKGROUND);
             return new MultipleLocationsImageFitting(fitradius, fitter);
         }
         throw new IllegalArgumentException("Unknown fitting method: " + method);
