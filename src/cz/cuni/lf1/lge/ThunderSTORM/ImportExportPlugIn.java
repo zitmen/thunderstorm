@@ -180,7 +180,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         gd.addNumericField("Starting frame number: ", startingFrame, 0);
         gd.addCheckbox("clear the `" + cmd + "` table before import", resetFirst);
         if(IJResultsTable.IDENTIFIER.equals(cmd)) {
-            gd.addCheckbox("show rendering preview", livePreview);
+            gd.addCheckbox("show preview", livePreview);
             int[] openedImagesIds = WindowManager.getIDList();
             if(openedImagesIds != null) {
                 String[] openedImagesTitles = new String[openedImagesIds.length + 1];
@@ -189,7 +189,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                     openedImagesTitles[i + 1] = WindowManager.getImage(openedImagesIds[i]).getTitle();
                 }
                 gd.addMessage("(Optional) Select window with raw data to show localizations in overlay.");
-                gd.addChoice("Raw image:", openedImagesTitles, "");
+                gd.addChoice("Raw image sequence:", openedImagesTitles, "");
             }
         }
     }

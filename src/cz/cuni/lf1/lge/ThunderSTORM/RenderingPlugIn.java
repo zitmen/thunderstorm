@@ -35,6 +35,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 public class RenderingPlugIn implements PlugIn {
 
@@ -82,8 +83,8 @@ public class RenderingPlugIn implements PlugIn {
             IRendererUI rendererUI = it.next();
             if(rendererUI instanceof EmptyRendererUI) {
                 it.remove();
-            }else if(rendererUI instanceof AbstractRenderingUI){
-                ((AbstractRenderingUI)rendererUI).setShowRepaintFrequency(false);
+            } else if(rendererUI instanceof AbstractRenderingUI) {
+                ((AbstractRenderingUI) rendererUI).setShowRepaintFrequency(false);
             }
         }
         IRendererUI selectedRendererUI;
@@ -94,8 +95,8 @@ public class RenderingPlugIn implements PlugIn {
             MacroParser parser = new MacroParser(null, null, null, knownRenderers);
             selectedRendererUI = parser.getRendererUI();
 
-            left  = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imleft", "0"));
-            top   = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imtop", "0"));
+            left = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imleft", "0"));
+            top = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imtop", "0"));
             sizeX = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imwidth", "0")) - left + 1;
             sizeY = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imheight", "0")) - top + 1;
         } else {
@@ -112,7 +113,7 @@ public class RenderingPlugIn implements PlugIn {
             } else {
                 guessedLeft = Math.max((int) Math.floor(VectorMath.min(xpos)) - 1, 0);
                 guessedTop = Math.max((int) Math.floor(VectorMath.min(ypos)) - 1, 0);
-                guessedWidth = (int) Math.ceil(VectorMath.max(xpos))  + 1;
+                guessedWidth = (int) Math.ceil(VectorMath.max(xpos)) + 1;
                 guessedHeight = (int) Math.ceil(VectorMath.max(ypos)) + 1;
             }
             RenderingDialog dialog = new RenderingDialog(preview, knownRenderers, guessedLeft, guessedTop, guessedWidth - guessedLeft, guessedHeight - guessedTop);
@@ -155,7 +156,7 @@ public class RenderingPlugIn implements PlugIn {
 
 class RenderingDialog extends JDialog {
 
-    CardsPanel<IRendererUI> cardsPanel;
+    CardsPanel<IRendererUI> renderingMethods;
     JButton sizeResultsButton;
     JButton sizeAnalyzedImageButton;
     JButton previewButton;
@@ -176,9 +177,9 @@ class RenderingDialog extends JDialog {
     }
 
     public RenderingDialog(boolean preview, List<IRendererUI> knownRenderers, int left, int top, int sizeX, int sizeY) {
-        super(IJ.getInstance(), "Visualization options", true);
+        super(IJ.getInstance(), "Visualization", true);
         this.enablePreview = preview;
-        this.cardsPanel = new CardsPanel<IRendererUI>(knownRenderers, 0);
+        this.renderingMethods = new CardsPanel<IRendererUI>(knownRenderers, 0);
         this.left = left;
         this.top = top;
         this.sizeX = sizeX;
@@ -192,25 +193,65 @@ class RenderingDialog extends JDialog {
     }
 
     public IRendererUI getSelectedRendererUI() {
-        return cardsPanel.getActiveComboBoxItem();
+        return renderingMethods.getActiveComboBoxItem();
     }
 
     private void layoutComponents() {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new GridBagLayout());
-        
+
         JPanel sizePanel = new JPanel(new GridBagLayout());
+        sizePanel.setBorder(new TitledBorder("ROI"));
+
+        JPanel sizeButtonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        sizeAnalyzedImageButton = new JButton("Auto size by analyzed image");
+        sizeAnalyzedImageButton.setEnabled(IJResultsTable.getResultsTable().getAnalyzedImage() != null);
+        sizeAnalyzedImageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ImagePlus analyzedImage = IJResultsTable.getResultsTable().getAnalyzedImage();
+                left = top = 0;
+                sizeX = analyzedImage.getWidth();
+                sizeY = analyzedImage.getHeight();
+                leftTextField.setText(left + "");
+                topTextField.setText(top + "");
+                sizeXTextField.setText(sizeX + "");
+                sizeYTextField.setText(sizeY + "");
+            }
+        });
+        sizeResultsButton = new JButton("Auto size by results");
+        sizeResultsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                IJResultsTable rt = IJResultsTable.getResultsTable();
+                double[] xpos = rt.getColumnAsDoubles(LABEL_X, PIXEL);
+                double[] ypos = rt.getColumnAsDoubles(LABEL_Y, PIXEL);
+                left = Math.max((int) Math.floor(VectorMath.min(xpos)) - 1, 0);
+                top = Math.max((int) Math.floor(VectorMath.min(ypos)) - 1, 0);
+                sizeX = (int) Math.ceil(VectorMath.max(xpos)) + 1;
+                sizeY = (int) Math.ceil(VectorMath.max(ypos)) + 1;
+                leftTextField.setText(left + "");
+                topTextField.setText(top + "");
+                sizeXTextField.setText(sizeX - left + "");
+                sizeYTextField.setText(sizeY - top + "");
+            }
+        });
+        sizeButtonsPanel.add(sizeAnalyzedImageButton);
+        sizeButtonsPanel.add(sizeResultsButton);
+
+        sizePanel.add(sizeButtonsPanel, GridBagHelper.twoCols());
+
         topTextField = new JTextField(Integer.toString(top), 20);
         leftTextField = new JTextField(Integer.toString(left), 20);
         sizeXTextField = new JTextField(Integer.toString(sizeX), 20);
         sizeYTextField = new JTextField(Integer.toString(sizeY), 20);
-        sizePanel.add(new JLabel("Image left offset [px]:"), GridBagHelper.leftCol());
+        sizePanel.add(new JLabel("Left top x [px]:"), GridBagHelper.leftCol());
         sizePanel.add(leftTextField, GridBagHelper.rightCol());
-        sizePanel.add(new JLabel("Image top offset [px]:"), GridBagHelper.leftCol());
+        sizePanel.add(new JLabel("Left top y [px]:"), GridBagHelper.leftCol());
         sizePanel.add(topTextField, GridBagHelper.rightCol());
-        sizePanel.add(new JLabel("Original image width [px]:"), GridBagHelper.leftCol());
+        sizePanel.add(new JLabel("Width [px]:"), GridBagHelper.leftCol());
         sizePanel.add(sizeXTextField, GridBagHelper.rightCol());
-        sizePanel.add(new JLabel("Original image height [px]:"), GridBagHelper.leftCol());
+        sizePanel.add(new JLabel("Height [px]:"), GridBagHelper.leftCol());
         sizePanel.add(sizeYTextField, GridBagHelper.rightCol());
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -242,8 +283,8 @@ class RenderingDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 sizeXTextField.setText(sizeX + "");
                 sizeYTextField.setText(sizeY + "");
-                cardsPanel.setSelectedItemIndex(0);
-                AnalysisOptionsDialog.resetModuleUIs(cardsPanel.getItems());
+                renderingMethods.setSelectedItemIndex(0);
+                AnalysisOptionsDialog.resetModuleUIs(renderingMethods.getItems());
             }
         });
         buttonsPanel.add(defaultsButton);
@@ -265,46 +306,11 @@ class RenderingDialog extends JDialog {
         }
         buttonsPanel.add(okButton);
         buttonsPanel.add(cancelButton);
-        
-        JPanel sizeButtonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        sizeAnalyzedImageButton = new JButton("Auto size by analyzed image");
-        sizeAnalyzedImageButton.setEnabled(IJResultsTable.getResultsTable().getAnalyzedImage() != null);
-        sizeAnalyzedImageButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ImagePlus analyzedImage = IJResultsTable.getResultsTable().getAnalyzedImage();
-                left = top = 0;
-                sizeX = analyzedImage.getWidth();
-                sizeY = analyzedImage.getHeight();
-                leftTextField.setText(left + "");
-                topTextField.setText(top + "");
-                sizeXTextField.setText(sizeX + "");
-                sizeYTextField.setText(sizeY + "");
-            }
-        });
-        sizeResultsButton = new JButton("Auto size by results");
-        sizeResultsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                IJResultsTable rt = IJResultsTable.getResultsTable();
-                double [] xpos = rt.getColumnAsDoubles(LABEL_X, PIXEL);
-                double [] ypos = rt.getColumnAsDoubles(LABEL_Y, PIXEL);
-                left = Math.max((int) Math.floor(VectorMath.min(xpos)) - 1, 0);
-                top = Math.max((int) Math.floor(VectorMath.min(ypos)) - 1, 0);
-                sizeX = (int) Math.ceil(VectorMath.max(xpos))  + 1;
-                sizeY = (int) Math.ceil(VectorMath.max(ypos)) + 1;
-                leftTextField.setText(left + "");
-                topTextField.setText(top + "");
-                sizeXTextField.setText(sizeX - left + "");
-                sizeYTextField.setText(sizeY - top + "");
-            }
-        });
-        sizeButtonsPanel.add(sizeAnalyzedImageButton);
-        sizeButtonsPanel.add(sizeResultsButton);
 
-        add(sizeButtonsPanel, GridBagHelper.leftCol());
         add(sizePanel, GridBagHelper.leftCol());
-        add(cardsPanel.getPanel("Renderer:"), GridBagHelper.leftCol());
+        JPanel cardsPanel = renderingMethods.getPanel("Method:");
+        cardsPanel.setBorder(new TitledBorder("Visualization options"));
+        add(cardsPanel, GridBagHelper.leftCol());
         add(buttonsPanel, GridBagHelper.leftCol());
 
         pack();
@@ -329,6 +335,6 @@ class RenderingDialog extends JDialog {
         if(sizeY < 1) {
             throw new IllegalArgumentException("Image height must be positive.");
         }
-        cardsPanel.getActiveComboBoxItem().readParameters();
+        renderingMethods.getActiveComboBoxItem().readParameters();
     }
 }
