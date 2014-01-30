@@ -24,7 +24,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-class ResultsStageOffset extends PostProcessingModule {
+public class ResultsStageOffset extends PostProcessingModule {
 
     private JButton applyButton;
     JTextField framesPerStagePositionTextField;
@@ -37,9 +37,7 @@ class ResultsStageOffset extends PostProcessingModule {
     ParameterKey.Double stageStepParam;
     ParameterKey.Double firstPositionOffsetParam;
 
-    public ResultsStageOffset(ResultsTableWindow table, TripleStateTableModel model) {
-        this.table = table;
-        this.model = model;
+    public ResultsStageOffset() {
         framesPerStagePositionParam = params.createIntField("framesPerStagePos", IntegerValidatorFactory.positiveNonZero(), 1);
         stagePositionsParam = params.createIntField("stagePositions", IntegerValidatorFactory.positiveNonZero(), 1);
         stageStepParam = params.createDoubleField("stageStep", null, 0);

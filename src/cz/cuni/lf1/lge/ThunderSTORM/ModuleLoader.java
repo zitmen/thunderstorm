@@ -1,9 +1,12 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import cz.cuni.lf1.lge.ThunderSTORM.results.PostProcessingModule;
 import ij.IJ;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Vector;
@@ -91,6 +94,33 @@ public class ModuleLoader {
         return retval;
     }
 
+    public static List<PostProcessingModule> getPostProcessingModules(){
+        //workaround a bug when service loading does not work after refreshing menus in ImageJ
+        boolean oldUseCaching = setUseCaching(false);
+        
+        List<PostProcessingModule> retval = new ArrayList<PostProcessingModule>();
+        try {
+        ServiceLoader loader = ServiceLoader.load(PostProcessingModule.class, IJ.getClassLoader());
+            for(Iterator<PostProcessingModule> it = loader.iterator(); it.hasNext();) {
+                //when something goes wrong while loading modules, log the error and try to continue
+                try {
+                    retval.add(it.next());
+                } catch(ServiceConfigurationError e) {
+                    IJ.handleException(e);
+                }
+            }
+        } catch(Throwable e) {
+            IJ.handleException(e);
+        } finally {
+            setUseCaching(oldUseCaching);
+        }
+        if(retval.isEmpty()) {
+            //throw exception only when no modules are succesfully loaded
+            throw new RuntimeException("No modules of type " + PostProcessingModule.class.getSimpleName() + " loaded.");
+        }
+        return retval;
+    }
+    
     /**
      * Enables or disables caching for URLConnection. 
      *

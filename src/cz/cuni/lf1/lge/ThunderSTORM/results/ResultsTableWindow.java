@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.ModuleLoader;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
@@ -29,7 +30,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
@@ -44,7 +44,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-class ResultsTableWindow extends GenericTableWindow {
+public class ResultsTableWindow extends GenericTableWindow {
 
     private JButton io_import;
     private JButton io_export;
@@ -130,16 +130,13 @@ class ResultsTableWindow extends GenericTableWindow {
         buttons.add(Box.createHorizontalStrut(3));
         buttons.add(io_export);
         //
-        postProcessingModules = Arrays.asList(
-                new ResultsFilter(this, model),
-                new DuplicatesFilter(this, model),
-                new ResultsGrouping(this, model),
-                new ResultsDriftCorrection(this, model),
-                new ResultsStageOffset(this, model));
+        postProcessingModules = ModuleLoader.getPostProcessingModules();
 
         //fill tabbed pane
         tabbedPane = new JTabbedPane();
         for(PostProcessingModule module : postProcessingModules) {
+            module.setModel(model);
+            module.setTable(this);
             tabbedPane.addTab(module.getTabName(), module.getUIPanel());
         }
 

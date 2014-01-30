@@ -38,16 +38,14 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
-class DuplicatesFilter extends PostProcessingModule {
+public class DuplicatesFilter extends PostProcessingModule {
 
     private JPanel filterPanel;
     private JTextField distTextField;
     private JButton applyButton;
     private ParameterKey.String distFormula;
 
-    public DuplicatesFilter(ResultsTableWindow table, TripleStateTableModel model) {
-        this.table = table;
-        this.model = model;
+    public DuplicatesFilter() {
         distFormula = params.createStringField("distFormula", null, "");
     }
 

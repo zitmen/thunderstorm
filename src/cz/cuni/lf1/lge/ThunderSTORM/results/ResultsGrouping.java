@@ -35,7 +35,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
-class ResultsGrouping extends PostProcessingModule {
+public class ResultsGrouping extends PostProcessingModule {
 
     private JTextField distanceTextField;
     private JButton applyButton;
@@ -43,9 +43,7 @@ class ResultsGrouping extends PostProcessingModule {
 
     private ParameterKey.Double distParam;
     
-    public ResultsGrouping(ResultsTableWindow table, TripleStateTableModel model) {
-        this.table = table;
-        this.model = model;
+    public ResultsGrouping() {
         distParam = params.createDoubleField("dist", DoubleValidatorFactory.positive(), 0);
     }
 

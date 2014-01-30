@@ -31,7 +31,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
-class ResultsFilter extends PostProcessingModule {
+public class ResultsFilter extends PostProcessingModule {
 
     private JTextField filterTextField;
     private JButton applyButton;
@@ -49,9 +49,7 @@ class ResultsFilter extends PostProcessingModule {
         return "Filter";
     }
 
-    public ResultsFilter(ResultsTableWindow table, TripleStateTableModel model) {
-        this.table = table;
-        this.model = model;
+    public ResultsFilter() {
         formulaParameter = params.createStringField("formula", null, "");
     }
 

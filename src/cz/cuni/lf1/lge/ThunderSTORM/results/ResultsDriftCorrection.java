@@ -57,9 +57,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         return "Drift correction";
     }
 
-    ResultsDriftCorrection(ResultsTableWindow table, TripleStateTableModel model) {
-        this.table = table;
-        this.model = model;
+    public ResultsDriftCorrection() {
         binsParam = params.createIntField("steps", IntegerValidatorFactory.rangeInclusive(3, Integer.MAX_VALUE), 5);
         magnificationParam = params.createDoubleField("magnification", DoubleValidatorFactory.positiveNonZero(), 5);
         showCorrelationImagesParam = params.createBooleanField("showCorrelations", null, false);
