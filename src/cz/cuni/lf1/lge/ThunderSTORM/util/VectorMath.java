@@ -1,4 +1,3 @@
-
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
@@ -47,7 +46,8 @@ public class VectorMath {
      * Compute the sum of an array of doubles.
      *
      * @param arr an array of doubles
-     * @return {@mathjax \sum_{i=0}^{arr.length}{arr[i]}}
+     * @return {
+     * @mathjax \sum_{i=0}^{arr.length}{arr[i]}}
      */
     public static double sum(double[] arr) {
         double sum = 0.0;
@@ -61,7 +61,8 @@ public class VectorMath {
      * Compute the sum of an array of floats.
      *
      * @param arr an array of floats
-     * @return {@mathjax \sum_{i=0}^{arr.length}{arr[i]}}
+     * @return {
+     * @mathjax \sum_{i=0}^{arr.length}{arr[i]}}
      */
     public static float sum(float[] arr) {
         float sum = 0.0F;
@@ -346,7 +347,11 @@ public class VectorMath {
     }
 
     public static Double[] add(Number[] arr, Number val) {
-        return add(arr, val);
+        Double[] res = new Double[arr.length];
+        for(int i = 0; i < arr.length; i++) {
+            res[i] = new Double(arr[i].doubleValue() + val.doubleValue());
+        }
+        return res;
     }
 
     public static Double[] add(Number[] arr1, Number[] arr2) {
@@ -372,8 +377,10 @@ public class VectorMath {
      * Compute the standard deviation of an array of doubles.
      *
      * @param arr an array of doubles
-     * @return {@mathjax \sqrt{\frac{1}{arr.length} \sum_{i=0}^{arr.length}{\left(arr[i]
-     * - \mu\right)}}}, where {@mathjax \mu} = {@code mean(arr)}.
+     * @return {
+     * @mathjax \sqrt{\frac{1}{arr.length} \sum_{i=0}^{arr.length}{\left(arr[i]
+     * - \mu\right)}}}, where {
+     * @mathjax \mu} = {@code mean(arr)}.
      */
     public static double stddev(double[] arr) {
         return MathProxy.sqrt(var(arr));
@@ -383,8 +390,10 @@ public class VectorMath {
      * Compute the standard deviation of an array of floats.
      *
      * @param arr an array of floats
-     * @return {@mathjax \sqrt{\frac{1}{arr.length} \sum_{i=0}^{arr.length}{\left(arr[i]
-     * - \mu\right)}}}, where {@mathjax \mu} = {@code mean(arr)}.
+     * @return {
+     * @mathjax \sqrt{\frac{1}{arr.length} \sum_{i=0}^{arr.length}{\left(arr[i]
+     * - \mu\right)}}}, where {
+     * @mathjax \mu} = {@code mean(arr)}.
      */
     public static float stddev(float[] arr) {
         float sumdev = 0.0F;
@@ -490,7 +499,8 @@ public class VectorMath {
      * Compute the mean value of an array of doubles.
      *
      * @param arr an array of doubles
-     * @return {@mathjax \frac{1}{arr.length} \sum_{i=0}^{arr.length}{arr[i]}}
+     * @return {
+     * @mathjax \frac{1}{arr.length} \sum_{i=0}^{arr.length}{arr[i]}}
      */
     public static double mean(double[] arr) {
         return sum(arr) / (double) arr.length;
@@ -500,7 +510,8 @@ public class VectorMath {
      * Compute the mean value of an array of floats.
      *
      * @param arr an array of floats
-     * @return {@mathjax \frac{1}{arr.length} \sum_{i=0}^{arr.length}{arr[i]}}
+     * @return {
+     * @mathjax \frac{1}{arr.length} \sum_{i=0}^{arr.length}{arr[i]}}
      */
     public static float mean(float[] arr) {
         return sum(arr) / (float) arr.length;
@@ -520,7 +531,7 @@ public class VectorMath {
     }
 
     public static Double[] sub(Number[] arr, Number val) {
-        return sub(new Double(-val.doubleValue()), arr);
+        return add(arr, new Double(-val.doubleValue()));
     }
 
     public static Double[] sub(Number[] arr1, Number[] arr2) {
@@ -546,5 +557,5 @@ public class VectorMath {
         }
         return res;
     }
-    
+
 }
