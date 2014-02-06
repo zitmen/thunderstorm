@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
+import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.log;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
@@ -20,7 +21,7 @@ import java.util.HashSet;
  *
  * <strong>This class and its children need to be refactored!</strong>
  */
-public abstract class PSFModel {
+public abstract class PSFModel implements IModule {
 
     /**
      * This class allows to maintain the variables inside of the PSF, keeps

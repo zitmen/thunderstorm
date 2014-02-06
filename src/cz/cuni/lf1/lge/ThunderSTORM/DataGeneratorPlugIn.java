@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.CardsPanel;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
@@ -10,6 +11,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.datagen.EmitterModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui.IPsfUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
@@ -21,6 +23,8 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.Validator;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -37,6 +41,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -233,6 +238,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         final ParameterKey.Integer heightParam = params.createIntField("height", IntegerValidatorFactory.positiveNonZero(), Defaults.WIDTH);
         final ParameterKey.Integer framesParam = params.createIntField("frames", IntegerValidatorFactory.positiveNonZero(), Defaults.FRAMES);
         final ParameterKey.Double densityParam = params.createDoubleField("density", DoubleValidatorFactory.positive(), Defaults.DENSITY);
+        final ParameterKey.String psfParam = params.createStringField("psf", new PsfValidator(), Defaults.PSF);
         final ParameterKey.Double addPoissonVarParam = params.createDoubleField("addPoisssonVar", DoubleValidatorFactory.positive(), Defaults.ADD_POISSON_VAR);
         final ParameterKey.String fwhmRangeParam = params.createStringField("fwhmRange", RangeValidatorFactory.fromTo(), Defaults.FWHM_RANGE);
         final ParameterKey.String intensityRangeParam = params.createStringField("intensityRange", RangeValidatorFactory.fromTo(), Defaults.INTENSITY_RANGE);
@@ -285,6 +291,14 @@ public class DataGeneratorPlugIn implements PlugIn {
                     //emitters
                     JPanel emittersPanel = new JPanel(new GridBagLayout());
                     emittersPanel.setBorder(BorderFactory.createTitledBorder("Emitters"));
+                    
+                    //
+                    List<IPsfUI> allPSFs = ModuleLoader.getUIModules(IPsfUI.class);
+                    int activePsfIndex = Integer.parseInt(Prefs.get("thunderstorm.datagen.psf.index", Defaults.PSF));
+                    CardsPanel psfPanel = new CardsPanel(allPSFs, activePsfIndex);
+                    JPanel p = psfPanel.getPanel("PSF:");
+                    emittersPanel.add(p, GridBagHelper.twoCols());
+                    params.registerComponent(psfParam, psfPanel.getComboBox());
 
                     emittersPanel.add(new JLabel("Density [um^-2]:"), GridBagHelper.leftCol());
                     JTextField densityTextField = new JTextField(20);
@@ -396,6 +410,19 @@ public class DataGeneratorPlugIn implements PlugIn {
         public static final String FWHM_RANGE = "200:350";
         public static final String INTENSITY_RANGE = "700:900";
         public static final String MASK_PATH = "";
+        public static final String PSF = "0";
     }
-
+    
+    static class PsfValidator implements Validator<String> {
+        @Override
+        public void validate(String input) throws ValidatorException {
+            List<IPsfUI> allPSFs = ModuleLoader.getUIModules(IPsfUI.class);
+            for(IPsfUI psf : allPSFs) {
+                if(psf.getName().equals(input)) {
+                    return; // ok
+                }
+            }
+            throw new ValidatorException("Unknown PSF model `" + input + "`!");
+        }
+    }
 }
