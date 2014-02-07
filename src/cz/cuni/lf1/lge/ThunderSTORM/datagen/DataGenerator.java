@@ -6,6 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui.IPsfUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
@@ -59,7 +60,9 @@ public class DataGenerator {
         return filter.filterImage(img);
     }
 
-    public Vector<EmitterModel> generateMolecules(int width, int height, FloatProcessor mask, double density, Range intensity_photons, Range fwhm) {
+    public Vector<EmitterModel> generateMolecules(int width, int height, FloatProcessor mask, double density, Range intensity_photons, IPsfUI psf) {
+        // TODO: z = rand.nextUniform(psf.getZRange().from, .to); sigma1/sigma = psf.getSigma1(z); sigma2 = psf.getSigma2(z);
+        //
         MoleculeDescriptor descriptor = null;
         double[] params = new double[PSFModel.Params.PARAMS_LENGTH];
         Vector<EmitterModel> molist = new Vector<EmitterModel>();
@@ -95,7 +98,9 @@ public class DataGenerator {
         return molist;
     }
     
-    public Vector<EmitterModel> generateSingleFixedMolecule(int width, int height, double xOffset, double yOffset, Range intensity_photons, Range fwhm) {
+    public Vector<EmitterModel> generateSingleFixedMolecule(int width, int height, double xOffset, double yOffset, Range intensity_photons, IPsfUI psf) {
+        // TODO: z = rand.nextUniform(psf.getZRange().from, .to); sigma1/sigma = psf.getSigma1(z); sigma2 = psf.getSigma2(z);
+        //
         MoleculeDescriptor descriptor = null;
         double[] params = new double[PSFModel.Params.PARAMS_LENGTH];
         Vector<EmitterModel> molist = new Vector<EmitterModel>();

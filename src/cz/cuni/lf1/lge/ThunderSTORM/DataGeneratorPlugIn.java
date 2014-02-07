@@ -56,7 +56,8 @@ public class DataGeneratorPlugIn implements PlugIn {
     private int width, height, frames, processing_frame;
     private double density;
     private Drift drift;
-    private Range fwhm_range, intensity_range;
+    private Range intensity_range;
+    private IPsfUI psf;
     private double add_poisson_var;
     private FloatProcessor mask;
     private boolean singleFixedMolecule;
@@ -186,8 +187,8 @@ public class DataGeneratorPlugIn implements PlugIn {
                 Arrays.fill(data, add_poisson_var > 0 ? (float) add_poisson_var : 0f);
                 backgroundMeanIntensity = new FloatProcessor(width, height, data, null);
                 Vector<EmitterModel> molecules = singleFixedMolecule
-                        ? datagen.generateSingleFixedMolecule(width, height, 0, 0, intensity_range, fwhm_range)
-                        : datagen.generateMolecules(width, height, mask, density, intensity_range, fwhm_range);
+                        ? datagen.generateSingleFixedMolecule(width, height, 0, 0, intensity_range, psf)
+                        : datagen.generateMolecules(width, height, mask, density, intensity_range, psf);
                 ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, backgroundMeanIntensity);
                 local_stack.add(slice);
                 local_table.add(molecules);
@@ -240,12 +241,12 @@ public class DataGeneratorPlugIn implements PlugIn {
         final ParameterKey.Double densityParam = params.createDoubleField("density", DoubleValidatorFactory.positive(), Defaults.DENSITY);
         final ParameterKey.String psfParam = params.createStringField("psf", new PsfValidator(), Defaults.PSF);
         final ParameterKey.Double addPoissonVarParam = params.createDoubleField("addPoisssonVar", DoubleValidatorFactory.positive(), Defaults.ADD_POISSON_VAR);
-        final ParameterKey.String fwhmRangeParam = params.createStringField("fwhmRange", RangeValidatorFactory.fromTo(), Defaults.FWHM_RANGE);
         final ParameterKey.String intensityRangeParam = params.createStringField("intensityRange", RangeValidatorFactory.fromTo(), Defaults.INTENSITY_RANGE);
         final ParameterKey.Double driftDistParam = params.createDoubleField("driftDist", null, Defaults.DRIFT_DISTANCE);
         final ParameterKey.Double driftAngleParam = params.createDoubleField("driftAngle", null, Defaults.DRIFT_ANGLE);
         final ParameterKey.String maskPathParam = params.createStringField("maskPath", null, Defaults.MASK_PATH);
         ParameterKey.Boolean singleFixedMoleculeParam = params.createBooleanField("singleFixed", null, false);
+        final CardsPanel psfPanel = new CardsPanel(ModuleLoader.getUIModules(IPsfUI.class), 0);
         //
         String macroOptions = Macro.getOptions();
         if(macroOptions != null) {
@@ -292,10 +293,6 @@ public class DataGeneratorPlugIn implements PlugIn {
                     JPanel emittersPanel = new JPanel(new GridBagLayout());
                     emittersPanel.setBorder(BorderFactory.createTitledBorder("Emitters"));
                     
-                    //
-                    List<IPsfUI> allPSFs = ModuleLoader.getUIModules(IPsfUI.class);
-                    int activePsfIndex = Integer.parseInt(Prefs.get("thunderstorm.datagen.psf.index", Defaults.PSF));
-                    CardsPanel psfPanel = new CardsPanel(allPSFs, activePsfIndex);
                     JPanel p = psfPanel.getPanel("PSF:");
                     emittersPanel.add(p, GridBagHelper.twoCols());
                     params.registerComponent(psfParam, psfPanel.getComboBox());
@@ -304,11 +301,6 @@ public class DataGeneratorPlugIn implements PlugIn {
                     JTextField densityTextField = new JTextField(20);
                     emittersPanel.add(densityTextField, GridBagHelper.rightCol());
                     params.registerComponent(densityParam, densityTextField);
-
-                    emittersPanel.add(new JLabel("FWHM range [nm]:"), GridBagHelper.leftCol());
-                    JTextField fwhmTextField = new JTextField(20);
-                    emittersPanel.add(fwhmTextField, GridBagHelper.rightCol());
-                    params.registerComponent(fwhmRangeParam, fwhmTextField);
 
                     emittersPanel.add(new JLabel("Intensity range [photons]:"), GridBagHelper.leftCol());
                     JTextField intensityTextField = new JTextField(20);
@@ -388,8 +380,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         frames = framesParam.getValue();
         density = densityParam.getValue();
         add_poisson_var = addPoissonVarParam.getValue();
-        fwhm_range = Range.parseFromTo(fwhmRangeParam.getValue());
-        fwhm_range.convert(Units.NANOMETER, Units.PIXEL);
+        psf = (IPsfUI)psfPanel.getActiveComboBoxItem();
         intensity_range = Range.parseFromTo(intensityRangeParam.getValue());
         drift = new Drift(Units.NANOMETER.convertTo(Units.PIXEL, driftDistParam.getValue()), driftAngleParam.getValue(), false, frames);
         mask = readMask(maskPathParam.getValue());
@@ -407,7 +398,6 @@ public class DataGeneratorPlugIn implements PlugIn {
         public static final double ADD_POISSON_VAR = 30;
         public static final double DRIFT_DISTANCE = 0;
         public static final double DRIFT_ANGLE = 0;
-        public static final String FWHM_RANGE = "200:350";
         public static final String INTENSITY_RANGE = "700:900";
         public static final String MASK_PATH = "";
         public static final String PSF = "0";

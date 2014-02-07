@@ -55,4 +55,14 @@ public class InterpolatedCalibration implements CylindricalLensCalibration {
 
         return interpolatedValue;
     }
+
+    @Override
+    public double getSigma1(double z) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double getSigma2(double z) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
