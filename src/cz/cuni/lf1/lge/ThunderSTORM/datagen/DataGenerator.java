@@ -18,11 +18,8 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import ij.process.ShortProcessor;
 import java.util.Vector;
-import static org.apache.commons.math3.util.FastMath.log;
 
 public class DataGenerator {
-    
-    public static final double FWHM_factor = 2*sqrt(2*log(2));
     
     private RandomDataGenerator rand;
     private Vector<EmitterModel> deleteLater;
@@ -61,8 +58,6 @@ public class DataGenerator {
     }
 
     public Vector<EmitterModel> generateMolecules(int width, int height, FloatProcessor mask, double density, Range intensity_photons, IPsfUI psf) {
-        // TODO: z = rand.nextUniform(psf.getZRange().from, .to); sigma1/sigma = psf.getSigma1(z); sigma2 = psf.getSigma2(z);
-        //
         MoleculeDescriptor descriptor = null;
         double[] params = new double[PSFModel.Params.PARAMS_LENGTH];
         Vector<EmitterModel> molist = new Vector<EmitterModel>();
@@ -72,16 +67,16 @@ public class DataGenerator {
                 p_px = gPpx * mask.getf(x, y);  //expected number of molecules inside a pixel
                 int nMols = p_px > 0 ? (int) rand.nextPoisson(p_px) : 0; //actual number of molecules inside a pixel
                 for(int i = 0; i < nMols; i++) {
-                    fwhm0 = fwhm.from < fwhm.to
-                            ? rand.nextUniform(fwhm.from, fwhm.to)
-                            : fwhm.from;
+                    double z = rand.nextUniform(psf.getZRange().from, psf.getZRange().to);
                     params[PSFModel.Params.X] = (x + 0.5 + rand.nextUniform(-0.5, +0.5)) * width / mask.getWidth();
                     params[PSFModel.Params.Y] = (y + 0.5 + rand.nextUniform(-0.5, +0.5)) * height / mask.getHeight();
-                    params[PSFModel.Params.SIGMA] = fwhm0 / FWHM_factor;
-                    params[PSFModel.Params.INTENSITY] = intensity_photons.from < intensity_photons.to
-                            ? rand.nextUniform(intensity_photons.from, intensity_photons.to)
-                            : intensity_photons.from;
-                    PSFModel model = new IntegratedSymmetricGaussianPSF(params[PSFModel.Params.SIGMA]);
+                    params[PSFModel.Params.Z] = z;
+                    params[PSFModel.Params.SIGMA] = psf.getSigma1(z);
+                    params[PSFModel.Params.SIGMA1] = psf.getSigma1(z);
+                    params[PSFModel.Params.SIGMA2] = psf.getSigma2(z);
+                    params[PSFModel.Params.ANGLE] = psf.getAngle();
+                    params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
+                    PSFModel model = psf.getImplementation();
                     Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
                     
                     //set a common MoleculeDescriptor for all molecules in a frame to save memory
@@ -90,7 +85,7 @@ public class DataGenerator {
                     }else{
                         descriptor = mol.descriptor;
                     }
-                    molist.add(new EmitterModel(model, mol, fwhm0));
+                    molist.add(new EmitterModel(model, mol));
                     //
                 }
             }
@@ -99,21 +94,19 @@ public class DataGenerator {
     }
     
     public Vector<EmitterModel> generateSingleFixedMolecule(int width, int height, double xOffset, double yOffset, Range intensity_photons, IPsfUI psf) {
-        // TODO: z = rand.nextUniform(psf.getZRange().from, .to); sigma1/sigma = psf.getSigma1(z); sigma2 = psf.getSigma2(z);
-        //
         MoleculeDescriptor descriptor = null;
         double[] params = new double[PSFModel.Params.PARAMS_LENGTH];
         Vector<EmitterModel> molist = new Vector<EmitterModel>();
-        double fwhm0 = fwhm.from < fwhm.to
-                ? rand.nextUniform(fwhm.from, fwhm.to)
-                : fwhm.from;
+        double z = rand.nextUniform(psf.getZRange().from, psf.getZRange().to);
         params[PSFModel.Params.X] = (xOffset + 0.5 + width/2.0);
         params[PSFModel.Params.Y] = (yOffset + 0.5 + height/2.0);
-        params[PSFModel.Params.SIGMA] = fwhm0 / FWHM_factor;
-        params[PSFModel.Params.INTENSITY] = intensity_photons.from < intensity_photons.to
-                ? rand.nextUniform(intensity_photons.from, intensity_photons.to)
-                : intensity_photons.from;
-        PSFModel model = new IntegratedSymmetricGaussianPSF(params[PSFModel.Params.SIGMA]);
+        params[PSFModel.Params.Z] = z;
+        params[PSFModel.Params.SIGMA] = psf.getSigma1(z);
+        params[PSFModel.Params.SIGMA1] = psf.getSigma1(z);
+        params[PSFModel.Params.SIGMA2] = psf.getSigma2(z);
+        params[PSFModel.Params.ANGLE] = psf.getAngle();
+        params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
+        PSFModel model = psf.getImplementation();
         Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
 
         //set a common MoleculeDescriptor for all molecules in a frame to save memory
@@ -122,7 +115,7 @@ public class DataGenerator {
         } else {
             descriptor = mol.descriptor;
         }
-        molist.add(new EmitterModel(model, mol, fwhm0));
+        molist.add(new EmitterModel(model, mol));
         //
         return molist;
     }

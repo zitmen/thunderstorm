@@ -23,7 +23,7 @@ public class Range {
         this.step = step;
         this.to = to;
     }
-
+    
     public static Range parseFromStepTo(String rangeText) throws RuntimeException {
         String [] ft = rangeText.split(":");
         try {
@@ -42,6 +42,10 @@ public class Range {
         } catch(Exception ex) {
             throw new RuntimeException("Wrong format of range field.");
         }
+    }
+    
+    public boolean isIn(double value) {
+        return ((from <= value) && (value <= to));
     }
     
     public void scale(double factor) {

@@ -1,20 +1,24 @@
 package cz.cuni.lf1.lge.ThunderSTORM.datagen;
 
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.max;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import ij.process.FloatProcessor;
 import java.awt.Rectangle;
 
 public class EmitterModel {
     
-    public double fwhm;
     public PSFModel model;
     public Molecule molecule;
+    public double region;
     
-    public EmitterModel(PSFModel model, Molecule molecule, double fwhm) {
+    public EmitterModel(PSFModel model, Molecule molecule) {
         this.model = model;
         this.molecule = molecule;
-        this.fwhm = fwhm;
+        this.region = 5*max(molecule.getParam(Params.LABEL_SIGMA),
+                            molecule.getParam(Params.LABEL_SIGMA1),
+                            molecule.getParam(Params.LABEL_SIGMA2));
     }
     
     public void moveXY(double dx, double dy) {
@@ -33,9 +37,9 @@ public class EmitterModel {
         }
         //
         int width = img.getWidth(), height = img.getHeight();
-        for(int x = (int)(molecule.getX() - 2*fwhm), xm = (int)(molecule.getX() + 2*fwhm); x <= xm; x++) {
+        for(int x = (int)(molecule.getX() - region), xm = (int)(molecule.getX() + region); x <= xm; x++) {
             if((x < 0) || (x >= width)) continue;
-            for(int y = (int)(molecule.getY() - 2*fwhm), ym = (int)(molecule.getY() + 2*fwhm); y <= ym; y++) {
+            for(int y = (int)(molecule.getY() - region), ym = (int)(molecule.getY() + region); y <= ym; y++) {
                 if((y < 0) || (y >= height)) continue;
                 img.setf(x, y, img.getf(x, y) + (float)model.getValue(params, x+0.5, y+0.5));
             }

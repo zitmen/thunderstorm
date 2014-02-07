@@ -203,11 +203,11 @@ public class PolynomialCalibration implements CylindricalLensCalibration {
 
     @Override
     public double getSigma1(double z) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (b1 + a1 * sqr(z - c1));
     }
 
     @Override
     public double getSigma2(double z) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (b2 + a2 * sqr(z - c2));
     }
 }
