@@ -16,9 +16,18 @@ public class EmitterModel {
     public EmitterModel(PSFModel model, Molecule molecule) {
         this.model = model;
         this.molecule = molecule;
-        this.region = 5*max(molecule.getParam(Params.LABEL_SIGMA),
-                            molecule.getParam(Params.LABEL_SIGMA1),
-                            molecule.getParam(Params.LABEL_SIGMA2));
+        //
+        region = 0;
+        if(molecule.hasParam(Params.LABEL_SIGMA)) {
+            region = max(region, molecule.getParam(Params.LABEL_SIGMA));
+        }
+        if(molecule.hasParam(Params.LABEL_SIGMA1)) {
+            region = max(region, molecule.getParam(Params.LABEL_SIGMA1));
+        } 
+        if(molecule.hasParam(Params.LABEL_SIGMA2)) {
+            region = max(region, molecule.getParam(Params.LABEL_SIGMA2));
+        } 
+        region *= 5;
     }
     
     public void moveXY(double dx, double dy) {

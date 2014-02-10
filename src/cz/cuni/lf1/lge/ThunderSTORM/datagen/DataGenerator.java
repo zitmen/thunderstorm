@@ -70,14 +70,14 @@ public class DataGenerator {
                     double z = rand.nextUniform(psf.getZRange().from, psf.getZRange().to);
                     params[PSFModel.Params.X] = (x + 0.5 + rand.nextUniform(-0.5, +0.5)) * width / mask.getWidth();
                     params[PSFModel.Params.Y] = (y + 0.5 + rand.nextUniform(-0.5, +0.5)) * height / mask.getHeight();
-                    params[PSFModel.Params.Z] = z;
                     params[PSFModel.Params.SIGMA] = psf.getSigma1(z);
                     params[PSFModel.Params.SIGMA1] = psf.getSigma1(z);
                     params[PSFModel.Params.SIGMA2] = psf.getSigma2(z);
-                    params[PSFModel.Params.ANGLE] = psf.getAngle();
                     params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
+                    params[PSFModel.Params.ANGLE] = Units.RADIAN.convertTo(Units.DEGREE, psf.getAngle());
                     PSFModel model = psf.getImplementation();
                     Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
+                    mol.addParam(PSFModel.Params.LABEL_Z, Units.NANOMETER, z);
                     
                     //set a common MoleculeDescriptor for all molecules in a frame to save memory
                     if(descriptor != null){
@@ -100,21 +100,17 @@ public class DataGenerator {
         double z = rand.nextUniform(psf.getZRange().from, psf.getZRange().to);
         params[PSFModel.Params.X] = (xOffset + 0.5 + width/2.0);
         params[PSFModel.Params.Y] = (yOffset + 0.5 + height/2.0);
-        params[PSFModel.Params.Z] = z;
         params[PSFModel.Params.SIGMA] = psf.getSigma1(z);
         params[PSFModel.Params.SIGMA1] = psf.getSigma1(z);
         params[PSFModel.Params.SIGMA2] = psf.getSigma2(z);
-        params[PSFModel.Params.ANGLE] = psf.getAngle();
         params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
+        params[PSFModel.Params.ANGLE] = Units.RADIAN.convertTo(Units.DEGREE, psf.getAngle());
         PSFModel model = psf.getImplementation();
         Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
+        mol.addParam(PSFModel.Params.LABEL_Z, Units.NANOMETER, z);
 
-        //set a common MoleculeDescriptor for all molecules in a frame to save memory
-        if(descriptor != null) {
-            mol.descriptor = descriptor;
-        } else {
-            descriptor = mol.descriptor;
-        }
+        //set a MoleculeDescriptor
+        mol.descriptor = descriptor;
         molist.add(new EmitterModel(model, mol));
         //
         return molist;

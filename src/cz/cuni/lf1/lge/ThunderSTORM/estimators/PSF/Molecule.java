@@ -343,7 +343,7 @@ public final class Molecule implements Comparable<Molecule> {
     public DetectionStatus getStatus() {
         return status;
     }
-    
+
     public static enum DetectionStatus {
         UNSPECIFIED, TRUE_POSITIVE, FALSE_POSITIVE, FALSE_NEGATIVE;
     }

@@ -8,9 +8,17 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import cz.cuni.lf1.lge.ThunderSTORM.util.RangeValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
+import ij.IJ;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -31,14 +39,36 @@ public class EllipticGaussianWAngleUI extends IPsfUI {
 
     @Override
     public JPanel getOptionsPanel() {
-        JTextField calibrationTextField = new JTextField("", 20);
+        final JTextField calibrationTextField = new JTextField("", 20);
         JTextField zRangeTextField = new JTextField("", 20);
         parameters.registerComponent(CALIBRATION, calibrationTextField);
         parameters.registerComponent(Z_RANGE, zRangeTextField);
         
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Calibration file:"), GridBagHelper.leftCol());
-        panel.add(calibrationTextField, GridBagHelper.rightCol());
+        
+        JButton findCalibrationButton = new JButton("...");
+        findCalibrationButton.setMargin(new Insets(1, 1, 1, 1));
+        findCalibrationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser(IJ.getDirectory("image"));
+                int userAction = fileChooser.showOpenDialog(null);
+                if(userAction == JFileChooser.APPROVE_OPTION) {
+                    calibrationTextField.setText(fileChooser.getSelectedFile().getPath());
+                }
+            }
+        });
+        JPanel calibrationPanel = new JPanel(new BorderLayout()){
+            @Override
+            public Dimension getPreferredSize(){
+                return ((JTextField)parameters.getRegisteredComponent(Z_RANGE)).getPreferredSize();
+            }
+        };
+        calibrationPanel.add(calibrationTextField, BorderLayout.CENTER);
+        calibrationPanel.add(findCalibrationButton, BorderLayout.EAST);
+        panel.add(calibrationPanel, GridBagHelper.rightCol());
+        
         panel.add(new JLabel("Z-range (from:to) [nm]:"), GridBagHelper.leftCol());
         panel.add(zRangeTextField, GridBagHelper.rightCol());
         
@@ -56,7 +86,7 @@ public class EllipticGaussianWAngleUI extends IPsfUI {
         if(calibration == null) {
             calibration = loadCalibration(CALIBRATION.getValue());
         }
-        return Math.toRadians(calibration.getAngle());
+        return calibration.getAngle();  // [rad]
     }
 
     @Override

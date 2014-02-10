@@ -348,12 +348,27 @@ public class DataGeneratorPlugIn implements PlugIn {
 
                     //buttons
                     JPanel buttons = new JPanel(new GridBagLayout());
-                    buttons.add(createDefaultsButton());
+                    JButton defaultButton = createDefaultsButton();
+                    buttons.add(defaultButton);
                     buttons.add(Box.createHorizontalGlue(), new GridBagHelper.Builder()
                             .fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
                     buttons.add(Help.createHelpButton(DataGeneratorPlugIn.class));
-                    buttons.add(createOKButton());
+                    JButton okButton = createOKButton();
+                    buttons.add(okButton);
                     buttons.add(createCancelButton());
+                    
+                    okButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent ae) {
+                            psfPanel.getActiveComboBoxItem().readParameters();
+                        }
+                    });
+                    defaultButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent ae) {
+                            psfPanel.getActiveComboBoxItem().resetToDefaults();
+                        }
+                    });
 
                     add(cameraPanel, GridBagHelper.twoCols());
                     add(stackPanel, GridBagHelper.twoCols());
