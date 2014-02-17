@@ -88,14 +88,15 @@ signal level.</p>
 <p class="ltx_p">Calibration is a procedure which determines the orientation angle
 <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="14" height="19" alt="\phi"> of the imaged ellipsoids, and the relationship between the
 axial position <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi38.png" width="13" height="11" alt="z"> of the molecules and their imaged widths <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi25.png" width="48" height="15" alt="\sigma_{1},\sigma_{2}">.
-We modeled this relationship by a pair of second degree polynomials</p>
+We modeled this relationship by a pair of third degree polynomials</p>
 <table id="Sx1.EGx2" class="ltx_equationgroup ltx_eqn_eqnarray">
 
 <tr id="Sx1.E2" class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
 <td class="ltx_td ltx_align_right"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi3.png" width="47" height="21" alt="\displaystyle\hat{\sigma}_{1}\left(z\right)"></td>
 <td class="ltx_td ltx_align_center"><img id="Sx1.E2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi1.png" width="17" height="10" alt="\displaystyle="></td>
-<td class="ltx_td ltx_align_left"><img id="Sx1.E2.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi10.png" width="137" height="25" alt="\displaystyle a_{1}\left(z-c_{1}\right)^{2}+b_{1}\,,"></td>
+<td class="ltx_td ltx_align_left"><img id="Sx1.E2.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi10.png" width="247" height="25" alt="\displaystyle a_{1}\left(z-c_{1}\right)^{2}+d_{1}\left(z-c_{1}\right)^{3}+b_{1%
+}\,,"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
 </tr>
@@ -103,7 +104,8 @@ We modeled this relationship by a pair of second degree polynomials</p>
 <td class="ltx_eqn_pad"></td>
 <td class="ltx_td ltx_align_right"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi5.png" width="47" height="21" alt="\displaystyle\hat{\sigma}_{2}\left(z\right)"></td>
 <td class="ltx_td ltx_align_center"><img id="Sx1.E3.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi1.png" width="17" height="10" alt="\displaystyle="></td>
-<td class="ltx_td ltx_align_left"><img id="Sx1.E3.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi11.png" width="137" height="25" alt="\displaystyle a_{2}\left(z-c_{2}\right)^{2}+b_{2}\,."></td>
+<td class="ltx_td ltx_align_left"><img id="Sx1.E3.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi11.png" width="247" height="25" alt="\displaystyle a_{2}\left(z-c_{2}\right)^{2}+d_{2}\left(z-c_{2}\right)^{3}+b_{2%
+}\,."></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(3)</span></td>
 </tr>
@@ -196,8 +198,7 @@ such that all beads are positioned at the same focal plane.</p>
 <span class="ltx_tag ltx_tag_enumerate">4.</span> 
 <div id="I2.i4.p1" class="ltx_para">
 <p class="ltx_p">The final coefficients are obtained by fitting the pair of polynomials
-to all shifted data points. The ‘‘zero’’ axial position is given
-by the intersection of the two polynomials.</p>
+to all shifted data points.</p>
 </div>
 </li>
 </ol>

@@ -212,11 +212,11 @@ Calibration is a procedure which determines the orientation angle
 \end_inset
 
 .
- We modeled this relationship by a pair of second degree polynomials
+ We modeled this relationship by a pair of third degree polynomials
 \begin_inset Formula 
 \begin{eqnarray}
-\hat{\sigma}_{1}\left(z\right) & = & a_{1}\left(z-c_{1}\right)^{2}+b_{1}\,,\label{eq:astigmatism_poly1}\\
-\hat{\sigma}_{2}\left(z\right) & = & a_{2}\left(z-c_{2}\right)^{2}+b_{2}\,.\label{eq:astigmatism_poly2}
+\hat{\sigma}_{1}\left(z\right) & = & a_{1}\left(z-c_{1}\right)^{2}+d_{1}\left(z-c_{1}\right)^{3}+b_{1}\,,\label{eq:astigmatism_poly1}\\
+\hat{\sigma}_{2}\left(z\right) & = & a_{2}\left(z-c_{2}\right)^{2}+d_{2}\left(z-c_{2}\right)^{3}+b_{2}\,.\label{eq:astigmatism_poly2}
 \end{eqnarray}
 
 \end_inset
@@ -392,15 +392,7 @@ From the fitted models, we determine a common focal plane of the beads as
 \begin_layout Enumerate
 The final coefficients are obtained by fitting the pair of polynomials to
  all shifted data points.
- The 
-\begin_inset Quotes eld
-\end_inset
-
-zero
-\begin_inset Quotes erd
-\end_inset
-
- axial position is given by the intersection of the two polynomials.
+ 
 \end_layout
 
 \begin_layout Subsection*
