@@ -7,11 +7,13 @@ import org.apache.commons.math3.fitting.CurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
+import org.apache.commons.math3.exception.TooManyEvaluationsException;
+import org.apache.commons.math3.optim.SimplePointChecker;
 
 /**
  *
  */
-public class IterativeQuadraticFitting {
+public class IterativeFitting {
 
     private double inlierFraction = 0.9;
     private int maxIterations = 5;
@@ -19,55 +21,44 @@ public class IterativeQuadraticFitting {
     public static void shiftInZ(double[] quadratic, double shift) {
         quadratic[0] -= shift;
     }
-
-    public static double intersectionOfQuadraticPolynomials(QuadraticFunction quadratic1, QuadraticFunction quadratic2) {
-        double intersection;
-        double c1 = quadratic1.getC();
-        double c2 = quadratic2.getC();
-        double a1 = quadratic1.getA();
-        double a2 = quadratic2.getA();
-        double b1 = quadratic1.getB();
-        double b2 = quadratic2.getB();
-        if(Math.abs(a1 - a2) < 1.0E-6) {
-            intersection = (b1 - b2 + a1 * sqr(c1) - a1 * sqr(c2)) / (2 * a1 * (c1 - c2));
-        } else {
-            double root = sqrt(a1 * (a2 * sqr(c1 - c2) - b1 + b2) + a2 * (b1 - b2));
-            double intersection1 = -(-root - a1 * c1 + a2 * c2) / (a1 - a2);
-            double intersection2 = -(root - a1 * c1 + a2 * c2) / (a1 - a2);
-            intersection = (Math.abs(intersection1 - c1) < Math.abs(intersection2 - c1)) ? intersection1 : intersection2;
-        }
-        return intersection;
-    }
-
-    private double[] fit(double[] x, double[] y, ParametricUnivariateFunction function, double[] initialParams) {
+    
+    
+    private double[] fit(double[] x, double[] y, ParametricUnivariateFunction function, double[] initialParams, int maxIter) {
         int numberOfInliers = (int) (inlierFraction * x.length);
-        CurveFitter<ParametricUnivariateFunction> fitter = new CurveFitter<ParametricUnivariateFunction>(new LevenbergMarquardtOptimizer());
+        CurveFitter<ParametricUnivariateFunction> fitter = new CurveFitter<ParametricUnivariateFunction>(new LevenbergMarquardtOptimizer(new SimplePointChecker(10e-10, 10e-10, maxIter)));
         WeightedObservedPoint[] points = new WeightedObservedPoint[x.length];
         //fit using all points
         for(int i = 0; i < x.length; i++) {
             points[i] = new WeightedObservedPoint(1, x[i], y[i]);
             fitter.addObservedPoint(points[i]);
         }
-        double[] parameters = fitter.fit(200000, function, initialParams);
+        double[] parameters = fitter.fit(maxIter, function, initialParams);
         double[] residuals = new double[x.length];
         for(int it = 0; it < maxIterations; it++) {
             //fit again with only inlier points (points with smallest error)
             computeResiduals(parameters, function, x, y, residuals);
             int[] inliers = findIndicesOfSmallestN(residuals, numberOfInliers);
 
-//      System.out.println("residuals : " + Arrays.toString(residuals));
-//      System.out.println("inliers : " + Arrays.toString(inliers));
-
+//          System.out.println("residuals : " + Arrays.toString(residuals));
+//          System.out.println("inliers : " + Arrays.toString(inliers));
             fitter.clearObservations();
             for(int i : inliers) {
                 fitter.addObservedPoint(points[i]);
             }
-            parameters = fitter.fit(function, parameters);
+            try {
+                parameters = fitter.fit(maxIter, function, parameters);
+            } catch(TooManyEvaluationsException ex) {
+                if(it > 0) {
+                    return parameters;
+                } else {
+                    throw ex;
+                }
+            }
         }
         return parameters;
     }
 
-    public QuadraticFunction fitParams(double[] x, double[] y) {
+    public DefocusFunction fitParams(double[] x, double[] y, int maxIter) {
         double min = y[0];
         int minIndex = 0;
         for(int i = 0; i < x.length; i++) {
@@ -76,7 +67,7 @@ public class IterativeQuadraticFitting {
                 minIndex = i;
             }
         }
-        return new QuadraticFunction(fit(x, y, new QuadraticFunction(), new double[]{x[minIndex], 0.0001, min}));
+        return new DefocusFunction(fit(x, y, new DefocusFunction.FittingFunction(), new double[]{x[minIndex], 0.0001, sqrt(min), 0}, maxIter));
     }
 
     private void computeResiduals(double[] parameters, ParametricUnivariateFunction function, double[] x, double[] y, double[] residualArray) {

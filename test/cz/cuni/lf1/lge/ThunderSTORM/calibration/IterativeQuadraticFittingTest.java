@@ -13,25 +13,19 @@ public class IterativeQuadraticFittingTest {
     double[] sigma2 = {4.52, 6.42, 6.00, 5.18, 5.15, 4.98, 4.85, 4.99, 4.75, 4.78, 4.78, 4.64, 4.60, 4.46, 4.32, 4.22, 4.15, 4.16, 4.03, 4.08, 3.89, 3.90, 3.74, 3.70, 3.53, 3.59, 3.59, 3.44, 3.31, 3.30, 3.21, 3.19, 3.05, 3.06, 3.03, 2.95, 2.91, 2.80, 2.87, 2.79, 2.79, 2.68, 2.66, 2.58, 2.66, 2.46, 2.49, 2.54, 2.50, 2.44, 2.42, 2.37, 2.30, 2.31, 2.33, 2.28, 2.27, 2.24, 2.25, 2.25, 2.17, 2.22, 2.17, 2.23, 2.17, 2.20, 2.17, 2.14, 2.13, 2.09, 2.15, 2.16, 2.09, 2.06, 2.10, 2.09, 2.07, 2.08, 2.04, 2.11, 2.03, 2.11, 2.10, 2.13, 2.14, 2.07, 2.18, 2.12, 2.19, 2.16, 2.26, 2.20, 2.22, 2.21, 2.29, 2.27, 2.27, 2.39, 2.27, 2.38, 2.37, 2.54, 2.52, 2.58, 2.55, 2.66, 2.68, 2.61, 2.72, 2.80, 2.82, 2.86, 2.99, 2.94, 3.10, 3.19, 3.24, 3.28, 3.34, 3.49, 3.53, 3.58, 3.54, 3.79, 3.84, 3.99, 3.89, 3.99, 4.26, 4.24, 4.36};
     
     @Test
-    public void testFitParamsAndShift() {
-        IterativeQuadraticFitting quadraticFitter = new IterativeQuadraticFitting();
+    public void testFitParams() {
+        IterativeFitting quadraticFitter = new IterativeFitting();
         
-        QuadraticFunction sigma1params = quadraticFitter.fitParams(zpos, sigma1);
+        DefocusFunction sigma1params = quadraticFitter.fitParams(zpos, sigma1, 1000);
         System.out.println("s1: " + sigma1params);
-        QuadraticFunction sigma2params = quadraticFitter.fitParams(zpos, sigma2);
+        DefocusFunction sigma2params = quadraticFitter.fitParams(zpos, sigma2, 1000);
         System.out.println("s2: " + sigma2params);
         
         
-        double[] expectedS1 = {100.87328907082066, 6.142169750599988E-4, 1.9813670409127584};
-        double[] expectedS2 = {111.57039071865755, 6.416466686608746E-4, 2.0507191870540735};
-        double expectedShift = 111.4995210934;
+        double[] expectedS1 = {101.25497353331642, 6.231821223769346E-4, 1.9747240670414778, 2.8222606605242904E-7};
+        double[] expectedS2 = {112.65002463626868, 6.655212029439303E-4, 2.0378570872539346, 8.875601959818572E-7};
         assertArrayEquals(expectedS1, sigma1params.toParArray(), 0.001);
         assertArrayEquals(expectedS2, sigma2params.toParArray(), 0.001);
-        double intersection = IterativeQuadraticFitting.intersectionOfQuadraticPolynomials(sigma1params, sigma2params);
-        sigma1params.shiftInZ(intersection);
-        sigma2params.shiftInZ(intersection);
-        assertEquals(expectedS1[0] - expectedShift, sigma1params.getC(), 0.001);
-        assertEquals(expectedS2[0] - expectedShift, sigma2params.getC(), 0.001);
     }
     
     @Test
@@ -39,17 +33,8 @@ public class IterativeQuadraticFittingTest {
         double[] d = {2, 1, 1, 564, 798, 782, 34, 5, 68, 94, 61, 3};
         int[] top5 = {7, 11, 0, 2, 1};
         
-        int[] calculatedTop5 = IterativeQuadraticFitting.findIndicesOfSmallestN(d, 5);
+        int[] calculatedTop5 = IterativeFitting.findIndicesOfSmallestN(d, 5);
         assertArrayEquals(top5, calculatedTop5);
     }
     
-    @Test
-    public void testShiftSame() {
-        double[] s1 = {10, 6.142169750599988E-4, 1.9813670409127584};
-        double[] s2 = {-10, 6.153169750599988E-4, 1.9813670409127584};
-        double intersection = IterativeQuadraticFitting.intersectionOfQuadraticPolynomials(new QuadraticFunction(s1), new QuadraticFunction(s2));
-        
-        assertFalse(Double.isNaN(intersection));
-        
-    }
 }

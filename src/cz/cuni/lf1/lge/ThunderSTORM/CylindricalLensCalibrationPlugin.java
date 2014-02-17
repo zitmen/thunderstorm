@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.CalibrationDialog;
-import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PolynomialCalibration;
@@ -12,14 +11,16 @@ import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.CalibrationProcess;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.QuadraticFunction;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.NoMoleculesFittedException;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_FRAME;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.Macro;
 import ij.gui.Plot;
 import ij.plugin.PlugIn;
-import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import java.awt.Color;
 import java.io.FileWriter;
@@ -27,7 +28,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 import org.yaml.snakeyaml.Yaml;
 import ij.gui.Roi;
 import java.awt.BorderLayout;
@@ -36,6 +36,9 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -53,6 +56,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     CalibrationEstimatorUI calibrationEstimatorUI;
     String savePath;
     double stageStep;
+    double zRangeLimit;//in nm
     ImagePlus imp;
     Roi roi;
 
@@ -78,54 +82,41 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             Thresholder.loadFilters(filters);
 
             // get user options
-            if(MacroParser.isRanFromMacro()) {
-                //parse macro parameters
-                MacroParser parser = new MacroParser(filters, estimators, detectors, null);
-                selectedFilterUI = parser.getFilterUI();
-                selectedDetectorUI = parser.getDetectorUI();
-                parser.getEstimatorUI();
-                savePath = Macro.getValue(Macro.getOptions(), "saveto", null);
-                stageStep = Double.parseDouble(Macro.getValue(Macro.getOptions(), "stageStep", "10"));
-            } else {
-                //show dialog
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch(Exception e) {
-                    IJ.handleException(e);
-                }
-                CalibrationDialog dialog;
-                dialog = new CalibrationDialog(filters, detectors, estimators);
-                dialog.setVisible(true);
-                if(dialog.waitForResult() != JOptionPane.OK_OPTION) {
-                    return;
-                }
-                selectedFilterUI = dialog.getActiveFilterUI();
-                selectedDetectorUI = dialog.getActiveDetectorUI();
-                savePath = dialog.getSavePath();
-                stageStep = dialog.getStageStep();
-
-                //if recording window is open, record parameters
-                if(Recorder.record) {
-                    MacroParser.recordFilterUI(selectedFilterUI);
-                    MacroParser.recordDetectorUI(selectedDetectorUI);
-                    MacroParser.recordEstimatorUI(calibrationEstimatorUI);
-                    Recorder.recordOption("saveto", savePath.replace("\\", "\\\\"));
-                    Recorder.recordOption("stageStep", stageStep + "");
-                }
+            try {
+                GUI.setLookAndFeel();
+            } catch(Exception e) {
+                IJ.handleException(e);
             }
+            CalibrationDialog dialog;
+            dialog = new CalibrationDialog(imp, filters, detectors, estimators);
+            if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
+                return;
+            }
+            selectedFilterUI = dialog.getActiveFilterUI();
+            selectedDetectorUI = dialog.getActiveDetectorUI();
+            savePath = dialog.getSavePath();
+            stageStep = dialog.getStageStep();
+            zRangeLimit = dialog.getZRangeLimit();
+
             roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
 
             //perform the calibration
-            final CalibrationProcess process = new CalibrationProcess(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, stageStep, imp, roi);
+            final CalibrationProcess process = new CalibrationProcess(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, stageStep, zRangeLimit, imp, roi);
 
             process.estimateAngle();
             IJ.log("angle = " + process.getAngle());
 
-            process.fitQuadraticPolynomials();
-            IJ.log("s1 = " + process.getPolynomS1Final().toString());
-            IJ.log("s2 = " + process.getPolynomS2Final().toString());
-
-            drawOverlay(imp, process.getBeadPositions(), process.getUsedPositions());
+            try {
+                process.fitQuadraticPolynomials();
+                IJ.log("s1 = " + process.getPolynomS1Final().toString());
+                IJ.log("s2 = " + process.getPolynomS2Final().toString());
+            } catch(NoMoleculesFittedException ex) {
+                //if no beads were succesfully fitted, draw localizations anyway
+                drawOverlay(imp, process.getAllFits(), process.getUsedPositions());
+                IJ.handleException(ex);
+                return;
+            }
+            drawOverlay(imp, process.getAllFits(), process.getUsedPositions());
             drawSigmaPlots(process.getAllPolynomsS1(), process.getAllPolynomsS2(),
                     process.getPolynomS1Final().convertToFrames(stageStep), process.getPolynomS2Final().convertToFrames(stageStep),
                     process.getAllFrames(), process.getAllSigma1s(), process.getAllSigma2s());
@@ -147,6 +138,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         dialog.add(new JLabel("Could not save calibration file. " + ex.getMessage(), SwingConstants.CENTER));
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         JButton ok = new JButton("OK");
+        dialog.getRootPane().setDefaultButton(ok);
         ok.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -198,8 +190,8 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
 
     }
 
-    private void drawSigmaPlots(List<QuadraticFunction> sigma1Quadratics, List<QuadraticFunction> sigma2Quadratics,
-            QuadraticFunction sigma1param, QuadraticFunction sigma2param,
+    private void drawSigmaPlots(List<DefocusFunction> sigma1Quadratics, List<DefocusFunction> sigma2Quadratics,
+            DefocusFunction sigma1param, DefocusFunction sigma2param,
             double[] allFrames, double[] allSigma1s, double[] allSigma2s) {
 
         Plot plot = new Plot("Sigma", "z[slices]", "sigma", (float[]) null, (float[]) null);
@@ -257,9 +249,37 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
      * were used for fitting polynomials
      *
      */
-    private void drawOverlay(ImagePlus imp, List<Position> allPositions, List<Position> usedPositions) {
+    private void drawOverlay(ImagePlus imp, List<Molecule> allFits, List<Position> usedPositions) {
         imp.setOverlay(null);
         Rectangle roiBounds = roi.getBounds();
+
+        //allFits
+        Map<Integer, List<Molecule>> fitsByFrame = new HashMap<Integer, List<Molecule>>(allFits.size());
+        for(Molecule mol : allFits) {
+            int frame = (int) mol.getParam(LABEL_FRAME);
+            List<Molecule> list;
+            if(!fitsByFrame.containsKey(frame)) {
+                list = new ArrayList<Molecule>();
+                fitsByFrame.put(frame, list);
+            } else {
+                list = fitsByFrame.get(frame);
+            }
+            list.add(mol);
+        }
+        for(Map.Entry<Integer, List<Molecule>> frameFitsEntry : fitsByFrame.entrySet()) {
+            int frame = frameFitsEntry.getKey();
+            List<Molecule> fits = frameFitsEntry.getValue();
+            double[] xAll = new double[fits.size()];
+            double[] yAll = new double[fits.size()];
+            for(int i = 0; i < fits.size(); i++) {
+                Molecule mol = fits.get(i);
+                xAll[i] = mol.getX(MoleculeDescriptor.Units.PIXEL) + roiBounds.x;
+                yAll[i] = mol.getY(MoleculeDescriptor.Units.PIXEL) + roiBounds.y;
+            }
+            RenderingOverlay.showPointsInImage(imp, xAll, yAll, frame, Color.BLUE, RenderingOverlay.MARKER_CROSS);
+        }
+
+        //centroids of used molecules
         double[] xCentroids = new double[usedPositions.size()];
         double[] yCentroids = new double[usedPositions.size()];
         for(int i = 0; i < xCentroids.length; i++) {
@@ -268,18 +288,19 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             yCentroids[i] = p.centroidY + roiBounds.y;
         }
         RenderingOverlay.showPointsInImage(imp, xCentroids, yCentroids, Color.red, RenderingOverlay.MARKER_CIRCLE);
-        for(Position p : allPositions) {
+        //usedFits
+        for(Position p : usedPositions) {
             double[] frame = p.getFramesAsArray();
             double[] x = VectorMath.add(p.getXAsArray(), roiBounds.x);
             double[] y = VectorMath.add(p.getYAsArray(), roiBounds.y);
             for(int i = 0; i < frame.length; i++) {
-                RenderingOverlay.showPointsInImage(imp, new double[]{x[i]}, new double[]{y[i]}, (int) frame[i], Color.BLUE, RenderingOverlay.MARKER_CROSS);
+                RenderingOverlay.showPointsInImage(imp, new double[]{x[i]}, new double[]{y[i]}, (int) frame[i], Color.RED, RenderingOverlay.MARKER_CROSS);
             }
         }
 
     }
 
-    private void showHistoImages(List<QuadraticFunction> sigma1Quadratics, List<QuadraticFunction> sigma2Quadratics) {
+    private void showHistoImages(List<DefocusFunction> sigma1Quadratics, List<DefocusFunction> sigma2Quadratics) {
         FloatProcessor a1 = new FloatProcessor(1, sigma1Quadratics.size());
         FloatProcessor a2 = new FloatProcessor(1, sigma2Quadratics.size());
         FloatProcessor b1 = new FloatProcessor(1, sigma2Quadratics.size());

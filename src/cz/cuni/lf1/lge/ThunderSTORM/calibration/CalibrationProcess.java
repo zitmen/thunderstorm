@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_ANGLE;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA1;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA2;
@@ -27,6 +28,7 @@ import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
+import org.apache.commons.math3.stat.ranking.NaturalRanking;
 
 /**
  *
@@ -37,27 +39,29 @@ public class CalibrationProcess {
     IDetectorUI selectedDetectorUI;
     CalibrationEstimatorUI calibrationEstimatorUI;
     double stageStep;
+    double zRange; //in frames
     ImagePlus imp;
     Roi roi;
     //results
     private double angle = Double.NaN;
-    private List<Position> beadPositions;
+    private PSFSeparator beadFits;
     private List<Position> usedPositions;
-    private QuadraticFunction polynomS2Final;
-    private QuadraticFunction polynomS1Final;
-    private ArrayList<QuadraticFunction> allPolynomsS1;
-    private ArrayList<QuadraticFunction> allPolynomsS2;
+    private DefocusFunction polynomS2Final;
+    private DefocusFunction polynomS1Final;
+    private ArrayList<DefocusFunction> allPolynomsS1;
+    private ArrayList<DefocusFunction> allPolynomsS2;
     private double[] allFrames;
     private double[] allSigma1s;
     private double[] allSigma2s;
 
-    public CalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, CalibrationEstimatorUI calibrationEstimatorUI, double stageStep, ImagePlus imp, Roi roi) {
+    public CalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, CalibrationEstimatorUI calibrationEstimatorUI, double stageStep, double zRangeLimit, ImagePlus imp, Roi roi) {
         this.selectedFilterUI = selectedFilterUI;
         this.selectedDetectorUI = selectedDetectorUI;
         this.calibrationEstimatorUI = calibrationEstimatorUI;
         this.stageStep = stageStep;
         this.imp = imp;
         this.roi = roi;
+        this.zRange = zRangeLimit / stageStep; //convert from nm to frames
     }
 
     /**
@@ -112,7 +116,7 @@ public class CalibrationProcess {
             }
             //*4
             fittedAngle *= 4;
-            
+
             sins.set(i, MathProxy.sin(fittedAngle));
             coss.set(i, MathProxy.cos(fittedAngle));
         }
@@ -122,12 +126,13 @@ public class CalibrationProcess {
     }
 
     public void fitQuadraticPolynomials() {
-        beadPositions = fitFixedAngle();
+        beadFits = fitFixedAngle();
+        List<Position> positions = beadFits.getPositions();
 
         //fit a quadratic polynomial to sigma1 = f(zpos) and sigma1 = f(zpos) for each bead
-        IterativeQuadraticFitting quadraticFitter = new IterativeQuadraticFitting();
-        allPolynomsS1 = new ArrayList<QuadraticFunction>();
-        allPolynomsS2 = new ArrayList<QuadraticFunction>();
+        IterativeFitting quadraticFitter = new IterativeFitting();
+        allPolynomsS1 = new ArrayList<DefocusFunction>();
+        allPolynomsS2 = new ArrayList<DefocusFunction>();
 
         List<double[]> framesArrays = new ArrayList<double[]>();
         List<double[]> sigma1Arrays = new ArrayList<double[]>();
@@ -135,19 +140,34 @@ public class CalibrationProcess {
 
         AtomicInteger moleculesProcessed = new AtomicInteger(0);
         usedPositions = new ArrayList<Position>();
-        for(Position p : beadPositions) {
+        for(Position p : positions) {
             moleculesProcessed.incrementAndGet();
-            IJ.showProgress(0.9 + 0.1 * (double) moleculesProcessed.intValue() / (double) beadPositions.size());
-            IJ.showStatus("Fitting polynoms: molecule " + moleculesProcessed + " of " + beadPositions.size() + "...");
+            IJ.showProgress(0.9 + 0.1 * (double) moleculesProcessed.intValue() / (double) positions.size());
+            IJ.showStatus("Fitting polynoms: molecule " + moleculesProcessed + " of " + positions.size() + "...");
 
-            double[] framesArray = p.getFramesAsArray();
             try {
-                if(framesArray.length < 20) {
+                if(p.getSize() < 20) {
                     continue;
                 }
+                double z0guess = guessZ0(p);
+                p.discardFitsByFrameRange(z0guess - zRange, z0guess + zRange);
+
+                //retrieve values again after filtering out fits not in range
+                double[] framesArray = p.getFramesAsArray();
+                double[] sigma1AsArray = p.getSigma1AsArray();
+                double[] sigma2AsArray = p.getSigma2AsArray();
+
                 //fit s1,2 = polynomial(frame)
-                QuadraticFunction polynomS1 = quadraticFitter.fitParams(framesArray, p.getSigma1AsArray());
-                QuadraticFunction polynomS2 = quadraticFitter.fitParams(framesArray, p.getSigma2AsArray());
+                DefocusFunction polynomS1;
+                DefocusFunction polynomS2;
+                try {
+                    polynomS1 = quadraticFitter.fitParams(framesArray, sigma1AsArray, 750);
+                    polynomS2 = quadraticFitter.fitParams(framesArray, sigma2AsArray, 750);
+                } catch(TooManyEvaluationsException e) {
+                    //discard not converged
+                    //IJ.log(e.toString());
+                    continue;
+                }
 
                 if(!isInZRange(polynomS1.getC()) || !isInZRange(polynomS2.getC())) {//realy bad fit?
                     continue;
@@ -164,28 +184,26 @@ public class CalibrationProcess {
                 usedPositions.add(p);
 
                 //save values used for fitting for this molecule, subtract moleucle the z-pos so that values from all molecules are aligned
-                sigma1Arrays.add(p.getSigma1AsArray());
-                sigma2Arrays.add(p.getSigma2AsArray());
+                sigma1Arrays.add(sigma1AsArray);
+                sigma2Arrays.add(sigma2AsArray);
                 double[] shiftedFrames = framesArray.clone();
                 for(int i = 0; i < shiftedFrames.length; i++) {
                     shiftedFrames[i] -= intersection;
                 }
                 framesArrays.add(shiftedFrames);
             } catch(TooManyEvaluationsException ex) {
-                IJ.log(ex.getMessage());
+                //discard fits that do not converge
             }
         }
-
+        if(framesArrays.size() < 1) {
+            throw new NoMoleculesFittedException("Could not fit a polynomial in any bead position.");
+        }
         allFrames = flattenListOfArrays(framesArrays);
         allSigma1s = flattenListOfArrays(sigma1Arrays);
         allSigma2s = flattenListOfArrays(sigma2Arrays);
-        polynomS1Final = quadraticFitter.fitParams(allFrames, allSigma1s);
-        polynomS2Final = quadraticFitter.fitParams(allFrames, allSigma2s);
+        polynomS1Final = quadraticFitter.fitParams(allFrames, allSigma1s, 2000);
+        polynomS2Final = quadraticFitter.fitParams(allFrames, allSigma2s, 2000);
 
-        if(allPolynomsS1.size() < 1) {
-            throw new RuntimeException("Could not fit a parabola in any location.");
-        }
-        
         polynomS1Final = polynomS1Final.convertToNm(stageStep);
         polynomS2Final = polynomS2Final.convertToNm(stageStep);
 
@@ -207,11 +225,11 @@ public class CalibrationProcess {
         return retVal;
     }
 
-    protected List<Position> fitFixedAngle() {
+    protected PSFSeparator fitFixedAngle() {
         calibrationEstimatorUI.setAngle(angle);
         calibrationEstimatorUI.resetThreadLocal(); //angle changed so we need to discard the old threadlocal implementations
         //fit stack again with fixed angle
-        final PSFSeparator separator = new PSFSeparator(calibrationEstimatorUI.getFitradius() / 3);
+        final PSFSeparator separator = new PSFSeparator(calibrationEstimatorUI.getFitradius());
         final ImageStack stack = imp.getStack();
         final AtomicInteger framesProcessed = new AtomicInteger(0);
         Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
@@ -227,14 +245,15 @@ public class CalibrationProcess {
                 framesProcessed.incrementAndGet();
 
                 for(Molecule fit : fits) {
-                    separator.add(fit, i);
+                    fit.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, i);
+                    separator.add(fit);
                 }
                 IJ.showProgress(0.45 + 0.45 * (double) framesProcessed.intValue() / (double) stack.getSize());
                 IJ.showStatus("Fitting " + LABEL_SIGMA1 + " and " + LABEL_SIGMA2 + ": frame " + framesProcessed + " of " + stack.getSize() + "...");
             }
         });
         //group fits from the same bead through z-stack
-        return separator.getPositions();
+        return separator;
     }
 
     private boolean isInZRange(double z) {
@@ -242,7 +261,7 @@ public class CalibrationProcess {
     }
 
     private boolean hasEnoughData(double[] framesArray, double intersection) {
-        int minPts = (int) MathProxy.max(10, 0.3 * framesArray.length);
+        int minPts = (int) MathProxy.max(10, 0.2 * framesArray.length);
 
         int smallerThanCenterSigma1 = 0;
         int smallerThanCenterSigma2 = 0;
@@ -300,11 +319,8 @@ public class CalibrationProcess {
         this.angle = angle;
     }
 
-    /**
-     * @return the beadPositions
-     */
-    public List<Position> getBeadPositions() {
-        return beadPositions;
+    public List<Molecule> getAllFits() {
+        return beadFits.getAllFits();
     }
 
     /**
@@ -317,28 +333,28 @@ public class CalibrationProcess {
     /**
      * @return the polynomS2Final
      */
-    public QuadraticFunction getPolynomS2Final() {
+    public DefocusFunction getPolynomS2Final() {
         return polynomS2Final;
     }
 
     /**
      * @return the polynomS1Final
      */
-    public QuadraticFunction getPolynomS1Final() {
+    public DefocusFunction getPolynomS1Final() {
         return polynomS1Final;
     }
 
     /**
      * @return the allPolynomsS1
      */
-    public ArrayList<QuadraticFunction> getAllPolynomsS1() {
+    public ArrayList<DefocusFunction> getAllPolynomsS1() {
         return allPolynomsS1;
     }
 
     /**
      * @return the allPolynomsS2
      */
-    public ArrayList<QuadraticFunction> getAllPolynomsS2() {
+    public ArrayList<DefocusFunction> getAllPolynomsS2() {
         return allPolynomsS2;
     }
 
@@ -361,5 +377,38 @@ public class CalibrationProcess {
      */
     public double[] getAllSigma2s() {
         return allSigma2s;
+    }
+
+    /**
+     * guess z0 of molecule
+     */
+    private double guessZ0(Position p) {
+        double[] sigma1AsArray = p.getSigma1AsArray();
+        double[] sigma2AsArray = p.getSigma2AsArray();
+        double[] framesArray = p.getFramesAsArray();
+        double[] intensityAsArray = p.getIntensityAsArray();
+
+        NaturalRanking ranker = new NaturalRanking();
+        double[] ratiosAsArray = new double[sigma1AsArray.length];
+        for(int i = 0; i < framesArray.length; i++) {
+            double ratio = Math.max(sigma1AsArray[i], sigma2AsArray[i]) / Math.min(sigma1AsArray[i], sigma2AsArray[i]);
+            ratiosAsArray[i] = ratio;
+        }
+
+        double[] ratiosRanks = ranker.rank(ratiosAsArray);
+        double[] sigma1Ranks = ranker.rank(sigma1AsArray);
+        double[] intensityRanks = ranker.rank(intensityAsArray);
+
+        double minVal = ratiosRanks[0] * sigma1Ranks[0] / intensityRanks[0];
+        int minIdx = 0;
+        for(int i = 0; i < ratiosRanks.length; i++) {
+            double val = ratiosRanks[i] * sigma1Ranks[i] / intensityRanks[i];
+            if(val < minVal) {
+                minVal = val;
+                minIdx = i;
+            }
+        }
+
+        return framesArray[minIdx];
     }
 }

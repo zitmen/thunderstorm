@@ -18,25 +18,29 @@ public class PolynomialCalibration implements CylindricalLensCalibration {
 
     final String name = "Polynomial calibration";
     double angle;
-    // polynom = b + a*(z-c)^2
+    // polynom = b + a*(z-c)^2 +d (z-c)^3
     double a1;
     double b1;
     double c1;
+    double d1;
     double a2;
     double b2;
     double c2;
+    double d2;
 
     public PolynomialCalibration() {
     }
 
-    public PolynomialCalibration(double angle, QuadraticFunction sigma1Params, QuadraticFunction sigma2Params) {
+    public PolynomialCalibration(double angle, DefocusFunction sigma1Params, DefocusFunction sigma2Params) {
         this.angle = angle;
         c1 = sigma1Params.getC();
         a1 = sigma1Params.getA();
         b1 = sigma1Params.getB();
+        d1 = sigma1Params.getD();
         c2 = sigma2Params.getC();
         a2 = sigma2Params.getA();
         b2 = sigma2Params.getB();
+        d1 = sigma2Params.getD();
     }
 
     @Override
@@ -44,6 +48,8 @@ public class PolynomialCalibration implements CylindricalLensCalibration {
         return getZZhuang(sigma1, sigma2);
     }
 
+    //not working for 3rd degree polynomial
+    @Deprecated
     public double getZSeparate(double sigma1, double sigma2) {
 
         double sqrt = Math.sqrt((sigma1 - b1) / a1);
@@ -59,7 +65,6 @@ public class PolynomialCalibration implements CylindricalLensCalibration {
         double z2s1 = sqrt + c1;
         double z1s2 = -sqrt2 + c2;
         double z2s2 = sqrt2 + c2;
-
 
         double d11 = Math.abs(z1s1 - z1s2);
         double d12 = Math.abs(z1s1 - z2s2);
@@ -83,6 +88,8 @@ public class PolynomialCalibration implements CylindricalLensCalibration {
         return z;
     }
 
+    //not working for 3rd degree polynomial
+    @Deprecated
     public double getZDiff(double sigma1, double sigma2) {
         double d = sigma1 - sigma2;
         double x;
@@ -107,20 +114,21 @@ public class PolynomialCalibration implements CylindricalLensCalibration {
         //multistart optimizer that does optimization with multiple starting parameters (-500,-300,-100,100,300,500)
         MultiStartMultivariateOptimizer optim = new MultiStartMultivariateOptimizer(new NonLinearConjugateGradientOptimizer(NonLinearConjugateGradientOptimizer.Formula.POLAK_RIBIERE, new SimplePointChecker<PointValuePair>(1e-10, 1e-10)),
                 7, new RandomVectorGenerator() {
-            double value = -700;
+                    double value = -700;
 
-            @Override
-            public double[] nextVector() {
-                value += 200;
-                return new double[]{value};
-            }
-        });
+                    @Override
+                    public double[] nextVector() {
+                        value += 200;
+                        return new double[]{value};
+                    }
+                });
         ObjectiveFunction distanceFunction = new ObjectiveFunction(new MultivariateFunction() {
             @Override
             public double value(double[] point) {
                 double z = point[0];
-                double s1calib = b1 + a1 * sqr(z - c1);
-                double s2calib = b2 + a2 * sqr(z - c2);
+
+                double s1calib = DefocusFunction.value(z, a1, b1, c1, d1);
+                double s2calib = DefocusFunction.value(z, a2, b2, c2, d2);
                 return sqrt(sqr(sqrt(sigma1) - sqrt(s1calib)) + sqr(sqrt(sigma2) - sqrt(s2calib)));
             }
         });
@@ -128,14 +136,22 @@ public class PolynomialCalibration implements CylindricalLensCalibration {
             @Override
             public double[] value(double[] point) throws IllegalArgumentException {
                 // wolfram alpha derivation:
-                // d(sqrt((sqrt(s_1) - sqrt(b_1 - a_1 *(z - c_1)^2))^2+(sqrt(s_2) - sqrt(b_2 - a_2 * (z - c_2)^2))^2))/dz
+                // d(sqrt((sqrt(s_1) - sqrt(b_1 + a_1 *(z - c_1)^2+d_1*(z-c_1)^3))^2+(sqrt(s_2) - sqrt(b_2 + a_2 * (z - c_2)^2+d_2*(z-c_2)^3))^2))/dz
                 double z = point[0];
-                double sqrtS1calib = sqrt(b1 + a1 * sqr(z - c1));
-                double sqrtS2calib = sqrt(b2 + a2 * sqr(z - c2));
-                double upper = (2 * a1 * (z - c1) * (sqrt(sigma1) - sqrtS1calib)) / sqrtS1calib + (2 * a2 * (z - c2) * (sqrt(sigma2) - sqrtS2calib)) / sqrtS2calib;
-                double lower = 2 * sqrt(sqr(sqrt(sigma1) - sqrtS1calib) + sqr(sqrt(sigma2) - sqrtS2calib));
+                double zd1 = z - c1;
+                double zd2 = z - c2;
 
-                return new double[]{-upper / lower};
+                double sqrtS1calib = sqrt(b1 + a1 * sqr(zd1) + d1 * sqr(zd1) * zd1);
+                double sqrtS2calib = sqrt(b2 + a2 * sqr(zd2)) + d2 * sqr(zd2) * zd2;
+
+                double upper
+                        = (zd1 * (2 * a1 + 3 * d1 * zd1) * (sqrtS1calib - sqrt(sigma1))) / sqrtS1calib
+                        + (zd2 * (2 * a2 + 3 * d2 * zd2) * (sqrtS2calib - sqrt(sigma2)));
+                double lower = 2 * sqrt(
+                        sqr(sqrtS1calib - sqrt(sigma1))
+                        + sqr(sqrtS2calib - sqrt(sigma2)));
+
+                return new double[]{upper / lower};
             }
         });
 
@@ -200,4 +216,21 @@ public class PolynomialCalibration implements CylindricalLensCalibration {
     public void setC2(double c2) {
         this.c2 = c2;
     }
+
+    public double getD1() {
+        return d1;
+    }
+
+    public void setD1(double d1) {
+        this.d1 = d1;
+    }
+
+    public double getD2() {
+        return d2;
+    }
+
+    public void setD2(double d2) {
+        this.d2 = d2;
+    }
+    
 }

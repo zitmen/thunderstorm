@@ -70,10 +70,10 @@ public class ModuleLoader {
     public static <T extends IModule> Vector<T> getModules(Class<T> c) {
         //workaround a bug when service loading does not work after refreshing menus in ImageJ
         boolean oldUseCaching = setUseCaching(false);
-        
+
         Vector<T> retval = new Vector<T>();
         try {
-        ServiceLoader loader = ServiceLoader.load(c, IJ.getClassLoader());
+            ServiceLoader loader = ServiceLoader.load(c, IJ.getClassLoader());
             for(Iterator<T> it = loader.iterator(); it.hasNext();) {
                 //when something goes wrong while loading modules, log the error and try to continue
                 try {
@@ -94,13 +94,13 @@ public class ModuleLoader {
         return retval;
     }
 
-    public static List<PostProcessingModule> getPostProcessingModules(){
+    public static List<PostProcessingModule> getPostProcessingModules() {
         //workaround a bug when service loading does not work after refreshing menus in ImageJ
         boolean oldUseCaching = setUseCaching(false);
-        
+
         List<PostProcessingModule> retval = new ArrayList<PostProcessingModule>();
         try {
-        ServiceLoader loader = ServiceLoader.load(PostProcessingModule.class, IJ.getClassLoader());
+            ServiceLoader loader = ServiceLoader.load(PostProcessingModule.class, IJ.getClassLoader());
             for(Iterator<PostProcessingModule> it = loader.iterator(); it.hasNext();) {
                 //when something goes wrong while loading modules, log the error and try to continue
                 try {
@@ -120,9 +120,9 @@ public class ModuleLoader {
         }
         return retval;
     }
-    
+
     /**
-     * Enables or disables caching for URLConnection. 
+     * Enables or disables caching for URLConnection.
      *
      * @return the value of useCaching before this call
      */
@@ -135,5 +135,23 @@ public class ModuleLoader {
         } catch(Exception ex) {
             return true;
         }
+    }
+
+    public static <T extends IModuleUI> T moduleByName(List<T> knownModules, String name) {
+        for(IModuleUI module : knownModules) {
+            if(module.getName().equals(name)) {
+                return (T) module;
+            }
+        }
+        return null;
+    }
+
+    public static <T extends IModuleUI> int moduleIndexByName(List<T> knownModules, String name) {
+        for(int i = 0; i < knownModules.size(); i++) {
+            if(knownModules.get(i).getName().equals(name)) {
+                return i;
+            }
+        }
+        return 0;
     }
 }
