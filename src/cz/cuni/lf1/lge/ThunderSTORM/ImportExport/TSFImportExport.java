@@ -11,6 +11,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Uni
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.IOUtils;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import ij.IJ;
@@ -31,7 +32,6 @@ import java.util.Set;
 import java.util.Vector;
 import org.apache.commons.collections.primitives.ArrayDoubleList;
 import org.apache.commons.collections.primitives.DoubleList;
-import org.apache.commons.io.IOUtils;
 import static org.apache.commons.math3.util.FastMath.log;
 
 public class TSFImportExport implements IImportExport {

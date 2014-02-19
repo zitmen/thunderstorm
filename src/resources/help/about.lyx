@@ -359,6 +359,25 @@ target "http://www.gnu.org/licenses/lgpl.html"
 \begin_layout Itemize
 \begin_inset CommandInset href
 LatexCommand href
+name "MacroAwareUI"
+target "http://bitbucket.org/pepa_borkovec/macroawareui"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "GPLv3"
+target "http://www.gnu.org/licenses/gpl.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
 name "NekoHTML "
 target "http://nekohtml.sourceforge.net/"
 
