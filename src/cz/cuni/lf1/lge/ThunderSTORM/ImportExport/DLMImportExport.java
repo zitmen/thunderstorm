@@ -92,7 +92,7 @@ abstract public class DLMImportExport implements IImportExport {
         
         BufferedWriter writer = new BufferedWriter(new FileWriter(fp));
         for(int c = 0, cm = columns.size(); c < cm; c++) {
-            if(c > 0) writer.write(",");
+            if(c > 0) writer.write(separator);
             writer.write("\"" + table.getColumnLabel(columns.elementAt(c)) + "\"");
         }
         writer.newLine();
@@ -100,7 +100,7 @@ abstract public class DLMImportExport implements IImportExport {
         int ncols = columns.size(), nrows = table.getRowCount();
         for(int r = 0; r < nrows; r++) {
             for(int c = 0; c < ncols; c++) {
-                if(c > 0) writer.write(",");
+                if(c > 0) writer.write(separator);
                 writer.write(Double.toString(table.getValue(r, columns.elementAt(c))));
             }
             writer.newLine();
