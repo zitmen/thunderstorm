@@ -27,20 +27,30 @@ public class Range {
     public static Range parseFromStepTo(String rangeText) throws RuntimeException {
         String [] ft = rangeText.split(":");
         try {
-            if((ft == null) || (ft.length != 3)) throw new Exception();
-            return new Range(Double.parseDouble(ft[0]), Double.parseDouble(ft[1]), Double.parseDouble(ft[2]));
-        } catch(Exception ex) {
-            throw new RuntimeException("Wrong format of range field.");
+            if((ft != null) && (ft.length == 2)) {
+                return parseFromTo(rangeText);
+            } else if((ft == null) || (ft.length != 3)) {
+                double val = Double.parseDouble(rangeText); // not range but just a single value?
+                return new Range(val, 0, val);
+            } else {
+                return new Range(Double.parseDouble(ft[0]), Double.parseDouble(ft[1]), Double.parseDouble(ft[2]));
+            }
+        } catch(NumberFormatException ex) {
+            throw new NumberFormatException("Wrong format of range field. Accepted are 'from:step:to', 'from:to' (step=1), or just 'value' (step=0).");
         }
     }
     
     public static Range parseFromTo(String rangeText) throws RuntimeException {
         String [] ft = rangeText.split(":");
         try {
-            if((ft == null) || (ft.length != 2)) throw new Exception();
-            return new Range(Double.parseDouble(ft[0]), Double.parseDouble(ft[1]));
-        } catch(Exception ex) {
-            throw new RuntimeException("Wrong format of range field.");
+            if((ft == null) || (ft.length != 2)) {
+                double val = Double.parseDouble(rangeText); // not range but just a single value?
+                return new Range(val, val);
+            } else {
+                return new Range(Double.parseDouble(ft[0]), Double.parseDouble(ft[1]));
+            }
+        } catch(NumberFormatException ex) {
+            throw new NumberFormatException("Wrong format of range field. Accepted are 'from:to', or just 'value'.");
         }
     }
     

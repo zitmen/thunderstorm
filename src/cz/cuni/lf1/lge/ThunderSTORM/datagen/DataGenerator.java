@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.datagen;
 
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
@@ -21,8 +20,12 @@ import java.util.Vector;
 
 public class DataGenerator {
     
-    private RandomDataGenerator rand;
-    private Vector<EmitterModel> deleteLater;
+    private final RandomDataGenerator rand;
+    private final Vector<EmitterModel> deleteLater;
+    
+    private double getNextUniform(double lower, double upper) {
+        return ((lower == upper) ? lower : rand.nextUniform(lower, upper));
+    }
     
     public DataGenerator() {
         rand = new RandomDataGenerator();
@@ -52,7 +55,7 @@ public class DataGenerator {
         FloatProcessor img = new FloatProcessor(width + 2*(int)ceil(drift.dist), height + 2*(int)ceil(drift.dist));
         for(int x = 0, w = img.getWidth(); x < w; x++)
             for(int y = 0, h = img.getHeight(); y < h; y++)
-                img.setf(x, y, (float)rand.nextUniform(bkg.from, bkg.to, true));
+                img.setf(x, y, (float)getNextUniform(bkg.from, bkg.to));
         IFilter filter = new BoxFilter(1+2*(int)(((double)Math.min(width, width))/8.0));
         return filter.filterImage(img);
     }
@@ -67,13 +70,13 @@ public class DataGenerator {
                 p_px = gPpx * mask.getf(x, y);  //expected number of molecules inside a pixel
                 int nMols = p_px > 0 ? (int) rand.nextPoisson(p_px) : 0; //actual number of molecules inside a pixel
                 for(int i = 0; i < nMols; i++) {
-                    double z = rand.nextUniform(psf.getZRange().from, psf.getZRange().to);
-                    params[PSFModel.Params.X] = (x + 0.5 + rand.nextUniform(-0.5, +0.5)) * width / mask.getWidth();
-                    params[PSFModel.Params.Y] = (y + 0.5 + rand.nextUniform(-0.5, +0.5)) * height / mask.getHeight();
+                    double z = getNextUniform(psf.getZRange().from, psf.getZRange().to);
+                    params[PSFModel.Params.X] = (x + 0.5 + getNextUniform(-0.5, +0.5)) * width / mask.getWidth();
+                    params[PSFModel.Params.Y] = (y + 0.5 + getNextUniform(-0.5, +0.5)) * height / mask.getHeight();
                     params[PSFModel.Params.SIGMA] = psf.getSigma1(z);
                     params[PSFModel.Params.SIGMA1] = psf.getSigma1(z);
                     params[PSFModel.Params.SIGMA2] = psf.getSigma2(z);
-                    params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
+                    params[PSFModel.Params.INTENSITY] = getNextUniform(intensity_photons.from, intensity_photons.to);
                     params[PSFModel.Params.ANGLE] = Units.RADIAN.convertTo(Units.DEGREE, psf.getAngle());
                     PSFModel model = psf.getImplementation();
                     Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
@@ -97,13 +100,13 @@ public class DataGenerator {
         MoleculeDescriptor descriptor = null;
         double[] params = new double[PSFModel.Params.PARAMS_LENGTH];
         Vector<EmitterModel> molist = new Vector<EmitterModel>();
-        double z = rand.nextUniform(psf.getZRange().from, psf.getZRange().to);
+        double z = getNextUniform(psf.getZRange().from, psf.getZRange().to);
         params[PSFModel.Params.X] = (xOffset + 0.5 + width/2.0);
         params[PSFModel.Params.Y] = (yOffset + 0.5 + height/2.0);
         params[PSFModel.Params.SIGMA] = psf.getSigma1(z);
         params[PSFModel.Params.SIGMA1] = psf.getSigma1(z);
         params[PSFModel.Params.SIGMA2] = psf.getSigma2(z);
-        params[PSFModel.Params.INTENSITY] = rand.nextUniform(intensity_photons.from, intensity_photons.to);
+        params[PSFModel.Params.INTENSITY] = getNextUniform(intensity_photons.from, intensity_photons.to);
         params[PSFModel.Params.ANGLE] = Units.RADIAN.convertTo(Units.DEGREE, psf.getAngle());
         PSFModel model = psf.getImplementation();
         Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);

@@ -202,7 +202,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                 stack.addSlice("", local_stack.elementAt(i));
                 for(EmitterModel psf : local_table.elementAt(i)) {
                     psf.molecule.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double) (f + 1));
-                    psf.molecule.setParam(PSFModel.Params.LABEL_OFFSET, CameraSetupPlugIn.getOffset());
+                    psf.molecule.setParam(PSFModel.Params.LABEL_OFFSET, MoleculeDescriptor.Units.DIGITAL, CameraSetupPlugIn.getOffset());
                     psf.molecule.setParam(PSFModel.Params.LABEL_BACKGROUND, bkgstd);
                     gt.addRow(psf.molecule);
                 }
@@ -302,7 +302,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                     emittersPanel.add(densityTextField, GridBagHelper.rightCol());
                     params.registerComponent(densityParam, densityTextField);
 
-                    emittersPanel.add(new JLabel("Intensity range [photons]:"), GridBagHelper.leftCol());
+                    emittersPanel.add(new JLabel("Intensity range (from:to) [photons]:"), GridBagHelper.leftCol());
                     JTextField intensityTextField = new JTextField(20);
                     emittersPanel.add(intensityTextField, GridBagHelper.rightCol());
                     params.registerComponent(intensityRangeParam, intensityTextField);
