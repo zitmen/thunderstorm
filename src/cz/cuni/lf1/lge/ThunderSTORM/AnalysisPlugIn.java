@@ -75,7 +75,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     private Roi roi;
     private MeasurementProtocol measurementProtocol;
     private AnalysisOptionsDialog dialog;
-
+    
     /**
      * Returns flags specifying capabilities of the plugin.
      *
@@ -274,8 +274,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                     showResults();
                 }
             }
-        } catch(Exception ex) {
-            IJ.handleException(ex);
         }
     }
     
