@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.CardsPanel;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
@@ -10,6 +11,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.datagen.EmitterModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui.IPsfUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
@@ -21,6 +23,8 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.Validator;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -37,6 +41,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -51,7 +56,8 @@ public class DataGeneratorPlugIn implements PlugIn {
     private int width, height, frames, processing_frame;
     private double density;
     private Drift drift;
-    private Range fwhm_range, intensity_range;
+    private Range intensity_range;
+    private IPsfUI psf;
     private double add_poisson_var;
     private FloatProcessor mask;
     private boolean singleFixedMolecule;
@@ -181,8 +187,8 @@ public class DataGeneratorPlugIn implements PlugIn {
                 Arrays.fill(data, add_poisson_var > 0 ? (float) add_poisson_var : 0f);
                 backgroundMeanIntensity = new FloatProcessor(width, height, data, null);
                 Vector<EmitterModel> molecules = singleFixedMolecule
-                        ? datagen.generateSingleFixedMolecule(width, height, 0, 0, intensity_range, fwhm_range)
-                        : datagen.generateMolecules(width, height, mask, density, intensity_range, fwhm_range);
+                        ? datagen.generateSingleFixedMolecule(width, height, 0, 0, intensity_range, psf)
+                        : datagen.generateMolecules(width, height, mask, density, intensity_range, psf);
                 ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, backgroundMeanIntensity);
                 local_stack.add(slice);
                 local_table.add(molecules);
@@ -196,7 +202,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                 stack.addSlice("", local_stack.elementAt(i));
                 for(EmitterModel psf : local_table.elementAt(i)) {
                     psf.molecule.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double) (f + 1));
-                    psf.molecule.setParam(PSFModel.Params.LABEL_OFFSET, CameraSetupPlugIn.getOffset());
+                    psf.molecule.setParam(PSFModel.Params.LABEL_OFFSET, MoleculeDescriptor.Units.DIGITAL, CameraSetupPlugIn.getOffset());
                     psf.molecule.setParam(PSFModel.Params.LABEL_BACKGROUND, bkgstd);
                     gt.addRow(psf.molecule);
                 }
@@ -233,13 +239,14 @@ public class DataGeneratorPlugIn implements PlugIn {
         final ParameterKey.Integer heightParam = params.createIntField("height", IntegerValidatorFactory.positiveNonZero(), Defaults.WIDTH);
         final ParameterKey.Integer framesParam = params.createIntField("frames", IntegerValidatorFactory.positiveNonZero(), Defaults.FRAMES);
         final ParameterKey.Double densityParam = params.createDoubleField("density", DoubleValidatorFactory.positive(), Defaults.DENSITY);
+        final ParameterKey.String psfParam = params.createStringField("psf", new PsfValidator(), Defaults.PSF);
         final ParameterKey.Double addPoissonVarParam = params.createDoubleField("addPoisssonVar", DoubleValidatorFactory.positive(), Defaults.ADD_POISSON_VAR);
-        final ParameterKey.String fwhmRangeParam = params.createStringField("fwhmRange", RangeValidatorFactory.fromTo(), Defaults.FWHM_RANGE);
         final ParameterKey.String intensityRangeParam = params.createStringField("intensityRange", RangeValidatorFactory.fromTo(), Defaults.INTENSITY_RANGE);
         final ParameterKey.Double driftDistParam = params.createDoubleField("driftDist", null, Defaults.DRIFT_DISTANCE);
         final ParameterKey.Double driftAngleParam = params.createDoubleField("driftAngle", null, Defaults.DRIFT_ANGLE);
         final ParameterKey.String maskPathParam = params.createStringField("maskPath", null, Defaults.MASK_PATH);
         ParameterKey.Boolean singleFixedMoleculeParam = params.createBooleanField("singleFixed", null, false);
+        final CardsPanel psfPanel = new CardsPanel(ModuleLoader.getUIModules(IPsfUI.class), 0);
         //
         String macroOptions = Macro.getOptions();
         if(macroOptions != null) {
@@ -285,18 +292,17 @@ public class DataGeneratorPlugIn implements PlugIn {
                     //emitters
                     JPanel emittersPanel = new JPanel(new GridBagLayout());
                     emittersPanel.setBorder(BorderFactory.createTitledBorder("Emitters"));
+                    
+                    JPanel p = psfPanel.getPanel("PSF:");
+                    emittersPanel.add(p, GridBagHelper.twoCols());
+                    params.registerComponent(psfParam, psfPanel.getComboBox());
 
                     emittersPanel.add(new JLabel("Density [um^-2]:"), GridBagHelper.leftCol());
                     JTextField densityTextField = new JTextField(20);
                     emittersPanel.add(densityTextField, GridBagHelper.rightCol());
                     params.registerComponent(densityParam, densityTextField);
 
-                    emittersPanel.add(new JLabel("FWHM range [nm]:"), GridBagHelper.leftCol());
-                    JTextField fwhmTextField = new JTextField(20);
-                    emittersPanel.add(fwhmTextField, GridBagHelper.rightCol());
-                    params.registerComponent(fwhmRangeParam, fwhmTextField);
-
-                    emittersPanel.add(new JLabel("Intensity range [photons]:"), GridBagHelper.leftCol());
+                    emittersPanel.add(new JLabel("Intensity range (from:to) [photons]:"), GridBagHelper.leftCol());
                     JTextField intensityTextField = new JTextField(20);
                     emittersPanel.add(intensityTextField, GridBagHelper.rightCol());
                     params.registerComponent(intensityRangeParam, intensityTextField);
@@ -342,12 +348,27 @@ public class DataGeneratorPlugIn implements PlugIn {
 
                     //buttons
                     JPanel buttons = new JPanel(new GridBagLayout());
-                    buttons.add(createDefaultsButton());
+                    JButton defaultButton = createDefaultsButton();
+                    buttons.add(defaultButton);
                     buttons.add(Box.createHorizontalGlue(), new GridBagHelper.Builder()
                             .fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
                     buttons.add(Help.createHelpButton(DataGeneratorPlugIn.class));
-                    buttons.add(createOKButton());
+                    JButton okButton = createOKButton();
+                    buttons.add(okButton);
                     buttons.add(createCancelButton());
+                    
+                    okButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent ae) {
+                            psfPanel.getActiveComboBoxItem().readParameters();
+                        }
+                    });
+                    defaultButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent ae) {
+                            psfPanel.getActiveComboBoxItem().resetToDefaults();
+                        }
+                    });
 
                     add(cameraPanel, GridBagHelper.twoCols());
                     add(stackPanel, GridBagHelper.twoCols());
@@ -374,8 +395,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         frames = framesParam.getValue();
         density = densityParam.getValue();
         add_poisson_var = addPoissonVarParam.getValue();
-        fwhm_range = Range.parseFromTo(fwhmRangeParam.getValue());
-        fwhm_range.convert(Units.NANOMETER, Units.PIXEL);
+        psf = (IPsfUI)psfPanel.getActiveComboBoxItem();
         intensity_range = Range.parseFromTo(intensityRangeParam.getValue());
         drift = new Drift(Units.NANOMETER.convertTo(Units.PIXEL, driftDistParam.getValue()), driftAngleParam.getValue(), false, frames);
         mask = readMask(maskPathParam.getValue());
@@ -393,9 +413,21 @@ public class DataGeneratorPlugIn implements PlugIn {
         public static final double ADD_POISSON_VAR = 30;
         public static final double DRIFT_DISTANCE = 0;
         public static final double DRIFT_ANGLE = 0;
-        public static final String FWHM_RANGE = "200:350";
         public static final String INTENSITY_RANGE = "700:900";
         public static final String MASK_PATH = "";
+        public static final String PSF = "0";
     }
-
+    
+    static class PsfValidator implements Validator<String> {
+        @Override
+        public void validate(String input) throws ValidatorException {
+            List<IPsfUI> allPSFs = ModuleLoader.getUIModules(IPsfUI.class);
+            for(IPsfUI psf : allPSFs) {
+                if(psf.getName().equals(input)) {
+                    return; // ok
+                }
+            }
+            throw new ValidatorException("Unknown PSF model `" + input + "`!");
+        }
+    }
 }

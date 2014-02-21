@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.UI;
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.GridBagConstraints;
@@ -29,6 +30,7 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
     private JPanel cardsPanel;
     private JPanel helpButtonsCardsPanel;
     private JComboBox cb;
+    private ParameterTracker params;
     private List<T> items;
 
     /**
@@ -47,6 +49,10 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
         if(index_default < cb.getItemCount()) {
             cb.setSelectedIndex(index_default);
         }
+    }
+    
+    public JComboBox getComboBox() {
+        return cb;
     }
 
     /**

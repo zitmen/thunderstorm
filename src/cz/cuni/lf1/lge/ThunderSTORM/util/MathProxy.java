@@ -193,6 +193,16 @@ public class MathProxy {
         return FastMath.max(a, b);
     }
     
+    public static double max(double... values) {
+        double max = values[0];
+        for(int i = 1; i < values.length; i++) {
+            if(values[i] > max) {
+                max = values[i];
+            }
+        }
+        return max;
+    }
+    
     public static int [] genIntSequence(int from, int length) {
         int [] seq = new int[length];
         for(int i = 0; i < length; i++) {

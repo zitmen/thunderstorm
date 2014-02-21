@@ -1,0 +1,80 @@
+package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui;
+
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
+import cz.cuni.lf1.lge.ThunderSTORM.util.RangeValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
+import java.awt.GridBagLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+/**
+ * Note: here `sigma` and `z` are not semantically correct; The reason for this
+ *       is that using FWMH range we simulate a linear defocus with the lower
+ *       value of the range being in focus; this is simply a convenient way of
+ *       implementation for data generator; it has no other semantical meaning
+ */
+public class IntegratedSymmetricGaussianUI extends IPsfUI {
+    
+    private final String name = "Integrated Gaussian";
+    private final transient ParameterKey.String FWHM_RANGE = parameters.createStringField("fwhm_range", RangeValidatorFactory.fromTo(), Defaults.FWHM_RANGE);
+    private Range zRange;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public JPanel getOptionsPanel() {
+        JTextField fwhmTextField = new JTextField("", 20);
+        parameters.registerComponent(FWHM_RANGE, fwhmTextField);
+        
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.add(new JLabel("FWHM range (from:to) [nm]:"), GridBagHelper.leftCol());
+        panel.add(fwhmTextField, GridBagHelper.rightCol());
+        
+        parameters.loadPrefs();
+        return panel;
+    }
+
+    @Override
+    public PSFModel getImplementation() {
+        return new IntegratedSymmetricGaussianPSF(1.6);
+    }
+
+    @Override
+    public double getAngle() {
+        return 0;
+    }
+
+    @Override
+    public Range getZRange() {
+        zRange = Range.parseFromTo(FWHM_RANGE.getValue(), Units.NANOMETER, Units.PIXEL);
+        zRange.from = fwhm2sigma(zRange.from);
+        zRange.to = fwhm2sigma(zRange.to);
+        return zRange;
+    }
+
+    @Override
+    public double getSigma1(double z) {
+        if(!zRange.isIn(z)) {
+            return Double.NaN;
+        }
+        return z;
+    }
+
+    @Override
+    public double getSigma2(double z) {
+        return getSigma1(z);
+    }
+    
+    static class Defaults {
+        public static final String FWHM_RANGE = "200:350";
+    }
+    
+}
