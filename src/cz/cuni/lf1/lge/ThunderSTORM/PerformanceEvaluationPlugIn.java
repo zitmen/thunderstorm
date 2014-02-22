@@ -2,9 +2,6 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.max;
-import ags.utils.dataStructures.MaxHeap;
-import ags.utils.dataStructures.trees.thirdGenKD.KdTree;
-import ags.utils.dataStructures.trees.thirdGenKD.SquareEuclideanDistanceFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
