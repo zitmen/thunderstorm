@@ -4,7 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -16,7 +16,7 @@ import net.java.balloontip.styles.RoundedBalloonStyle;
 class MergedMoleculesPopUp {
 
     // Bug: if row == 0, then the balloon does not show up! This is probably a bug in the BalloonTip library.
-    public MergedMoleculesPopUp(JTable parent, int row, int col, Vector<Molecule> molecules) {
+    public MergedMoleculesPopUp(JTable parent, int row, int col, List<Molecule> molecules) {
         GenericTableModel model = new GenericTableModel();
         for(Molecule mol : molecules) {
             model.addRow(mol);

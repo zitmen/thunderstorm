@@ -14,6 +14,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -98,14 +99,14 @@ public class CrowdedFieldEstimatorsTest {
             fit = fitTestData(fitter, mol);
             System.out.println(fit.toString());
             assertEquals(mol, fit.getDetections().size());
-            Vector<Molecule> detections = fit.getDetections();
+            List<Molecule> detections = fit.getDetections();
             Collections.sort(detections, new MoleculeXYZComparator());
             for(int i = 0; i < mol; i++) {
-                assertEquals(groundTruth[i][0], detections.elementAt(i).getX(), tol[mol-1][0]);
-                assertEquals(groundTruth[i][1], detections.elementAt(i).getY(), tol[mol-1][0]);
-                assertEquals(groundTruth[i][2], detections.elementAt(i).getParam(LABEL_INTENSITY), tol[mol-1][1]);
-                assertEquals(groundTruth[i][3], detections.elementAt(i).getParam(LABEL_OFFSET), tol[mol-1][1]);
-                assertEquals(groundTruth[i][4], detections.elementAt(i).getParam(fit.hasParam(LABEL_SIGMA) ? LABEL_SIGMA : LABEL_SIGMA1), tol[mol-1][2]);
+                assertEquals(groundTruth[i][0], detections.get(i).getX(), tol[mol-1][0]);
+                assertEquals(groundTruth[i][1], detections.get(i).getY(), tol[mol-1][0]);
+                assertEquals(groundTruth[i][2], detections.get(i).getParam(LABEL_INTENSITY), tol[mol-1][1]);
+                assertEquals(groundTruth[i][3], detections.get(i).getParam(LABEL_OFFSET), tol[mol-1][1]);
+                assertEquals(groundTruth[i][4], detections.get(i).getParam(fit.hasParam(LABEL_SIGMA) ? LABEL_SIGMA : LABEL_SIGMA1), tol[mol-1][2]);
             }
         }
     }

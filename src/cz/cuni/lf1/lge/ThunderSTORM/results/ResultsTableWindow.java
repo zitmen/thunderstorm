@@ -264,7 +264,7 @@ public class ResultsTableWindow extends GenericTableWindow {
                 Molecule mol = rt.getRow(rowIndex);
                 if(mol.hasParam(LABEL_DETECTIONS)) {
                     if(mol.getParam(LABEL_DETECTIONS) > 1) {
-                        Vector<Molecule> detections = mol.getDetections();
+                        List<Molecule> detections = mol.getDetections();
                         Collections.sort(detections);
                         new MergedMoleculesPopUp(table, row, 0, detections);
                     }

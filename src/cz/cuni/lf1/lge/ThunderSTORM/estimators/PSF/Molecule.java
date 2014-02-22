@@ -3,7 +3,9 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import ij.IJ;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import org.apache.commons.collections.primitives.ArrayDoubleList;
@@ -12,13 +14,13 @@ import org.apache.commons.collections.primitives.DoubleList;
 public final class Molecule implements Comparable<Molecule> {
 
     public MoleculeDescriptor descriptor;
-    private Vector<Molecule> detections;
+    private List<Molecule> detections;    // for merging of re-appearing molecules (post-processing)
+    public List<Molecule> neighbors;    // for molecule matching (performance evaluation)
     public DoubleList values;
 
     public Molecule(MoleculeDescriptor descriptor, DoubleList values) {
         this.descriptor = descriptor;
         this.values = values;
-        //
     }
     
     public Molecule(MoleculeDescriptor descriptor, double [] values) {
@@ -27,7 +29,6 @@ public final class Molecule implements Comparable<Molecule> {
         for(int i = 0; i < values.length; i++) {
             this.values.add(values[i]);
         }
-        //
     }
     
     public Molecule(Params params) {
@@ -38,13 +39,39 @@ public final class Molecule implements Comparable<Molecule> {
         for(int i = 0; i < params.values.length; i++) {
             values.add(params.values[i]);
         }
-        //
     }
     
     public Molecule(Molecule mol) {
         this.descriptor = mol.descriptor;
         this.values = mol.values;
         this.detections = mol.detections;
+    }
+    
+    public void addNeighbors(List<Molecule> nbrs, double dist2, Units distUnits) {
+        if(neighbors == null) {
+            neighbors = new ArrayList<Molecule>();
+        }
+        for(Molecule nbr : nbrs) {
+            if(getDist2(nbr, distUnits) <= dist2) {
+                neighbors.add(nbr);
+            }
+        }
+    }
+    
+    public double getDist2(Molecule mol, Units distUnits) {
+        return sqr(getX(distUnits) - mol.getX(distUnits)) + sqr(getY(distUnits) - mol.getY(distUnits)) + sqr(getZ(distUnits) - mol.getZ(distUnits));
+    }
+    
+    public double getDist(Molecule mol, Units distUnits) {
+        return sqrt(getDist2(mol, distUnits));
+    }
+    
+    public double getDist2(Molecule mol) {
+        return sqr(getX() - mol.getX()) + sqr(getY() - mol.getY()) + sqr(getZ() - mol.getZ());
+    }
+    
+    public double getDist(Molecule mol) {
+        return sqrt(getDist2(mol));
     }
     
     /**
@@ -302,7 +329,7 @@ public final class Molecule implements Comparable<Molecule> {
         }
     }
 
-    public Vector<Molecule> getDetections() {
+    public List<Molecule> getDetections() {
         return detections;
     }
 

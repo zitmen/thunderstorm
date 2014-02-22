@@ -7,17 +7,17 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LAB
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_GROUND_TRUTH_ID;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_ID;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
-import ags.utils.dataStructures.MaxHeap;
-import ags.utils.dataStructures.trees.thirdGenKD.KdTree;
-import ags.utils.dataStructures.trees.thirdGenKD.SquareEuclideanDistanceFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
+import net.sf.javaml.core.kdtree.KDTree;
+import net.sf.javaml.core.kdtree.KeyDuplicateException;
+import net.sf.javaml.core.kdtree.KeySizeException;
+import robotutils.planning.StableMatching;
 import java.util.List;
+import java.util.Map;
 
 public class MoleculeMatcher {
 
-    public List<Molecule> detections;
-    public List<Molecule> groundTruth;
     public Units distUnits;
     public double dist2Thr;
 
@@ -38,35 +38,50 @@ public class MoleculeMatcher {
         if(det == null || gt == null || TP == null || FP == null || FN == null) {
             return;
         }
-        this.detections = det;
-        this.groundTruth = gt;
         //
-        SquareEuclideanDistanceFunction dist_fn = new SquareEuclideanDistanceFunction();
-        MaxHeap<Molecule> nn_mol;
-        //
-        KdTree<Molecule> tree = new KdTree<Molecule>(3);
-        for(Molecule mol : gt) {
-            tree.addPoint(new double[]{mol.getX(distUnits), mol.getY(distUnits), mol.getZ(distUnits)}, mol);
-            FN.add(mol);
-            mol.setStatus(FALSE_NEGATIVE);
-        }
-        for(Molecule mol : det) {
-            nn_mol = tree.findNearestNeighbors(new double[]{mol.getX(distUnits), mol.getY(distUnits), mol.getZ(distUnits)}, 1, dist_fn);
-            if(nn_mol.getMaxKey() < dist2Thr) {
-                TP.add(new Pair(nn_mol.getMax(), mol));
-                FN.remove(nn_mol.getMax());
-                mol.setStatus(TRUE_POSITIVE);
-                nn_mol.getMax().setStatus(TRUE_POSITIVE);
-                //
-                mol.addParam(LABEL_GROUND_TRUTH_ID, Units.UNITLESS, nn_mol.getMax().getParam(LABEL_ID));
-                mol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH, distUnits, sqrt(nn_mol.getMaxKey()));
-            } else {
-                FP.add(mol);
-                mol.setStatus(FALSE_POSITIVE);
-                //
-                mol.addParam(LABEL_GROUND_TRUTH_ID, Units.UNITLESS, 0);
-                mol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH, distUnits, Double.POSITIVE_INFINITY);
+        // Initialize
+        KDTree<Molecule> tree = new KDTree<Molecule>(3);
+        try {
+            for (Molecule mol : gt) {
+                try {
+                    tree.insert(new double[]{mol.getX(distUnits), mol.getY(distUnits), mol.getZ(distUnits)}, mol);
+                }  catch(KeyDuplicateException ex) {
+                    // this might theoreticaly happen if two molecules are located at the same exact spot; but it is very unlikely
+                }
             }
+            double dist = sqrt(dist2Thr);
+            for (Molecule mol : det) {
+                FP.add(mol);
+                mol.addNeighbors(tree.range(
+                        new double[] { mol.getX(distUnits) - dist, mol.getY(distUnits) - dist, mol.getZ(distUnits) - dist },
+                        new double[] { mol.getX(distUnits) + dist, mol.getY(distUnits) + dist, mol.getZ(distUnits) + dist }), dist2Thr, distUnits);
+            }
+        } catch(KeySizeException ex) {
+            // this will never happen since all the input is administered here
+        }
+        //
+        // Perform the matching in the neighbourhood (given by dist2Thr) of each molecule
+        Map<Molecule, Molecule> pairs = new StableMatching().match(det, gt);
+        //
+        // Set the results (TP, FP, FN)
+        for (Molecule gtMol : gt) {
+            Molecule detMol = pairs.get(gtMol);
+            if(detMol != null) {
+                gtMol.setStatus(TRUE_POSITIVE);
+                detMol.setStatus(TRUE_POSITIVE);
+                FP.remove(detMol);
+                TP.add(new Pair<Molecule, Molecule>(gtMol, detMol));
+                detMol.addParam(LABEL_GROUND_TRUTH_ID, Units.UNITLESS, gtMol.getParam(LABEL_ID));
+                detMol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH, distUnits, gtMol.getDist(detMol, distUnits));
+            } else {
+                FN.add(gtMol);
+                gtMol.setStatus(FALSE_NEGATIVE);
+            }
+        }
+        for(Molecule detMol : FP) {
+            detMol.setStatus(FALSE_POSITIVE);
+            detMol.addParam(LABEL_GROUND_TRUTH_ID, Units.UNITLESS, 0);
+            detMol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH, distUnits, Double.POSITIVE_INFINITY);
         }
     }
 

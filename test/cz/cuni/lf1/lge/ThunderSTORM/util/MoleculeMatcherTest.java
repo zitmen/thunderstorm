@@ -7,7 +7,10 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LAB
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -48,9 +51,17 @@ public class MoleculeMatcherTest {
         matcher.matchMolecules(det, gt, TP, FP, FN);
         //
         // Validate the results:
-        assertArrayEquals(TP_correct.toArray(), TP.toArray());
-        assertArrayEquals(FP_correct.toArray(), FP.toArray());
-        assertArrayEquals(FN_correct.toArray(), FN.toArray());
+        // 1) TP pairs
+        Map gtTP = new HashMap();
+        for(Pair<Molecule, Molecule> pair : TP_correct) {
+            gtTP.put(pair.first, pair.second);
+        }
+        for(Pair<Molecule, Molecule> pair : TP) {
+            assertEquals(gtTP.get(pair.first), pair.second);
+        }
+        // 2) FP & FN lists
+        assertTrue(new HashSet(FP_correct).containsAll(FP));
+        assertTrue(new HashSet(FN_correct).containsAll(FN));
     }
     
 }

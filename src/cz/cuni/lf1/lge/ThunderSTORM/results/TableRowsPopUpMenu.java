@@ -21,13 +21,13 @@ import javax.swing.SwingWorker;
 
 final class TableRowsPopUpMenu implements ActionListener {
 
-    private IJResultsTable rt;
-    private ResultsTableWindow tableWindow;
-    private GenericTableModel tableModel;
-    private JTable jtable;
-    private JMenuItem highlightMoleculeMenuItem;
-    private JMenuItem deleteMoleculeMenuItem;
-    private JMenuItem mergedMoleculesMenuItem;
+    private final IJResultsTable rt;
+    private final ResultsTableWindow tableWindow;
+    private final GenericTableModel tableModel;
+    private final JTable jtable;
+    private final JMenuItem highlightMoleculeMenuItem;
+    private final JMenuItem deleteMoleculeMenuItem;
+    private final JMenuItem mergedMoleculesMenuItem;
 
     public TableRowsPopUpMenu(MouseEvent evt, ResultsTableWindow table) {
         tableWindow = table;
@@ -164,7 +164,7 @@ final class TableRowsPopUpMenu implements ActionListener {
         int row = jtable.getSelectedRow();
         int rowIndex = jtable.convertRowIndexToModel(row);
         Molecule mol = tableModel.getRow(rowIndex);
-        Vector<Molecule> detections = mol.getDetections();
+        List<Molecule> detections = mol.getDetections();
         Collections.sort(detections);
         new MergedMoleculesPopUp(jtable, row, 0, detections);
     }

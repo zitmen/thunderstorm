@@ -16,6 +16,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -644,7 +645,7 @@ public class MoleculeDescriptor implements Cloneable {
         // molecule <-- target
         // detections <-- source
         // paramName <-- parameter, which is this operation applied to
-        public static void merge(Molecule molecule, Vector<Molecule> detections, String paramName) throws Exception {
+        public static void merge(Molecule molecule, List<Molecule> detections, String paramName) throws Exception {
             if(allParams == null) {
                 init();
             }
