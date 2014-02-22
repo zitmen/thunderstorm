@@ -9,9 +9,11 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
+import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeMatcher;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import fiji.util.gui.GenericDialogPlus;
@@ -19,6 +21,8 @@ import ij.IJ;
 import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -80,7 +84,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
     private void runEvaluation(double dist2Tol, Units distUnits) {
         //
         int cores = Runtime.getRuntime().availableProcessors();
-        MoleculeMatcher [] matchers = new MoleculeMatcher[cores];
+        MoleculeMatcherWorker [] matchers = new MoleculeMatcherWorker[cores];
         Thread [] threads = new Thread[cores];
         processingFrame = 1;
         frames = getFrameCount();
@@ -93,7 +97,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
                 } else {
                     f_end = frames;
                 }
-                matchers[c] = new MoleculeMatcher(f_start, f_end, dist2Tol, distUnits);
+                matchers[c] = new MoleculeMatcherWorker(f_start, f_end, dist2Tol, distUnits);
                 threads[c] = new Thread(matchers[c]);
                 f_start = f_end + 1;
             }
@@ -134,11 +138,11 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         //
         Vector<Pair<Molecule,Molecule>> TP = new Vector<Pair<Molecule,Molecule>>();
         double tp = 0.0, fp = 0.0, fn = 0.0;
-        for(int i = 0; i < matchers.length; i++) {
-            tp += (double)matchers[i].TP.size();
-            fp += (double)matchers[i].FP.size();
-            fn += (double)matchers[i].FN.size();
-            TP.addAll(matchers[i].TP);
+        for(MoleculeMatcherWorker matcher : matchers) {
+            tp += (double) matcher.TP.size();
+            fp += (double) matcher.FP.size();
+            fn += (double) matcher.FN.size();
+            TP.addAll(matcher.TP);
         }
         double jaccard = tp / (tp + fp + fn);
         double precision = tp / (tp + fp);
@@ -165,7 +169,6 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         rt.addValue("RMSE lateral [" + distUnits.getLabel() + "]", RMSExy);
         rt.addValue("RMSE axial [" + distUnits.getLabel() + "]", RMSEz);
         rt.addValue("RMSE total [" + distUnits.getLabel() + "]", RMSExyz);
-        
         rt.show("Results");
         //
         IJResultsTable.getResultsTable().fireStructureChanged();
@@ -175,7 +178,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         IJ.showStatus("");
     }
 
-    private double calcRMSExyz(Vector<Pair<Molecule, Molecule>> pairs, Units units) {
+    private double calcRMSExyz(List<Pair<Molecule, Molecule>> pairs, Units units) {
         double rmse = 0.0;
         for(Pair<Molecule,Molecule> pair : pairs) {
             rmse += pair.first.dist2xyz(pair.second, units);
@@ -183,7 +186,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         return sqrt(rmse / (double)pairs.size());
     }
     
-    private double calcRMSExy(Vector<Pair<Molecule, Molecule>> pairs, Units units) {
+    private double calcRMSExy(List<Pair<Molecule, Molecule>> pairs, Units units) {
         double rmse = 0.0;
         for(Pair<Molecule,Molecule> pair : pairs) {
             rmse += pair.first.dist2xy(pair.second, units);
@@ -191,7 +194,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         return sqrt(rmse / (double)pairs.size());
     }
     
-    private double calcRMSEz(Vector<Pair<Molecule, Molecule>> pairs, Units units) {
+    private double calcRMSEz(List<Pair<Molecule, Molecule>> pairs, Units units) {
         double rmse = 0.0;
         for(Pair<Molecule,Molecule> pair : pairs) {
             rmse += pair.first.dist2z(pair.second, units);
@@ -199,7 +202,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         return sqrt(rmse / (double)pairs.size());
     }
     
-    private double calcRMSEx(Vector<Pair<Molecule, Molecule>> pairs, Units units){
+    private double calcRMSEx(List<Pair<Molecule, Molecule>> pairs, Units units){
         double residualSumOfSquares = 0;
         for(Pair<Molecule,Molecule> pair : pairs) {
             residualSumOfSquares += MathProxy.sqr(pair.first.getX(units) - pair.second.getX(units));
@@ -207,7 +210,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         return sqrt(residualSumOfSquares / (double)pairs.size());
     }
     
-    private double calcRMSEy(Vector<Pair<Molecule, Molecule>> pairs, Units units){
+    private double calcRMSEy(List<Pair<Molecule, Molecule>> pairs, Units units){
         double residualSum = 0;
         for(Pair<Molecule,Molecule> pair : pairs) {
             residualSum += MathProxy.sqr(pair.first.getY(units) - pair.second.getY(units));
@@ -228,108 +231,51 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
     
     // ------------------------------------------------------------------------
     
-    final class MoleculeMatcher implements Runnable {
+    final class MoleculeMatcherWorker implements Runnable {
 
         // <Frame #, List of Molecules>
-        public HashMap<Integer, Vector<Molecule>> detections;
-        public HashMap<Integer, Vector<Molecule>> groundTruth;
+        public Map<Integer, List<Molecule>> detections;
+        public Map<Integer, List<Molecule>> groundTruth;
+        private final MoleculeMatcher matcher;
+        public SortedSet<Integer> frames;
         public Vector<Pair<Molecule, Molecule>> TP; // <ground-truth, detection>
         public Vector<Molecule> FP, FN;
-        public SortedSet<Integer> frames;
-        private double dist2Thr;
-        private Units distUnits;
 
-        public MoleculeMatcher(int frameStart, int frameStop, double dist2Thr, Units distUnits) {
-            this.detections = new HashMap<Integer, Vector<Molecule>>();
-            this.groundTruth = new HashMap<Integer, Vector<Molecule>>();
+        public MoleculeMatcherWorker(int frameStart, int frameStop, double dist2Thr, Units distUnits) {
             this.frames = new TreeSet<Integer>();
+            this.detections = fillWithData(frameStart, frameStop, IJResultsTable.getResultsTable());
+            this.groundTruth = fillWithData(frameStart, frameStop, IJGroundTruthTable.getGroundTruthTable());
+            this.matcher = new MoleculeMatcher(dist2Thr, distUnits);
+            //
             this.TP = new Vector<Pair<Molecule, Molecule>>();
             this.FP = new Vector<Molecule>();
             this.FN = new Vector<Molecule>();
-            //
-            this.dist2Thr = dist2Thr;
-            this.distUnits = distUnits;
-            //
-            fillDetections(frameStart, frameStop);
-            fillGroundTruth(frameStart, frameStop);
         }
         
         @Override
         public void run() {
-            matchMolecules(dist2Thr, distUnits);
-        }
-
-        private void fillDetections(int frameStart, int frameStop) {
-            IJResultsTable rt = IJResultsTable.getResultsTable();
-            for(int i = 0, im = rt.getRowCount(); i < im; i++) {
-                Molecule mol = rt.getRow(i);
-                int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME);
-                if((frame < frameStart) || (frame > frameStop)) continue;
-                if(!detections.containsKey(frame)) {
-                    detections.put(frame, new Vector<Molecule>());
-                    frames.add(frame);
-                }
-                detections.get(frame).add(mol);
-            }
-        }
-        
-        private void fillGroundTruth(int frameStart, int frameStop) {
-            IJGroundTruthTable rt = IJGroundTruthTable.getGroundTruthTable();
-            for(int i = 0, im = rt.getRowCount(); i < im; i++) {
-                Molecule mol = rt.getRow(i);
-                int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME);
-                if((frame < frameStart) || (frame > frameStop)) continue;
-                if(!groundTruth.containsKey(frame)) {
-                    groundTruth.put(frame, new Vector<Molecule>());
-                    frames.add(frame);
-                }
-                groundTruth.get(frame).add(mol);
-            }
-        }
-
-        /**
-         * The method matches detected molecules to the ground-truth data.
-         */
-        private void matchMolecules(double dist2_thr, Units distUnits) {
-            SquareEuclideanDistanceFunction dist_fn = new SquareEuclideanDistanceFunction();
-            MaxHeap<Molecule> nn_mol;
             for(Integer frame : frames) {
                 if(Thread.interrupted()) {
                     return;
                 }
                 processingNewFrame("ThunderSTORM is evaluating frame %d out of %d...");
-                //
-                Vector<Molecule> det = detections.get(frame);
-                Vector<Molecule> gt = groundTruth.get(frame);
-                //
-                if(det == null || gt == null) continue;
-                //
-                KdTree<Molecule> tree = new KdTree<Molecule>(3);
-                for(Molecule mol : gt) {
-                    tree.addPoint(new double[]{mol.getX(distUnits), mol.getY(distUnits), mol.getZ(distUnits)}, mol);
-                    FN.add(mol);
-                    mol.setStatus(Molecule.DetectionStatus.FALSE_NEGATIVE);
-                }
-                for(Molecule mol : det) {
-                    nn_mol = tree.findNearestNeighbors(new double[]{mol.getX(distUnits), mol.getY(distUnits), mol.getZ(distUnits)}, 1, dist_fn);
-                    if(nn_mol.getMaxKey() < dist2_thr) {
-                        TP.add(new Pair(nn_mol.getMax(), mol));
-                        FN.remove(nn_mol.getMax());
-                        mol.setStatus(Molecule.DetectionStatus.TRUE_POSITIVE);
-                        nn_mol.getMax().setStatus(Molecule.DetectionStatus.TRUE_POSITIVE);
-                        //tree.removePoint(nn_mol);
-                        //
-                        mol.setParam(MoleculeDescriptor.LABEL_GROUND_TRUTH_ID, nn_mol.getMax().getParam(MoleculeDescriptor.LABEL_ID));
-                        mol.setParam(MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH, sqrt(nn_mol.getMaxKey()));
-                    } else {
-                        FP.add(mol);
-                        mol.setStatus(Molecule.DetectionStatus.FALSE_POSITIVE);
-                        //
-                        mol.setParam(MoleculeDescriptor.LABEL_GROUND_TRUTH_ID, 0);
-                        mol.setParam(MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH, Double.POSITIVE_INFINITY);
-                    }
-                }
+                matcher.matchMolecules(detections.get(frame), groundTruth.get(frame), TP, FP, FN);
             }
+        }
+        
+        private Map<Integer, List<Molecule>> fillWithData(int frameStart, int frameStop, GenericTable table) {
+            Map<Integer, List<Molecule>> framesMolList = new HashMap<Integer, List<Molecule>>();
+            for(int i = 0, im = table.getRowCount(); i < im; i++) {
+                Molecule mol = table.getRow(i);
+                int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME);
+                if((frame < frameStart) || (frame > frameStop)) continue;
+                if(!framesMolList.containsKey(frame)) {
+                    framesMolList.put(frame, new Vector<Molecule>());
+                    frames.add(frame);
+                }
+                framesMolList.get(frame).add(mol);
+            }
+            return framesMolList;
         }
     }
 

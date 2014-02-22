@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable.setResultsTable;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
 

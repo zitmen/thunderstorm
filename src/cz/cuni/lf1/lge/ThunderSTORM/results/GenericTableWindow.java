@@ -43,7 +43,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-class GenericTableWindow {
+public class GenericTableWindow {
 
     protected JFrame frame;
     protected ColoredTable table;
