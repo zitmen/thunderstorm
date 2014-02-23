@@ -72,6 +72,11 @@ public class IntegratedSymmetricGaussianUI extends IPsfUI {
     public double getSigma2(double z) {
         return getSigma1(z);
     }
+
+    @Override
+    public boolean is3D() {
+        return false;
+    }
     
     static class Defaults {
         public static final String FWHM_RANGE = "200:350";

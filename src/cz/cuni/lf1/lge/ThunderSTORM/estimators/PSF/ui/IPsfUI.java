@@ -27,5 +27,6 @@ public abstract class IPsfUI extends IModuleUI<PSFModel> {
     abstract public Range getZRange();
     abstract public double getSigma1(double z);
     abstract public double getSigma2(double z);
+    abstract public boolean is3D();
     
 }

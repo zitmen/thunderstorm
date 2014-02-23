@@ -157,11 +157,11 @@ public class DataGeneratorPlugIn implements PlugIn {
 
     private class GeneratorWorker implements Runnable {
 
-        private int frame_start, frame_end;
+        private final int frame_start, frame_end;
         //private FloatProcessor bkg;
-        private DataGenerator datagen;
-        private Vector<ShortProcessor> local_stack;
-        private Vector<Vector<EmitterModel>> local_table;
+        private final DataGenerator datagen;
+        private final Vector<ShortProcessor> local_stack;
+        private final Vector<Vector<EmitterModel>> local_table;
 
         public GeneratorWorker(int frame_start, int frame_end) {
             this.frame_start = frame_start;

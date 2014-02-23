@@ -110,6 +110,11 @@ public class EllipticGaussianWAngleUI extends IPsfUI {
         return calibration.getSigma2(z);
     }
 
+    @Override
+    public boolean is3D() {
+        return true;
+    }
+
     static class Defaults {
         public static final String CALIBRATION = "";
         public static final String Z_RANGE = "-300:+300";

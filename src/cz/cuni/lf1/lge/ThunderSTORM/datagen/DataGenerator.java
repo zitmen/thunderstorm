@@ -80,7 +80,9 @@ public class DataGenerator {
                     params[PSFModel.Params.ANGLE] = Units.RADIAN.convertTo(Units.DEGREE, psf.getAngle());
                     PSFModel model = psf.getImplementation();
                     Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
-                    mol.addParam(PSFModel.Params.LABEL_Z, Units.NANOMETER, z);
+                    if(psf.is3D()) {
+                        mol.addParam(PSFModel.Params.LABEL_Z, Units.NANOMETER, z);
+                    }
                     
                     //set a common MoleculeDescriptor for all molecules in a frame to save memory
                     if(descriptor != null){
@@ -89,7 +91,6 @@ public class DataGenerator {
                         descriptor = mol.descriptor;
                     }
                     molist.add(new EmitterModel(model, mol));
-                    //
                 }
             }
         }
