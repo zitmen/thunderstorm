@@ -24,7 +24,17 @@ public class DataGenerator {
     private final Vector<EmitterModel> deleteLater;
     
     private double getNextUniform(double lower, double upper) {
-        return ((lower == upper) ? lower : rand.nextUniform(lower, upper));
+        //return ((lower == upper) ? lower : rand.nextUniform(lower, upper));
+        if(lower == upper) {
+            return lower;
+        } else {
+            try {
+                return rand.nextUniform(lower, upper);
+            } catch(Exception ex) {
+                int a = 5;
+                return a;
+            }
+        }
     }
     
     public DataGenerator() {
@@ -65,12 +75,13 @@ public class DataGenerator {
         double[] params = new double[PSFModel.Params.PARAMS_LENGTH];
         Vector<EmitterModel> molist = new Vector<EmitterModel>();
         double gPpx = Units.NANOMETER_SQUARED.convertTo(Units.MICROMETER_SQUARED, sqr(CameraSetupPlugIn.getPixelSize())*width*height/(mask.getWidth()*mask.getHeight())) * density, p_px, p, fwhm0;
+        double zFrom = psf.getZRange().from, zTo = psf.getZRange().to;
         for(int x = 0; x < mask.getWidth(); x++) {
             for(int y = 0; y < mask.getHeight(); y++) {
                 p_px = gPpx * mask.getf(x, y);  //expected number of molecules inside a pixel
                 int nMols = p_px > 0 ? (int) rand.nextPoisson(p_px) : 0; //actual number of molecules inside a pixel
                 for(int i = 0; i < nMols; i++) {
-                    double z = getNextUniform(psf.getZRange().from, psf.getZRange().to);
+                    double z = getNextUniform(zFrom, zTo);
                     params[PSFModel.Params.X] = (x + 0.5 + getNextUniform(-0.5, +0.5)) * width / mask.getWidth();
                     params[PSFModel.Params.Y] = (y + 0.5 + getNextUniform(-0.5, +0.5)) * height / mask.getHeight();
                     params[PSFModel.Params.SIGMA] = psf.getSigma1(z);

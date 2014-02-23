@@ -54,10 +54,12 @@ public class SymmetricGaussianUI extends IPsfUI {
     }
 
     @Override
-    public Range getZRange() {
-        zRange = Range.parseFromTo(FWHM_RANGE.getValue(), Units.NANOMETER, Units.PIXEL);
-        zRange.from = fwhm2sigma(zRange.from);
-        zRange.to = fwhm2sigma(zRange.to);
+    public synchronized Range getZRange() {
+        if(zRange == null) {
+            zRange = Range.parseFromTo(FWHM_RANGE.getValue(), Units.NANOMETER, Units.PIXEL);
+            zRange.from = fwhm2sigma(zRange.from);
+            zRange.to = fwhm2sigma(zRange.to);
+        }
         return zRange;
     }
 

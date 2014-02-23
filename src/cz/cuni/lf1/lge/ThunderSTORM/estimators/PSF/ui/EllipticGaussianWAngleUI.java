@@ -82,7 +82,7 @@ public class EllipticGaussianWAngleUI extends IPsfUI {
     }
 
     @Override
-    public double getAngle() {
+    public synchronized double getAngle() {
         if(calibration == null) {
             calibration = loadCalibration(CALIBRATION.getValue());
         }
@@ -90,12 +90,12 @@ public class EllipticGaussianWAngleUI extends IPsfUI {
     }
 
     @Override
-    public Range getZRange() {
+    public synchronized Range getZRange() {
         return Range.parseFromTo(Z_RANGE.getValue());
     }
 
     @Override
-    public double getSigma1(double z) {
+    public synchronized double getSigma1(double z) {
         if(calibration == null) {
             calibration = loadCalibration(CALIBRATION.getValue());
         }
@@ -103,7 +103,7 @@ public class EllipticGaussianWAngleUI extends IPsfUI {
     }
 
     @Override
-    public double getSigma2(double z) {
+    public synchronized double getSigma2(double z) {
         if(calibration == null) {
             calibration = loadCalibration(CALIBRATION.getValue());
         }
