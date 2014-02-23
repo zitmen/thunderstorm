@@ -1,8 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import ags.utils.dataStructures.MaxHeap;
-import ags.utils.dataStructures.trees.thirdGenKD.KdTree;
-import ags.utils.dataStructures.trees.thirdGenKD.SquareEuclideanDistanceFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
@@ -34,6 +31,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+import net.sf.javaml.core.kdtree.KDTree;
+import net.sf.javaml.core.kdtree.KeyDuplicateException;
+import net.sf.javaml.core.kdtree.KeySizeException;
 
 public class ResultsGrouping extends PostProcessingModule {
 
@@ -41,7 +41,7 @@ public class ResultsGrouping extends PostProcessingModule {
     private JButton applyButton;
     private JLabel groupThrLabel;
 
-    private ParameterKey.Double distParam;
+    private final ParameterKey.Double distParam;
     
     public ResultsGrouping() {
         distParam = params.createDoubleField("dist", DoubleValidatorFactory.positive(), 0);
@@ -209,9 +209,9 @@ public class ResultsGrouping extends PostProcessingModule {
     static class FrameSequence {
 
         // <Frame #, List of Molecules>
-        private HashMap<Integer, Vector<Molecule>> detections;
-        private Vector<Molecule> molecules;
-        private SortedSet frames;
+        private final HashMap<Integer, Vector<Molecule>> detections;
+        private final Vector<Molecule> molecules;
+        private final SortedSet frames;
 
         public FrameSequence() {
             detections = new HashMap<Integer, Vector<Molecule>>();
@@ -252,8 +252,6 @@ public class ResultsGrouping extends PostProcessingModule {
             molecules.clear();
             Integer[] frno = new Integer[frames.size()];
             frames.toArray(frno);
-            SquareEuclideanDistanceFunction dist_fn = new SquareEuclideanDistanceFunction();
-            MaxHeap<Molecule> nn_mol;
             for(int fi = 1; fi < frno.length; fi++) {
                 Vector<Molecule> fr1mol = detections.get(frno[fi - 1]);
                 Vector<Molecule> fr2mol = detections.get(frno[fi]);
@@ -261,18 +259,27 @@ public class ResultsGrouping extends PostProcessingModule {
                 boolean[] selected = new boolean[fr1mol.size()];
                 Arrays.fill(selected, false);
                 //
-                KdTree<Molecule> tree = new KdTree<Molecule>(3);
-                for(Molecule mol : fr2mol) {
-                    tree.addPoint(new double[]{mol.getX(), mol.getY(), mol.getZ()}, mol);
-                }
-                for(int si = 0, sim = fr1mol.size(); si < sim; si++) {
-                    Molecule mol = fr1mol.get(si);
-                    nn_mol = tree.findNearestNeighbors(new double[]{mol.getX(), mol.getY(), mol.getZ()}, 1, dist_fn);
-                    if(nn_mol.getMaxKey() < dist2_thr) {
-                        nn_mol.getMax().addDetection(mol);
-                        nn_mol.getMax().updateParameters();
-                        selected[si] = true;
+                KDTree<Molecule> tree = new KDTree<Molecule>(3);
+                try {
+                    for(Molecule mol : fr2mol) {
+                        try {
+                            tree.insert(new double[]{mol.getX(), mol.getY(), mol.getZ()}, mol);
+                        } catch(KeyDuplicateException ex) {
+                            // almost never happens...if it does, somethin is wrong with fitting/detection
+                        }
                     }
+                    Molecule nn_mol;
+                    for(int si = 0, sim = fr1mol.size(); si < sim; si++) {
+                        Molecule mol = fr1mol.get(si);
+                        nn_mol = tree.nearest(new double[]{mol.getX(), mol.getY(), mol.getZ()});
+                        if(nn_mol.getDist2(mol) < dist2_thr) {
+                            nn_mol.addDetection(mol);
+                            nn_mol.updateParameters();
+                            selected[si] = true;
+                        }
+                    }
+                } catch(KeySizeException ex) {
+                    // never happens
                 }
                 // store the not-selected molecules as real ones
                 for(int si = 0; si < selected.length; si++) {

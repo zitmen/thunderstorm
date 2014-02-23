@@ -14,7 +14,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-class GenericTableModel extends AbstractTableModel implements Cloneable {
+public class GenericTableModel extends AbstractTableModel implements Cloneable {
 
     public static final int COLUMN_NOT_FOUND = -1;
     protected Vector<Molecule> rows;
