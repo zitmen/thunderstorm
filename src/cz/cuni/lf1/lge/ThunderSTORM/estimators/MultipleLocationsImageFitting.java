@@ -60,7 +60,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
         }
     }
 
-    public void run() throws StoppedByUserException{
+    public void run() throws StoppedByUserException {
 
         for(int i = 0; i < locations.size(); i++) {
             GUI.checkIJEscapePressed();

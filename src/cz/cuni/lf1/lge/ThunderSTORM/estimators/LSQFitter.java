@@ -45,11 +45,6 @@ public class LSQFitter implements OneLocationFitter {
         this.bkgStdColumn = bkgStdIndex;
     }
 
-    /**
-     *
-     * @param values
-     * @param initialGuess for example: {A, x, y, sigma, b}
-     */
     @Override
     public Molecule fit(OneLocationFitter.SubImage subimage) {
         computeWeights(subimage);
