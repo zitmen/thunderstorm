@@ -109,7 +109,6 @@ public class DataGenerator {
     }
     
     public Vector<EmitterModel> generateSingleFixedMolecule(int width, int height, double xOffset, double yOffset, Range intensity_photons, IPsfUI psf) {
-        MoleculeDescriptor descriptor = null;
         double[] params = new double[PSFModel.Params.PARAMS_LENGTH];
         Vector<EmitterModel> molist = new Vector<EmitterModel>();
         double z = getNextUniform(psf.getZRange().from, psf.getZRange().to);
@@ -122,12 +121,10 @@ public class DataGenerator {
         params[PSFModel.Params.ANGLE] = Units.RADIAN.convertTo(Units.DEGREE, psf.getAngle());
         PSFModel model = psf.getImplementation();
         Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
-        mol.addParam(PSFModel.Params.LABEL_Z, Units.NANOMETER, z);
-
-        //set a MoleculeDescriptor
-        mol.descriptor = descriptor;
+        if(psf.is3D()) {
+            mol.addParam(PSFModel.Params.LABEL_Z, Units.NANOMETER, z);
+        }
         molist.add(new EmitterModel(model, mol));
-        //
         return molist;
     }
     
