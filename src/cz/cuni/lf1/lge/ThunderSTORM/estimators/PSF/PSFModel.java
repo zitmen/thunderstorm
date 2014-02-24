@@ -87,6 +87,7 @@ public abstract class PSFModel implements IModule {
         public double[] values;
         private HashSet<Integer> params_int;
         private HashMap<String, Integer> params_str;
+        
 
         // if fullVector == true, then values are of length = PARAMS_LENGTH,
         // otherwise they are as long as variables.length
@@ -282,8 +283,7 @@ public abstract class PSFModel implements IModule {
      * first step of nelder-mead simplex algorithm. Used in mle estimator.
      */
     public abstract double[] getInitialSimplex();
-
     public abstract double[] getInitialParams(OneLocationFitter.SubImage subImage);
-
     public abstract Molecule newInstanceFromParams(double[] params, MoleculeDescriptor.Units subImageUnits);
+    public abstract double getDefaultSigma();
 }

@@ -10,6 +10,8 @@ import javax.swing.JPanel;
  * the main window of this plugin. For example different filters, detectors or
  * estimators which are listed in the combo boxes in the
  * {@code AnalysisOptionsDialog}.
+ * 
+ * @param <T> Module Interface
  */
 public abstract class IModuleUI<T extends IModule> {
 
@@ -17,6 +19,7 @@ public abstract class IModuleUI<T extends IModule> {
     protected ParameterTracker parameters = new ParameterTracker(getPreferencesPrefix());
 
     public IModuleUI() {
+        parameters.setNoGuiParametersAllowed(true);
         threadLocalImplementation = new ThreadLocal<T>() {
             @Override
             protected T initialValue() {

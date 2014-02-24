@@ -20,11 +20,11 @@ abstract public class MFA_AbstractFitter implements OneLocationFitter {
     }
 
     // get rid of the molecules close to the fiting region boundary
-    protected Molecule eliminateBadFits(Molecule mol, double maxXY) {
+    protected Molecule eliminateBadFits(Molecule mol, double maxX, double maxY) {
         if(!mol.isSingleMolecule()) {
             Vector<Molecule> detections = new Vector<Molecule>();
             for(Molecule m : mol.getDetections()) {
-                if((abs(m.getX()) <= maxXY) || (abs(m.getY()) <= maxXY)) {
+                if((abs(m.getX()) <= maxX) || (abs(m.getY()) <= maxY)) {
                     detections.add(m);
                 }
             }

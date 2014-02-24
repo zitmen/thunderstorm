@@ -15,8 +15,8 @@ public class MultiPSF extends PSFModel {
 
     private int nmol;
     private double defaultSigma;
-    private PSFModel psf;
-    private double [] n_1_params;   // params fitted in model with nmol=nmol-1
+    private final PSFModel psf;
+    private final double [] n_1_params;   // params fitted in model with nmol=nmol-1
     private Range expI;
     private boolean sameI;
     
@@ -181,7 +181,7 @@ public class MultiPSF extends PSFModel {
                     max_i = i;
                 }
             }
-            OneLocationFitter.SubImage img = new OneLocationFitter.SubImage(subImage.size, subImage.xgrid, subImage.ygrid, residual, subImage.xgrid[max_i], subImage.ygrid[max_i]);
+            OneLocationFitter.SubImage img = new OneLocationFitter.SubImage(subImage.size_x, subImage.size_y, subImage.xgrid, subImage.ygrid, residual, subImage.xgrid[max_i], subImage.ygrid[max_i]);
             // get the initial guess for Nth molecule
             System.arraycopy(psf.getInitialParams(img), 0, guess, (nmol-1)*Params.PARAMS_LENGTH, Params.PARAMS_LENGTH);
             // perform push&pull adjustment -- to close to the boundary? push out; else pull in;
@@ -189,12 +189,12 @@ public class MultiPSF extends PSFModel {
             for(int i = 0, base = 0; i < nmol; i++, base += Params.PARAMS_LENGTH) {
                 x = guess[base+Params.X];
                 y = guess[base+Params.Y];
-                if((subImage.size/2 - abs(x)) < defaultSigma) {
+                if((subImage.size_x/2 - abs(x)) < defaultSigma) {
                     guess[base+Params.X] += (x > 0 ? sig_2 : -sig_2);
                 } else {
                     guess[base+Params.X] -= (x > 0 ? sig_2 : -sig_2);
                 }
-                if((subImage.size/2 - abs(y)) < defaultSigma) {
+                if((subImage.size_y/2 - abs(y)) < defaultSigma) {
                     guess[base+Params.Y] += (y > 0 ? sig_2 : -sig_2);
                 } else {
                     guess[base+Params.Y] -= (y > 0 ? sig_2 : -sig_2);
@@ -223,5 +223,10 @@ public class MultiPSF extends PSFModel {
 
     public void setFixedIntensities(boolean sameI) {
         this.sameI = sameI;
+    }
+
+    @Override
+    public double getDefaultSigma() {
+        return defaultSigma;
     }
 }

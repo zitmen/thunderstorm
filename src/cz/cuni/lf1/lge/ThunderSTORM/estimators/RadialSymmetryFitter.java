@@ -19,12 +19,12 @@ public class RadialSymmetryFitter implements OneLocationFitter {
         float[] dIdu = computeGradientImage(img, false);
         float[] dIdv = computeGradientImage(img, true);
 
-        smooth(dIdu, img.size);
-        smooth(dIdv, img.size);
+        smooth(dIdu, img.size_x);
+        smooth(dIdv, img.size_y);
 
         float[] m = calculateSlope(dIdu, dIdv);
-        float[] xMesh = createMesh(img.size, true);
-        float[] yMesh = createMesh(img.size, false);
+        float[] xMesh = createMesh(img.size_x, true);
+        float[] yMesh = createMesh(img.size_y, false);
 
         float[] yInterceptB = calculateYIntercept(xMesh, yMesh, m);
 
@@ -45,14 +45,14 @@ public class RadialSymmetryFitter implements OneLocationFitter {
      * @return
      */
     private float[] computeGradientImage(SubImage img, boolean mainDiagonalDirection) {
-        float[] dI = new float[(img.size - 1) * (img.size - 1)];
+        float[] dI = new float[(img.size_x - 1) * (img.size_y - 1)];
 
         int idx1 = mainDiagonalDirection ? 0 : 1;
-        int idx2 = mainDiagonalDirection ? img.size + 1 : img.size;
+        int idx2 = mainDiagonalDirection ? img.size_x + 1 : img.size_x;
         int resIdx = 0;
 
-        for(int i = 0; i < img.size - 1; i++) {
-            for(int j = 0; j < img.size - 1; j++) {
+        for(int i = 0; i < img.size_x - 1; i++) {
+            for(int j = 0; j < img.size_y - 1; j++) {
                 dI[resIdx++] = (float) (img.values[idx1++] - img.values[idx2++]);
             }
             idx1++;

@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.CylindricalLensCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.CylindricalLensZEstimator;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.FullImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
@@ -96,22 +97,27 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
         double sigma = SIGMA.getValue();
         int fitradius = FITRAD.getValue();
         EllipticGaussianPSF psf = new EllipticGaussianPSF(sigma, Math.toRadians(calibration.getAngle()));
-        if(LSQ.equals(method) || WLSQ.equals(method)) {
-            if(crowdedField.isEnabled()) {
-                IEstimator mfa = crowdedField.getLSQImplementation(psf, sigma, fitradius);
-                return new CylindricalLensZEstimator(calibration, mfa);
-            } else {
-                LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
-                return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
+        if(FULL_IMAGE_FITTING.getValue() == true) {
+            FullImageFitting fif = new FullImageFitting(psf, method, crowdedField);
+            return new CylindricalLensZEstimator(calibration, fif);
+        } else {
+            if(LSQ.equals(method) || WLSQ.equals(method)) {
+                if(crowdedField.isEnabled()) {
+                    IEstimator mfa = crowdedField.getLSQImplementation(psf, sigma, fitradius);
+                    return new CylindricalLensZEstimator(calibration, mfa);
+                } else {
+                    LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
+                    return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
+                }
             }
-        }
-        if(MLE.equals(method)) {
-            if(crowdedField.isEnabled()) {
-                IEstimator mfa = crowdedField.getMLEImplementation(psf, sigma, fitradius);
-                return new CylindricalLensZEstimator(calibration, mfa);
-            } else {
-                MLEFitter fitter = new MLEFitter(psf, Params.BACKGROUND);
-                return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
+            if(MLE.equals(method)) {
+                if(crowdedField.isEnabled()) {
+                    IEstimator mfa = crowdedField.getMLEImplementation(psf, sigma, fitradius);
+                    return new CylindricalLensZEstimator(calibration, mfa);
+                } else {
+                    MLEFitter fitter = new MLEFitter(psf, Params.BACKGROUND);
+                    return new CylindricalLensZEstimator(calibration, new MultipleLocationsImageFitting(fitradius, fitter));
+                }
             }
         }
         throw new IllegalArgumentException("Unknown fitting method: " + method);

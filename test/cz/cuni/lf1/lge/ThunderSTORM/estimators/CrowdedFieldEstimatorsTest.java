@@ -15,7 +15,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -168,8 +167,9 @@ public class CrowdedFieldEstimatorsTest {
         }
 
         return ((MFA_AbstractFitter) fitter).eliminateBadFits(
-                fitter.fit(new OneLocationFitter.SubImage(2 * FITRADIUS + 1, xgrid, ygrid, values[dataset - 1], 0.0, 0.0, MoleculeDescriptor.Units.DIGITAL)),
-                FITRADIUS);
+            fitter.fit(new OneLocationFitter.SubImage(2 * FITRADIUS + 1, 2 * FITRADIUS + 1,
+                xgrid, ygrid, values[dataset - 1], 0.0, 0.0, MoleculeDescriptor.Units.DIGITAL)),
+                FITRADIUS, FITRADIUS);
     }
 
 }

@@ -66,6 +66,6 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
                 m.setParam(PSFModel.Params.LABEL_BACKGROUND, bkg);
             }
         }
-        return eliminateBadFits(mol, ((double) subimage.size) / 2.0 - defaultSigma / 2.0);
+        return eliminateBadFits(mol, ((double) subimage.size_x) / 2.0 - defaultSigma / 2.0, ((double) subimage.size_y) / 2.0 - defaultSigma / 2.0);
     }
 }

@@ -72,7 +72,8 @@ public class MultipleLocationsImageFitting implements IEstimator {
                     extractSubimageData(xInt, yInt);
                     //new ImagePlus(String.valueOf(i),new FloatProcessor(2*subimageSize+1, 2*subimageSize+1, subimageData)).show();
                     OneLocationFitter.SubImage subImage = new OneLocationFitter.SubImage(
-                            bigSubImageSize,
+                            2*subimageSize+1,
+                            2*subimageSize+1,
                             xgrid,
                             ygrid,
                             subimageData,
@@ -151,7 +152,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
         return extracted;
     }
 
-    private void appendCalculatedUncertainty(Molecule mol) {
+    public static void appendCalculatedUncertainty(Molecule mol) {
         try {
             String paramName = MoleculeDescriptor.Fitting.LABEL_THOMPSON;
             double paramValue;

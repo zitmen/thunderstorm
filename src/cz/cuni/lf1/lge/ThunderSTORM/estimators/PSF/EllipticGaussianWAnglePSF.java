@@ -147,4 +147,9 @@ public class EllipticGaussianWAnglePSF extends PSFModel {
     public double getDoF() {
         return 7;
     }
+
+    @Override
+    public double getDefaultSigma() {
+        return defaultSigma;
+    }
 }

@@ -102,7 +102,6 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
         Vector<Point> detections = new Vector<Point>();
         for(Graph.ConnectedComponent c : Graph.getConnectedComponents((ImageProcessor) maskedImage, Graph.CONNECTIVITY_8)) {
             detections.add(c.centroid());
-            detections.lastElement().val = null;
         }
         return detections;
     }

@@ -144,14 +144,34 @@ public class CrowdedFieldEstimatorUI {
     }
 
     IEstimator getMLEImplementation(PSFModel psf, double sigma, int fitradius) {
-        Range intensityRange = FIXED_INTENSITY.getValue() ? Range.parseFromTo(INTENSITY_RANGE.getValue()) : null;
-        MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, NMAX.getValue(), PVALUE.getValue(), KEEP_SAME_INTENSITY.getValue(), intensityRange);
+        Range intensityRange = isFixedIntensity() ? getIntensityRange() : null;
+        MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, getMaxMolecules(), getPValue(), isKeepSameIntensity(), intensityRange);
         return new MultipleLocationsImageFitting(fitradius, fitter);
     }
 
     IEstimator getLSQImplementation(PSFModel psf, double sigma, int fitradius) {
-        Range intensityRange = FIXED_INTENSITY.getValue() ? Range.parseFromTo(INTENSITY_RANGE.getValue()) : null;
-        MFA_LSQFitter fitter = new MFA_LSQFitter(psf, sigma, NMAX.getValue(), PVALUE.getValue(), KEEP_SAME_INTENSITY.getValue(), intensityRange);
+        Range intensityRange = isFixedIntensity() ? getIntensityRange() : null;
+        MFA_LSQFitter fitter = new MFA_LSQFitter(psf, sigma, getMaxMolecules(), getPValue(), isKeepSameIntensity(), intensityRange);
         return new MultipleLocationsImageFitting(fitradius, fitter);
+    }
+    
+    public boolean isFixedIntensity() {
+        return FIXED_INTENSITY.getValue();
+    }
+
+    public Range getIntensityRange() {
+        return Range.parseFromTo(INTENSITY_RANGE.getValue());
+    }
+    
+    public int getMaxMolecules() {
+        return NMAX.getValue();
+    }
+    
+    public double getPValue() {
+        return PVALUE.getValue();
+    }
+
+    public boolean isKeepSameIntensity() {
+        return KEEP_SAME_INTENSITY.getValue();
     }
 }

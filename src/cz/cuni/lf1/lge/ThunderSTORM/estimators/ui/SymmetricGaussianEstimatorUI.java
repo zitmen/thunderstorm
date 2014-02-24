@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.FullImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
@@ -19,21 +20,24 @@ import javax.swing.JTextField;
 
 public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
 
+    public transient static final String MLE = "Maximum likelihood";
+    public transient static final String LSQ = "Least squares";
+    public transient static final String WLSQ = "Weighted Least squares";
+    //
     protected String name = "PSF: Gaussian";
     protected CrowdedFieldEstimatorUI crowdedField;
-    protected transient static final String MLE = "Maximum likelihood";
-    protected transient static final String LSQ = "Least squares";
-    protected transient static final String WLSQ = "Weighted Least squares";
     //params
     protected transient ParameterKey.Integer FITRAD;
     protected transient ParameterKey.String METHOD;
     protected transient ParameterKey.Double SIGMA;
+    protected transient ParameterKey.Boolean FULL_IMAGE_FITTING;
 
     public SymmetricGaussianEstimatorUI() {
         crowdedField = new CrowdedFieldEstimatorUI();
         FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
         METHOD = parameters.createStringField("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), LSQ);
         SIGMA = parameters.createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
+        FULL_IMAGE_FITTING = parameters.createBooleanField("full_image_fitting", null, false);
     }
 
     @Override
@@ -75,23 +79,26 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
         double sigma = SIGMA.getValue();
         int fitradius = FITRAD.getValue();
         SymmetricGaussianPSF psf = new SymmetricGaussianPSF(sigma);
-        if(LSQ.equals(method) || WLSQ.equals(method)) {
-            if(crowdedField.isEnabled()) {
-                return crowdedField.getLSQImplementation(psf, sigma, fitradius);
-            } else {
-                LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
-                return new MultipleLocationsImageFitting(fitradius, fitter);
+        if(FULL_IMAGE_FITTING.getValue() == true) {
+            return new FullImageFitting(psf, method, crowdedField);
+        } else {
+            if(LSQ.equals(method) || WLSQ.equals(method)) {
+                if(crowdedField.isEnabled()) {
+                    return crowdedField.getLSQImplementation(psf, sigma, fitradius);
+                } else {
+                    LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
+                    return new MultipleLocationsImageFitting(fitradius, fitter);
+                }
+            }
+            if(MLE.equals(method)) {
+                if(crowdedField.isEnabled()) {
+                    return crowdedField.getMLEImplementation(psf, sigma, fitradius);
+                } else {
+                    MLEFitter fitter = new MLEFitter(psf, Params.BACKGROUND);
+                    return new MultipleLocationsImageFitting(fitradius, fitter);
+                }
             }
         }
-        if(MLE.equals(method)) {
-            if(crowdedField.isEnabled()) {
-                return crowdedField.getMLEImplementation(psf, sigma, fitradius);
-            } else {
-                MLEFitter fitter = new MLEFitter(psf, Params.BACKGROUND);
-                return new MultipleLocationsImageFitting(fitradius, fitter);
-            }
-        }
-        //
         throw new IllegalArgumentException("Unknown fitting method: " + method);
     }
 

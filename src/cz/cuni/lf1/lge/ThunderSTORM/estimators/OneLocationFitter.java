@@ -14,18 +14,20 @@ public interface OneLocationFitter {
         public double[] values;
         public double detectorX;
         public double detectorY;
-        public int size;
         public MoleculeDescriptor.Units units;
+        public int size_y;
+        public int size_x;
 
         public SubImage() {
         }
 
-        public SubImage(int size, int[] xgrid, int[] ygrid, double[] values, double detectorX, double detectorY) {
-            this(size, xgrid, ygrid, values, detectorX, detectorY, Units.DIGITAL);
+        public SubImage(int sizeX, int sizeY, int[] xgrid, int[] ygrid, double[] values, double detectorX, double detectorY) {
+            this(sizeX, sizeY, xgrid, ygrid, values, detectorX, detectorY, Units.DIGITAL);
         }
         
-        public SubImage(int size, int[] xgrid, int[] ygrid, double[] values, double detectorX, double detectorY, MoleculeDescriptor.Units units) {
-            this.size = size;
+        public SubImage(int sizeX, int sizeY, int[] xgrid, int[] ygrid, double[] values, double detectorX, double detectorY, MoleculeDescriptor.Units units) {
+            this.size_x = sizeX;
+            this.size_y = sizeY;
             this.xgrid = xgrid;
             this.ygrid = ygrid;
             this.values = values;

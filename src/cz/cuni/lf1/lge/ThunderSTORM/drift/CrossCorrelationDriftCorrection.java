@@ -26,11 +26,11 @@ import org.apache.commons.math3.util.MathArrays;
  */
 public class CrossCorrelationDriftCorrection {
 
-    private int imageWidth;
-    private int imageHeight;
+    private final int imageWidth;
+    private final int imageHeight;
     private double magnification = 5;
-    private int binCount;
-    private boolean saveCorrelationImages;
+    private final int binCount;
+    private final boolean saveCorrelationImages;
     private ImageStack correlationImages;
     private double[] x;
     private double[] y;
@@ -255,7 +255,7 @@ public class CrossCorrelationDriftCorrection {
             }
         }
 
-        OneLocationFitter.SubImage subImage = new OneLocationFitter.SubImage(roiSize, null, null, subImageData, 0, 0);
+        OneLocationFitter.SubImage subImage = new OneLocationFitter.SubImage(roiSize, roiSize, null, null, subImageData, 0, 0);
         RadialSymmetryFitter radialSymmetryFitter = new RadialSymmetryFitter();
         Molecule psf = radialSymmetryFitter.fit(subImage);
 
