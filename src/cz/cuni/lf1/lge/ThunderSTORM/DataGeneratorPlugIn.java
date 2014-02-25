@@ -360,7 +360,12 @@ public class DataGeneratorPlugIn implements PlugIn {
                     okButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent ae) {
-                            psfPanel.getActiveComboBoxItem().readParameters();
+                            IPsfUI psfui = (IPsfUI)psfPanel.getActiveComboBoxItem();
+                            psfui.parameters.readDialogOptions();
+                            psfui.parameters.recordMacroOptions();
+                            if(psfui.parameters.isPrefsSavingEnabled()) {
+                                psfui.parameters.savePrefs();
+                            }
                         }
                     });
                     defaultButton.addActionListener(new ActionListener() {
