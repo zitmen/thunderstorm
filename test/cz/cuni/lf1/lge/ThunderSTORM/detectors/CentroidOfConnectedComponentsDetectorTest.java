@@ -31,8 +31,8 @@ public class CentroidOfConnectedComponentsDetectorTest {
         });
         instance = new CentroidOfConnectedComponentsDetector("5.0", false);
         expResult = new Vector<Point>();
-        expResult.add(new Point(0.5,1.5));
-        expResult.add(new Point(3.0,3.0));
+        expResult.add(new Point(0.5,1.5,7.0));
+        expResult.add(new Point(3.0,3.0,6.0));
         result = instance.detectMoleculeCandidates(image);
         Collections.sort(result, new Point.XYComparator());
         assertEquals(expResult, result);
@@ -45,8 +45,8 @@ public class CentroidOfConnectedComponentsDetectorTest {
         });
         instance = new CentroidOfConnectedComponentsDetector("3.0", true);
         expResult = new Vector<Point>();
-        expResult.add(new Point(1.0,1.0));
-        expResult.add(new Point(1.0,5.0));
+        expResult.add(new Point(1.0,1.0,8.0));
+        expResult.add(new Point(1.0,5.0,8.0));
         result = instance.detectMoleculeCandidates(image);
         Collections.sort(result, new Point.XYComparator());
         assertEquals(expResult, result);
@@ -58,7 +58,7 @@ public class CentroidOfConnectedComponentsDetectorTest {
         });
         instance = new CentroidOfConnectedComponentsDetector("3.0", true);
         expResult = new Vector<Point>();
-        expResult.add(new Point(0.5,0.5));
+        expResult.add(new Point(0.5,0.5,5.0));
         result = instance.detectMoleculeCandidates(image);
         Collections.sort(result, new Point.XYComparator());
         assertEquals(expResult, result);

@@ -101,7 +101,9 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
         // finding a center of gravity (with subpixel precision)
         Vector<Point> detections = new Vector<Point>();
         for(Graph.ConnectedComponent c : Graph.getConnectedComponents((ImageProcessor) maskedImage, Graph.CONNECTIVITY_8)) {
-            detections.add(c.centroid());
+            Point pt = c.centroid();
+            pt.val = new Double(image.getf((int)Math.round(pt.x.doubleValue()), (int)Math.round(pt.y.doubleValue())));
+            detections.add(pt);
         }
         return detections;
     }

@@ -130,7 +130,7 @@ public class CalibrationProcess {
         List<Position> positions = beadFits.getPositions();
 
         //fit a quadratic polynomial to sigma1 = f(zpos) and sigma1 = f(zpos) for each bead
-        IterativeFitting quadraticFitter = new IterativeFitting();
+        IterativeFitting polynomialFitter = new IterativeFitting();
         allPolynomsS1 = new ArrayList<DefocusFunction>();
         allPolynomsS2 = new ArrayList<DefocusFunction>();
 
@@ -161,11 +161,14 @@ public class CalibrationProcess {
                 DefocusFunction polynomS1;
                 DefocusFunction polynomS2;
                 try {
-                    polynomS1 = quadraticFitter.fitParams(framesArray, sigma1AsArray, 750);
-                    polynomS2 = quadraticFitter.fitParams(framesArray, sigma2AsArray, 750);
+                    polynomS1 = polynomialFitter.fitParams(framesArray, sigma1AsArray, 750);
+                    polynomS2 = polynomialFitter.fitParams(framesArray, sigma2AsArray, 750);
                 } catch(TooManyEvaluationsException e) {
                     //discard not converged
                     //IJ.log(e.toString());
+                    continue;
+                } catch(ArrayIndexOutOfBoundsException ex) {
+                    // discard: no detections!
                     continue;
                 }
 
@@ -201,8 +204,8 @@ public class CalibrationProcess {
         allFrames = flattenListOfArrays(framesArrays);
         allSigma1s = flattenListOfArrays(sigma1Arrays);
         allSigma2s = flattenListOfArrays(sigma2Arrays);
-        polynomS1Final = quadraticFitter.fitParams(allFrames, allSigma1s, 2000);
-        polynomS2Final = quadraticFitter.fitParams(allFrames, allSigma2s, 2000);
+        polynomS1Final = polynomialFitter.fitParams(allFrames, allSigma1s, 2000);
+        polynomS2Final = polynomialFitter.fitParams(allFrames, allSigma2s, 2000);
 
         polynomS1Final = polynomS1Final.convertToNm(stageStep);
         polynomS2Final = polynomS2Final.convertToNm(stageStep);

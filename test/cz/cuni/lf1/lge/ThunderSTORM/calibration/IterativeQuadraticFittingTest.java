@@ -14,11 +14,11 @@ public class IterativeQuadraticFittingTest {
     
     @Test
     public void testFitParams() {
-        IterativeFitting quadraticFitter = new IterativeFitting();
+        IterativeFitting polynomialFitter = new IterativeFitting();
         
-        DefocusFunction sigma1params = quadraticFitter.fitParams(zpos, sigma1, 1000);
+        DefocusFunction sigma1params = polynomialFitter.fitParams(zpos, sigma1, 1000);
         System.out.println("s1: " + sigma1params);
-        DefocusFunction sigma2params = quadraticFitter.fitParams(zpos, sigma2, 1000);
+        DefocusFunction sigma2params = polynomialFitter.fitParams(zpos, sigma2, 1000);
         System.out.println("s2: " + sigma2params);
         
         
