@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedDueToErrorException;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
@@ -274,6 +275,8 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                     showResults();
                 }
             }
+        } catch (StoppedDueToErrorException ex) {
+            IJ.error(ex.getMessage());
         }
     }
     
