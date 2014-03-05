@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
+import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
@@ -7,6 +8,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fit
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.measure.Calibration;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
@@ -215,6 +217,15 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             stack.addSlice((i * zStep + zFrom) + " to " + ((i + 1) * zStep + zFrom), slices[i]);
         }
         image = new ImagePlus(getRendererName(), stack);
+        Calibration calibration = new Calibration();
+        double pixelSize = resolution*CameraSetupPlugIn.getPixelSize()/1000;
+        calibration.pixelHeight = pixelSize;
+        calibration.pixelWidth = pixelSize;
+        if(threeDimensions){
+            calibration.pixelDepth = zStep/1000;
+        }
+        calibration.setUnit("\u03BCm"); //unicode for mu
+        image.setCalibration(calibration);
         if(colorizeZ) {
             image.setDimensions(zSlices, 1, 1);
             CompositeImage image2 = new CompositeImage(image);
