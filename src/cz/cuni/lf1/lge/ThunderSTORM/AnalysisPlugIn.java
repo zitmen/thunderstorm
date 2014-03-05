@@ -244,16 +244,14 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         assert (selectedRenderer >= 0 && selectedRenderer < allRenderers.size()) : "Index out of bounds: selectedRenderer!";
         assert (renderingQueue != null) : "Renderer was not selected!";
         //
-        ip.setRoi(roi);
+        ip.setRoi(roi.getBounds());
         FloatProcessor fp = subtract((FloatProcessor) ip.crop().convertToFloat(), (float) CameraSetupPlugIn.getOffset());
         float minVal = VectorMath.min((float[]) fp.getPixels());
         if(minVal < 0) {
             IJ.log("Camera base level is set higher than values in the image!");
             fp = add(-minVal, fp);
         }
-        if(roi != null) {
-            fp.setMask(roi.getMask());
-        }
+        fp.setMask(roi.getMask());    
         try {
             Thresholder.setCurrentImage(fp);
             FloatProcessor filtered = allFilters.get(selectedFilter).getThreadLocalImplementation().filterImage(fp);

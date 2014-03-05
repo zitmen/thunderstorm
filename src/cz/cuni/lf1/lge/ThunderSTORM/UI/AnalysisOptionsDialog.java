@@ -16,9 +16,14 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Prefs;
+import ij.gui.ImageRoi;
+import ij.gui.Line;
+import ij.gui.PointRoi;
 import ij.gui.Roi;
+import ij.gui.TextRoi;
 import ij.measure.Calibration;
 import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GraphicsEnvironment;
@@ -175,7 +180,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         getRootPane().setDefaultButton(ok);
         pack();
         int maxScreenHeight = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height;
-        if(getHeight() > maxScreenHeight){
+        if(getHeight() > maxScreenHeight) {
             setSize(getWidth(), maxScreenHeight);
         }
     }
@@ -254,16 +259,24 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             if(previewFuture != null) {
                 previewFuture.cancel(true);
             }
+            final Roi roi = imp.getRoi();
             previewFuture = previewThreadRunner.submit(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         IJ.showStatus("Creating preview image.");
-                        FloatProcessor fp = subtract((FloatProcessor) imp.getProcessor().crop().convertToFloat(), (float) CameraSetupPlugIn.getOffset());
-                        Roi roi = imp.getRoi();
+                        ImageProcessor processor = imp.getProcessor();
+                        if(roi != null) {
+                            processor.setRoi(roi.getBounds());
+                            processor = processor.crop();
+                        } else {
+                            processor = processor.duplicate();
+                        }
+                        FloatProcessor fp = subtract((FloatProcessor) processor.crop().convertToFloat(), (float) CameraSetupPlugIn.getOffset());
                         if(roi != null) {
                             fp.setMask(roi.getMask());
                         }
+                        
                         Thresholder.setCurrentImage(fp);
                         FloatProcessor filtered = allFilters.get(activeFilterIndex).getThreadLocalImplementation().filterImage(fp);
                         new ImagePlus("ThunderSTORM: filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
@@ -279,7 +292,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                         Vector<Molecule> results = allEstimators.get(activeEstimatorIndex).getThreadLocalImplementation().estimateParameters(fp, detections);
                         GUI.checkIJEscapePressed();
                         //
-                        ImagePlus impPreview = new ImagePlus("ThunderSTORM: detections in frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
+                        ImagePlus impPreview = new ImagePlus("ThunderSTORM: detections in frame " + Integer.toString(imp.getSlice()), processor);
                         RenderingOverlay.showPointsInImage(impPreview,
                                 Molecule.extractParamToArray(results, PSFModel.Params.LABEL_X),
                                 Molecule.extractParamToArray(results, PSFModel.Params.LABEL_Y),

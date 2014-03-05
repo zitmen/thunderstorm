@@ -79,8 +79,9 @@ public class CalibrationProcess {
             @Override
             public void run(int i) {
                 ImageProcessor ip = stack.getProcessor(i);
-                ip.setRoi(roi);
+                ip.setRoi(roi.getBounds());
                 FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
+                fp.setMask(roi.getMask());
                 Thresholder.setCurrentImage(fp);
                 Vector<Molecule> fits = threadLocalEstimatorUI.getThreadLocalImplementation().estimateParameters(fp,
                         Point.applyRoiMask(roi, selectedDetectorUI.getThreadLocalImplementation().detectMoleculeCandidates(selectedFilterUI.getThreadLocalImplementation().filterImage(fp))));
@@ -240,8 +241,9 @@ public class CalibrationProcess {
             public void run(int i) {
                 //fit elliptic gaussians
                 ImageProcessor ip = stack.getProcessor(i);
-                ip.setRoi(roi);
+                ip.setRoi(roi.getBounds());
                 FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
+                fp.setMask(roi.getMask());
                 Thresholder.setCurrentImage(fp);
                 Vector<Molecule> fits = calibrationEstimatorUI.getThreadLocalImplementation().estimateParameters(fp,
                         Point.applyRoiMask(roi, selectedDetectorUI.getThreadLocalImplementation().detectMoleculeCandidates(selectedFilterUI.getThreadLocalImplementation().filterImage(fp))));

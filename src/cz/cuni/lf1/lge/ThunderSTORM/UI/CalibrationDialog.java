@@ -18,6 +18,7 @@ import ij.Macro;
 import ij.gui.Roi;
 import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -157,7 +158,7 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
         try {
             if("Preview".equals(e.getActionCommand())) {
                 Thresholder.setActiveFilter(getActiveFilterUIIndex());
-            // parse parameters
+                // parse parameters
 
                 params.readDialogOptions();
                 getActiveFilterUI().readParameters();
@@ -180,8 +181,16 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
                     public void run() {
                         try {
                             IJ.showStatus("Creating preview image.");
-                            FloatProcessor fp = (FloatProcessor) imp.getProcessor().crop().convertToFloat();
                             Roi roi = imp.getRoi();
+                            ImageProcessor processor = imp.getProcessor();
+                            if(roi != null) {
+                                processor.setRoi(roi.getBounds());
+                                processor = processor.crop();
+                            } else {
+                                processor = processor.duplicate();
+                            }
+                            FloatProcessor fp = (FloatProcessor) processor.convertToFloat();
+
                             if(roi != null) {
                                 fp.setMask(roi.getMask());
                             }
@@ -199,7 +208,7 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
                                 yCoord[i] = detections.get(i).getY().doubleValue();
                             }
                             //
-                            ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), imp.getProcessor().crop());
+                            ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), processor);
                             RenderingOverlay.showPointsInImage(impPreview, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
                             impPreview.show();
                         } catch(StoppedByUserException ex) {
@@ -211,20 +220,20 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
                     }
                 });
             } else if("OK".equals(e.getActionCommand())) {
-                    params.readDialogOptions();
-                    Thresholder.setActiveFilter(getActiveFilterUIIndex());
-                    getActiveFilterUI().readParameters();
-                    getActiveDetectorUI().readParameters();
-                    getActiveEstimatorUI().readParameters();
-                    params.savePrefs();
-                    if(Recorder.record) {
-                        getActiveFilterUI().recordOptions();
-                        getActiveDetectorUI().recordOptions();
-                        getActiveEstimatorUI().recordOptions();
-                        params.recordMacroOptions();
-                    }
-                    result = JOptionPane.OK_OPTION;
-                    dispose();
+                params.readDialogOptions();
+                Thresholder.setActiveFilter(getActiveFilterUIIndex());
+                getActiveFilterUI().readParameters();
+                getActiveDetectorUI().readParameters();
+                getActiveEstimatorUI().readParameters();
+                params.savePrefs();
+                if(Recorder.record) {
+                    getActiveFilterUI().recordOptions();
+                    getActiveDetectorUI().recordOptions();
+                    getActiveEstimatorUI().recordOptions();
+                    params.recordMacroOptions();
+                }
+                result = JOptionPane.OK_OPTION;
+                dispose();
             } else if("Cancel".equals(e.getActionCommand())) {
                 dispose();
             } else if("Defaults".equals(e.getActionCommand())) {
