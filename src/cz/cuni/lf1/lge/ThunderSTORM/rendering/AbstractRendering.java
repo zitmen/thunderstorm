@@ -298,22 +298,22 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             LUT[] channeLuts = new LUT[zSlices];
             for(int i = 0; i < channeLuts.length; i++) {
                 //Colormap for slices: (has constant grayscale intensity, unlike jet and similar)
-                //r:   \
-                //      \__
+                //r:      /
+                //     __/
                 //g:    /\
                 //     /  \
-                //b:      /
-                //     __/
+                //b:   \
+                //      \__
                 float norm = (float) i / zSlices;
                 float r, g, b;
                 if(norm < 0.5) {
-                    r = 1 - 2 * norm;
+                    b = 1 - 2 * norm;
                     g = 2 * norm;
-                    b = 0;
-                } else {
                     r = 0;
+                } else {
+                    b = 0;
                     g = -2 * norm + 2;
-                    b = 2 * norm - 1;
+                    r = 2 * norm - 1;
                 }
                 channeLuts[i] = LUT.createLutFromColor(new Color(r, g, b));
             }

@@ -62,7 +62,14 @@ public class ASHRendering extends AbstractRendering implements IncrementalRender
     if (isInBounds(x, y)) {
       int u = (int) ((x - xmin) / resolution);
       int v = (int) ((y - ymin) / resolution);
-      int w = threeDimensions ? ((int) ((z - zFrom) / zStep)) : 0;
+      int w =  0;
+      if(threeDimensions) {
+        if(z == zTo){
+          w = zSlices-1;
+        }else{
+          w = ((int) ((z - zFrom) / zStep));
+        }
+      }
 
       for (int k = -zShifts + 1; k < zShifts; k++) {
         if (w + k < zSlices && w + k >= 0) {

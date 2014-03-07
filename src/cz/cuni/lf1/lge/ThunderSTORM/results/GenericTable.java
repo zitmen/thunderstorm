@@ -15,6 +15,14 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
 
     TW tableWindow;
     TripleStateTableModel model;
+
+    public TW getTableWindow() {
+        return tableWindow;
+    }
+
+    public TripleStateTableModel getModel() {
+        return model;
+    }
     
     /**
      * Constructs an empty ResultsTable with the counter=0 and no columns.
@@ -271,7 +279,7 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
         return model.rows.isEmpty();
     }
 
-    Vector<Molecule> getData() {
+    public Vector<Molecule> getData() {
         return model.rows;
     }
 

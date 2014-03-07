@@ -36,7 +36,7 @@ package net.sf.javaml.core.kdtree;
   * @since JDK1.2 
   */
 
-public class KeySizeException extends Exception {
+public class KeySizeException extends RuntimeException {
 
     protected KeySizeException() {
 	super("Key size mismatch");

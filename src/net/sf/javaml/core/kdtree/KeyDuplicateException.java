@@ -35,7 +35,7 @@ package net.sf.javaml.core.kdtree;
   * @since JDK1.2 
   */
 
-public class KeyDuplicateException extends Exception {
+public class KeyDuplicateException extends RuntimeException {
 
     protected KeyDuplicateException() {
 	super("Key already in tree");
