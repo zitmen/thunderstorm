@@ -39,6 +39,22 @@ public class MoleculeMatcher {
             return;
         }
         //
+        // Clean the data
+        for(Molecule d : det) {
+            if(d.getStatus() != Molecule.DetectionStatus.UNSPECIFIED) {
+                if(d.neighbors != null) d.neighbors.clear();
+                d.setStatus(Molecule.DetectionStatus.UNSPECIFIED);
+                d.setParam(LABEL_GROUND_TRUTH_ID, Units.UNITLESS, 0);
+                d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH, distUnits, Double.POSITIVE_INFINITY);
+            }
+        }
+        for(Molecule g : gt) {
+            if(g.getStatus() != Molecule.DetectionStatus.UNSPECIFIED) {
+                if(g.neighbors != null) g.neighbors.clear();
+                g.setStatus(Molecule.DetectionStatus.UNSPECIFIED);
+            }
+        }
+        //
         // Initialize
         KDTree<Molecule> tree = new KDTree<Molecule>(3);
         try {
