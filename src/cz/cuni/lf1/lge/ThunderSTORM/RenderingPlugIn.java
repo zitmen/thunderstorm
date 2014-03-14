@@ -22,6 +22,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Macro;
+import ij.Prefs;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.Recorder;
 import java.awt.FlowLayout;
@@ -170,6 +171,7 @@ class RenderingDialog extends JDialog {
     JTextField sizeYTextField;
     int left, top, sizeX, sizeY;
     boolean enablePreview;
+    int activeRendererIndex;
 
     enum DialogResult {
 
@@ -178,10 +180,11 @@ class RenderingDialog extends JDialog {
 
     public RenderingDialog(boolean preview, List<IRendererUI> knownRenderers, int left, int top, int sizeX, int sizeY) {
         super(IJ.getInstance(), "Visualization", true);
+        this.activeRendererIndex = Integer.parseInt(Prefs.get("thunderstorm.rendering.index", "0"));
+        this.renderingMethods = new CardsPanel<IRendererUI>(knownRenderers, activeRendererIndex);
         this.enablePreview = preview;
-        this.renderingMethods = new CardsPanel<IRendererUI>(knownRenderers, 0);
-        this.left = left;
         this.top = top;
+        this.left = left;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         layoutComponents();
@@ -262,6 +265,7 @@ class RenderingDialog extends JDialog {
                 try {
                     validateFields();
                     result = DialogResult.OK;
+                    Prefs.set("thunderstorm.rendering.index", activeRendererIndex = renderingMethods.getActiveComboBoxItemIndex());
                     dispose();
                 } catch(Exception ex) {
                     IJ.showMessage(ex.toString());
@@ -283,7 +287,7 @@ class RenderingDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 sizeXTextField.setText(sizeX + "");
                 sizeYTextField.setText(sizeY + "");
-                renderingMethods.setSelectedItemIndex(0);
+                renderingMethods.setSelectedItemIndex(activeRendererIndex = 0);
                 AnalysisOptionsDialog.resetModuleUIs(renderingMethods.getItems());
             }
         });
@@ -296,6 +300,7 @@ class RenderingDialog extends JDialog {
                     try {
                         validateFields();
                         result = DialogResult.PREVIEW;
+                        Prefs.set("thunderstorm.rendering.index", activeRendererIndex = renderingMethods.getActiveComboBoxItemIndex());
                         dispose();
                     } catch(Exception ex) {
                         IJ.showMessage(ex.toString());

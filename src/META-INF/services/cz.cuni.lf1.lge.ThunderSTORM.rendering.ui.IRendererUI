@@ -1,5 +1,5 @@
 cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.ASHRenderingUI
-cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI
 cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.ScatterRenderingUI
 cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.DensityRenderingUI
 cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.HistogramRenderingUI
+cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI
