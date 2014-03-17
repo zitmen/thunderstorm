@@ -18,12 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -31,9 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
-import net.sf.javaml.core.kdtree.KDTree;
-import net.sf.javaml.core.kdtree.KeyDuplicateException;
-import net.sf.javaml.core.kdtree.KeySizeException;
 
 public class ResultsGrouping extends PostProcessingModule {
 
@@ -100,46 +92,40 @@ public class ResultsGrouping extends PostProcessingModule {
         }
         distanceTextField.setBackground(Color.WHITE);
         GUI.closeBalloonTip();
-        try {
-            applyButton.setEnabled(false);
-            ResultsGrouping.this.saveStateForUndo(MergingOperation.class);
+        applyButton.setEnabled(false);
+        ResultsGrouping.this.saveStateForUndo(MergingOperation.class);
 
-            final int merged = model.getRowCount();
-            new SwingWorker<List<Molecule>, Object>() {
-                @Override
-                protected List<Molecule> doInBackground() {
-                    return getMergedMolecules(model, dist, offFrames, zWeight);
-                }
+        final int merged = model.getRowCount();
+        new SwingWorker<List<Molecule>, Object>() {
+            @Override
+            protected List<Molecule> doInBackground() {
+                return getMergedMolecules(model, dist, offFrames, zWeight);
+            }
 
-                @Override
-                protected void done() {
-                    try {
-                        List<Molecule> mergedMolecules = get();
-                        model.reset();
-                        for(Molecule mol : mergedMolecules) {
-                            model.addRow(mol);
-                        }
-
-                        int into = model.getRowCount();
-                        ResultsGrouping.this.addOperationToHistory(new MergingOperation(dist));
-
-                        table.setStatus(Integer.toString(merged) + " molecules were merged into " + Integer.toString(into) + " molecules");
-                        table.showPreview();
-                    } catch(InterruptedException ex) {
-                    } catch(ExecutionException ex) {
-                        IJ.handleException(ex);
-                        distanceTextField.setBackground(new Color(255, 200, 200));
-                        GUI.showBalloonTip(distanceTextField, ex.getCause().toString());
-                    } finally {
-                        applyButton.setEnabled(true);
+            @Override
+            protected void done() {
+                try {
+                    List<Molecule> mergedMolecules = get();
+                    model.reset();
+                    for(Molecule mol : mergedMolecules) {
+                        model.addRow(mol);
                     }
+
+                    int into = model.getRowCount();
+                    ResultsGrouping.this.addOperationToHistory(new MergingOperation(dist));
+
+                    table.setStatus(Integer.toString(merged) + " molecules were merged into " + Integer.toString(into) + " molecules");
+                    table.showPreview();
+                } catch(InterruptedException ex) {
+                } catch(ExecutionException ex) {
+                    IJ.handleException(ex);
+                    distanceTextField.setBackground(new Color(255, 200, 200));
+                    GUI.showBalloonTip(distanceTextField, ex.getCause().toString());
+                } finally {
+                    applyButton.setEnabled(true);
                 }
-            }.execute();
-        } catch(Exception ex) {
-            IJ.handleException(ex);
-            distanceTextField.setBackground(new Color(255, 200, 200));
-            GUI.showBalloonTip(distanceTextField, ex.toString());
-        }
+            }
+        }.execute();
     }
 
     private class InputListener extends KeyAdapter implements ActionListener {
@@ -209,7 +195,10 @@ public class ResultsGrouping extends PostProcessingModule {
         for(int i = 0, im = model.getRowCount(); i < im; i++) {
             frames.InsertMolecule(model.getRow(i));
         }
-        frames.matchMolecules(sqr(dist), offFrames, zWeight);
+        frames.matchMolecules(sqr(dist),
+                new FrameSequence.Fixed(offFrames),
+                new FrameSequence.LastDetection(),
+                zWeight);
         //
         // Set new IDs for the new "macro" molecules
         for(Molecule mol : frames.getAllMolecules()) {
@@ -219,119 +208,5 @@ public class ResultsGrouping extends PostProcessingModule {
         }
         //
         return frames.getAllMolecules();
-    }
-
-    //
-    // ===================================================================
-    //
-    static class FrameSequence {
-
-        // <Frame #, List of Molecules>
-        private final HashMap<Integer, List<Molecule>> detections;
-        private final List<Molecule> molecules;
-        private final SortedSet<Integer> frames;
-
-        public FrameSequence() {
-            detections = new HashMap<Integer, List<Molecule>>();
-            molecules = new ArrayList<Molecule>();
-            frames = new TreeSet<Integer>();
-        }
-
-        public void InsertMolecule(Molecule mol) {
-            int frame = (int) mol.getParam(MoleculeDescriptor.LABEL_FRAME);
-            // molecule itself has to be added to the list of detections,
-            // because the parameters can change during the merging
-            mol.addDetection(mol.clone(mol.descriptor));
-            mol.updateParameters();
-            mol.addParam(MoleculeDescriptor.LABEL_DETECTIONS, MoleculeDescriptor.Units.UNITLESS, 1);
-            //
-            if(!detections.containsKey(frame)) {
-                detections.put(frame, new ArrayList<Molecule>());
-            }
-            detections.get(frame).add(mol);
-            frames.add(frame);
-        }
-
-        public List<Molecule> getAllMolecules() {
-            Collections.sort(molecules);
-            return molecules;
-        }
-
-        /**
-         * The method matches molecules at the same positions lasting for more
-         * than just 1 frame. Maximum number of frames between two detections to
-         * be still considered as one molecule can be specifed(offFramesThr).
-         *
-         * The method works in 3D - calculating weighted squared euclidean
-         * distance. The weight of z in the distance is specified in
-         * zCoordWeight parameter. X and Y weights are not adjustable. Note:
-         * this method makes changes into `detections`!
-         */
-        public void matchMolecules(double dist2_thr, int offFramesThr, double zCoordWeight) {
-            molecules.clear();
-            List<Molecule> activeMolecules = new ArrayList<Molecule>();
-            List<Molecule> activeMoleculesTemp = new ArrayList<Molecule>();
-            for(int frame : frames) {
-                List<Molecule> fr2mol = detections.get(frame);
-                //
-                KDTree<Molecule> tree = new KDTree<Molecule>(3);
-                try {
-                    //build tree from active detections
-                    for(Molecule mol : activeMolecules) {
-                        try {
-                            Molecule lastAddedMol = getLastAddedChildMolecule(mol);
-                            //key in the tree is the coords of the molecule from last frame, but the object stored is the parent molecule
-                            tree.insert(new double[]{lastAddedMol.getX(), lastAddedMol.getY(), zCoordWeight * lastAddedMol.getZ()}, mol);
-                        } catch(KeyDuplicateException ex) {
-                            IJ.handleException(ex);// almost never happens...if it does, somethin is wrong with fitting/detection
-                        }
-                    }
-                    boolean emptyTree = activeMolecules.isEmpty();
-                    Molecule nn_mol;
-                    for(Molecule mol : fr2mol) {
-                        if(!emptyTree) {
-                            nn_mol = tree.nearest(new double[]{mol.getX(), mol.getY(), zCoordWeight * mol.getZ()});
-                            Molecule lastAddedMol = getLastAddedChildMolecule(nn_mol);
-                            if(squareDistWeightedZ(mol, lastAddedMol, zCoordWeight) < dist2_thr) {
-                                nn_mol.addDetection(mol.getDetections().get(0));
-                                nn_mol.updateParameters();
-                                continue;
-                            }
-                        }
-                        activeMolecules.add(mol);
-                        molecules.add(mol);
-                    }
-
-                    //remove from activeMolecules those, that were off for more than offFramesThr
-                    activeMoleculesTemp.clear();
-                    for(Molecule mol : activeMolecules) {
-                        if(frame - getLastAddedChildMolecule(mol).getParam(MoleculeDescriptor.LABEL_FRAME) <= offFramesThr) {
-                            activeMoleculesTemp.add(mol);
-                        }
-                    }
-                    List<Molecule> pom = activeMolecules;
-                    activeMolecules = activeMoleculesTemp;
-                    activeMoleculesTemp = pom;
-                } catch(KeySizeException ex) {
-                    // never happens
-                }
-            }
-        }
-
-        /**
-         * return the molecule that was last added to the input molecule or the
-         * input molecule if it is a single molecule
-         */
-        private static Molecule getLastAddedChildMolecule(Molecule parent) {
-            if(parent.isSingleMolecule()) {
-                return parent;
-            } else {
-                return parent.getDetections().get(parent.getDetectionsCount() - 1);
-            }
-        }
-
-        private static double squareDistWeightedZ(Molecule m1, Molecule m2, double zWeight) {
-            return sqr(m1.getX() - m2.getX()) + sqr(m1.getY() - m2.getY()) + sqr(zWeight) * sqr(m1.getZ() - m2.getZ());
-        }
     }
 }
