@@ -153,12 +153,12 @@ public class CrossCorrelationDriftCorrection {
         //interpolate the drift using loess interpolator, or linear interpolation if not enough data for loess
         if(binCount < 4) {
             LinearInterpolator interpolator = new LinearInterpolator();
-            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX));
-            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY));
+            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX), (int)minFrame, (int)maxFrame);
+            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY), (int)minFrame, (int)maxFrame);
         } else {
             LoessInterpolator interpolator = new LoessInterpolator(0.5, 0);
-            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX));
-            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY));
+            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX), (int)minFrame, (int)maxFrame);
+            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY), (int)minFrame, (int)maxFrame);
         }
         x = null;
         y = null;
@@ -267,7 +267,7 @@ public class CrossCorrelationDriftCorrection {
     }
 
     //
-    private PolynomialSplineFunction addLinearExtrapolationToBorders(PolynomialSplineFunction spline) {
+    public static PolynomialSplineFunction addLinearExtrapolationToBorders(PolynomialSplineFunction spline, int minFrame, int maxFrame) {
         PolynomialFunction[] polynomials = spline.getPolynomials();
         double[] knots = spline.getKnots();
 
