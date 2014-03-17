@@ -10,21 +10,21 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 public abstract class PostProcessingModule {
-    
+
     protected JPanel uiPanel;
     protected ParameterTracker params = new ParameterTracker();
-    
+
     ResultsTableWindow table;
     TripleStateTableModel model;
-    
+
     public abstract String getMacroName();
-    
+
     public abstract String getTabName();
-    
+
     abstract protected JPanel createUIPanel();
-    
+
     protected abstract void runImpl();
-    
+
     public void run() {
         try {
             if(MacroParser.isRanFromMacro()) {
@@ -32,35 +32,35 @@ public abstract class PostProcessingModule {
             } else {
                 params.readDialogOptions();
             }
-            
+
             runImpl();
-            
+
             recordMacro();
         } catch(Exception e) {
             handleException(e);
         }
     }
-    
+
     void setModel(TripleStateTableModel model) {
         this.model = model;
     }
-    
+
     void setTable(ResultsTableWindow table) {
         this.table = table;
     }
-    
+
     public JPanel getUIPanel() {
         if(uiPanel == null) {
             uiPanel = createUIPanel();
         }
         return uiPanel;
     }
-    
+
     protected <T extends OperationsHistoryPanel.Operation> void saveStateForUndo(Class<T> cls) {
         final IJResultsTable rt = IJResultsTable.getResultsTable();
         final OperationsHistoryPanel history = rt.getOperationHistoryPanel();
-        if(history.getLastOperation() != null &&
-                history.getLastOperation().getClass().equals(cls)) {
+        if(history.getLastOperation() != null
+                && history.getLastOperation().getClass().equals(cls)) {
             if(!history.isLastOperationUndone()) {
                 rt.swapUndoAndActual();     //undo last operation
             }
@@ -68,13 +68,13 @@ public abstract class PostProcessingModule {
         }
         rt.copyActualToUndo();  //save state for later undo
     }
-    
+
     protected void addOperationToHistory(OperationsHistoryPanel.Operation op) {
         final IJResultsTable rt = IJResultsTable.getResultsTable();
         final OperationsHistoryPanel history = rt.getOperationHistoryPanel();
         history.addOperation(op);
     }
-    
+
     protected void handleException(Throwable ex) {
         if(ex instanceof ValidatorException) {
             ValidatorException vex = (ValidatorException) ex;
@@ -88,14 +88,10 @@ public abstract class PostProcessingModule {
                 IJ.handleException(ex);
             }
         } else {
-            if(uiPanel != null) {
-                GUI.showBalloonTip(uiPanel, ex.getClass().getSimpleName() + ":" + ex.getMessage());
-            } else {
-                IJ.handleException(ex);
-            }
+            IJ.handleException(ex);
         }
     }
-    
+
     public void recordMacro() {
         if(Recorder.record) {
             String oldCommand = Recorder.getCommand();
