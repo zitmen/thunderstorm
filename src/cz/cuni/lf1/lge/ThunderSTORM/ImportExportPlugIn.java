@@ -91,6 +91,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 fillImportPane(commands[1], gd);
             }
             //gd.add(Help.createHelpButton("help"));
+            textValueChanged(null); // to update file type automatically
             gd.showDialog();
 
             if(!gd.wasCanceled()) {
@@ -137,6 +138,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         for(int i = 0; i < suffix.length; i++) {
             if(type.equals(suffix[i])) {
                 ftype.select(i);
+                active_ie = i;
                 break;
             }
         }
