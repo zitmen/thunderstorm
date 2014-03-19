@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.drift;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.RadialSymmetryFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
@@ -10,10 +11,12 @@ import ij.process.FloatProcessor;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
+import java.util.Iterator;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
@@ -24,25 +27,7 @@ import org.apache.commons.math3.util.MathArrays;
 /**
  *
  */
-public class CrossCorrelationDriftCorrection {
-
-    private final int imageWidth;
-    private final int imageHeight;
-    private double magnification = 5;
-    private final int binCount;
-    private final boolean saveCorrelationImages;
-    private ImageStack correlationImages;
-    private double[] x;
-    private double[] y;
-    private double[] frame;
-    private double[][] xBinnedByFrame; //xBinnedByFrame[bin]
-    private double[][] yBinnedByFrame;
-    private double minFrame, maxFrame;
-    private double[] binDriftX;
-    private double[] binDriftY;
-    private double[] binCenters;
-    private UnivariateFunction xFunction;
-    private UnivariateFunction yFunction;
+public class CorrelationDriftEstimator {
 
     /**
      *
@@ -54,84 +39,71 @@ public class CrossCorrelationDriftCorrection {
      * @param roiWidth - [px] width of the original image or -1 for max(x)
      * @param roiHeight - [px] height of the original image or -1 for max(y)
      */
-    public CrossCorrelationDriftCorrection(double[] x, double[] y, double[] frame, int steps, double renderingMagnification, int roiWidth, int roiHeight, boolean saveCorrelationImages) {
-        this.x = x;
-        this.y = y;
-        this.frame = frame;
-        this.binCount = steps;
-        this.magnification = renderingMagnification;
-        this.saveCorrelationImages = saveCorrelationImages;
-        this.imageWidth = (roiWidth < 1) ? (int) MathProxy.ceil(VectorMath.max(x)) : roiWidth;
-        this.imageHeight = (roiHeight < 1) ? (int) MathProxy.ceil(VectorMath.max(y)) : roiHeight;
+    public static CrossCorrelationDriftResults estimateDriftFromCoords(
+            double[] x, double[] y, double[] frame,
+            final int steps,
+            final double magnification,
+            int roiWidth, int roiHeight,
+            boolean saveCorrelationImages) {
 
-        run();
+        final BinningResults bins = binResultByFrame(x, y, frame, steps);
+
+        //create iterator over rendered images
+        int imageWidth = (roiWidth < 1) ? (int) MathProxy.ceil(VectorMath.max(x)) : roiWidth;
+        int imageHeight = (roiHeight < 1) ? (int) MathProxy.ceil(VectorMath.max(y)) : roiHeight;
+        final RenderingMethod renderer = new ASHRendering.Builder().roi(0, imageWidth, 0, imageHeight).resolution(1 / magnification).shifts(2).build();
+        Iterator<FloatProcessor> imagesIterator = new Iterator<FloatProcessor>() {
+            int current = 0;
+
+            @Override
+            public boolean hasNext() {
+                return current < steps;
+            }
+
+            @Override
+            public FloatProcessor next() {
+                FloatProcessor ret = (FloatProcessor) renderer.getRenderedImage(bins.xBinnedByFrame[current], bins.yBinnedByFrame[current], null, null)
+                        .getProcessor().convertToFloat();
+                current++;
+                return ret;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Not supported.");
+            }
+        };
+
+        return estimateDriftFromImages(imagesIterator, bins.binCenters, bins.minFrame, bins.maxFrame, saveCorrelationImages, 1 / magnification);
     }
 
-    public double[] getBinCenters() {
-        return binCenters;
-    }
+    public static CrossCorrelationDriftResults estimateDriftFromImages(Iterator<FloatProcessor> images, double[] frames, int minFrame, int maxFrame, boolean saveCorrelationImages, double scaleFactor) {
+        FloatProcessor firstImage = images.next();
+        int paddedSize = CorrelationDriftEstimator.nextPowerOf2(MathProxy.max(firstImage.getWidth(), firstImage.getHeight()));
+        FHT firstImageFFT = new FHT(Padding.padToBiggerSquare(firstImage, 1, paddedSize));
+        firstImageFFT.setShowProgress(false);
+        firstImageFFT.transform();
 
-    public double[] getBinDriftX() {
-        return binDriftX;
-    }
-
-    public double[] getBinDriftY() {
-        return binDriftY;
-    }
-
-    public int getMinFrame() {
-        return (int) minFrame;
-    }
-
-    public int getMaxFrame() {
-        return (int) maxFrame;
-    }
-
-    public double getMagnification() {
-        return magnification;
-    }
-
-    public int getBinCount() {
-        return binCount;
-    }
-
-    public ImageStack getCorrelationImages() {
-        return correlationImages;
-    }
-
-    private void run() {
-        int paddedSize = nextPowerOf2(MathProxy.max((int) (imageWidth * magnification), (int) (imageHeight * magnification)));
-        int originalImageSize = MathProxy.max(imageWidth, imageHeight);
-        double minRoi = 0 - ((double) paddedSize / magnification - originalImageSize) / 2;
-        double maxRoi = originalImageSize + ((double) paddedSize / magnification - originalImageSize) / 2;
-//    double ymin = 0 - ((double) paddedSize / magnification - imageHeight) / 2;
-//    double ymax = imageHeight + ((double) paddedSize / magnification - imageHeight) / 2;
-
-        binResultByFrame();
-
+        ImageStack correlationImages = null;
         if(saveCorrelationImages) {
             correlationImages = new ImageStack(paddedSize, paddedSize);
         }
 
-        binDriftX = new double[binCount];
-        binDriftY = new double[binCount];
-        binDriftX[0] = 0;   //first image has no drift
-        binDriftY[0] = 0;
+        double[] driftXofImage = new double[frames.length];
+        double[] driftYofImage = new double[frames.length];
+        driftXofImage[0] = 0;
+        driftYofImage[0] = 0;
 
-        RenderingMethod renderer = new ASHRendering.Builder().imageSize(paddedSize, paddedSize).roi(minRoi, maxRoi, minRoi, maxRoi).shifts(2).build();
-        FHT firstImage = new FHT(renderer.getRenderedImage(xBinnedByFrame[0], yBinnedByFrame[0], null, null).getProcessor());
-        firstImage.setShowProgress(false);
-        firstImage.transform();
-        FHT secondImage;
-        for(int i = 1; i < xBinnedByFrame.length; i++) {
-            IJ.showProgress((double) i / (double) (binCount - 1));
-            IJ.showStatus("Processing part " + i + " from " + (binCount - 1) + "...");
-            secondImage = new FHT(renderer.getRenderedImage(xBinnedByFrame[i], yBinnedByFrame[i], null, null).getProcessor());
-            secondImage.setShowProgress(false);
-            //new ImagePlus("render " + i,renderer.getRenderedImage(xBinnedByFrame[i], yBinnedByFrame[i], null, null).getProcessor()).show();
-            secondImage.transform();
+        for(int i = 1; i < frames.length; i++) {
+            IJ.showProgress((double) i / (double) (frames.length - 1));
+            IJ.showStatus("Processing part " + i + " from " + (frames.length - 1) + "...");
 
-            FHT crossCorrelationImage = firstImage.conjugateMultiply(secondImage);
+            FloatProcessor nextImage = images.next();
+            FHT imageFFT = new FHT(Padding.padToBiggerSquare(nextImage, Padding.PADDING_ZERO, paddedSize));
+            imageFFT.setShowProgress(false);
+            imageFFT.transform();
+
+            FHT crossCorrelationImage = firstImageFFT.conjugateMultiply(imageFFT);
             crossCorrelationImage.setShowProgress(false);
             crossCorrelationImage.inverseTransform();
             crossCorrelationImage.swapQuadrants();
@@ -140,47 +112,57 @@ public class CrossCorrelationDriftCorrection {
                 correlationImages.addSlice("", crossCorrelationImage);
             }
 
-//            GaussianBlur blur = new GaussianBlur();
-//            blur.blurFloat(crossCorrelationImage, magnification/2, magnification/2, 0.01);
+            Point2D.Double maximumCoords = CorrelationDriftEstimator.findMaxima(crossCorrelationImage);
+            maximumCoords = CorrelationDriftEstimator.findMaximaWithSubpixelPrecision(maximumCoords, 11, crossCorrelationImage);
+            driftXofImage[i] = (crossCorrelationImage.getWidth() / 2 - maximumCoords.x);
+            driftYofImage[i] = (crossCorrelationImage.getHeight() / 2 - maximumCoords.y);
+        }
 
-            //find maxima
-            Point2D.Double maximumCoords = findMaxima(crossCorrelationImage);
-            maximumCoords = findMaximaWithSubpixelPrecision(maximumCoords, 1 + 2 * (int) (5 * magnification), crossCorrelationImage);
-            binDriftX[i] = (crossCorrelationImage.getWidth() / 2 - maximumCoords.x) / magnification;
-            binDriftY[i] = (crossCorrelationImage.getHeight() / 2 - maximumCoords.y) / magnification;
+        //scale
+        for(int i = 0; i < driftXofImage.length; i++) {
+            driftXofImage[i] = scaleFactor * driftXofImage[i];
+            driftYofImage[i] = scaleFactor * driftYofImage[i];
         }
 
         //interpolate the drift using loess interpolator, or linear interpolation if not enough data for loess
-        if(binCount < 4) {
+        UnivariateFunction xFunction;
+        UnivariateFunction yFunction;
+        if(frames.length < 4) {
             LinearInterpolator interpolator = new LinearInterpolator();
-            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX), (int)minFrame, (int)maxFrame);
-            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY), (int)minFrame, (int)maxFrame);
+            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(frames, driftXofImage), minFrame, maxFrame);
+            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(frames, driftYofImage), minFrame, maxFrame);
         } else {
             LoessInterpolator interpolator = new LoessInterpolator(0.5, 0);
-            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftX), (int)minFrame, (int)maxFrame);
-            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(binCenters, binDriftY), (int)minFrame, (int)maxFrame);
+            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(frames, driftXofImage), minFrame, maxFrame);
+            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(frames, driftYofImage), minFrame, maxFrame);
         }
-        x = null;
-        y = null;
-        frame = null;
-        xBinnedByFrame = null;
-        yBinnedByFrame = null;
+
         IJ.showStatus("");
         IJ.showProgress(1.0);
+        return new CrossCorrelationDriftResults(correlationImages, xFunction, yFunction, frames, driftXofImage, driftYofImage, scaleFactor, minFrame, maxFrame, MoleculeDescriptor.Units.PIXEL);
     }
 
-    private void binResultByFrame() {
-        //find min and max frame
-        minFrame = frame[0];
-        maxFrame = frame[0];
-        for(int i = 0; i < frame.length; i++) {
-            if(frame[i] < minFrame) {
-                minFrame = frame[i];
-            }
-            if(frame[i] > maxFrame) {
-                maxFrame = frame[i];
-            }
+    private static class BinningResults {
+
+        double[][] xBinnedByFrame;
+        double[][] yBinnedByFrame;
+        double[] binCenters;
+        int minFrame;
+        int maxFrame;
+
+        public BinningResults(double[][] xBinnedByFrame, double[][] yBinnedByFrame, double[] binCenters, int minFrame, int maxFrame) {
+            this.xBinnedByFrame = xBinnedByFrame;
+            this.yBinnedByFrame = yBinnedByFrame;
+            this.binCenters = binCenters;
+            this.minFrame = minFrame;
+            this.maxFrame = maxFrame;
         }
+    }
+
+    private static BinningResults binResultByFrame(double[] x, double[] y, double[] frame, int binCount) {
+        double minFrame = findMinFrame(frame);
+        double maxFrame = findMaxFrame(frame);
+
         if(maxFrame == minFrame) {
             throw new RuntimeException("Requires multiple frames.");
         }
@@ -189,16 +171,16 @@ public class CrossCorrelationDriftCorrection {
         int detectionsPerBin = frame.length / binCount;
 
         //alloc space for binned results
-        xBinnedByFrame = new double[binCount][];
-        yBinnedByFrame = new double[binCount][];
-        binCenters = new double[binCount];
+        double[][] xBinnedByFrame = new double[binCount][];
+        double[][] yBinnedByFrame = new double[binCount][];
+        double[] binCenters = new double[binCount];
         int currentPos = 0;
         for(int i = 0; i < binCount; i++) {
             int endPos = currentPos + detectionsPerBin;
-            if(endPos >= frame.length || i == binCount-1) {
+            if(endPos >= frame.length || i == binCount - 1) {
                 endPos = frame.length;
             } else {
-                double frameAtEndPos = frame[endPos-1];
+                double frameAtEndPos = frame[endPos - 1];
                 while(endPos < frame.length - 1 && frame[endPos] == frameAtEndPos) {
                     endPos++;
                 }
@@ -210,10 +192,33 @@ public class CrossCorrelationDriftCorrection {
             } else {
                 xBinnedByFrame[i] = Arrays.copyOfRange(x, currentPos, endPos);
                 yBinnedByFrame[i] = Arrays.copyOfRange(y, currentPos, endPos);
-                binCenters[i] = (frame[currentPos] + frame[endPos-1]) / 2;
+                binCenters[i] = (frame[currentPos] + frame[endPos - 1]) / 2;
             }
             currentPos = endPos;
         }
+        return new BinningResults(xBinnedByFrame, yBinnedByFrame, binCenters, (int) minFrame, (int) maxFrame);
+    }
+
+    private static double findMinFrame(double[] frame) {
+        //find min and max frame
+        double minFrame = frame[0];
+        for(int i = 0; i < frame.length; i++) {
+            if(frame[i] < minFrame) {
+                minFrame = frame[i];
+            }
+        }
+        return minFrame;
+    }
+
+    private static double findMaxFrame(double[] frame) {
+        //find min and max frame
+        double maxFrame = frame[0];
+        for(int i = 0; i < frame.length; i++) {
+            if(frame[i] > maxFrame) {
+                maxFrame = frame[i];
+            }
+        }
+        return maxFrame;
     }
 
     private static int nextPowerOf2(int num) {
@@ -224,7 +229,7 @@ public class CrossCorrelationDriftCorrection {
         return powof2;
     }
 
-    private static Point2D.Double findMaxima(FloatProcessor crossCorrelationImage) {
+    static Point2D.Double findMaxima(FloatProcessor crossCorrelationImage) {
         float[] pixels = (float[]) crossCorrelationImage.getPixels();
         int maxIndex = 0;
         float max = pixels[0];
@@ -237,7 +242,7 @@ public class CrossCorrelationDriftCorrection {
         return new Point2D.Double(maxIndex % crossCorrelationImage.getWidth(), maxIndex / crossCorrelationImage.getWidth());
     }
 
-    private Point2D.Double findMaximaWithSubpixelPrecision(Point2D.Double maximumCoords, int roiSize, FHT crossCorrelationImage) {
+    static Point2D.Double findMaximaWithSubpixelPrecision(Point2D.Double maximumCoords, int roiSize, FHT crossCorrelationImage) {
         double[] subImageData = new double[roiSize * roiSize];
         float[] pixels = (float[]) crossCorrelationImage.getPixels();
         int roiX = (int) maximumCoords.x - (roiSize - 1) / 2;
@@ -260,10 +265,6 @@ public class CrossCorrelationDriftCorrection {
         Molecule psf = radialSymmetryFitter.fit(subImage);
 
         return new Point2D.Double((int) maximumCoords.x + psf.getX(), (int) maximumCoords.y + psf.getY());
-    }
-
-    public Point2D.Double getInterpolatedDrift(double frameNumber) {
-        return new Point2D.Double(xFunction.value(frameNumber), yFunction.value(frameNumber));
     }
 
     //
@@ -311,7 +312,7 @@ public class CrossCorrelationDriftCorrection {
 
     }
 
-    boolean isCloseToBorder(int x, int y, int subimageSize, ImageProcessor image) {
+    static boolean isCloseToBorder(int x, int y, int subimageSize, ImageProcessor image) {
         if(x < subimageSize || x > image.getWidth() - subimageSize - 1) {
             return true;
         }

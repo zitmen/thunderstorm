@@ -146,24 +146,24 @@ public class RadialSymmetryFitter implements OneLocationFitter {
      * distance^2 to the origin:
      */
     private double[] lsRadialCenterFit(float[] m, float[] b, float[] weights) {
-        float sw = 0;
-        float smmw = 0;
-        float smw = 0;
-        float smbw = 0;
-        float sbw = 0;
+        double sw = 0;
+        double smmw = 0;
+        double smw = 0;
+        double smbw = 0;
+        double sbw = 0;
 
         for(int i = 0; i < m.length; i++) {
-            float weighted = weights[i] / (m[i] * m[i] + 1); //wm2p1
+            double weighted = weights[i] / (m[i] * m[i] + 1); //wm2p1
             sw += weighted;
-            float mw = weighted * m[i];
+            double mw = weighted * m[i];
             smw += mw;
             smmw += mw * m[i];
             smbw += mw * b[i];
             sbw += weighted * b[i];
         }
-        float det = smw * smw - smmw * sw;
-        float xc = (smbw * sw - smw * sbw) / det;    // relative to image center
-        float yc = (smbw * smw - smmw * sbw) / det; // relative to image center
+        double det = smw * smw - smmw * sw;
+        double xc = (smbw * sw - smw * sbw) / det;    // relative to image center
+        double yc = (smbw * smw - smmw * sbw) / det; // relative to image center
 
         return new double[]{xc, yc};
     }

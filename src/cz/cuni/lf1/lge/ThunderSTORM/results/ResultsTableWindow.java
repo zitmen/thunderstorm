@@ -32,7 +32,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;

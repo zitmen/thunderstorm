@@ -134,7 +134,7 @@ public class FrameSequence {
         Molecule getActiveMoleculePosition(Molecule mol);
     }
 
-    static class LastFewDetectionsMean implements ActiveMoleculePositionStrategy {
+    public static class LastFewDetectionsMean implements ActiveMoleculePositionStrategy {
 
         int few;
         private static final MoleculeDescriptor simpleMolDesc = new MoleculeDescriptor(new String[]{PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y, PSFModel.Params.LABEL_Z});
@@ -164,7 +164,7 @@ public class FrameSequence {
         }
     }
 
-    static class LastDetection implements ActiveMoleculePositionStrategy {
+    public static class LastDetection implements ActiveMoleculePositionStrategy {
 
         @Override
         public Molecule getActiveMoleculePosition(Molecule mol) {
@@ -172,7 +172,7 @@ public class FrameSequence {
         }
     }
 
-    static class Centroid implements ActiveMoleculePositionStrategy {
+    public static class Centroid implements ActiveMoleculePositionStrategy {
 
         @Override
         public Molecule getActiveMoleculePosition(Molecule mol) {
@@ -186,7 +186,7 @@ public class FrameSequence {
         double getMaxOffFrames(Molecule activeMolecule);
     }
 
-    static class Fixed implements OffFramesThresholdStrategy {
+    public static class Fixed implements OffFramesThresholdStrategy {
 
         double threshold;
 
@@ -200,7 +200,7 @@ public class FrameSequence {
         }
     }
 
-    static class RelativeToDetectionCount implements OffFramesThresholdStrategy {
+    public static class RelativeToDetectionCount implements OffFramesThresholdStrategy {
 
         double ratio;
 

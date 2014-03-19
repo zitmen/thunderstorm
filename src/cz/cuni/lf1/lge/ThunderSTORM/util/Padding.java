@@ -82,9 +82,35 @@ public class Padding {
         }
     }
     
+    /**
+     * Only supports padding with zero now
+     */
+    public static FloatProcessor padToBiggerSquare(FloatProcessor image, int type, int targetImageSize){
+        assert targetImageSize >= image.getWidth();
+        assert targetImageSize >= image.getHeight();
+        
+        switch(type) {
+            case PADDING_NONE: return paddingNone(image);
+            case PADDING_ZERO: return paddingZeroSquare(image, targetImageSize);
+            default: throw new UnsupportedOperationException("Unsupported padding method!");
+        }
+    }
+    
     private static FloatProcessor paddingNone(FloatProcessor image) {
         FloatProcessor out = new FloatProcessor(image.getWidth(), image.getHeight());
         out.copyBits(image, 0, 0, Blitter.COPY);
+        return out;
+    }
+    
+    private static FloatProcessor paddingZeroSquare(FloatProcessor image, int targetImageSize) {
+        FloatProcessor out = new FloatProcessor(targetImageSize,targetImageSize);
+        // fill the output image with zeros
+        out.setValue(0);
+        out.fill();
+        // finally, insert the input image inside the output image
+        int xloc = (targetImageSize-image.getWidth())/2;
+        int yloc = (targetImageSize-image.getHeight())/2;
+        out.copyBits(image, xloc, yloc, Blitter.COPY);
         return out;
     }
     
@@ -161,5 +187,6 @@ public class Padding {
         
         return out;
     }
+
     
 }
