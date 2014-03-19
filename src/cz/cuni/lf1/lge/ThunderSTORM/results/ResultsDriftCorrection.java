@@ -1,5 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.drift.CorrelationDriftEstimator;
@@ -27,7 +30,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
@@ -40,25 +42,30 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFact
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
 import ij.IJ;
-import ij.plugin.frame.Recorder;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JFileChooser;
 import javax.swing.JRadioButton;
+import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import net.java.balloontip.BalloonTip;
 import net.java.balloontip.styles.BalloonTipStyle;
 import net.java.balloontip.styles.RoundedBalloonStyle;
+import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 public class ResultsDriftCorrection extends PostProcessingModule {
-
-    JTextField numStepsTextField;
-    JTextField magnificationTextField;
-    JCheckBox showCorrelationsCheckBox;
-    JButton applyButton;
 
     private String[] actions = {"Cross correlation", "Fiducial markers", "Load from file"};
     private ParameterKey.String actionParam;
@@ -74,6 +81,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
     private ParameterKey.Boolean saveParam;
     private ParameterKey.String pathParam;
 
+    private JButton applyButton;
     private BalloonTip ccOptionsBalloon;
     private BalloonTip fiducialOptionsBalloon;
 
@@ -156,11 +164,11 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         //cross correlation options panel
         final JPanel ccPanel = new JPanel(new GridBagLayout());
 
-        numStepsTextField = new JTextField(10);
+        JTextField numStepsTextField = new JTextField(10);
+        JTextField magnificationTextField = new JTextField(10);
+        JCheckBox showCorrelationsCheckBox = new JCheckBox("Show cross correlations", false);
         numStepsTextField.addKeyListener(listener);
-        magnificationTextField = new JTextField(10);
         magnificationTextField.addKeyListener(listener);
-        showCorrelationsCheckBox = new JCheckBox("Show cross correlations", false);
 
         binsParam.registerComponent(numStepsTextField);
         magnificationParam.registerComponent(magnificationTextField);
@@ -178,7 +186,10 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         JTextField distanceThrTextField = new JTextField(10);
         JTextField onTimeRatioTextField = new JTextField(10);
         JTextField smoothingBandwidthTextField = new JTextField(10);
-
+        distanceThrTextField.addActionListener(listener);
+        onTimeRatioTextField.addActionListener(listener);
+        smoothingBandwidthTextField.addActionListener(listener);
+        
         distanceThresholdParam.registerComponent(distanceThrTextField);
         onTimeRatioParam.registerComponent(onTimeRatioTextField);
         smoothingBandwidthParam.registerComponent(smoothingBandwidthTextField);
@@ -191,8 +202,9 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         fiducialPanel.add(smoothingBandwidthTextField, GridBagHelper.rightCol());
 
         //save panel
-        final JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
         final JCheckBox saveCheckBox = new JCheckBox("Save to file:");
+        saveCheckBox.setBorder(null);
         final JTextField savePathTextField = new JTextField(20);
         JButton browseButton = new JButton("...");
         browseButton.setMargin(new Insets(1, 1, 1, 1));
@@ -200,11 +212,14 @@ public class ResultsDriftCorrection extends PostProcessingModule {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser jfc = new JFileChooser(savePathTextField.getText().isEmpty() ? null : savePathTextField.getText());
+                jfc.setFileFilter(new FileNameExtensionFilter("JSON text file", "json"));
                 if(jfc.showDialog(uiPanel, "OK") == JFileChooser.APPROVE_OPTION) {
                     savePathTextField.setText(jfc.getSelectedFile().getPath());
                 }
             }
         });
+        savePathTextField.addActionListener(listener);
+        
         saveParam.registerComponent(saveCheckBox);
         pathParam.registerComponent(savePathTextField);
         final JLabel loadLabel = new JLabel("Load file path:", SwingConstants.TRAILING) {
@@ -217,10 +232,6 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         savePanel.add(saveCheckBox);
         savePanel.add(savePathTextField);
         savePanel.add(browseButton);
-
-        //load panel
-        saveParam.registerComponent(saveCheckBox);
-        pathParam.registerComponent(savePathTextField);
 
         //Table ui panel
         GridBagHelper.Builder glueConstr = new GridBagHelper.Builder().fill(GridBagConstraints.HORIZONTAL).weightx(1);
@@ -325,7 +336,8 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         }
         new SwingWorker<DriftResults, Void>() {
             @Override
-            protected DriftResults doInBackground() {
+            protected DriftResults doInBackground() throws IOException {
+                DriftResults results = null;
                 String action = actionParam.getValue();
                 if(action.equals(actions[0])) {
                     //cross correlation
@@ -333,21 +345,26 @@ public class ResultsDriftCorrection extends PostProcessingModule {
                     double[] y = model.getColumnAsDoubles(PSFModel.Params.LABEL_Y, MoleculeDescriptor.Units.PIXEL);
                     double[] frame = model.getColumnAsDoubles(MoleculeDescriptor.LABEL_FRAME, null);
 
-                    return CorrelationDriftEstimator.estimateDriftFromCoords(x, y, frame, binsParam.getValue(), magnificationParam.getValue(), -1, -1, showCorrelationImagesParam.getValue());
+                    results = CorrelationDriftEstimator.estimateDriftFromCoords(x, y, frame, binsParam.getValue(), magnificationParam.getValue(), -1, -1, showCorrelationImagesParam.getValue());
                 } else if(action.equals(actions[1])) {
                     //fiducials
                     List<Molecule> molecules = getClonedMoleculeList();
 
-                    return new FiducialDriftEstimator().estimateDrift(
+                    results = new FiducialDriftEstimator().estimateDrift(
                             molecules,
                             distanceThresholdParam.getValue(),
                             onTimeRatioParam.getValue(),
                             smoothingBandwidthParam.getValue());
                 } else if(action.equals(actions[2])) {
-                    throw new RuntimeException("NYI");
+                    return loadResultsFromFile(pathParam.getValue());
                 } else {
                     throw new RuntimeException("unknown action");
                 }
+
+                if(saveParam.getValue()) {
+                    saveResultsToFile(results, pathParam.getValue());
+                }
+                return results;
             }
 
             @Override
@@ -389,6 +406,40 @@ public class ResultsDriftCorrection extends PostProcessingModule {
             Point2D.Double drift = driftCorrection.getInterpolatedDrift(frameNumber);
             rt.setValueAt(xVal - unitsDrift.convertTo(unitsX, drift.x), i, PSFModel.Params.LABEL_X);
             rt.setValueAt(yVal - unitsDrift.convertTo(unitsY, drift.y), i, PSFModel.Params.LABEL_Y);
+        }
+    }
+
+    private DriftResults loadResultsFromFile(String path) throws IOException {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(path));
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(
+                    UnivariateFunction.class,
+                    new InstanceCreator<PolynomialSplineFunction>() {
+                        @Override
+                        public PolynomialSplineFunction createInstance(Type type) {
+                            return new PolynomialSplineFunction(new double[]{1, 2}, new PolynomialFunction[]{new PolynomialFunction(new double[1])});
+                        }
+                    }).create();
+            return gson.fromJson(reader, DriftResults.class);
+        } finally {
+            if(reader != null) {
+                reader.close();
+            }
+        }
+    }
+
+    private void saveResultsToFile(DriftResults results, String path) throws IOException {
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(path));
+            Gson gson = new GsonBuilder().create();
+            writer.append(gson.toJson(results));
+        } finally {
+            if(writer != null) {
+                writer.close();
+            }
         }
     }
 
@@ -450,7 +501,6 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         }
         super.handleException(ex);
     }
-
 
     private class InputListener extends KeyAdapter implements ActionListener {
 

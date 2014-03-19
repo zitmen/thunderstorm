@@ -2,13 +2,13 @@ package cz.cuni.lf1.lge.ThunderSTORM.drift;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import java.awt.geom.Point2D;
-import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 public class DriftResults {
 
     //interpolated drift
-    private UnivariateFunction xFunction;
-    private UnivariateFunction yFunction;
+    private PolynomialSplineFunction xFunction;
+    private PolynomialSplineFunction yFunction;
     //actual estimated drift data
     private double[] driftDataFrame;
     private double[] driftDataX;
@@ -19,8 +19,8 @@ public class DriftResults {
     //units of the drift, both for original values interpolation 
     MoleculeDescriptor.Units units;
 
-    public DriftResults(UnivariateFunction xFunction,
-            UnivariateFunction yFunction,
+    public DriftResults(PolynomialSplineFunction xFunction,
+            PolynomialSplineFunction yFunction,
             double[] driftDataFrame,
             double[] driftDataX,
             double[] driftDataY,

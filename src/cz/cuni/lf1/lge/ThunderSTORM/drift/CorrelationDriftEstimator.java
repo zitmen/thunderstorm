@@ -17,7 +17,6 @@ import ij.IJ;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
 import java.util.Iterator;
-import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
@@ -125,8 +124,8 @@ public class CorrelationDriftEstimator {
         }
 
         //interpolate the drift using loess interpolator, or linear interpolation if not enough data for loess
-        UnivariateFunction xFunction;
-        UnivariateFunction yFunction;
+        PolynomialSplineFunction xFunction;
+        PolynomialSplineFunction yFunction;
         if(frames.length < 4) {
             LinearInterpolator interpolator = new LinearInterpolator();
             xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(frames, driftXofImage), minFrame, maxFrame);

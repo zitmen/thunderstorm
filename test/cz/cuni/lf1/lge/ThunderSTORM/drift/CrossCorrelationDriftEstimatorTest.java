@@ -1,14 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.drift;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
 import org.junit.Test;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.ImageStack;
-import java.lang.reflect.Type;
-import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import static org.junit.Assert.*;
 
 /**
@@ -46,13 +40,5 @@ public class CrossCorrelationDriftEstimatorTest {
         assertEquals(0.5, driftCorrection.getInterpolatedDrift(16).y, 0.01);
         assertEquals(8.5, driftCorrection.getInterpolatedDrift(96).x, 0.01);
         assertEquals(1.5, driftCorrection.getInterpolatedDrift(96).y, 0.01);
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(UnivariateFunction.class, new InstanceCreator<PolynomialFunction>() {
-            @Override
-            public PolynomialFunction createInstance(Type type) {
-                return new PolynomialFunction(new double[1]);
-            }
-        }).create();
-        gson.fromJson(gson.toJson(driftCorrection), DriftResults.class);
     }
 }

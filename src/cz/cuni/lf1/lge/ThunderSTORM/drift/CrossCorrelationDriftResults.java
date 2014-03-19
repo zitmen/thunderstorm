@@ -2,7 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.drift;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import ij.ImageStack;
-import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 /**
  *
@@ -14,8 +14,8 @@ public class CrossCorrelationDriftResults extends DriftResults {
     private double scale;
 
     public CrossCorrelationDriftResults(ImageStack correlationImages,
-            UnivariateFunction xFunction,
-            UnivariateFunction yFunction,
+            PolynomialSplineFunction xFunction,
+            PolynomialSplineFunction yFunction,
             double[] binCenters,
             double[] binDriftX,
             double[] binDriftY,
