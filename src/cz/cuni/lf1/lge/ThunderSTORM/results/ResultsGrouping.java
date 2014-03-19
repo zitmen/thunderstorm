@@ -93,7 +93,7 @@ public class ResultsGrouping extends PostProcessingModule {
         distanceTextField.setBackground(Color.WHITE);
         GUI.closeBalloonTip();
         applyButton.setEnabled(false);
-        ResultsGrouping.this.saveStateForUndo(MergingOperation.class);
+        saveStateForUndo();
 
         final int merged = model.getRowCount();
         new SwingWorker<List<Molecule>, Object>() {
@@ -112,7 +112,7 @@ public class ResultsGrouping extends PostProcessingModule {
                     }
 
                     int into = model.getRowCount();
-                    ResultsGrouping.this.addOperationToHistory(new MergingOperation(dist));
+                    addOperationToHistory(new DefaultOperation());
 
                     table.setStatus(Integer.toString(merged) + " molecules were merged into " + Integer.toString(into) + " molecules");
                     table.showPreview();
@@ -140,49 +140,6 @@ public class ResultsGrouping extends PostProcessingModule {
             if(e.getKeyCode() == KeyEvent.VK_ENTER) {
                 applyButton.doClick();
             }
-        }
-    }
-
-    class MergingOperation extends OperationsHistoryPanel.Operation {
-
-        final String name = "Merging";
-        double threshold;
-
-        public MergingOperation(double threshold) {
-            this.threshold = threshold;
-        }
-
-        @Override
-        protected String getName() {
-            return name;
-        }
-
-        @Override
-        protected boolean isUndoAble() {
-            return true;
-        }
-
-        @Override
-        protected void clicked() {
-            if(uiPanel.getParent() instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) uiPanel.getParent();
-                tabbedPane.setSelectedComponent(uiPanel);
-            }
-            distanceTextField.setText(Double.toString(threshold));
-        }
-
-        @Override
-        protected void undo() {
-            model.swapUndoAndActual();
-            table.setStatus("Merging: Undo.");
-            table.showPreview();
-        }
-
-        @Override
-        protected void redo() {
-            model.swapUndoAndActual();
-            table.setStatus("Merging: Redo.");
-            table.showPreview();
         }
     }
 

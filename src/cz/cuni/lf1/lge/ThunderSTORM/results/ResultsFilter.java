@@ -93,7 +93,7 @@ public class ResultsFilter extends PostProcessingModule {
         GUI.closeBalloonTip();
         try {
             applyButton.setEnabled(false);
-            saveStateForUndo(FilteringOperation.class);
+            saveStateForUndo();
             final int all = model.getRowCount();
             new SwingWorker() {
 
@@ -108,7 +108,7 @@ public class ResultsFilter extends PostProcessingModule {
                     try {
                         get();  // throws an exception if doInBackground hasn't finished succesfully
                         int filtered = all - model.getRowCount();
-                        ResultsFilter.this.addOperationToHistory(new FilteringOperation(filterText));
+                        addOperationToHistory(new DefaultOperation());
                         String be = ((filtered > 1) ? "were" : "was");
                         String item = ((all > 1) ? "items" : "item");
                         table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
@@ -129,7 +129,7 @@ public class ResultsFilter extends PostProcessingModule {
             GUI.showBalloonTip(filterTextField, ex.toString());
         }
     }
-    
+
     public void restrictToROIFilter() {
         double mag = new EmptyRendererUI().magnification.getValue();
         IJResultsTable rt = IJResultsTable.getResultsTable();
@@ -145,9 +145,9 @@ public class ResultsFilter extends PostProcessingModule {
         Units ux = rt.getColumnUnits(LABEL_X);
         Units uy = rt.getColumnUnits(LABEL_Y);
         //
-        double leftVal   = Units.PIXEL.convertTo(ux, Math.ceil(roi.getMinX() / mag));
-        double rightVal  = Units.PIXEL.convertTo(ux, Math.ceil(roi.getMaxX() / mag));
-        double topVal    = Units.PIXEL.convertTo(uy, Math.ceil(roi.getMinY() / mag));
+        double leftVal = Units.PIXEL.convertTo(ux, Math.ceil(roi.getMinX() / mag));
+        double rightVal = Units.PIXEL.convertTo(ux, Math.ceil(roi.getMaxX() / mag));
+        double topVal = Units.PIXEL.convertTo(uy, Math.ceil(roi.getMinY() / mag));
         double bottomVal = Units.PIXEL.convertTo(uy, Math.ceil(roi.getMaxY() / mag));
         //
         rt.addNewFilter("x", leftVal, rightVal);
@@ -170,49 +170,6 @@ public class ResultsFilter extends PostProcessingModule {
                 results[i] = (res[i].doubleValue() != 0.0);
             }
             model.filterRows(results);
-        }
-    }
-
-    class FilteringOperation extends OperationsHistoryPanel.Operation {
-
-        final String name = "Filtering";
-        String filterText;
-
-        public FilteringOperation(String filterText) {
-            this.filterText = filterText;
-        }
-
-        @Override
-        protected String getName() {
-            return name;
-        }
-
-        @Override
-        protected boolean isUndoAble() {
-            return true;
-        }
-
-        @Override
-        protected void clicked() {
-            if(uiPanel.getParent() instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) uiPanel.getParent();
-                tabbedPane.setSelectedComponent(uiPanel);
-            }
-            filterTextField.setText(filterText);
-        }
-
-        @Override
-        protected void undo() {
-            model.swapUndoAndActual();
-            table.setStatus("Filtering: Undo.");
-            table.showPreview();
-        }
-
-        @Override
-        protected void redo() {
-            model.swapUndoAndActual();
-            table.setStatus("Filtering: Redo.");
-            table.showPreview();
         }
     }
 

@@ -74,8 +74,8 @@ public class ResultsDriftCorrection extends PostProcessingModule {
     private ParameterKey.Boolean saveParam;
     private ParameterKey.String pathParam;
 
-    private BalloonTip ccOptions;
-    private BalloonTip fiducialOptions;
+    private BalloonTip ccOptionsBalloon;
+    private BalloonTip fiducialOptionsBalloon;
 
     @Override
     public String getMacroName() {
@@ -88,6 +88,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
     }
 
     public ResultsDriftCorrection() {
+        //conditions stating when to (not) process parameters
         ParameterTracker.Condition crossCorrCondition = new Condition() {
             @Override
             public boolean isSatisfied() {
@@ -256,30 +257,30 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         ccOptionsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!ccOptions.isVisible()) {
-                    ccOptions.setVisible(true);
-                    fiducialOptions.setVisible(false);
+                if(!ccOptionsBalloon.isVisible()) {
+                    ccOptionsBalloon.setVisible(true);
+                    fiducialOptionsBalloon.setVisible(false);
                 } else {
-                    ccOptions.setVisible(false);
+                    ccOptionsBalloon.setVisible(false);
                 }
             }
         });
         fiducialOptionsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!fiducialOptions.isVisible()) {
-                    fiducialOptions.setVisible(true);
-                    ccOptions.setVisible(false);
+                if(!fiducialOptionsBalloon.isVisible()) {
+                    fiducialOptionsBalloon.setVisible(true);
+                    ccOptionsBalloon.setVisible(false);
                 } else {
-                    fiducialOptions.setVisible(false);
+                    fiducialOptionsBalloon.setVisible(false);
                 }
             }
         });
         BalloonTipStyle style = new RoundedBalloonStyle(5, 5, fiducialPanel.getBackground(), Color.BLACK);
-        ccOptions = new BalloonTip(ccOptionsButton, ccPanel, style, false);
-        fiducialOptions = new BalloonTip(fiducialOptionsButton, fiducialPanel, style, false);
-        ccOptions.setVisible(false);
-        fiducialOptions.setVisible(false);
+        ccOptionsBalloon = new BalloonTip(ccOptionsButton, ccPanel, style, false);
+        fiducialOptionsBalloon = new BalloonTip(fiducialOptionsButton, fiducialPanel, style, false);
+        ccOptionsBalloon.setVisible(false);
+        fiducialOptionsBalloon.setVisible(false);
 
         applyButton = new JButton("Apply");
         applyButton.addActionListener(listener);
@@ -305,12 +306,12 @@ public class ResultsDriftCorrection extends PostProcessingModule {
     public void runImpl() {
         try {
             //hide options balloons
-            ccOptions.setVisible(false);
-            fiducialOptions.setVisible(false);
+            ccOptionsBalloon.setVisible(false);
+            fiducialOptionsBalloon.setVisible(false);
 
             applyButton.setEnabled(false);
 
-            saveStateForUndo(DefaultOperation.class);
+            saveStateForUndo();
 
             if(!model.columnExists(PSFModel.Params.LABEL_X) || !model.columnExists(PSFModel.Params.LABEL_Y)) {
                 throw new RuntimeException("Could not find " + PSFModel.Params.LABEL_X + " and " + PSFModel.Params.LABEL_Y + " columns.");
@@ -442,9 +443,9 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         if(ex instanceof ValidatorException) {
             String action = actionParam.getValue();
             if(action.equals(actions[0])) {
-                ccOptions.setVisible(true);
+                ccOptionsBalloon.setVisible(true);
             } else if(action.equals(actions[1])) {
-                fiducialOptions.setVisible(true);
+                fiducialOptionsBalloon.setVisible(true);
             }
         }
         super.handleException(ex);

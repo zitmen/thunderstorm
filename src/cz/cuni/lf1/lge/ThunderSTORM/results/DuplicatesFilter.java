@@ -86,8 +86,8 @@ public class DuplicatesFilter extends PostProcessingModule {
             GUI.closeBalloonTip();
             final String dist = distFormula.getValue();
             applyButton.setEnabled(false);
-            
-            DuplicatesFilter.this.saveStateForUndo(DuplicatesRemovalOperation.class);
+
+            DuplicatesFilter.this.saveStateForUndo();
             final int all = model.getRowCount();
             new SwingWorker() {
 
@@ -102,7 +102,7 @@ public class DuplicatesFilter extends PostProcessingModule {
                     try {
                         get();  // throws an exception if doInBackground hasn't finished
                         int filtered = all - model.getRowCount();
-                        DuplicatesFilter.this.addOperationToHistory(new DuplicatesRemovalOperation());
+                        DuplicatesFilter.this.addOperationToHistory(new DefaultOperation());
                         String be = ((filtered > 1) ? "were" : "was");
                         String item = ((all > 1) ? "items" : "item");
                         table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
@@ -151,47 +151,6 @@ public class DuplicatesFilter extends PostProcessingModule {
             frames.insertMolecule(model.getRow(i), dist[i]);
         }
         model.filterRows(frames.filterDuplicateMolecules());
-    }
-
-    class DuplicatesRemovalOperation extends OperationsHistoryPanel.Operation {
-
-        final String name = "Remove duplicates";
-
-        public DuplicatesRemovalOperation() {
-            //
-        }
-
-        @Override
-        protected String getName() {
-            return name;
-        }
-
-        @Override
-        protected boolean isUndoAble() {
-            return true;
-        }
-
-        @Override
-        protected void clicked() {
-            if(uiPanel.getParent() instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) uiPanel.getParent();
-                tabbedPane.setSelectedComponent(uiPanel);
-            }
-        }
-
-        @Override
-        protected void undo() {
-            model.swapUndoAndActual();
-            table.setStatus("Remove duplicates: Undo.");
-            table.showPreview();
-        }
-
-        @Override
-        protected void redo() {
-            model.swapUndoAndActual();
-            table.setStatus("Remove duplicates: Redo.");
-            table.showPreview();
-        }
     }
 
     private class InputListener extends KeyAdapter implements ActionListener {
@@ -252,8 +211,7 @@ public class DuplicatesFilter extends PostProcessingModule {
          * uncertainty with which their positions were estimated.
          *
          * The method works just in 2D, since the Thompson formula applies only
-         * for lateral coordinates. Thus calculating distance
-         * {
+         * for lateral coordinates. Thus calculating distance {
          *
          * @mathjax (x_1-x_2)^2+(y_1-y_2)^2}.
          */

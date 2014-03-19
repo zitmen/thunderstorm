@@ -106,10 +106,10 @@ public class ResultsStageOffset extends PostProcessingModule {
             double stageStep = stageStepParam.getValue();
             double firstPositionOffset = firstPositionOffsetParam.getValue();
 
-            saveStateForUndo(StageOffsetOperation.class);
+            saveStateForUndo();
 
             applyToModel(framesPerStagePosition, stagePositions, stageStep, firstPositionOffset);
-            addOperationToHistory(new StageOffsetOperation(framesPerStagePosition, stagePositions, stageStep, firstPositionOffset));
+            addOperationToHistory(new DefaultOperation());
         } catch(Exception ex) {
             GUI.showBalloonTip(applyButton, ex.toString());
         }
@@ -152,59 +152,6 @@ public class ResultsStageOffset extends PostProcessingModule {
             if(e.getKeyCode() == KeyEvent.VK_ENTER) {
                 applyButton.doClick();
             }
-        }
-    }
-
-    class StageOffsetOperation extends OperationsHistoryPanel.Operation {
-
-        final String name = "Z-stage scanning";
-        int framesPerStagePosition;
-        int stagePositions;
-        double stageStep;
-        double firstPositionOffset;
-
-        public StageOffsetOperation(int framesPerStagePosition, int stagePositions, double stageStep, double firstPositionOffset) {
-            this.framesPerStagePosition = framesPerStagePosition;
-            this.stagePositions = stagePositions;
-            this.stageStep = stageStep;
-            this.firstPositionOffset = firstPositionOffset;
-        }
-
-        @Override
-        protected String getName() {
-            return name;
-        }
-
-        @Override
-        protected boolean isUndoAble() {
-            return true;
-        }
-
-        @Override
-        protected void clicked() {
-            if(uiPanel.getParent() instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) uiPanel.getParent();
-                tabbedPane.setSelectedComponent(uiPanel);
-
-                framesPerStagePositionTextField.setText(framesPerStagePosition + "");
-                stagePositionsTextField.setText(stagePositions + "");
-                stageStepTextField.setText(stagePositions + "");
-                firstPositionOffsetTextField.setText(firstPositionOffset + "");
-            }
-        }
-
-        @Override
-        protected void undo() {
-            model.swapUndoAndActual();
-            table.setStatus("Stage offset: Undo.");
-            table.showPreview();
-        }
-
-        @Override
-        protected void redo() {
-            model.swapUndoAndActual();
-            table.setStatus("Stage offset: Redo.");
-            table.showPreview();
         }
     }
 }

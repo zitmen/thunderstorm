@@ -58,11 +58,11 @@ public abstract class PostProcessingModule {
         return uiPanel;
     }
 
-    protected <T extends OperationsHistoryPanel.Operation> void saveStateForUndo(Class<T> cls) {
+    protected void saveStateForUndo() {
         final IJResultsTable rt = IJResultsTable.getResultsTable();
         final OperationsHistoryPanel history = rt.getOperationHistoryPanel();
         if(history.getLastOperation() != null
-                && history.getLastOperation().getClass().equals(cls)) {
+                && history.getLastOperation().getName().equals(getTabName())) {
             if(!history.isLastOperationUndone()) {
                 rt.swapUndoAndActual();     //undo last operation
             }
@@ -113,7 +113,7 @@ public abstract class PostProcessingModule {
             //dummy record the param options
             boolean oldRecording = Recorder.record;
             Recorder.record = true;
-            Recorder.setCommand("dummy");
+            
             params.recordMacroOptions();
             options = Recorder.getCommandOptions();
             Recorder.record = oldRecording;
@@ -121,7 +121,7 @@ public abstract class PostProcessingModule {
 
         @Override
         protected String getName() {
-            return getMacroName();
+            return getTabName();
         }
 
         @Override
