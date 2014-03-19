@@ -10,10 +10,6 @@ import ij.Macro;
 import ij.plugin.frame.Recorder;
 import java.util.List;
 
-/**
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
- */
 public class MacroParser {
 
     String options;
@@ -147,10 +143,6 @@ public class MacroParser {
     
     public static void runNestedWithRecording(String command, String options){
         String oldCommand = Recorder.getCommand();
-        String oldOptions = Recorder.getCommandOptions();
-        if(oldOptions != null && oldOptions.length() > 0){
-            throw new IllegalStateException("Some macro options have already been recorder. Cannot record nested invocation without discarding curent macro options.");
-        }
         
         Recorder.setCommand(command);
         Macro.setOptions(options);
