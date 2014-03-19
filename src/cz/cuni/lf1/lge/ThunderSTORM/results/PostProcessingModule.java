@@ -5,9 +5,11 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
 import ij.IJ;
+import ij.Macro;
 import ij.plugin.frame.Recorder;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 public abstract class PostProcessingModule {
 
@@ -101,5 +103,71 @@ public abstract class PostProcessingModule {
             Recorder.saveCommand();
             Recorder.setCommand(oldCommand);
         }
+    }
+
+    class DefaultOperation extends OperationsHistoryPanel.Operation {
+
+        String options;
+
+        public DefaultOperation() {
+            //dummy record the param options
+            boolean oldRecording = Recorder.record;
+            Recorder.record = true;
+            Recorder.setCommand("dummy");
+            params.recordMacroOptions();
+            options = Recorder.getCommandOptions();
+            Recorder.record = oldRecording;
+        }
+
+        @Override
+        protected String getName() {
+            return getMacroName();
+        }
+
+        @Override
+        protected void redo() {
+            IJResultsTable rt = IJResultsTable.getResultsTable();
+            rt.swapUndoAndActual();
+            rt.setStatus(getTabName() + ": Redo.");
+            rt.showPreview();
+        }
+
+        @Override
+        protected void undo() {
+            IJResultsTable rt = IJResultsTable.getResultsTable();
+            rt.swapUndoAndActual();
+            rt.setStatus(getTabName() + ": Undo.");
+            rt.showPreview();
+        }
+
+        @Override
+        protected void clicked() {
+            if(uiPanel.getParent() instanceof JTabbedPane) {
+                JTabbedPane tabbedPane = (JTabbedPane) uiPanel.getParent();
+                tabbedPane.setSelectedComponent(uiPanel);
+            }
+            //change thread name temporarily beacuse Macro.getOptions() requires the thread name to start with "Run$_"
+            Thread thr = Thread.currentThread();
+            String oldThreadName = thr.getName();
+            thr.setName("Run$_workaround");
+            //save old options values
+            String oldOptions = Macro.getOptions();
+
+            //set macro options and read param values
+            Macro.setOptions(options);
+            params.readMacroOptions();
+
+            //restore options values and thread name
+            Macro.setOptions(oldOptions);
+            thr.setName(oldThreadName);
+
+            params.updateComponents();
+        }
+
+        @Override
+        protected boolean isUndoAble() {
+            return true;
+        }
+
     }
 }

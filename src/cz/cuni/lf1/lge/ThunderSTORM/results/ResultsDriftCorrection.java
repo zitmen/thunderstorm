@@ -40,6 +40,7 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFact
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
 import ij.IJ;
+import ij.plugin.frame.Recorder;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
@@ -56,7 +57,6 @@ public class ResultsDriftCorrection extends PostProcessingModule {
 
     JTextField numStepsTextField;
     JTextField magnificationTextField;
-    //JCheckBox showDriftPlotCheckBox;
     JCheckBox showCorrelationsCheckBox;
     JButton applyButton;
 
@@ -307,11 +307,11 @@ public class ResultsDriftCorrection extends PostProcessingModule {
             //hide options balloons
             ccOptions.setVisible(false);
             fiducialOptions.setVisible(false);
-            
+
             applyButton.setEnabled(false);
-            
-            ResultsDriftCorrection.this.saveStateForUndo(DriftCorrectionOperation.class);
-            
+
+            saveStateForUndo(DefaultOperation.class);
+
             if(!model.columnExists(PSFModel.Params.LABEL_X) || !model.columnExists(PSFModel.Params.LABEL_Y)) {
                 throw new RuntimeException("Could not find " + PSFModel.Params.LABEL_X + " and " + PSFModel.Params.LABEL_Y + " columns.");
             }
@@ -360,7 +360,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
                     }
                     //update results table
                     applyToResultsTable(driftCorrection);
-//                        ResultsDriftCorrection.this.addOperationToHistory(new DriftCorrectionOperation(magnification, bins, showPlot, showCorrelationImages));
+                    addOperationToHistory(new DefaultOperation());
                     table.setStatus("Drift correction applied.");
                     table.showPreview();
                 } catch(ExecutionException ex) {
@@ -406,13 +406,13 @@ public class ResultsDriftCorrection extends PostProcessingModule {
             driftY[i] = offset.y;
         }
         Plot plot = new Plot("Drift", "frame", "drift [" + driftCorrection.getUnits() + "]", (float[]) null, null);
-        if(driftCorrection.getDriftDataX().length > 50){
+        if(driftCorrection.getDriftDataX().length > 50) {
             plot.setFrameSize(1280, 720);
         }
-        plot.setLimits(minFrame, driftCorrection.getMaxFrame(), 
+        plot.setLimits(minFrame, driftCorrection.getMaxFrame(),
                 Math.min(VectorMath.min(driftCorrection.getDriftDataX()), VectorMath.min(driftCorrection.getDriftDataY())),
                 Math.max(VectorMath.max(driftCorrection.getDriftDataX()), VectorMath.max(driftCorrection.getDriftDataY())));
-        plot.setColor(new Color(255,128,128));
+        plot.setColor(new Color(255, 128, 128));
         plot.addPoints(driftCorrection.getDriftDataFrame(), driftCorrection.getDriftDataX(), Plot.CROSS);
         plot.draw();
         plot.setColor(new Color(128, 255, 128));
@@ -450,58 +450,6 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         super.handleException(ex);
     }
 
-    class DriftCorrectionOperation extends OperationsHistoryPanel.Operation {
-
-        final String name = "Drift";
-        double magnification;
-        int numSteps;
-        transient boolean showDrift;
-        transient boolean showCorrelations;
-
-        public DriftCorrectionOperation(double magnification, int numSteps, boolean showDrift, boolean showCorrelations) {
-            this.magnification = magnification;
-            this.numSteps = numSteps;
-            this.showDrift = showDrift;
-            this.showCorrelations = showCorrelations;
-        }
-
-        @Override
-        protected String getName() {
-            return name;
-        }
-
-        @Override
-        protected boolean isUndoAble() {
-            return true;
-        }
-
-        @Override
-        protected void clicked() {
-            if(uiPanel.getParent() instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) uiPanel.getParent();
-                tabbedPane.setSelectedComponent(uiPanel);
-            }
-            magnificationTextField.setText(Double.toString(magnification));
-            numStepsTextField.setText(Integer.toString(numSteps));
-            showCorrelationsCheckBox.setSelected(showCorrelations);
-        }
-
-        @Override
-        protected void undo() {
-            IJResultsTable rt = IJResultsTable.getResultsTable();
-            rt.swapUndoAndActual();
-            rt.setStatus("Drift correction: Undo.");
-            rt.showPreview();
-        }
-
-        @Override
-        protected void redo() {
-            IJResultsTable rt = IJResultsTable.getResultsTable();
-            rt.swapUndoAndActual();
-            rt.setStatus("Drift correction: Redo.");
-            rt.showPreview();
-        }
-    }
 
     private class InputListener extends KeyAdapter implements ActionListener {
 
