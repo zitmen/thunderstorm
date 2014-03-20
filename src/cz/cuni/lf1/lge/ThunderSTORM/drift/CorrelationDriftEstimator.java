@@ -16,7 +16,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
-import java.util.Iterator;
 import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
@@ -47,98 +46,109 @@ public class CorrelationDriftEstimator {
 
         final BinningResults bins = binResultByFrame(x, y, frame, steps);
 
-        //create iterator over rendered images
         int imageWidth = (roiWidth < 1) ? (int) MathProxy.ceil(VectorMath.max(x)) : roiWidth;
         int imageHeight = (roiHeight < 1) ? (int) MathProxy.ceil(VectorMath.max(y)) : roiHeight;
-        final RenderingMethod renderer = new ASHRendering.Builder().roi(0, imageWidth, 0, imageHeight).resolution(1 / magnification).shifts(2).build();
-        Iterator<FloatProcessor> imagesIterator = new Iterator<FloatProcessor>() {
-            int current = 0;
 
-            @Override
-            public boolean hasNext() {
-                return current < steps;
-            }
+        RenderingMethod renderer = new ASHRendering.Builder().roi(0, imageWidth, 0, imageHeight).resolution(1 / magnification).shifts(2).build();
+        RenderingMethod lowResRenderer = new ASHRendering.Builder().roi(0, imageWidth, 0, imageHeight).resolution(1).shifts(2).build();
 
-            @Override
-            public FloatProcessor next() {
-                FloatProcessor ret = (FloatProcessor) renderer.getRenderedImage(bins.xBinnedByFrame[current], bins.yBinnedByFrame[current], null, null)
-                        .getProcessor().convertToFloat();
-                current++;
-                return ret;
-            }
+        FloatProcessor firstImage = (FloatProcessor) renderer.getRenderedImage(bins.xBinnedByFrame[0], bins.yBinnedByFrame[0], null, null).getProcessor().convertToFloat();
+        int paddedSize = nextPowerOf2(MathProxy.max(firstImage.getWidth(), firstImage.getHeight()));
+        FHT firstImageFFT = createPaddedFFTImage(firstImage, paddedSize);
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("Not supported.");
-            }
-        };
-
-        return estimateDriftFromImages(imagesIterator, bins.binCenters, bins.minFrame, bins.maxFrame, saveCorrelationImages, 1 / magnification);
-    }
-
-    public static CrossCorrelationDriftResults estimateDriftFromImages(Iterator<FloatProcessor> images, double[] frames, int minFrame, int maxFrame, boolean saveCorrelationImages, double scaleFactor) {
-        FloatProcessor firstImage = images.next();
-        int paddedSize = CorrelationDriftEstimator.nextPowerOf2(MathProxy.max(firstImage.getWidth(), firstImage.getHeight()));
-        FHT firstImageFFT = new FHT(Padding.padToBiggerSquare(firstImage, 1, paddedSize));
-        firstImageFFT.setShowProgress(false);
-        firstImageFFT.transform();
+        FloatProcessor lowResFirstImage = (FloatProcessor) lowResRenderer.getRenderedImage(bins.xBinnedByFrame[0], bins.yBinnedByFrame[0], null, null).getProcessor().convertToFloat();
+        int lowResPaddedSize = nextPowerOf2(MathProxy.max(lowResFirstImage.getWidth(), lowResFirstImage.getHeight()));
+        FHT lowResFirstImageFFT = createPaddedFFTImage(lowResFirstImage, lowResPaddedSize);
 
         ImageStack correlationImages = null;
         if(saveCorrelationImages) {
             correlationImages = new ImageStack(paddedSize, paddedSize);
         }
 
-        double[] driftXofImage = new double[frames.length];
-        double[] driftYofImage = new double[frames.length];
+        double[] driftXofImage = new double[steps];
+        double[] driftYofImage = new double[steps];
         driftXofImage[0] = 0;
         driftYofImage[0] = 0;
 
-        for(int i = 1; i < frames.length; i++) {
-            IJ.showProgress((double) i / (double) (frames.length - 1));
-            IJ.showStatus("Processing part " + i + " from " + (frames.length - 1) + "...");
+        for(int i = 1; i < steps; i++) {
+            IJ.showProgress((double) i / (double) (steps - 1));
+            IJ.showStatus("Processing part " + i + " from " + (steps - 1) + "...");
 
-            FloatProcessor nextImage = images.next();
-            FHT imageFFT = new FHT(Padding.padToBiggerSquare(nextImage, Padding.PADDING_ZERO, paddedSize));
-            imageFFT.setShowProgress(false);
-            imageFFT.transform();
+            FloatProcessor nextImage = (FloatProcessor) renderer.getRenderedImage(bins.xBinnedByFrame[i], bins.yBinnedByFrame[i], null, null).getProcessor().convertToFloat();
+            FHT imageFFT = createPaddedFFTImage(nextImage, paddedSize);
+            FHT crossCorrelationImage = computeCrossCorrelationImage(firstImageFFT, imageFFT);
 
-            FHT crossCorrelationImage = firstImageFFT.conjugateMultiply(imageFFT);
-            crossCorrelationImage.setShowProgress(false);
-            crossCorrelationImage.inverseTransform();
-            crossCorrelationImage.swapQuadrants();
+            FloatProcessor lowResNextImage = (FloatProcessor) lowResRenderer.getRenderedImage(bins.xBinnedByFrame[i], bins.yBinnedByFrame[i], null, null).getProcessor().convertToFloat();
+            FHT lowResImageFFT = createPaddedFFTImage(lowResNextImage, lowResPaddedSize);
+            FHT lowResCrossCorrelationImage = computeCrossCorrelationImage(lowResFirstImageFFT, lowResImageFFT);
 
             if(saveCorrelationImages) {
                 correlationImages.addSlice("", crossCorrelationImage);
             }
 
-            Point2D.Double maximumCoords = CorrelationDriftEstimator.findMaxima(crossCorrelationImage);
-            maximumCoords = CorrelationDriftEstimator.findMaximaWithSubpixelPrecision(maximumCoords, 11, crossCorrelationImage);
-            driftXofImage[i] = (crossCorrelationImage.getWidth() / 2 - maximumCoords.x);
-            driftYofImage[i] = (crossCorrelationImage.getHeight() / 2 - maximumCoords.y);
+            //find maxima in low res image
+            multiplyImageByGaussianMask(new Point2D.Double(driftXofImage[i - 1] + lowResPaddedSize / 2, driftXofImage[i - 1] + lowResPaddedSize / 2), lowResPaddedSize, lowResCrossCorrelationImage);
+            Point2D.Double lowResMaximumCoords = CorrelationDriftEstimator.findMaxima(lowResCrossCorrelationImage);
+            lowResMaximumCoords = CorrelationDriftEstimator.findMaximaWithSubpixelPrecision(lowResMaximumCoords, 11, lowResCrossCorrelationImage);
+
+            //translate maxima coords from low res image to high res image
+            Point2D.Double highResMaximumCoords = new Point2D.Double(
+                    crossCorrelationImage.getWidth() / 2 + magnification * (lowResMaximumCoords.x - (lowResCrossCorrelationImage.getWidth() / 2)),
+                    crossCorrelationImage.getHeight() / 2 + magnification * (lowResMaximumCoords.y - (lowResCrossCorrelationImage.getHeight() / 2)));
+            //find maxima in high res image
+            highResMaximumCoords = CorrelationDriftEstimator.findMaximaWithSubpixelPrecision(highResMaximumCoords, 11, crossCorrelationImage);
+
+            driftXofImage[i] = (crossCorrelationImage.getWidth() / 2 - highResMaximumCoords.x);
+            driftYofImage[i] = (crossCorrelationImage.getHeight() / 2 - highResMaximumCoords.y);
         }
 
         //scale
         for(int i = 0; i < driftXofImage.length; i++) {
-            driftXofImage[i] = scaleFactor * driftXofImage[i];
-            driftYofImage[i] = scaleFactor * driftYofImage[i];
+            driftXofImage[i] = driftXofImage[i] / magnification;
+            driftYofImage[i] = driftYofImage[i] / magnification;
         }
 
         //interpolate the drift using loess interpolator, or linear interpolation if not enough data for loess
         PolynomialSplineFunction xFunction;
         PolynomialSplineFunction yFunction;
-        if(frames.length < 4) {
+        if(steps < 4) {
             LinearInterpolator interpolator = new LinearInterpolator();
-            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(frames, driftXofImage), minFrame, maxFrame);
-            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(frames, driftYofImage), minFrame, maxFrame);
+            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(bins.binCenters, driftXofImage), bins.minFrame, bins.maxFrame);
+            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(bins.binCenters, driftYofImage), bins.minFrame, bins.maxFrame);
         } else {
             LoessInterpolator interpolator = new LoessInterpolator(0.5, 0);
-            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(frames, driftXofImage), minFrame, maxFrame);
-            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(frames, driftYofImage), minFrame, maxFrame);
+            xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(bins.binCenters, driftXofImage), bins.minFrame, bins.maxFrame);
+            yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(bins.binCenters, driftYofImage), bins.minFrame, bins.maxFrame);
         }
 
         IJ.showStatus("");
         IJ.showProgress(1.0);
-        return new CrossCorrelationDriftResults(correlationImages, xFunction, yFunction, frames, driftXofImage, driftYofImage, scaleFactor, minFrame, maxFrame, MoleculeDescriptor.Units.PIXEL);
+        return new CrossCorrelationDriftResults(correlationImages, xFunction, yFunction, bins.binCenters, driftXofImage, driftYofImage, 1 / magnification, bins.minFrame, bins.maxFrame, MoleculeDescriptor.Units.PIXEL);
+    }
+
+    private static FHT createPaddedFFTImage(FloatProcessor nextImage, int paddedSize) {
+        FHT imageFFT = new FHT(Padding.padToBiggerSquare(nextImage, Padding.PADDING_ZERO, paddedSize));
+        imageFFT.setShowProgress(false);
+        imageFFT.transform();
+        return imageFFT;
+    }
+
+    private static FHT computeCrossCorrelationImage(FHT image1FFT, FHT image2FFT) {
+        FHT crossCorrelationImage = image1FFT.conjugateMultiply(image2FFT);
+        crossCorrelationImage.setShowProgress(false);
+        crossCorrelationImage.inverseTransform();
+        crossCorrelationImage.swapQuadrants();
+        return crossCorrelationImage;
+    }
+
+    private static void multiplyImageByGaussianMask(Point2D.Double gaussianCenter, double gaussianSigma, FloatProcessor image) {
+        for(int y = 0; y < image.getHeight(); y++) {
+            for(int x = 0; x < image.getWidth(); x++) {
+                double maskValue = MathProxy.exp(-(MathProxy.sqr(x - gaussianCenter.x) + MathProxy.sqr(y - gaussianCenter.y)) / (2 * gaussianSigma * gaussianSigma));
+                float newValue = (float) (image.getf(x, y) * maskValue);
+                image.setf(x, y, newValue);
+            }
+        }
     }
 
     private static class BinningResults {

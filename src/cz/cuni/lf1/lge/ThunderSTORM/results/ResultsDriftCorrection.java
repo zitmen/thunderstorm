@@ -56,7 +56,6 @@ import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JFileChooser;
 import javax.swing.JRadioButton;
-import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.java.balloontip.BalloonTip;
 import net.java.balloontip.styles.BalloonTipStyle;
@@ -204,7 +203,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         //save panel
         JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
         final JCheckBox saveCheckBox = new JCheckBox("Save to file:");
-        saveCheckBox.setBorder(null);
+        saveCheckBox.setBorder(null);// so that it aligns well with loadLabel
         final JTextField savePathTextField = new JTextField(20);
         JButton browseButton = new JButton("...");
         browseButton.setMargin(new Insets(1, 1, 1, 1));
