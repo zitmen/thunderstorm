@@ -139,16 +139,7 @@ public class MathProxy {
     public static double gauss(double x, double sigma, boolean normalized) {
         return exp(-0.5 * sqr(x / sigma)) / ((normalized) ? (sigma * sqrt(2 * PI)) : 1);
     }
-
-    public static Double[] add(Number val, Number[] arr) {
-        Double[] res = new Double[arr.length];
-        double v = val.doubleValue();
-        for(int i = 0; i < arr.length; i++) {
-            res[i] = new Double(arr[i].doubleValue() + v);
-        }
-        return res;
-    }
-
+    
     public static Double abs(Double val) {
         return new Double(java.lang.Math.abs(val.doubleValue()));
     }

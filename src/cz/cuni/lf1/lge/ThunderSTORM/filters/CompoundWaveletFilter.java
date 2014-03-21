@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 /**
  * This wavelet filter is implemented as an undecimated wavelet transform using
- * B-spline of third order.
+ * scaled B-spline of k-th order.
  *
  * This filter uses the separable kernel feature. Note that in the convolution
  * with the wavelet kernels we use padding twice to simulate {@code conv2}
@@ -21,31 +21,29 @@ import java.util.HashMap;
  */
 public final class CompoundWaveletFilter implements IFilter {
 
-    private FloatProcessor input = null, result = null, result_F1 = null, result_F2 = null, result_F3 = null;
+    private FloatProcessor input = null, result = null, result_F1 = null, result_F2 = null;
     private HashMap<String, FloatProcessor> export_variables = null;
     private int margin;
-    private boolean third_plane;
-    private WaveletFilter w1, w2, w3;
+    private int spline_order = 3, spline_n_samples = 5;
+    private double spline_scale = 2.0;
+    private WaveletFilter w1, w2;
 
     public CompoundWaveletFilter() {
-        this(false);
+        this(3, 2.0, 5);    // these settings yield the identical kernel to the one proposed by Izeddin
     }
 
     /**
      * Initialize the filter with all the wavelet kernels needed to create the
      * wavelet transform.
-     *
-     * @param third_plane if {@code true} use 3rd plane for detection; otherwise
-     * use 2nd plane instead
      */
-    public CompoundWaveletFilter(boolean third_plane) {
-        this.third_plane = third_plane;
+    public CompoundWaveletFilter(int spline_order, double spline_scale, int spline_n_samples) {
+        w1 = new WaveletFilter(1, spline_order, spline_scale, spline_n_samples, Padding.PADDING_ZERO);
+        w2 = new WaveletFilter(2, spline_order, spline_scale, spline_n_samples, Padding.PADDING_ZERO);
         //
-        w1 = new WaveletFilter(1, Padding.PADDING_ZERO);
-        w2 = new WaveletFilter(2, Padding.PADDING_ZERO);
-        w3 = new WaveletFilter(3, Padding.PADDING_ZERO);
-        //
-        this.margin = w3.getKernelX().getWidth() / 2;
+        this.margin = w2.getKernelX().getWidth() / 2;
+        this.spline_n_samples = spline_n_samples;
+        this.spline_order = spline_order;
+        this.spline_scale = spline_scale;
     }
 
     @Override
@@ -57,14 +55,8 @@ public final class CompoundWaveletFilter implements IFilter {
 
         result_F1 = subtract(input, crop(V1, margin, margin, image.getWidth(), image.getHeight()));
         result_F2 = subtract(input, crop(V2, margin, margin, image.getWidth(), image.getHeight()));
-
-        if(third_plane) {
-            FloatProcessor V3 = w3.filterImage(V2);
-            result_F3 = subtract(input, crop(V3, margin, margin, image.getWidth(), image.getHeight()));
-            result = crop(subtract(V2, V3), margin, margin, image.getWidth(), image.getHeight());
-        } else {
-            result = crop(subtract(V1, V2), margin, margin, image.getWidth(), image.getHeight());
-        }
+        result = crop(subtract(V1, V2), margin, margin, image.getWidth(), image.getHeight());
+        
         return result;
     }
 
@@ -87,12 +79,11 @@ public final class CompoundWaveletFilter implements IFilter {
         export_variables.put("F", result);
         export_variables.put("F1", result_F1);
         export_variables.put("F2", result_F2);
-        export_variables.put("F3", result_F3);
         return export_variables;
     }
 
     @Override
     public IFilter clone() {
-        return new CompoundWaveletFilter(third_plane);
+        return new CompoundWaveletFilter(spline_order, spline_scale, spline_n_samples);
     }
 }

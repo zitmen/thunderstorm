@@ -250,6 +250,14 @@ public class VectorMath {
         }
         return sumdev / (double) arr.length;
     }
+    
+    public static double [] div(double [] arr, double val) {
+        double[] res = new double[arr.length];
+        for(int i = 0; i < arr.length; i++) {
+            res[i] = arr[i] / val;
+        }
+        return res;
+    }
 
     public static Double[] div(Number val, Number[] arr) {
         Double[] res = new Double[arr.length];

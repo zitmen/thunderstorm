@@ -1,7 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
+import cz.cuni.lf1.lge.ThunderSTORM.util.BSplines;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.pow;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
+import java.util.Arrays;
 
 /**
  * This wavelet filter is a convolution filter with a separable kernel determined by B-splines.
@@ -24,12 +27,6 @@ import ij.process.FloatProcessor;
  */
 public class WaveletFilter extends ConvolutionFilter {
 
-    // Pre-defined kernels for different wavelet planes.
-    static final float[][] kernels = {
-        {1f/16f,             1f/4f,             3f/8f,             1f/4f,             1f/16f},
-        {1f/16f,     0f,     1f/4f,     0f,     3f/8f,     0f,     1f/4f,     0f,     1f/16f},
-        {1f/16f, 0f, 0f, 0f, 1f/4f, 0f, 0f, 0f, 3f/8f, 0f, 0f, 0f, 1f/4f, 0f, 0f, 0f, 1f/16f}};
-    
     /**
      * Initialize the filter with a kernel corresponding to a specific plane.
      *
@@ -37,8 +34,10 @@ public class WaveletFilter extends ConvolutionFilter {
      * 
      * @throws IndexOutOfBoundsException if the requested plane is not in range of supported plane, i.e., it is not in range from 1 to 3
      */
-    public WaveletFilter(int plane) throws IndexOutOfBoundsException {
-        super(new FloatProcessor(1, kernels[plane-1].length, kernels[plane-1], null), true, Padding.PADDING_DUPLICATE);
+    public WaveletFilter(int plane, int spline_order, double spline_scale, int n_samples) throws IndexOutOfBoundsException {
+        double [] kernel = getKernel(plane, spline_order, spline_scale, n_samples);
+        updateKernel(new FloatProcessor(1, kernel.length, kernel), true);
+        updatePaddingMethod(Padding.PADDING_DUPLICATE);
     }
     
     /**
@@ -51,8 +50,29 @@ public class WaveletFilter extends ConvolutionFilter {
      * 
      * @see Padding
      */
-    public WaveletFilter(int plane, int padding_method) throws UnsupportedOperationException {
-        super(new FloatProcessor(1, kernels[plane-1].length, kernels[plane-1], null), true, padding_method);
+    public WaveletFilter(int plane, int spline_order, double spline_scale, int n_samples, int padding_method) throws UnsupportedOperationException {
+        double [] kernel = getKernel(plane, spline_order, spline_scale, n_samples);
+        updateKernel(new FloatProcessor(1, kernel.length, kernel), true);
+        updatePaddingMethod(padding_method);
     }
-    
+
+    private double [] getKernel(int plane, int spline_order, double spline_scale, int n_samples) {
+        double [] samples = new double[n_samples];
+        for(int i = 0; i < n_samples; i++) {
+            samples[i] = i - n_samples / 2;
+        }
+        double [] spline = BSplines.bSplineBlender(spline_order, spline_scale, samples);
+        if(plane == 1) {
+            return spline;
+        } else {
+            int step = (int)pow(2, plane-1);
+            int n = (step * (n_samples - 1)) + 1;
+            double [] kernel = new double[n];
+            Arrays.fill(kernel, 0.0);
+            for(int i = 0; i < spline.length; i++) {
+                kernel[i*step] = spline[i];
+            }
+            return kernel;
+        }
+    }
 }

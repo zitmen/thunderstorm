@@ -63,7 +63,7 @@ public class RetVal {
             if(b.isValue()) {   // scalar + scalar
                 return new RetVal(val.doubleValue() + b.val.doubleValue());
             } else if(b.isVector()) { // scalar + vector
-                return new RetVal(MathProxy.add(val.doubleValue(), b.vec));
+                return new RetVal(VectorMath.add(b.vec, val));
             } else {    // scalar + matrix
                 return new RetVal(ImageMath.add(val.floatValue(), b.mat));
             }

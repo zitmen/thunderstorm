@@ -38,7 +38,6 @@ public class GaussianFilterUI extends IFilterUI {
         JTextField sigmaTextField = new JTextField("", 20);
         parameters.registerComponent(size, sizeTextField);
         parameters.registerComponent(sigma, sigmaTextField);
-
         //
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());

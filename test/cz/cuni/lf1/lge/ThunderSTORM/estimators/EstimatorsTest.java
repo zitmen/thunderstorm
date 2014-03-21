@@ -73,7 +73,7 @@ public class EstimatorsTest {
 
         String basePath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
         FloatProcessor image = (FloatProcessor) IJ.openImage(basePath + "resources/tubulins1_00020.tif").getProcessor().convertToFloat();
-        FloatProcessor filtered = (new CompoundWaveletFilter(false)).filterImage(image);
+        FloatProcessor filtered = (new CompoundWaveletFilter()).filterImage(image);
         Vector<Point> detections = (new CentroidOfConnectedComponentsDetector("16", true)).detectMoleculeCandidates(filtered);
         Vector<Molecule> fits = estimator.estimateParameters(image, detections);
         for(Molecule fit : fits) {

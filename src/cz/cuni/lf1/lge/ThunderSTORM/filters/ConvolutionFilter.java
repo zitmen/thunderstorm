@@ -79,6 +79,10 @@ public class ConvolutionFilter {
         this.kernel_y = kernel_y;
     }
     
+    public ConvolutionFilter() {
+        //
+    }
+    
     /**
      * Initialize the filter.
      * 

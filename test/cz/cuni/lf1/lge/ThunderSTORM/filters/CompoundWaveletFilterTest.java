@@ -20,14 +20,9 @@ public class CompoundWaveletFilterTest {
             String basePath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
             FloatProcessor image = (FloatProcessor) IJ.openImage(basePath + "resources/rice.png").getProcessor().convertToFloat();
             
-            CompoundWaveletFilter instance = new CompoundWaveletFilter(false);
+            CompoundWaveletFilter instance = new CompoundWaveletFilter();
             float[] result = (float[]) instance.filterImage(image).getPixels();
             float[] expResult = (float[]) CSV.csv2fp(basePath + "resources/rice_filter_compound-wavelet-V1-V2.csv").getPixels();
-            assertArrayEquals(expResult, result, 0.001f);
-            
-            instance = new CompoundWaveletFilter(true);
-            result = (float[]) instance.filterImage(image).getPixels();
-            expResult = (float[]) CSV.csv2fp(basePath + "resources/rice_filter_compound-wavelet-V2-V3.csv").getPixels();
             assertArrayEquals(expResult, result, 0.001f);
         } catch(IOException ex) {
             fail("Error in box filter test: " + ex.getMessage());
