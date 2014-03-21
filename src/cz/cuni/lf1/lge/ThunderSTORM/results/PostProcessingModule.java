@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
 import ij.IJ;
@@ -78,7 +79,11 @@ public abstract class PostProcessingModule {
     }
 
     protected void handleException(Throwable ex) {
-        if(ex instanceof ValidatorException) {
+        if(ex instanceof StoppedByUserException) {
+            IJ.resetEscape();
+            IJ.showStatus("Stopped by user.");
+            IJ.showProgress(1);
+        } else if(ex instanceof ValidatorException) {
             ValidatorException vex = (ValidatorException) ex;
             Object source = vex.getSource();
             JComponent balloontipAnchor = (source != null && (source instanceof JComponent))
@@ -113,7 +118,7 @@ public abstract class PostProcessingModule {
             //dummy record the param options
             boolean oldRecording = Recorder.record;
             Recorder.record = true;
-            
+
             params.recordMacroOptions();
             options = Recorder.getCommandOptions();
             Recorder.record = oldRecording;

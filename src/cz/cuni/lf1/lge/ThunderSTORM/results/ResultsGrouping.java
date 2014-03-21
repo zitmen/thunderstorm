@@ -23,7 +23,6 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
@@ -155,7 +154,8 @@ public class ResultsGrouping extends PostProcessingModule {
         frames.matchMolecules(sqr(dist),
                 new FrameSequence.Fixed(offFrames),
                 new FrameSequence.LastDetection(),
-                zWeight);
+                zWeight,
+                null);
         //
         // Set new IDs for the new "macro" molecules
         for(Molecule mol : frames.getAllMolecules()) {

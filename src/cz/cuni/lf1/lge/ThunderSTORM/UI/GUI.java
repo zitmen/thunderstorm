@@ -35,7 +35,7 @@ public class GUI {
     }
 
     /**
-     * Throws InterruptedException if IJ.escapePerssed flag is true. Does not reset the flag.
+     * Throws StoppedByUserException if IJ.escapePressed flag is true. Does not reset the flag.
      */
     public static void checkIJEscapePressed() throws StoppedByUserException {
         if(IJ.escapePressed()) {

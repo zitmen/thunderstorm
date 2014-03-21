@@ -1,10 +1,12 @@
 package cz.cuni.lf1.lge.ThunderSTORM.drift;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.*;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.optimizers.NelderMead;
+import cz.cuni.lf1.lge.ThunderSTORM.util.IJProgressTracker;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
@@ -34,6 +36,9 @@ public class FiducialDriftEstimator {
                 fiducialMarkers.add(mol);
             }
         }
+        if(fiducialMarkers.isEmpty()){
+            throw new RuntimeException("No fiducial markers found.");
+        }
         //combine data points from multiple fiducial markers
         int dataPoints = countDetections(fiducialMarkers);
         double[] combinedFrames = new double[dataPoints];
@@ -50,8 +55,12 @@ public class FiducialDriftEstimator {
         //find offsets for each fiducial marker (to get relative drift out of absolute coordinates)
         IJ.showStatus("Finding marker offsets (x)...");
         double[] markerOffsetsInX = findFiducialsOffsets(fiducialMarkers, combinedFrames, PSFModel.Params.LABEL_X);
+        IJ.showProgress(0.875);
+        GUI.checkIJEscapePressed();
         IJ.showStatus("Finding marker offsets (y)...");
         double[] markerOffsetsInY = findFiducialsOffsets(fiducialMarkers, combinedFrames, PSFModel.Params.LABEL_Y);
+        IJ.showProgress(0.95);
+        GUI.checkIJEscapePressed();
         //combine x,y, while subtracting the found offsets
         lastIndex = 0;
         for(int i = 0; i < fiducialMarkers.size(); i++) {
@@ -81,7 +90,7 @@ public class FiducialDriftEstimator {
         ModifiedLoess interpolator = new ModifiedLoess(smoothingBandwidth, 0);
         PolynomialSplineFunction xFunction = CorrelationDriftEstimator.addLinearExtrapolationToBorders(interpolator.interpolate(combinedFrames, combinedX), minFrame, maxFrame);
         PolynomialSplineFunction yFunction = CorrelationDriftEstimator.addLinearExtrapolationToBorders(interpolator.interpolate(combinedFrames, combinedY), minFrame, maxFrame);
-
+        IJ.showProgress(1);
         //same units as input
         MoleculeDescriptor.Units units = molecules.get(0).getParamUnits(PSFModel.Params.LABEL_X);
         return new DriftResults(xFunction, yFunction, combinedFrames, combinedX, combinedY, minFrame, maxFrame, units);
@@ -100,10 +109,12 @@ public class FiducialDriftEstimator {
         for(Molecule mol : molecules) {
             grouping.InsertMolecule(mol);
         }
+        IJProgressTracker tracker = new IJProgressTracker(0, 0.8);
         grouping.matchMolecules(MathProxy.sqr(distanceThr),
                 new FrameSequence.RelativeToDetectionCount(2),
                 new FrameSequence.LastFewDetectionsMean(5),
-                0);
+                0,
+                tracker);
         List<Molecule> groupedMolecules = grouping.getAllMolecules();
         return groupedMolecules;
     }

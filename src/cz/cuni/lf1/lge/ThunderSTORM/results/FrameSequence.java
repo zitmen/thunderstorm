@@ -1,9 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
+import cz.cuni.lf1.lge.ThunderSTORM.util.ProgressTracker;
 import ij.IJ;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,10 +65,12 @@ public class FrameSequence {
     public void matchMolecules(double dist2_thr,
             OffFramesThresholdStrategy off_thr,
             ActiveMoleculePositionStrategy positionStrategy,
-            double zCoordWeight) {
+            double zCoordWeight,
+            ProgressTracker progressTracker) {
         molecules.clear();
         List<Molecule> activeMolecules = new ArrayList<Molecule>();
         List<Molecule> activeMoleculesTemp = new ArrayList<Molecule>();
+        int framesProcessed = 0;
         for(int frame : frames) {
             List<Molecule> fr2mol = detections.get(frame);
             //
@@ -107,6 +111,11 @@ public class FrameSequence {
                 List<Molecule> pom = activeMolecules;
                 activeMolecules = activeMoleculesTemp;
                 activeMoleculesTemp = pom;
+                
+                if(progressTracker != null){
+                    progressTracker.progress((double)framesProcessed++/frames.size());
+                }
+                GUI.checkIJEscapePressed();
             } catch(KeySizeException ex) {
                 // never happens
             }

@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.drift;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
@@ -45,7 +46,7 @@ public class CorrelationDriftEstimator {
             boolean saveCorrelationImages) {
 
         final BinningResults bins = binResultByFrame(x, y, frame, steps);
-
+        GUI.checkIJEscapePressed();
         int imageWidth = (roiWidth < 1) ? (int) MathProxy.ceil(VectorMath.max(x)) : roiWidth;
         int imageHeight = (roiHeight < 1) ? (int) MathProxy.ceil(VectorMath.max(y)) : roiHeight;
 
@@ -73,6 +74,7 @@ public class CorrelationDriftEstimator {
         for(int i = 1; i < steps; i++) {
             IJ.showProgress((double) i / (double) (steps - 1));
             IJ.showStatus("Processing part " + i + " from " + (steps - 1) + "...");
+            GUI.checkIJEscapePressed();
 
             FloatProcessor nextImage = (FloatProcessor) renderer.getRenderedImage(bins.xBinnedByFrame[i], bins.yBinnedByFrame[i], null, null).getProcessor().convertToFloat();
             FHT imageFFT = createPaddedFFTImage(nextImage, paddedSize);
