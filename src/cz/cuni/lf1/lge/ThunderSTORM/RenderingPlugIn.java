@@ -98,8 +98,8 @@ public class RenderingPlugIn implements PlugIn {
 
             left = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imleft", "0"));
             top = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imtop", "0"));
-            sizeX = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imwidth", "0")) - left + 1;
-            sizeY = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imheight", "0")) - top + 1;
+            sizeX = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imwidth", "0"));
+            sizeY = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imheight", "0"));
         } else {
             int guessedLeft;
             int guessedTop;
@@ -231,12 +231,12 @@ class RenderingDialog extends JDialog {
                 double[] ypos = rt.getColumnAsDoubles(LABEL_Y, PIXEL);
                 left = Math.max((int) Math.floor(VectorMath.min(xpos)) - 1, 0);
                 top = Math.max((int) Math.floor(VectorMath.min(ypos)) - 1, 0);
-                sizeX = (int) Math.ceil(VectorMath.max(xpos)) + 1;
-                sizeY = (int) Math.ceil(VectorMath.max(ypos)) + 1;
+                sizeX = (int) Math.ceil(VectorMath.max(xpos)) - left + 1;
+                sizeY = (int) Math.ceil(VectorMath.max(ypos)) - top + 1;
                 leftTextField.setText(left + "");
                 topTextField.setText(top + "");
-                sizeXTextField.setText(sizeX - left + "");
-                sizeYTextField.setText(sizeY - top + "");
+                sizeXTextField.setText(sizeX + "");
+                sizeYTextField.setText(sizeY + "");
             }
         });
         sizeButtonsPanel.add(sizeAnalyzedImageButton);

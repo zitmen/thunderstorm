@@ -172,7 +172,11 @@ public class RenderingOverlay {
             ys.add((float) (roi.y + mol.getParam(PSFModel.Params.LABEL_Y, Units.PIXEL)));
             oldFrame = frame;
         }
-        overlay.add(new MultiplePointsRoi(xs.toArray(), ys.toArray(), oldFrame, c, markerType));
+        if(imp.getStackSize() > 1) {
+            overlay.add(new MultiplePointsRoi(xs.toArray(), ys.toArray(), oldFrame, c, markerType));
+        } else {
+            overlay.add(new MultiplePointsRoi(xs.toArray(), ys.toArray(), 0, c, markerType));
+        }
         imp.setOverlay(overlay);
     }
 
