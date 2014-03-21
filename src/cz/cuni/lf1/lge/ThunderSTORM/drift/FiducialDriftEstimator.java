@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.collections.primitives.ArrayDoubleList;
+import org.apache.commons.collections.primitives.DoubleList;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 import org.apache.commons.math3.util.MathArrays;
@@ -36,7 +38,7 @@ public class FiducialDriftEstimator {
                 fiducialMarkers.add(mol);
             }
         }
-        if(fiducialMarkers.isEmpty()){
+        if(fiducialMarkers.isEmpty()) {
             throw new RuntimeException("No fiducial markers found.");
         }
         //combine data points from multiple fiducial markers
@@ -84,7 +86,6 @@ public class FiducialDriftEstimator {
         VectorMath.add(combinedX, -combinedX[0]);
         VectorMath.add(combinedY, -combinedY[0]);
 
-        
         //smooth & interpolate
         IJ.showStatus("Smoothing and interpolating drift...");
         ModifiedLoess interpolator = new ModifiedLoess(smoothingBandwidth, 0);
@@ -130,7 +131,6 @@ public class FiducialDriftEstimator {
                 detectionsByFrame.put(detection.getParam(MoleculeDescriptor.LABEL_FRAME), detection.getParam(param));
             }
         }
-
         NelderMead nm = new NelderMead();
         //cost function:
         //for each frame where multiple drift values are present
@@ -138,24 +138,26 @@ public class FiducialDriftEstimator {
         MultivariateFunction fun = new MultivariateFunction() {
             @Override
             public double value(double[] point) {
+                GUI.checkIJEscapePressed();
                 double cost = 0;
                 for(double frame : combinedFrames) {
-                    List<Double> drifts = new ArrayList<Double>();
+                    ArrayDoubleList drifts = new ArrayDoubleList();
                     for(int i = 0; i < fiducials.size(); i++) {
                         Double val = maps.get(i).get(frame);
                         if(val != null) {
                             drifts.add(val - point[i]);
                         }
                     }
-                    if(drifts.size() > 1) {
+                    int numMarkersOnFrame = drifts.size();
+                    if(numMarkersOnFrame > 1) {
                         double sum = 0;
-                        for(Double d : drifts) {
-                            sum += d;
+                        for(int i = 0, size = numMarkersOnFrame; i < size; i++) {
+                            sum += drifts.get(i);
                         }
-                        double avg = sum / drifts.size();
+                        double avg = sum / numMarkersOnFrame;
 
-                        for(Double d : drifts) {
-                            cost += MathProxy.sqr(d - avg);
+                        for(int i = 0, size = numMarkersOnFrame; i < size; i++) {
+                            cost += MathProxy.sqr(drifts.get(i) - avg);
                         }
                     }
                 }
@@ -165,11 +167,11 @@ public class FiducialDriftEstimator {
         //values for first iteration:  first detection coords
         double[] guess = new double[fiducials.size()];
         for(int i = 0; i < guess.length; i++) {
-            fiducials.get(i).getDetections().get(0).getParam(param);
+            guess[i] = fiducials.get(i).getDetections().get(0).getParam(param);
         }
         //first simplex step size, ?????
         double[] initialSimplex = new double[fiducials.size()];
-        Arrays.fill(initialSimplex, 5);
+        Arrays.fill(initialSimplex, 50);
         int maxIter = 5000;
 
         nm.optimize(fun, NelderMead.Objective.MINIMIZE, guess, 1e-8, initialSimplex, 10, maxIter);
