@@ -197,15 +197,19 @@ public class GenericTableModel extends AbstractTableModel implements Cloneable {
     }
 
     public void setColumnUnits(int columnIndex, Units new_units) {
+        setColUnitsImpl(columnIndex, new_units);
+        fireTableStructureChanged();
+    }
+
+    private void setColUnitsImpl(int columnIndex, Units new_units) {
         MoleculeDescriptor.Units old_units = getColumnUnits(columnIndex);
-        if(old_units.equals(new_units)){
+        if(old_units.equals(new_units)) {
             return;
         }
         for(int row = 0, max = getRowCount(); row < max; row++) {
-            setValueAt(old_units.convertTo(new_units, getValueAt(row, columnIndex)), row, columnIndex);
+            setValImpl(old_units.convertTo(new_units, getValueAt(row, columnIndex)), row, columnIndex);
         }
         columns.setColumnUnits(new_units, columnIndex);
-        fireTableStructureChanged();
     }
 
     public Units getColumnUnits(String columnName) {
@@ -221,8 +225,12 @@ public class GenericTableModel extends AbstractTableModel implements Cloneable {
         if(!getColumnClass(columnIndex).isInstance(value)) {
             throw new ClassCastException("Class of the object does not match the class of the column!");
         }
-        rows.elementAt(rowIndex).setParamAt(columns.indices.elementAt(columnIndex), (Double)value);
+        setValImpl((Double)value, rowIndex, columnIndex);
         fireTableCellUpdated(rowIndex, columnIndex);
+    }
+
+    private void setValImpl(double value, int rowIndex, int columnIndex) {
+        rows.elementAt(rowIndex).setParamAt(columns.indices.elementAt(columnIndex), value);
     }
 
     // Note that if a molecule already has an id included in `values`,
@@ -339,8 +347,9 @@ public class GenericTableModel extends AbstractTableModel implements Cloneable {
             Units columnUnits = getColumnUnits(colName);
             Units analogUnits = Units.getAnalogUnits(columnUnits);
             if(!columnUnits.equals(analogUnits)){
-                setColumnUnits(colName, analogUnits);
+                setColUnitsImpl(columns.getParamColumn(colName), analogUnits);
             }
+            fireTableStructureChanged();
         }
     }
     
@@ -349,8 +358,9 @@ public class GenericTableModel extends AbstractTableModel implements Cloneable {
             Units columnUnits = getColumnUnits(colName);
             Units digitalUnits = Units.getDigitalUnits(columnUnits);
             if(!columnUnits.equals(digitalUnits)){
-                setColumnUnits(colName, digitalUnits);
+                setColUnitsImpl(columns.getParamColumn(colName), digitalUnits);
             }
+            fireTableStructureChanged();
         }
     }
 

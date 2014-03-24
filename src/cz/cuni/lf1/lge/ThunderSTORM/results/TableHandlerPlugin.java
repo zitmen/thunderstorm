@@ -21,6 +21,7 @@ public class TableHandlerPlugin implements PlugIn {
                 resultsTable.show();
             } else if("reset".equals(action)) {
                 resultsTable.copyOriginalToActual();
+                resultsTable.convertAllColumnsToAnalogUnits();
                 resultsTable.getOperationHistoryPanel().removeAllOperations();
                 resultsTable.setStatus("Results reset.");
                 resultsTable.showPreview();
