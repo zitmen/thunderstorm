@@ -224,7 +224,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         if(threeDimensions){
             calibration.pixelDepth = zStep/1000;
         }
-        calibration.setUnit("\u03BCm"); //unicode for mu
+        calibration.setUnit("um");
         image.setCalibration(calibration);
         if(colorizeZ) {
             image.setDimensions(zSlices, 1, 1);
