@@ -59,7 +59,8 @@ public class DataGeneratorPlugIn implements PlugIn {
     private Range intensity_range;
     private IPsfUI psf;
     private double add_poisson_var;
-    private FloatProcessor mask;
+    private FloatProcessor densityMask;
+    private FloatProcessor backgroundMask;
     private boolean singleFixedMolecule;
 
     @Override
@@ -183,12 +184,10 @@ public class DataGeneratorPlugIn implements PlugIn {
                 }
                 processingNewFrame("ThunderSTORM is generating frame %d out of %d...");
                 FloatProcessor backgroundMeanIntensity;
-                float[] data = new float[width * height];
-                Arrays.fill(data, add_poisson_var > 0 ? (float) add_poisson_var : 0f);
-                backgroundMeanIntensity = new FloatProcessor(width, height, data, null);
+                backgroundMeanIntensity = createBackgroundIntensityImage();
                 Vector<EmitterModel> molecules = singleFixedMolecule
                         ? datagen.generateSingleFixedMolecule(width, height, 0, 0, intensity_range, psf)
-                        : datagen.generateMolecules(width, height, mask, density, intensity_range, psf);
+                        : datagen.generateMolecules(width, height, densityMask, density, intensity_range, psf);
                 ShortProcessor slice = datagen.renderFrame(width, height, f, drift, molecules, backgroundMeanIntensity);
                 local_stack.add(slice);
                 local_table.add(molecules);
@@ -209,6 +208,19 @@ public class DataGeneratorPlugIn implements PlugIn {
             }
         }
 
+    }
+
+    private FloatProcessor createBackgroundIntensityImage() {
+        FloatProcessor backgroundMeanIntensity;
+        if(backgroundMask == null) {
+            float[] data = new float[width * height];
+            Arrays.fill(data, add_poisson_var > 0 ? (float) add_poisson_var : 0f);
+            backgroundMeanIntensity = new FloatProcessor(width, height, data, null);
+            return backgroundMeanIntensity;
+        } else {
+            backgroundMeanIntensity = (FloatProcessor) backgroundMask.resize(width, height);
+            return ImageMath.multiply((float) (add_poisson_var), backgroundMeanIntensity);
+        }
     }
 
     private FloatProcessor readMask(String imagePath) {
@@ -245,6 +257,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         final ParameterKey.Double driftDistParam = params.createDoubleField("driftDist", null, Defaults.DRIFT_DISTANCE);
         final ParameterKey.Double driftAngleParam = params.createDoubleField("driftAngle", null, Defaults.DRIFT_ANGLE);
         final ParameterKey.String maskPathParam = params.createStringField("maskPath", null, Defaults.MASK_PATH);
+        final ParameterKey.String backgroundMaskPathParam = params.createStringField("maskPathBg", null, Defaults.BG_MASK_PATH);
         ParameterKey.Boolean singleFixedMoleculeParam = params.createBooleanField("singleFixed", null, false);
         final CardsPanel psfPanel = new CardsPanel(ModuleLoader.getUIModules(IPsfUI.class), 0);
         //
@@ -292,20 +305,34 @@ public class DataGeneratorPlugIn implements PlugIn {
                     //emitters
                     JPanel emittersPanel = new JPanel(new GridBagLayout());
                     emittersPanel.setBorder(BorderFactory.createTitledBorder("Emitters"));
-                    
+
                     JPanel p = psfPanel.getPanel("PSF:");
                     emittersPanel.add(p, GridBagHelper.twoCols());
                     params.registerComponent(psfParam, psfPanel.getComboBox());
-
-                    emittersPanel.add(new JLabel("Density [um^-2]:"), GridBagHelper.leftCol());
-                    JTextField densityTextField = new JTextField(20);
-                    emittersPanel.add(densityTextField, GridBagHelper.rightCol());
-                    params.registerComponent(densityParam, densityTextField);
 
                     emittersPanel.add(new JLabel("Intensity range (from:to) [photons]:"), GridBagHelper.leftCol());
                     JTextField intensityTextField = new JTextField(20);
                     emittersPanel.add(intensityTextField, GridBagHelper.rightCol());
                     params.registerComponent(intensityRangeParam, intensityTextField);
+                    
+                    emittersPanel.add(new JLabel("Density [um^-2]:"), GridBagHelper.leftCol());
+                    final JTextField densityTextField = new JTextField(20);
+                    emittersPanel.add(densityTextField, GridBagHelper.rightCol());
+                    params.registerComponent(densityParam, densityTextField);
+
+                    emittersPanel.add(new JLabel("Density mask (optional):"), GridBagHelper.leftCol());
+                    JPanel pathPanel = new JPanel(new BorderLayout()) {
+                        @Override
+                        public Dimension getPreferredSize() {
+                            return densityTextField.getPreferredSize();//same size as fields above
+                        }
+                    };
+                    final JTextField pathTextField = new JTextField(15);
+                    params.registerComponent(maskPathParam, pathTextField);
+                    pathPanel.add(pathTextField);
+                    pathPanel.add(createBrowseButton(pathTextField, true), BorderLayout.EAST);
+                    emittersPanel.add(pathPanel, GridBagHelper.rightCol());
+                    
                     //Noise
                     JPanel noisePanel = new JPanel(new GridBagLayout());
                     noisePanel.setBorder(BorderFactory.createTitledBorder("Background noise"));
@@ -314,6 +341,19 @@ public class DataGeneratorPlugIn implements PlugIn {
                     final JTextField noiseVarTextField = new JTextField(20);
                     noisePanel.add(noiseVarTextField, GridBagHelper.rightCol());
                     params.registerComponent(addPoissonVarParam, noiseVarTextField);
+
+                    noisePanel.add(new JLabel("Background intensity mask (optional):"), GridBagHelper.leftCol());
+                    JPanel bgPathPanel = new JPanel(new BorderLayout()) {
+                        @Override
+                        public Dimension getPreferredSize() {
+                            return noiseVarTextField.getPreferredSize();//same size as fields above
+                        }
+                    };
+                    final JTextField bgPathTextField = new JTextField(15);
+                    params.registerComponent(backgroundMaskPathParam, bgPathTextField);
+                    bgPathPanel.add(bgPathTextField);
+                    bgPathPanel.add(createBrowseButton(bgPathTextField, true), BorderLayout.EAST);
+                    noisePanel.add(bgPathPanel, GridBagHelper.rightCol());
 
                     //drift
                     JPanel driftPanel = new JPanel(new GridBagLayout());
@@ -329,23 +369,6 @@ public class DataGeneratorPlugIn implements PlugIn {
                     driftPanel.add(driftAngleTextField, GridBagHelper.rightCol());
                     params.registerComponent(driftAngleParam, driftAngleTextField);
 
-                    //additional
-                    JPanel additionalPanel = new JPanel(new GridBagLayout());
-                    additionalPanel.setBorder(BorderFactory.createTitledBorder("Additional settings"));
-
-                    additionalPanel.add(new JLabel("Grayscale mask (optional):"), GridBagHelper.leftCol());
-                    JPanel pathPanel = new JPanel(new BorderLayout()) {
-                        @Override
-                        public Dimension getPreferredSize() {
-                            return noiseVarTextField.getPreferredSize();//same size as fields above
-                        }
-                    };
-                    final JTextField pathTextField = new JTextField(15);
-                    params.registerComponent(maskPathParam, pathTextField);
-                    pathPanel.add(pathTextField);
-                    pathPanel.add(createBrowseButton(pathTextField, true), BorderLayout.EAST);
-                    additionalPanel.add(pathPanel, GridBagHelper.rightCol());
-
                     //buttons
                     JPanel buttons = new JPanel(new GridBagLayout());
                     JButton defaultButton = createDefaultsButton();
@@ -356,11 +379,11 @@ public class DataGeneratorPlugIn implements PlugIn {
                     JButton okButton = createOKButton();
                     buttons.add(okButton);
                     buttons.add(createCancelButton());
-                    
+
                     okButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent ae) {
-                            IPsfUI psfui = (IPsfUI)psfPanel.getActiveComboBoxItem();
+                            IPsfUI psfui = (IPsfUI) psfPanel.getActiveComboBoxItem();
                             psfui.parameters.readDialogOptions();
                             psfui.parameters.recordMacroOptions();
                             if(psfui.parameters.isPrefsSavingEnabled()) {
@@ -380,7 +403,6 @@ public class DataGeneratorPlugIn implements PlugIn {
                     add(emittersPanel, GridBagHelper.twoCols());
                     add(noisePanel, GridBagHelper.twoCols());
                     add(driftPanel, GridBagHelper.twoCols());
-                    add(additionalPanel, GridBagHelper.twoCols());
                     add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
                     add(buttons, GridBagHelper.twoCols());
 
@@ -390,7 +412,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                     setLocationRelativeTo(null);
                 }
             };
-            
+
             if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
                 return false;
             }
@@ -400,10 +422,11 @@ public class DataGeneratorPlugIn implements PlugIn {
         frames = framesParam.getValue();
         density = densityParam.getValue();
         add_poisson_var = addPoissonVarParam.getValue();
-        psf = (IPsfUI)psfPanel.getActiveComboBoxItem();
+        psf = (IPsfUI) psfPanel.getActiveComboBoxItem();
         intensity_range = Range.parseFromTo(intensityRangeParam.getValue());
         drift = new Drift(Units.NANOMETER.convertTo(Units.PIXEL, driftDistParam.getValue()), driftAngleParam.getValue(), false, frames);
-        mask = readMask(maskPathParam.getValue());
+        densityMask = readMask(maskPathParam.getValue());
+        backgroundMask = readMask(backgroundMaskPathParam.getValue());
         singleFixedMolecule = singleFixedMoleculeParam.getValue();
 
         return true;
@@ -420,10 +443,12 @@ public class DataGeneratorPlugIn implements PlugIn {
         public static final double DRIFT_ANGLE = 0;
         public static final String INTENSITY_RANGE = "700:900";
         public static final String MASK_PATH = "";
+        public static final String BG_MASK_PATH = "";
         public static final String PSF = "0";
     }
-    
+
     static class PsfValidator implements Validator<String> {
+
         @Override
         public void validate(String input) throws ValidatorException {
             List<IPsfUI> allPSFs = ModuleLoader.getUIModules(IPsfUI.class);
