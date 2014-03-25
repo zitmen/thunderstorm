@@ -143,7 +143,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
 
         actionParam = params.createStringField("method", StringValidatorFactory.isMember(actions), actions[0]);
         //cross correlation params
-        binsParam = params.createIntField("steps", IntegerValidatorFactory.rangeInclusive(3, Integer.MAX_VALUE), 5, crossCorrCondition);
+        binsParam = params.createIntField("steps", IntegerValidatorFactory.rangeInclusive(2, Integer.MAX_VALUE), 5, crossCorrCondition);
         magnificationParam = params.createDoubleField("magnification", DoubleValidatorFactory.positiveNonZero(), 5, crossCorrCondition);
         showCorrelationImagesParam = params.createBooleanField("showCorrelations", null, false, crossCorrCondition);
         //fiducials params
