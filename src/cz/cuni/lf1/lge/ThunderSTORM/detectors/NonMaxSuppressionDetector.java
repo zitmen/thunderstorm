@@ -26,7 +26,7 @@ public final class NonMaxSuppressionDetector extends IDetectorUI implements IDet
     private String threshold;
     private transient float thresholdValue;
     private transient final static String DEFAULT_THRESHOLD = "std(Wave.F1)";
-    private transient final static int DEFAULT_RADIUS = 3;
+    private transient final static int DEFAULT_RADIUS = 1;
     private transient ParameterKey.Integer RADIUS;
     private transient ParameterKey.String THRESHOLD;
 
@@ -65,12 +65,12 @@ public final class NonMaxSuppressionDetector extends IDetectorUI implements IDet
     @Override
     public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException {
         Vector<Point> detections = new Vector<Point>();
-        FloatProcessor mx = Morphology.dilateBox(image, radius);
+        FloatProcessor mx = Morphology.dilateBox(image, 2*radius+1);
 
         float imval, mxval;
         thresholdValue = Thresholder.getThreshold(threshold);
-        for(int x = radius / 2, xm = image.getWidth() - radius / 2; x < xm; x++) {
-            for(int y = radius / 2, ym = image.getHeight() - radius / 2; y < ym; y++) {
+        for(int x = radius, xm = image.getWidth() - radius; x < xm; x++) {
+            for(int y = radius, ym = image.getHeight() - radius; y < ym; y++) {
                 imval = image.getf(x, y);
                 mxval = mx.getf(x, y);
                 if((mxval == imval) && (imval >= thresholdValue)) {
