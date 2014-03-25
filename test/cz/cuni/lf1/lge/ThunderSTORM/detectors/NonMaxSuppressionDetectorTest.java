@@ -26,7 +26,7 @@ public class NonMaxSuppressionDetectorTest {
             { 2f, 3f, 4f, 3f, 2f },
             { 2f, 3f, 3f, 3f, 2f }
         });
-        instance = new NonMaxSuppressionDetector(3, "3.0");
+        instance = new NonMaxSuppressionDetector(1, "3.0");
         expResult = new Vector<Point>();
         expResult.add(new Point(3,2,4f));
         result = instance.detectMoleculeCandidates(image);

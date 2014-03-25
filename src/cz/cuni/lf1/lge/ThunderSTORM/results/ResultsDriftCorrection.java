@@ -442,7 +442,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         }
     }
 
-    static void showDriftPlot(DriftResults driftCorrection) {
+    public static void showDriftPlot(DriftResults driftCorrection) {
         int minFrame = driftCorrection.getMinFrame();
         int maxFrame = driftCorrection.getMaxFrame();
         int gridTicks = 200;
