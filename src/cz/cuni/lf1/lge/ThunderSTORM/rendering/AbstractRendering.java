@@ -185,6 +185,10 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
                     }
                 }
             }
+            long pixelcount = (long) imSizeX * (long) imSizeY;
+            if(pixelcount > Integer.MAX_VALUE) {
+                throw new IllegalArgumentException("Tried to create too big image (" + imSizeX + " x " + imSizeY + "). Check that parameters are correct and use appropriate units.");
+            }
         }
 
         /**
@@ -218,11 +222,11 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         }
         image = new ImagePlus(getRendererName(), stack);
         Calibration calibration = new Calibration();
-        double pixelSize = resolution*CameraSetupPlugIn.getPixelSize()/1000;
+        double pixelSize = resolution * CameraSetupPlugIn.getPixelSize() / 1000;
         calibration.pixelHeight = pixelSize;
         calibration.pixelWidth = pixelSize;
-        if(threeDimensions){
-            calibration.pixelDepth = zStep/1000;
+        if(threeDimensions) {
+            calibration.pixelDepth = zStep / 1000;
         }
         calibration.setUnit("um");
         image.setCalibration(calibration);
