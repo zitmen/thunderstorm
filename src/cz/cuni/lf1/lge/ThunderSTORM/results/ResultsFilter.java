@@ -27,7 +27,6 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
@@ -90,7 +89,6 @@ public class ResultsFilter extends PostProcessingModule {
             return;
         }
         filterTextField.setBackground(Color.WHITE);
-        GUI.closeBalloonTip();
         try {
             applyButton.setEnabled(false);
             saveStateForUndo();

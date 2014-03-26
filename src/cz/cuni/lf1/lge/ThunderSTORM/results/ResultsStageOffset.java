@@ -99,7 +99,6 @@ public class ResultsStageOffset extends PostProcessingModule {
     @Override
     public void runImpl() {
         try {
-            GUI.closeBalloonTip();
 
             int framesPerStagePosition = framesPerStagePositionParam.getValue();
             int stagePositions = stagePositionsParam.getValue();

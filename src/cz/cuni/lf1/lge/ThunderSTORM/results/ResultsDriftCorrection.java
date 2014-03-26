@@ -175,7 +175,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
 
         ccPanel.add(new JLabel("Number of bins:", SwingConstants.TRAILING), GridBagHelper.leftCol());
         ccPanel.add(numStepsTextField, GridBagHelper.rightCol());
-        ccPanel.add(new JLabel("Rendering magnification:", SwingConstants.TRAILING), GridBagHelper.leftCol());
+        ccPanel.add(new JLabel("Magnification:", SwingConstants.TRAILING), GridBagHelper.leftCol());
         ccPanel.add(magnificationTextField, GridBagHelper.rightCol());
         ccPanel.add(showCorrelationsCheckBox, GridBagHelper.twoCols());
 
@@ -193,11 +193,11 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         onTimeRatioParam.registerComponent(onTimeRatioTextField);
         smoothingBandwidthParam.registerComponent(smoothingBandwidthTextField);
 
-        fiducialPanel.add(new JLabel("Max distance:"), GridBagHelper.leftCol());
+        fiducialPanel.add(new JLabel("Max distance[units of x,y]:"), GridBagHelper.leftCol());
         fiducialPanel.add(distanceThrTextField, GridBagHelper.rightCol());
-        fiducialPanel.add(new JLabel("Min frames ratio:"), GridBagHelper.leftCol());
+        fiducialPanel.add(new JLabel("Min marker visibility ratio:"), GridBagHelper.leftCol());
         fiducialPanel.add(onTimeRatioTextField, GridBagHelper.rightCol());
-        fiducialPanel.add(new JLabel("Smoothing bandwidth:"), GridBagHelper.leftCol());
+        fiducialPanel.add(new JLabel("Trajectory smoothing factor:"), GridBagHelper.leftCol());
         fiducialPanel.add(smoothingBandwidthTextField, GridBagHelper.rightCol());
 
         //save panel

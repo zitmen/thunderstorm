@@ -30,6 +30,7 @@ public abstract class PostProcessingModule {
 
     public void run() {
         try {
+            GUI.closeBalloonTip();
             if(MacroParser.isRanFromMacro()) {
                 params.readMacroOptions();
             } else {

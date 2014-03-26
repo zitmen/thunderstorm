@@ -61,7 +61,7 @@ public class ResultsGrouping extends PostProcessingModule {
         distanceTextField = new JTextField(15);
         distanceTextField.addKeyListener(listener);
         distParam.registerComponent(distanceTextField);
-        JLabel groupThrLabel = new JLabel("Maximum distance [current units of x,y]:");
+        JLabel groupThrLabel = new JLabel("Maximum distance [units of x,y]:");
 
         offFramesTextField = new JTextField(15);
         offFramesTextField.addKeyListener(listener);
@@ -90,7 +90,6 @@ public class ResultsGrouping extends PostProcessingModule {
             return;
         }
         distanceTextField.setBackground(Color.WHITE);
-        GUI.closeBalloonTip();
         applyButton.setEnabled(false);
         saveStateForUndo();
 
