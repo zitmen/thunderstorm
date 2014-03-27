@@ -34,6 +34,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker.Condition;
@@ -205,18 +206,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         final JCheckBox saveCheckBox = new JCheckBox("Save to file:");
         saveCheckBox.setBorder(null);// so that it aligns well with loadLabel
         final JTextField savePathTextField = new JTextField(20);
-        JButton browseButton = new JButton("...");
-        browseButton.setMargin(new Insets(1, 1, 1, 1));
-        browseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser jfc = new JFileChooser(savePathTextField.getText().isEmpty() ? null : savePathTextField.getText());
-                jfc.setFileFilter(new FileNameExtensionFilter("JSON text file", "json"));
-                if(jfc.showDialog(uiPanel, "OK") == JFileChooser.APPROVE_OPTION) {
-                    savePathTextField.setText(jfc.getSelectedFile().getPath());
-                }
-            }
-        });
+        JButton browseButton = DialogStub.createBrowseButton(savePathTextField, true, new FileNameExtensionFilter("JSON text file", "json"));
         savePathTextField.addActionListener(listener);
         
         saveParam.registerComponent(saveCheckBox);

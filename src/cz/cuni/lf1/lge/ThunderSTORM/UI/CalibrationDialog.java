@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class CalibrationDialog extends DialogStub implements ActionListener {
 
@@ -123,7 +124,7 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
         JTextField calibrationFileTextField = new JTextField(15);
         calibrationFilePath.registerComponent(calibrationFileTextField);
         calibrationPanel.add(calibrationFileTextField, BorderLayout.CENTER);
-        calibrationPanel.add(createBrowseButton(calibrationFileTextField, true), BorderLayout.EAST);
+        calibrationPanel.add(createBrowseButton(calibrationFileTextField, true, new FileNameExtensionFilter("Yaml file", "yaml")), BorderLayout.EAST);
         GridBagConstraints gbc = GridBagHelper.rightCol();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         aditionalOptions.add(calibrationPanel, gbc);

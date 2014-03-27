@@ -10,23 +10,20 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
-import ij.IJ;
 import ij.Prefs;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.yaml.snakeyaml.Yaml;
 
 public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
@@ -51,22 +48,11 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
         parentPanel.add(new JLabel("Calibration file:"), GridBagHelper.leftCol());
         final JTextField calibrationFileTextField = new JTextField(Prefs.get("thunderstorm.estimators.calibrationpath", ""));
         parameters.registerComponent(CALIBRATION_PATH, calibrationFileTextField);
-        JButton findCalibrationButton = new JButton("...");
-        findCalibrationButton.setMargin(new Insets(1, 1, 1, 1));
-        findCalibrationButton.addActionListener(new ActionListener() {
+        JButton findCalibrationButton = DialogStub.createBrowseButton(calibrationFileTextField, true, new FileNameExtensionFilter("Yaml file", "yaml"));
+        JPanel calibrationPanel = new JPanel(new BorderLayout()) {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser(IJ.getDirectory("image"));
-                int userAction = fileChooser.showOpenDialog(null);
-                if(userAction == JFileChooser.APPROVE_OPTION) {
-                    calibrationFileTextField.setText(fileChooser.getSelectedFile().getPath());
-                }
-            }
-        });
-        JPanel calibrationPanel = new JPanel(new BorderLayout()){
-            @Override
-            public Dimension getPreferredSize(){
-                return ((JTextField)parameters.getRegisteredComponent(SIGMA)).getPreferredSize();
+            public Dimension getPreferredSize() {
+                return ((JTextField) parameters.getRegisteredComponent(SIGMA)).getPreferredSize();
             }
         };
         calibrationPanel.add(calibrationFileTextField, BorderLayout.CENTER);
