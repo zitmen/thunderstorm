@@ -11,7 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -64,7 +64,7 @@ public class YAMLImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, GenericTable table, Vector<String> columns) throws IOException {
+    public void exportToFile(String fp, GenericTable table, List<String> columns) throws IOException {
         assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -76,7 +76,7 @@ public class YAMLImportExport implements IImportExport {
         for(int r = 0; r < nrows; r++) {
             HashMap<String,Double> molecule = new HashMap<String,Double>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(table.getColumnLabel(columns.elementAt(c)), table.getValue(r, columns.elementAt(c)));
+                molecule.put(table.getColumnLabel(columns.get(c)), table.getValue(r, columns.get(c)));
             results.add(molecule);
             IJ.showProgress((double)r / (double)nrows);
         }

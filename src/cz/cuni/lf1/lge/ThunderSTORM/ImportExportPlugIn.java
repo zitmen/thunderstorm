@@ -19,8 +19,9 @@ import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JSeparator;
 
 public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
@@ -29,7 +30,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     public static final String EXPORT = "export";
     private String[] modules = null;
     private String[] suffix = null;
-    private Vector<IImportExport> ie = null;
+    private List<IImportExport> ie = null;
     private Choice ftype;
     private TextField fpath;
     
@@ -69,8 +70,8 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             modules = new String[ie.size()];
             suffix = new String[ie.size()];
             for(int i = 0; i < modules.length; i++) {
-                modules[i] = ie.elementAt(i).getName();
-                suffix[i] = ie.elementAt(i).getSuffix();
+                modules[i] = ie.get(i).getName();
+                suffix[i] = ie.get(i).getSuffix();
             }
             gd.addChoice("File type", modules, modules[active_ie]);
             ftype = (Choice) gd.getChoices().get(0);
@@ -211,7 +212,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             table = rt;
         }
         //
-        Vector<String> columns = new Vector<String>();
+        List<String> columns = new ArrayList<String>();
         for(int i = 0; i < col_headers.length; i++) {
             if(gd.getNextBoolean() == true) {
                 columns.add(col_headers[i]);
@@ -241,11 +242,11 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         }
     }
 
-    private void exportToFile(GenericTable table, String fpath, Vector<String> columns) {
+    private void exportToFile(GenericTable table, String fpath, List<String> columns) {
         IJ.showStatus("ThunderSTORM is exporting your results...");
         IJ.showProgress(0.0);
         try {
-            IImportExport exporter = ie.elementAt(active_ie);
+            IImportExport exporter = ie.get(active_ie);
             exporter.exportToFile(fpath, table, columns);
             IJ.showStatus("ThunderSTORM has exported your results.");
         } catch(IOException ex) {
@@ -266,7 +267,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 table.reset();
             }
             table.setOriginalState();
-            IImportExport importer = ie.elementAt(active_ie);
+            IImportExport importer = ie.get(active_ie);
             importer.importFromFile(fpath, table, startingFrame);
             IJ.showStatus("ThunderSTORM has imported your file.");
         } catch(IOException ex) {

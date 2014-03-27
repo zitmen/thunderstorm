@@ -12,7 +12,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProtoImportExport implements IImportExport {
     
@@ -25,7 +26,7 @@ public class ProtoImportExport implements IImportExport {
         Results results = Results.parseFrom(new FileInputStream(fp));
         
         double [] values = null;
-        Vector<String> fields = new Vector<String>();
+        List<String> fields = new ArrayList<String>();
         int r = 0, nrows = results.getMoleculeCount();
         for(Molecule mol : results.getMoleculeList()) {
             //
@@ -84,7 +85,7 @@ public class ProtoImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, GenericTable table, Vector<String> columns) throws FileNotFoundException, IOException {
+    public void exportToFile(String fp, GenericTable table, List<String> columns) throws FileNotFoundException, IOException {
         assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -95,7 +96,7 @@ public class ProtoImportExport implements IImportExport {
         Results.Builder results = Results.newBuilder();
         cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.Builder units = cz.cuni.lf1.lge.ThunderSTORM.ImportExport.proto.ResultsTable.Units.newBuilder();
         for(int c = 0; c < ncols; c++) {
-            String name = columns.elementAt(c);
+            String name = columns.get(c);
             String unit = table.getColumnUnits(name).toString();
             if((unit != null) && !unit.trim().isEmpty()) {
                 if(MoleculeDescriptor.LABEL_ID.equals(name)) {
@@ -131,7 +132,7 @@ public class ProtoImportExport implements IImportExport {
                         units.setThompsonCcd(unit);
                     }
                 } else {
-                    throw new IllegalArgumentException("Parameter `" + columns.elementAt(c) + "` is not supported in the current version of protocol buffer!");
+                    throw new IllegalArgumentException("Parameter `" + columns.get(c) + "` is not supported in the current version of protocol buffer!");
                 }
             }
         }
@@ -139,7 +140,7 @@ public class ProtoImportExport implements IImportExport {
         for(int r = 0; r < nrows; r++) {
             Molecule.Builder mol = Molecule.newBuilder();
             for(int c = 0; c < ncols; c++) {
-                String name = columns.elementAt(c);
+                String name = columns.get(c);
                 double value = table.getValue(r, name);
                 if(MoleculeDescriptor.LABEL_ID.equals(name)) {
                     mol.setId((int)value);
@@ -174,7 +175,7 @@ public class ProtoImportExport implements IImportExport {
                         mol.setThompsonCcd(value);
                     }
                 } else {
-                    throw new IllegalArgumentException("Parameter `" + columns.elementAt(c) + "` is not supported in the current version of protocol buffer!");
+                    throw new IllegalArgumentException("Parameter `" + columns.get(c) + "` is not supported in the current version of protocol buffer!");
                 }
             }
             results.addMolecule(mol);

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 import org.apache.commons.collections.primitives.ArrayDoubleList;
 import org.apache.commons.collections.primitives.DoubleList;
 import static org.apache.commons.math3.util.FastMath.log;
@@ -182,7 +181,7 @@ public class TSFImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, GenericTable table, Vector<String> columns) throws FileNotFoundException, IOException {
+    public void exportToFile(String fp, GenericTable table, List<String> columns) throws FileNotFoundException, IOException {
         assert (table != null);
         assert (fp != null);
         assert (!fp.isEmpty());

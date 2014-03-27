@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.Vector;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
@@ -156,7 +156,7 @@ public class XMLImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, GenericTable table, Vector<String> columns) throws IOException {
+    public void exportToFile(String fp, GenericTable table, List<String> columns) throws IOException {
         assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -190,9 +190,9 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(unitsStartElement);
             eventWriter.add(end);
             for(int c = 0; c < ncols; c++) {
-                String units = table.getColumnUnits(columns.elementAt(c)).toString();
+                String units = table.getColumnUnits(columns.get(c)).toString();
                 if((units != null) && !units.trim().isEmpty()) {
-                    createNode(eventWriter, columns.elementAt(c), units);
+                    createNode(eventWriter, columns.get(c), units);
                 }
             }
             eventWriter.add(tab);
@@ -207,7 +207,7 @@ public class XMLImportExport implements IImportExport {
                 eventWriter.add(end);
 
                 for(int c = 0; c < ncols; c++) {
-                    createNode(eventWriter, columns.elementAt(c), Double.toString((Double)table.getValue(r,columns.elementAt(c))));
+                    createNode(eventWriter, columns.get(c), Double.toString((Double)table.getValue(r,columns.get(c))));
                 }
                 
                 eventWriter.add(tab);
