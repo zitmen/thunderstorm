@@ -325,13 +325,7 @@ class RenderingDialog extends JDialog {
 
     private void validateFields() {
         left = Integer.parseInt(leftTextField.getText());
-        if(left < 0) {
-            throw new IllegalArgumentException("Image offset must not be negative.");
-        }
         top = Integer.parseInt(topTextField.getText());
-        if(top < 0) {
-            throw new IllegalArgumentException("Image offset must not be negative.");
-        }
         sizeX = Integer.parseInt(sizeXTextField.getText());
         if(sizeX < 1) {
             throw new IllegalArgumentException("Image width must be positive.");
