@@ -33,7 +33,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     private List<IImportExport> ie = null;
     private Choice ftype;
     private TextField fpath;
-    
+
     private int active_ie = 0;
     private int startingFrame = 1;
     private String path = null;
@@ -132,16 +132,23 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             return;
         }
         int dotpos = fname.lastIndexOf('.');
-        if(dotpos < 0) {
-            return;
-        }
-        String type = fname.substring(dotpos + 1).trim();
-        for(int i = 0; i < suffix.length; i++) {
-            if(type.equals(suffix[i])) {
-                ftype.select(i);
-                active_ie = i;
-                break;
+        if(dotpos >= 0) {
+            String type = fname.substring(dotpos + 1).trim();
+            for(int i = 0; i < suffix.length; i++) {
+                if(type.equals(suffix[i])) {
+                    //found correct suffix, adjust type combobox and return
+                    ftype.select(i);
+                    active_ie = i;
+                    return;
+                }
             }
+        }
+        
+        //no suffix found or unknown suffix
+        if(!fpath.isFocusOwner()) {
+            //user is not writting text at the moment
+            String selectedTypeSuffix = suffix[ftype.getSelectedIndex()];
+            fpath.setText(fpath.getText() + "." + selectedTypeSuffix);
         }
     }
 
@@ -283,16 +290,18 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         table.show();
         IJ.showProgress(1.0);
     }
-    
+
     public void loadPreferences() {
         active_ie = Integer.parseInt(Prefs.get("thunderstorm.io.active", "0"));
         startingFrame = Integer.parseInt(Prefs.get("thunderstorm.io.startingFrame", "1"));
-        if(path == null) path = Prefs.get("thunderstorm.io.path", "");  // if it is not null, the plugin was invoked by drag&drop operation
+        if(path == null) {
+            path = Prefs.get("thunderstorm.io.path", "");  // if it is not null, the plugin was invoked by drag&drop operation
+        }
         resetFirst = Boolean.parseBoolean(Prefs.get("thunderstorm.io.resetTable", "true"));
         livePreview = Boolean.parseBoolean(Prefs.get("thunderstorm.io.livePreview", "true"));
         saveMeasurementProtocol = Boolean.parseBoolean(Prefs.get("thunderstorm.io.saveMeasurementProtocol", "true"));
     }
-    
+
     public void savePreferences() {
         Prefs.set("thunderstorm.io.active", Integer.toString(active_ie));
         Prefs.set("thunderstorm.io.startingFrame", Integer.toString(startingFrame));
@@ -302,8 +311,8 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         Prefs.set("thunderstorm.io.saveMeasurementProtocol", Boolean.toString(saveMeasurementProtocol));
     }
 
-    private static String capitalizeFirstLetter(String s){
-        if(s != null && s.length() > 0){
+    private static String capitalizeFirstLetter(String s) {
+        if(s != null && s.length() > 0) {
             return (s.charAt(0) + "").toUpperCase() + s.substring(1);
         } else {
             return s;
