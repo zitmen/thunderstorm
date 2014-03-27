@@ -45,7 +45,7 @@ public class DuplicatesFilter extends PostProcessingModule {
     private ParameterKey.String distFormula;
 
     public DuplicatesFilter() {
-        distFormula = params.createStringField("distFormula", null, "");
+        distFormula = params.createStringField("distFormula", null, MoleculeDescriptor.Fitting.LABEL_THOMPSON);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class DuplicatesFilter extends PostProcessingModule {
     @Override
     protected JPanel createUIPanel() {
         filterPanel = new JPanel(new GridBagLayout());
-        distTextField = new JTextField(MoleculeDescriptor.Fitting.LABEL_THOMPSON);
+        distTextField = new JTextField();
         distFormula.registerComponent(distTextField);
         InputListener listener = new InputListener();
         distTextField.addKeyListener(listener);
@@ -72,6 +72,7 @@ public class DuplicatesFilter extends PostProcessingModule {
         filterPanel.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(1, 0).anchor(GridBagConstraints.EAST).build());
         filterPanel.add(distTextField, new GridBagHelper.Builder().gridxy(0, 1).fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
         filterPanel.add(applyButton, new GridBagHelper.Builder().gridxy(1, 1).build());
+        params.updateComponents();
         return filterPanel;
     }
 
@@ -277,4 +278,9 @@ public class DuplicatesFilter extends PostProcessingModule {
         }
     }
 
+    @Override
+    public void resetParamsToDefaults() {
+        distTextField.setBackground(Color.white);
+        super.resetParamsToDefaults();
+    }
 }

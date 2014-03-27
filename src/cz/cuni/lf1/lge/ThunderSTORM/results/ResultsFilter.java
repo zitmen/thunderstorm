@@ -190,4 +190,10 @@ public class ResultsFilter extends PostProcessingModule {
             }
         }
     }
+
+    @Override
+    public void resetParamsToDefaults() {
+        filterTextField.setBackground(Color.white);
+        super.resetParamsToDefaults();
+    }
 }

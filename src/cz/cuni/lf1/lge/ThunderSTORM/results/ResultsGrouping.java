@@ -11,7 +11,6 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import ij.IJ;
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -89,7 +88,6 @@ public class ResultsGrouping extends PostProcessingModule {
         if(!applyButton.isEnabled() || (dist == 0)) {
             return;
         }
-        distanceTextField.setBackground(Color.WHITE);
         applyButton.setEnabled(false);
         saveStateForUndo();
 
@@ -117,7 +115,6 @@ public class ResultsGrouping extends PostProcessingModule {
                 } catch(InterruptedException ex) {
                 } catch(ExecutionException ex) {
                     IJ.handleException(ex);
-                    distanceTextField.setBackground(new Color(255, 200, 200));
                     GUI.showBalloonTip(distanceTextField, ex.getCause().toString());
                 } finally {
                     applyButton.setEnabled(true);

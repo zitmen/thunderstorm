@@ -49,11 +49,11 @@ public class ResultsTableWindow extends GenericTableWindow {
     private JButton io_export;
     private JButton showHist;
     private JButton render;
+    private JButton defaultsButton;
     private JCheckBox preview;
     private JLabel status;
     private RenderingQueue previewRenderer;
     private boolean livePreview;
-    private JButton setCamera;
     private JButton resetButton;
     private JTabbedPane tabbedPane;
     private OperationsHistoryPanel operationsStackPanel;
@@ -73,15 +73,17 @@ public class ResultsTableWindow extends GenericTableWindow {
         //buttons
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        setCamera = new JButton("Camera setup");
+        defaultsButton = new JButton("Defaults");
         showHist = new JButton("Plot histogram");
         io_import = new JButton("Import");
         io_export = new JButton("Export");
         render = new JButton("Visualization");
-        setCamera.addActionListener(new ActionListener() {
+        defaultsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP, null);
+                for(PostProcessingModule module : postProcessingModules){
+                    module.resetParamsToDefaults();
+                }
             }
         });
         showHist.addActionListener(new ActionListener() {
@@ -119,7 +121,7 @@ public class ResultsTableWindow extends GenericTableWindow {
         });
         buttons.add(preview);
         buttons.add(Box.createHorizontalGlue());
-        buttons.add(setCamera);
+        buttons.add(defaultsButton);
         buttons.add(Box.createHorizontalStrut(5));
         buttons.add(showHist);
         buttons.add(Box.createHorizontalStrut(5));
@@ -179,7 +181,7 @@ public class ResultsTableWindow extends GenericTableWindow {
         livePreview = enabled;
         preview.setSelected(enabled);
     }
-    
+
     public void showPreview() {
         IJResultsTable rt = IJResultsTable.getResultsTable();
         if(livePreview && !rt.isEmpty()) {
@@ -193,13 +195,13 @@ public class ResultsTableWindow extends GenericTableWindow {
                 if(analyzedImage != null) {
                     renderer.setSize(analyzedImage.getWidth(), analyzedImage.getHeight());
                 } else {
-                    double [] xpos = rt.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL);
-                    double [] ypos = rt.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL);
-                    int left   = Math.max((int) Math.floor(VectorMath.min(xpos)) - 1, 0);
-                    int top    = Math.max((int) Math.floor(VectorMath.min(ypos)) - 1, 0);
-                    int right  = (int) Math.ceil (VectorMath.max(xpos)) + 1;
-                    int bottom = (int) Math.ceil (VectorMath.max(ypos)) + 1;
-                    renderer.setSize(left, top, right-left+1, bottom-top+1);
+                    double[] xpos = rt.getColumnAsDoubles(LABEL_X, MoleculeDescriptor.Units.PIXEL);
+                    double[] ypos = rt.getColumnAsDoubles(LABEL_Y, MoleculeDescriptor.Units.PIXEL);
+                    int left = Math.max((int) Math.floor(VectorMath.min(xpos)) - 1, 0);
+                    int top = Math.max((int) Math.floor(VectorMath.min(ypos)) - 1, 0);
+                    int right = (int) Math.ceil(VectorMath.max(xpos)) + 1;
+                    int bottom = (int) Math.ceil(VectorMath.max(ypos)) + 1;
+                    renderer.setSize(left, top, right - left + 1, bottom - top + 1);
                 }
                 IncrementalRenderingMethod rendererImplementation = renderer.getImplementation();
                 previewRenderer = new RenderingQueue(rendererImplementation,
@@ -219,7 +221,7 @@ public class ResultsTableWindow extends GenericTableWindow {
         livePreview = (renderer != null);
         preview.setSelected(livePreview);
     }
-    
+
     public ImagePlus getPreviewImage() {
         if(!livePreview || previewRenderer == null) {
             return null;

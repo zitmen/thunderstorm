@@ -111,6 +111,11 @@ public abstract class PostProcessingModule {
         }
     }
 
+    public void resetParamsToDefaults(){
+        GUI.closeBalloonTip();
+        params.resetToDefaults(true);
+    }
+    
     class DefaultOperation extends OperationsHistoryPanel.Operation {
 
         String options;
