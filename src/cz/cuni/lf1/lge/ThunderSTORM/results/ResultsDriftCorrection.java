@@ -55,11 +55,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
-import javax.swing.JFileChooser;
 import javax.swing.JRadioButton;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.java.balloontip.BalloonTip;
-import net.java.balloontip.styles.BalloonTipStyle;
 import net.java.balloontip.styles.RoundedBalloonStyle;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
@@ -276,9 +274,8 @@ public class ResultsDriftCorrection extends PostProcessingModule {
                 }
             }
         });
-        BalloonTipStyle style = new RoundedBalloonStyle(5, 5, fiducialPanel.getBackground(), Color.BLACK);
-        ccOptionsBalloon = new BalloonTip(ccOptionsButton, ccPanel, style, false);
-        fiducialOptionsBalloon = new BalloonTip(fiducialOptionsButton, fiducialPanel, style, false);
+        ccOptionsBalloon = new BalloonTip(ccOptionsButton, ccPanel, new RoundedBalloonStyle(5, 5, fiducialPanel.getBackground(), Color.BLACK), false);
+        fiducialOptionsBalloon = new BalloonTip(fiducialOptionsButton, fiducialPanel, new RoundedBalloonStyle(5, 5, fiducialPanel.getBackground(), Color.BLACK), false);
         ccOptionsBalloon.setVisible(false);
         fiducialOptionsBalloon.setVisible(false);
 
