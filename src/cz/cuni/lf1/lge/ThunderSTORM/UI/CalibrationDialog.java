@@ -197,7 +197,7 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
                             }
                             Thresholder.setCurrentImage(fp);
                             FloatProcessor filtered = getActiveFilterUI().getThreadLocalImplementation().filterImage(fp);
-                            new ImagePlus("ThunderSTORM: filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
+                            new ImagePlus("Filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
                             GUI.checkIJEscapePressed();
                             List<Point> detections = Point.applyRoiMask(imp.getRoi(), getActiveDetectorUI().getThreadLocalImplementation().detectMoleculeCandidates(filtered));
                             GUI.checkIJEscapePressed();
@@ -209,7 +209,7 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
                                 yCoord[i] = detections.get(i).getY().doubleValue();
                             }
                             //
-                            ImagePlus impPreview = new ImagePlus("ThunderSTORM preview for frame " + Integer.toString(imp.getSlice()), processor);
+                            ImagePlus impPreview = new ImagePlus("Preview for frame " + Integer.toString(imp.getSlice()), processor);
                             RenderingOverlay.showPointsInImage(impPreview, xCoord, yCoord, Color.red, RenderingOverlay.MARKER_CROSS);
                             impPreview.show();
                         } catch(StoppedByUserException ex) {

@@ -137,7 +137,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         gt.copyOriginalToActual();
         gt.setActualState();
         //
-        ImagePlus imp = IJ.createImage("ThunderSTORM: artificial dataset", "16-bit", width, height, frames);
+        ImagePlus imp = IJ.createImage("Artificial dataset", "16-bit", width, height, frames);
         imp.setStack(stack);
         Calibration cal = new Calibration();
         cal.setUnit("um");

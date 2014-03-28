@@ -275,7 +275,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                         
                         Thresholder.setCurrentImage(fp);
                         FloatProcessor filtered = allFilters.get(activeFilterIndex).getThreadLocalImplementation().filterImage(fp);
-                        new ImagePlus("ThunderSTORM: filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
+                        new ImagePlus("Filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
                         GUI.checkIJEscapePressed();
                         IDetector detector = allDetectors.get(activeDetectorIndex).getThreadLocalImplementation();
                         Vector<Point> detections = Point.applyRoiMask(imp.getRoi(), detector.detectMoleculeCandidates(filtered));
@@ -288,7 +288,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                         Vector<Molecule> results = allEstimators.get(activeEstimatorIndex).getThreadLocalImplementation().estimateParameters(fp, detections);
                         GUI.checkIJEscapePressed();
                         //
-                        ImagePlus impPreview = new ImagePlus("ThunderSTORM: detections in frame " + Integer.toString(imp.getSlice()), processor);
+                        ImagePlus impPreview = new ImagePlus("Detections in frame " + Integer.toString(imp.getSlice()), processor);
                         RenderingOverlay.showPointsInImage(impPreview,
                                 Molecule.extractParamToArray(results, PSFModel.Params.LABEL_X),
                                 Molecule.extractParamToArray(results, PSFModel.Params.LABEL_Y),
