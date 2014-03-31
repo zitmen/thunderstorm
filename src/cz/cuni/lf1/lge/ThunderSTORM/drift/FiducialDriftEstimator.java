@@ -13,10 +13,9 @@ import ij.IJ;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.collections.primitives.ArrayDoubleList;
-import org.apache.commons.collections.primitives.DoubleList;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 import org.apache.commons.math3.util.MathArrays;
@@ -120,17 +119,46 @@ public class FiducialDriftEstimator {
         return groupedMolecules;
     }
 
-    public double[] findFiducialsOffsets(final List<Molecule> fiducials, final double[] combinedFrames, String param) {
+    public double[] findFiducialsOffsets(List<Molecule> fiducials, double[] combinedFrames, String param) {
+        //first, restructure the required data in a data structure that can be efficiently used in the optimization process
 
-        //frame to detection coordinate maps, for each fiducial marker
-        final List<Map<Double, Double>> maps = new ArrayList<Map<Double, Double>>();
-        for(Molecule fiducial : fiducials) {
-            Map<Double, Double> detectionsByFrame = new HashMap<Double, Double>();
-            maps.add(detectionsByFrame);
-            for(Molecule detection : fiducial.getDetections()) {
-                detectionsByFrame.put(detection.getParam(MoleculeDescriptor.LABEL_FRAME), detection.getParam(param));
+        //a helper class that holds a detection coordinate and an index of fiducial marker the detection belongs to
+        class ValAndMarkerIndex {
+
+            double val;
+            int index;
+
+            public ValAndMarkerIndex(double val, int index) {
+                this.val = val;
+                this.index = index;
             }
         }
+        //create a map from frame to a list of fiducial marker detections in that frame
+        Map<Double, List<ValAndMarkerIndex>> values = new HashMap<Double, List<ValAndMarkerIndex>>();
+        for(int i = 0; i < fiducials.size(); i++) {
+            Molecule fiducial = fiducials.get(i);
+            for(Molecule detection : fiducial.getDetections()) {
+                double frame = detection.getParam(MoleculeDescriptor.LABEL_FRAME);
+                List<ValAndMarkerIndex> list = values.get(frame);
+                if(list == null) {
+                    list = new ArrayList<ValAndMarkerIndex>();
+                    values.put(frame, list);
+                }
+                list.add(new ValAndMarkerIndex(detection.getParam(param), i));
+            }
+        }
+
+        //prune frames with less than two detections
+        for(Iterator<Map.Entry<Double, List<ValAndMarkerIndex>>> it = values.entrySet().iterator(); it.hasNext();) {
+            List<ValAndMarkerIndex> list = it.next().getValue();
+            if(list.size() < 2) {
+                it.remove();
+            }
+        }
+        //copy the values collection to a list
+        //this is the final data structure used in optimization
+        final List<List<ValAndMarkerIndex>> detectionsInFrames = new ArrayList<List<ValAndMarkerIndex>>(values.values());
+
         NelderMead nm = new NelderMead();
         //cost function:
         //for each frame where multiple drift values are present
@@ -140,25 +168,15 @@ public class FiducialDriftEstimator {
             public double value(double[] point) {
                 GUI.checkIJEscapePressed();
                 double cost = 0;
-                for(double frame : combinedFrames) {
-                    ArrayDoubleList drifts = new ArrayDoubleList();
-                    for(int i = 0; i < fiducials.size(); i++) {
-                        Double val = maps.get(i).get(frame);
-                        if(val != null) {
-                            drifts.add(val - point[i]);
-                        }
+                for(List<ValAndMarkerIndex> oneFrameDetections : detectionsInFrames) {
+                    double mean = 0;
+                    for(ValAndMarkerIndex detection : oneFrameDetections) {
+                        mean += detection.val - point[detection.index];
                     }
-                    int numMarkersOnFrame = drifts.size();
-                    if(numMarkersOnFrame > 1) {
-                        double sum = 0;
-                        for(int i = 0, size = numMarkersOnFrame; i < size; i++) {
-                            sum += drifts.get(i);
-                        }
-                        double avg = sum / numMarkersOnFrame;
+                    mean /= oneFrameDetections.size();
 
-                        for(int i = 0, size = numMarkersOnFrame; i < size; i++) {
-                            cost += MathProxy.sqr(drifts.get(i) - avg);
-                        }
+                    for(ValAndMarkerIndex frameValue : oneFrameDetections) {
+                        cost += MathProxy.sqr(frameValue.val - point[frameValue.index] - mean);
                     }
                 }
                 return Math.sqrt(cost);
