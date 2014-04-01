@@ -3,9 +3,9 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.LoweredGaussianFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,11 +14,9 @@ import javax.swing.JTextField;
 public class LoweredGaussianFilterUI extends IFilterUI {
 
     private final String name = "Lowered Gaussian filter";
-    private transient ParameterKey.Integer size;
     private transient ParameterKey.Double sigma;
 
     public LoweredGaussianFilterUI() {
-        size = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 11);
         sigma = parameters.createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
     }
 
@@ -34,14 +32,10 @@ public class LoweredGaussianFilterUI extends IFilterUI {
 
     @Override
     public JPanel getOptionsPanel() {
-        JTextField sizeTextField = new JTextField("", 20);
         JTextField sigmaTextField = new JTextField("", 20);
-        parameters.registerComponent(size, sizeTextField);
         parameters.registerComponent(sigma, sigmaTextField);
         //
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());
-        panel.add(sizeTextField, GridBagHelper.rightCol());
         panel.add(new JLabel("Sigma [px]: "), GridBagHelper.leftCol());
         panel.add(sigmaTextField, GridBagHelper.rightCol());
         parameters.loadPrefs();
@@ -50,6 +44,8 @@ public class LoweredGaussianFilterUI extends IFilterUI {
 
     @Override
     public IFilter getImplementation() {
-        return new LoweredGaussianFilter(size.getValue(), sigma.getValue());
+        double sigmaValue = sigma.getValue();
+        int size = 1 + 2 * (int) MathProxy.ceil(sigmaValue * 3);
+        return new LoweredGaussianFilter(size, sigmaValue);
     }
 }

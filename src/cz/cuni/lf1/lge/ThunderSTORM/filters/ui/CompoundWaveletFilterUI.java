@@ -14,12 +14,10 @@ import javax.swing.JTextField;
 public class CompoundWaveletFilterUI extends IFilterUI {
 
     private final String name = "Wavelet filter (B-Spline)";
-    private transient ParameterKey.Integer size;
     private transient ParameterKey.Integer order;
     private transient ParameterKey.Double scale;
 
     public CompoundWaveletFilterUI() {
-        size = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 5);
         scale = parameters.createDoubleField("scale", DoubleValidatorFactory.positiveNonZero(), 2.0);
         order = parameters.createIntField("order", IntegerValidatorFactory.positiveNonZero(), 3);
     }
@@ -38,24 +36,23 @@ public class CompoundWaveletFilterUI extends IFilterUI {
     public JPanel getOptionsPanel() {
         JTextField orderTextField = new JTextField("", 20);
         JTextField scaleTextField = new JTextField("", 20);
-        JTextField sizeTextField = new JTextField("", 20);
         parameters.registerComponent(order, orderTextField);
         parameters.registerComponent(scale, scaleTextField);
-        parameters.registerComponent(size, sizeTextField);
         //
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("B-Spline order: "), GridBagHelper.leftCol());
         panel.add(orderTextField, GridBagHelper.rightCol());
         panel.add(new JLabel("B-Spline scale: "), GridBagHelper.leftCol());
         panel.add(scaleTextField, GridBagHelper.rightCol());
-        panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());
-        panel.add(sizeTextField, GridBagHelper.rightCol());
         parameters.loadPrefs();
         return panel;
     }
 
     @Override
     public IFilter getImplementation() {
-        return new CompoundWaveletFilter(order.getValue(), scale.getValue(), size.getValue());
+        double scaleValue = scale.getValue();
+        int orderValue = order.getValue();
+        int size = 2 * (int) Math.ceil(orderValue * scaleValue / 2) - 1;
+        return new CompoundWaveletFilter(orderValue, scaleValue, size);
     }
 }
