@@ -3,9 +3,11 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.Prefs;
@@ -13,6 +15,8 @@ import ij.WindowManager;
 import ij.plugin.PlugIn;
 import java.awt.Choice;
 import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.TextEvent;
@@ -143,7 +147,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
                 }
             }
         }
-        
+
         //no suffix found or unknown suffix
         if(!fpath.isFocusOwner()) {
             //user is not writting text at the moment
@@ -187,6 +191,12 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     }
 
     private void fillImportPane(String cmd, GenericDialogPlus gd) {
+        gd.addButton("Camera setup", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP, null);
+            }
+        });
         gd.addNumericField("Starting frame number: ", startingFrame, 0);
         gd.addCheckbox("clear the `" + cmd + "` table before import", resetFirst);
         if(IJResultsTable.IDENTIFIER.equals(cmd)) {
@@ -276,6 +286,7 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             table.setOriginalState();
             IImportExport importer = ie.get(active_ie);
             importer.importFromFile(fpath, table, startingFrame);
+            table.convertAllColumnsToAnalogUnits();
             IJ.showStatus("ThunderSTORM has imported your file.");
         } catch(IOException ex) {
             IJ.showStatus("");
@@ -285,7 +296,8 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             IJ.handleException(ex);
         }
         if(table instanceof IJResultsTable) {
-            AnalysisPlugIn.setDefaultColumnsWidth((IJResultsTable) table);
+            IJResultsTable ijTable = (IJResultsTable) table;
+            AnalysisPlugIn.setDefaultColumnsWidth(ijTable);
         }
         table.show();
         IJ.showProgress(1.0);

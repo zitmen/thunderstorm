@@ -136,6 +136,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         gt.insertIdColumn();
         gt.copyOriginalToActual();
         gt.setActualState();
+        gt.convertAllColumnsToAnalogUnits();
         //
         ImagePlus imp = IJ.createImage("Artificial dataset", "16-bit", width, height, frames);
         imp.setStack(stack);

@@ -175,8 +175,8 @@ public class FiducialDriftEstimator {
                     }
                     mean /= oneFrameDetections.size();
 
-                    for(ValAndMarkerIndex frameValue : oneFrameDetections) {
-                        cost += MathProxy.sqr(frameValue.val - point[frameValue.index] - mean);
+                    for(ValAndMarkerIndex detection : oneFrameDetections) {
+                        cost += MathProxy.sqr(detection.val - point[detection.index] - mean);
                     }
                 }
                 return Math.sqrt(cost);
