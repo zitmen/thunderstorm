@@ -4,46 +4,53 @@ import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
-import fiji.util.gui.GenericDialogPlus;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
 import ij.IJ;
-import ij.Prefs;
 import ij.WindowManager;
 import ij.plugin.PlugIn;
-import java.awt.Choice;
-import java.awt.TextField;
+import java.awt.BorderLayout;
+import java.awt.GridBagLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.TextEvent;
-import java.awt.event.TextListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import javax.swing.JSeparator;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
+public class ImportExportPlugIn implements PlugIn {
 
     public static final String IMPORT = "import";
     public static final String EXPORT = "export";
-    private String[] modules = null;
-    private String[] suffix = null;
-    private List<IImportExport> ie = null;
-    private Choice ftype;
-    private TextField fpath;
+    private List<IImportExport> modules = null;
+    private String[] moduleNames = null;
+    private String[] moduleExtensions = null;
 
-    private int active_ie = 0;
-    private int startingFrame = 1;
     private String path = null;
-    private boolean resetFirst = true;
-    private boolean livePreview = true;
-    private boolean saveMeasurementProtocol = true;
 
     public ImportExportPlugIn() {
         super();
@@ -58,101 +65,114 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
     @Override
     public void run(String command) {
         GUI.setLookAndFeel();
-        loadPreferences();
-        //
+        //Valid command strings:
+        //"import;results"
+        //"export;results"
+        //"import;ground-truth"
+        //"export;ground-truth"
         String[] commands = command.split(";");
         if(commands.length != 2) {
-            throw new IllegalArgumentException("Malformatted argument for Import/Export plug-in!");
+            throw new IllegalArgumentException("Malformed argument for Import/Export plug-in!");
         }
         //
         try {
-            ie = ModuleLoader.getModules(IImportExport.class);
-
-            // Create and show the dialog
-            GenericDialogPlus gd = new GenericDialogPlus(capitalizeFirstLetter(commands[0]) + " " + commands[1]);
-
-            modules = new String[ie.size()];
-            suffix = new String[ie.size()];
-            for(int i = 0; i < modules.length; i++) {
-                modules[i] = ie.get(i).getName();
-                suffix[i] = ie.get(i).getSuffix();
-            }
-            gd.addChoice("File type", modules, modules[active_ie]);
-            ftype = (Choice) gd.getChoices().get(0);
-            ftype.addItemListener(this);
-            if((path == null) || path.isEmpty()) {
-                gd.addFileField("Choose a file", IJ.getDirectory("current") + commands[1] + "." + suffix[active_ie]);
+            //get table
+            GenericTable table;
+            boolean groundTruth = IJGroundTruthTable.IDENTIFIER.equals(commands[1]);
+            if(groundTruth) {
+                table = IJGroundTruthTable.getGroundTruthTable();
             } else {
-                gd.addFileField("Choose a file", path);
+                table = IJResultsTable.getResultsTable();
             }
-            fpath = (TextField) gd.getStringFields().get(0);
-            fpath.addTextListener(this);
-            gd.addComponent(new JSeparator(JSeparator.HORIZONTAL));
-            //
-            String[] col_headers = null;
-            if(EXPORT.equals(commands[0])) {
-                col_headers = fillExportPane(commands[1], gd);
-            } else if(IMPORT.equals(commands[0])) {
-                fillImportPane(commands[1], gd);
-            }
-            //gd.add(Help.createHelpButton("help"));
-            textValueChanged(null); // to update file type automatically
-            gd.showDialog();
 
-            if(!gd.wasCanceled()) {
-                active_ie = gd.getNextChoiceIndex();
-                path = gd.getNextString();
-                if(EXPORT.equals(commands[0])) {
-                    runExport(commands[1], gd, path, col_headers);
-                } else if(IMPORT.equals(commands[0])) {
-                    runImport(commands[1], gd, path);
-                }
-                savePreferences();
+            setupModules();
+
+            if(EXPORT.equals(commands[0])) {
+                runExport(table, groundTruth);
+            } else if(IMPORT.equals(commands[0])) {
+                runImport(table, groundTruth);
             }
         } catch(Exception ex) {
             IJ.handleException(ex);
         }
     }
 
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        String fp = fpath.getText();
-        if(fp.endsWith("\\") || fp.endsWith("/")) {
-            fpath.setText(fp + "results." + suffix[ftype.getSelectedIndex()]);
+    private void runImport(GenericTable table, boolean groundTruth) {
+        ImportDialog dialog = new ImportDialog(IJ.getInstance(), groundTruth);
+        if(MacroParser.isRanFromMacro()) {
+            dialog.getParams().readMacroOptions();
         } else {
-            int dotpos = fp.lastIndexOf('.');
-            if(dotpos < 0) {
-                fpath.setText(fp + '.' + suffix[ftype.getSelectedIndex()]);
-            } else {
-                fpath.setText(fp.substring(0, dotpos + 1) + suffix[ftype.getSelectedIndex()]);
+            if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
+                return;
             }
         }
-    }
 
-    @Override
-    public void textValueChanged(TextEvent e) {
-        String fname = new File(fpath.getText()).getName().trim();
-        if(fname.isEmpty()) {
-            return;
-        }
-        int dotpos = fname.lastIndexOf('.');
-        if(dotpos >= 0) {
-            String type = fname.substring(dotpos + 1).trim();
-            for(int i = 0; i < suffix.length; i++) {
-                if(type.equals(suffix[i])) {
-                    //found correct suffix, adjust type combobox and return
-                    ftype.select(i);
-                    active_ie = i;
-                    return;
+        path = dialog.filePath.getValue();
+        boolean resetFirst = !dialog.append.getValue();
+        int startingFrame = dialog.startingFrame.getValue();
+        IImportExport importer = getModuleByName(dialog.fileFormat.getValue());
+        table.forceHide();
+        if(groundTruth) {
+            callImporter(importer, table, path, startingFrame);
+        } else {    // IJResultsTable
+            IJResultsTable ijrt = (IJResultsTable) table;
+            if(resetFirst) {
+                ijrt.reset();
+            }
+            try {
+                ijrt.setAnalyzedImage(WindowManager.getImage(dialog.rawImageStack.getValue()));
+            } catch(ArrayIndexOutOfBoundsException ex) {
+                if(resetFirst) {
+                    ijrt.setAnalyzedImage(null);
                 }
             }
+            callImporter(importer, table, path, startingFrame);
+            AnalysisPlugIn.setDefaultColumnsWidth(ijrt);
+            ijrt.setLivePreview(dialog.showPreview.getValue());
+            ijrt.showPreview();
+        }
+        table.forceShow();
+    }
+
+    private void runExport(GenericTable table, boolean groundTruth) {
+        String[] colNames = (String[]) table.getColumnNames().toArray(new String[0]);
+
+        ExportDialog dialog = new ExportDialog(IJ.getInstance(), groundTruth, colNames);
+        if(MacroParser.isRanFromMacro()) {
+            dialog.getParams().readMacroOptions();
+        } else {
+            if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
+                return;
+            }
         }
 
-        //no suffix found or unknown suffix
-        if(!fpath.isFocusOwner()) {
-            //user is not writting text at the moment
-            String selectedTypeSuffix = suffix[ftype.getSelectedIndex()];
-            fpath.setText(fpath.getText() + "." + selectedTypeSuffix);
+        List<String> columns = new ArrayList<String>();
+        for(int i = 0; i < colNames.length; i++) {
+            if(dialog.exportColumns[i].getValue()) {
+                columns.add(colNames[i]);
+            }
+        }
+        path = dialog.filePath.getValue();
+        //save protocol
+        if(!groundTruth && dialog.saveProtocol.getValue()) {
+            IJResultsTable ijrt = (IJResultsTable) table;
+            if(ijrt.getMeasurementProtocol() != null) {
+                ijrt.getMeasurementProtocol().export(getProtocolFilePath(path));
+            }
+        }
+
+        //export
+        IImportExport exporter = getModuleByName(dialog.fileFormat.getValue());
+        callExporter(exporter, table, path, columns);
+    }
+
+    private void setupModules() {
+        modules = ModuleLoader.getModules(IImportExport.class);
+        moduleNames = new String[modules.size()];
+        moduleExtensions = new String[modules.size()];
+        for(int i = 0; i < moduleNames.length; i++) {
+            moduleNames[i] = modules.get(i).getName();
+            moduleExtensions[i] = modules.get(i).getSuffix();
         }
     }
 
@@ -165,105 +185,10 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         }
     }
 
-    private String[] fillExportPane(String cmd, GenericDialogPlus gd) {
-        String[] col_headers;
-        GenericTable table;
-        if(IJGroundTruthTable.IDENTIFIER.equals(cmd)) {
-            table = IJGroundTruthTable.getGroundTruthTable();
-        } else {
-            if(IJResultsTable.getResultsTable().getMeasurementProtocol() != null) {
-                gd.addCheckbox("export measurement protocol", saveMeasurementProtocol);
-            }
-            table = IJResultsTable.getResultsTable();
-        }
-        //
-        gd.addMessage("Columns to export:");
-        col_headers = (String[]) table.getColumnNames().toArray(new String[0]);
-        boolean[] active_columns = new boolean[col_headers.length];
-        Arrays.fill(active_columns, true);
-        int colId = table.findColumn(MoleculeDescriptor.LABEL_ID);
-        if(colId >= 0) {
-            active_columns[colId] = false;
-        }
-        gd.addCheckboxGroup(col_headers.length, 1, col_headers, active_columns);
-        //
-        return col_headers;
-    }
-
-    private void fillImportPane(String cmd, GenericDialogPlus gd) {
-        gd.addButton("Camera setup", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP, null);
-            }
-        });
-        gd.addNumericField("Starting frame number: ", startingFrame, 0);
-        gd.addCheckbox("clear the `" + cmd + "` table before import", resetFirst);
-        if(IJResultsTable.IDENTIFIER.equals(cmd)) {
-            gd.addCheckbox("show preview", livePreview);
-            int[] openedImagesIds = WindowManager.getIDList();
-            if(openedImagesIds != null) {
-                String[] openedImagesTitles = new String[openedImagesIds.length + 1];
-                openedImagesTitles[0] = "";
-                for(int i = 0; i < openedImagesIds.length; i++) {
-                    openedImagesTitles[i + 1] = WindowManager.getImage(openedImagesIds[i]).getTitle();
-                }
-                gd.addMessage("(Optional) Select window with raw data to show localizations in overlay.");
-                gd.addChoice("Raw image sequence:", openedImagesTitles, "");
-            }
-        }
-    }
-
-    private void runExport(String cmd, GenericDialogPlus gd, String filePath, String[] col_headers) {
-        GenericTable table;
-        if(IJGroundTruthTable.IDENTIFIER.equals(cmd)) {
-            table = IJGroundTruthTable.getGroundTruthTable();
-        } else {    // IJResultsTable
-            IJResultsTable rt = IJResultsTable.getResultsTable();
-            if(rt.getMeasurementProtocol() != null) {
-                saveMeasurementProtocol = gd.getNextBoolean();
-                if(saveMeasurementProtocol) {
-                    rt.getMeasurementProtocol().export(getProtocolFilePath(filePath));
-                }
-            }
-            table = rt;
-        }
-        //
-        List<String> columns = new ArrayList<String>();
-        for(int i = 0; i < col_headers.length; i++) {
-            if(gd.getNextBoolean() == true) {
-                columns.add(col_headers[i]);
-            }
-        }
-        exportToFile(table, filePath, columns);
-    }
-
-    private void runImport(String cmd, GenericDialogPlus gd, String filePath) {
-        startingFrame = (int) gd.getNextNumber();
-        if(IJGroundTruthTable.IDENTIFIER.equals(cmd)) {
-            importFromFile(IJGroundTruthTable.getGroundTruthTable(), filePath, gd.getNextBoolean());
-        } else {    // IJResultsTable
-            IJResultsTable rt = IJResultsTable.getResultsTable();
-            resetFirst = gd.getNextBoolean();
-            try {
-                rt.setAnalyzedImage(WindowManager.getImage(gd.getNextChoice()));
-            } catch(ArrayIndexOutOfBoundsException ex) {
-                if(resetFirst) {
-                    rt.setAnalyzedImage(null);
-                }
-            }
-            importFromFile(rt, filePath, resetFirst);
-            livePreview = gd.getNextBoolean();
-            rt.setLivePreview(livePreview);
-            rt.showPreview();
-        }
-    }
-
-    private void exportToFile(GenericTable table, String fpath, List<String> columns) {
+    private void callExporter(IImportExport exporter, GenericTable table, String fpath, List<String> columns) {
         IJ.showStatus("ThunderSTORM is exporting your results...");
         IJ.showProgress(0.0);
         try {
-            IImportExport exporter = ie.get(active_ie);
             exporter.exportToFile(fpath, table, columns);
             IJ.showStatus("ThunderSTORM has exported your results.");
         } catch(IOException ex) {
@@ -276,15 +201,11 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
         IJ.showProgress(1.0);
     }
 
-    private void importFromFile(GenericTable table, String fpath, boolean reset_first) {
+    private void callImporter(IImportExport importer, GenericTable table, String fpath, int startingFrame) {
         IJ.showStatus("ThunderSTORM is importing your file...");
         IJ.showProgress(0.0);
         try {
-            if(reset_first) {
-                table.reset();
-            }
             table.setOriginalState();
-            IImportExport importer = ie.get(active_ie);
             importer.importFromFile(fpath, table, startingFrame);
             table.convertAllColumnsToAnalogUnits();
             IJ.showStatus("ThunderSTORM has imported your file.");
@@ -295,39 +216,293 @@ public class ImportExportPlugIn implements PlugIn, ItemListener, TextListener {
             IJ.showStatus("");
             IJ.handleException(ex);
         }
-        if(table instanceof IJResultsTable) {
-            IJResultsTable ijTable = (IJResultsTable) table;
-            AnalysisPlugIn.setDefaultColumnsWidth(ijTable);
-        }
-        table.show();
         IJ.showProgress(1.0);
     }
 
-    public void loadPreferences() {
-        active_ie = Integer.parseInt(Prefs.get("thunderstorm.io.active", "0"));
-        startingFrame = Integer.parseInt(Prefs.get("thunderstorm.io.startingFrame", "1"));
-        if(path == null) {
-            path = Prefs.get("thunderstorm.io.path", "");  // if it is not null, the plugin was invoked by drag&drop operation
+    public IImportExport getModuleByName(String name) {
+        for(int i = 0; i < moduleNames.length; i++) {
+            if(moduleNames[i].equals(name)) {
+                return modules.get(i);
+            }
         }
-        resetFirst = Boolean.parseBoolean(Prefs.get("thunderstorm.io.resetTable", "true"));
-        livePreview = Boolean.parseBoolean(Prefs.get("thunderstorm.io.livePreview", "true"));
-        saveMeasurementProtocol = Boolean.parseBoolean(Prefs.get("thunderstorm.io.saveMeasurementProtocol", "true"));
+        throw new RuntimeException("No module found for name " + name + ".");
     }
 
-    public void savePreferences() {
-        Prefs.set("thunderstorm.io.active", Integer.toString(active_ie));
-        Prefs.set("thunderstorm.io.startingFrame", Integer.toString(startingFrame));
-        Prefs.set("thunderstorm.io.path", path);
-        Prefs.set("thunderstorm.io.resetTable", Boolean.toString(resetFirst));
-        Prefs.set("thunderstorm.io.livePreview", Boolean.toString(livePreview));
-        Prefs.set("thunderstorm.io.saveMeasurementProtocol", Boolean.toString(saveMeasurementProtocol));
+    //---------------GUI-----------------------
+    class ImportDialog extends DialogStub {
+
+        ParameterKey.String fileFormat;
+        ParameterKey.String filePath;
+        ParameterKey.Integer startingFrame;
+        ParameterKey.Boolean showPreview;
+        ParameterKey.Boolean append;
+        ParameterKey.String rawImageStack;
+
+        private boolean groundTruth;
+
+        public ImportDialog(Window owner, boolean groundTruthTable) {
+            super(new ParameterTracker("thunderstorm.io"), owner, "Import" + (groundTruthTable ? " ground-truth" : ""));
+            assert moduleNames != null && moduleNames.length > 0;
+            fileFormat = params.createStringField("fileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
+            filePath = params.createStringField("filePath", StringValidatorFactory.fileExists(), "");
+            startingFrame = params.createIntField("startingFrame", IntegerValidatorFactory.positiveNonZero(), 1);
+            append = params.createBooleanField("append", null, false);
+            groundTruth = groundTruthTable;
+            if(!groundTruth) {
+                showPreview = params.createBooleanField("livePreview", null, true);
+                rawImageStack = params.createStringField("rawImageStack", StringValidatorFactory.openImages(true), "");
+            }
+        }
+
+        ParameterTracker getParams() {
+            return params;
+        }
+
+        @Override
+        protected void layoutComponents() {
+            JTextField startingFrameTextField = new JTextField(20);
+
+            JPanel cameraPanel = new JPanel(new BorderLayout());
+            cameraPanel.setBorder(new TitledBorder("Camera"));
+            JButton cameraSetup = new JButton("Camera setup");
+            cameraSetup.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP, null);
+                }
+            });
+            cameraPanel.add(cameraSetup);
+            add(cameraPanel, GridBagHelper.twoCols());
+
+            JPanel filePanel = new JPanel(new GridBagLayout());
+            filePanel.setBorder(new TitledBorder("Input File"));
+            JComboBox<String> fileFormatCBox = new JComboBox<String>(moduleNames);
+            JTextField filePathTextField = new JTextField(20);
+            filePathTextField.getDocument().addDocumentListener(createDocListener(filePathTextField, fileFormatCBox));
+            fileFormatCBox.addItemListener(createItemListener(filePathTextField, fileFormatCBox));
+            JButton browseButton = createBrowseButton(filePathTextField, true, new FileNameExtensionFilter(createFilterString(moduleExtensions), moduleExtensions));
+            fileFormat.registerComponent(fileFormatCBox);
+            filePath.registerComponent(filePathTextField);
+            JPanel filePathPanel = new JPanel(new BorderLayout());
+            filePathPanel.add(filePathTextField);
+            filePathPanel.add(browseButton, BorderLayout.EAST);
+            filePathPanel.setPreferredSize(startingFrameTextField.getPreferredSize());
+            filePanel.add(new JLabel("File format:"), GridBagHelper.leftCol());
+            filePanel.add(fileFormatCBox, GridBagHelper.rightCol());
+            filePanel.add(new JLabel("File path:"), GridBagHelper.leftCol());
+            filePanel.add(filePathPanel, GridBagHelper.rightCol());
+            add(filePanel, GridBagHelper.twoCols());
+
+            JPanel concatenationPanel = new JPanel(new GridBagLayout());
+            concatenationPanel.setBorder(new TitledBorder("Results concatenation"));
+            JCheckBox appendCheckBox = new JCheckBox();
+            startingFrame.registerComponent(startingFrameTextField);
+            append.registerComponent(appendCheckBox);
+            concatenationPanel.add(new JLabel("Append to current table:"), GridBagHelper.leftCol());
+            concatenationPanel.add(appendCheckBox, GridBagHelper.rightCol());
+            concatenationPanel.add(new JLabel("Starting frame number:"), GridBagHelper.leftCol());
+            concatenationPanel.add(startingFrameTextField, GridBagHelper.rightCol());
+            add(concatenationPanel, GridBagHelper.twoCols());
+
+            if(!groundTruth) {
+                JCheckBox showPreviewCheckBox = new JCheckBox();
+                JComboBox<String> rawImageComboBox = createOpenImagesComboBox(true);
+                rawImageComboBox.setPreferredSize(startingFrameTextField.getPreferredSize());
+                showPreview.registerComponent(showPreviewCheckBox);
+                rawImageStack.registerComponent(rawImageComboBox);
+                JPanel previewPanel = new JPanel(new GridBagLayout());
+                previewPanel.setBorder(new TitledBorder("Visualization"));
+                previewPanel.add(new JLabel("Live preview:"), GridBagHelper.leftCol());
+                previewPanel.add(showPreviewCheckBox, GridBagHelper.rightCol());
+                previewPanel.add(new JLabel("Raw image sequence for overlay:"), GridBagHelper.leftCol());
+                previewPanel.add(rawImageComboBox, GridBagHelper.rightCol());
+                add(previewPanel, GridBagHelper.twoCols());
+            }
+
+            add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
+            add(createButtonsPanel(), GridBagHelper.twoCols());
+            params.loadPrefs();
+            if(path != null && !path.isEmpty()) {
+                filePath.setValue(path);
+            }
+
+            getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            pack();
+            setLocationRelativeTo(null);
+            setModal(true);
+
+        }
     }
 
-    private static String capitalizeFirstLetter(String s) {
-        if(s != null && s.length() > 0) {
-            return (s.charAt(0) + "").toUpperCase() + s.substring(1);
-        } else {
-            return s;
+    class ExportDialog extends DialogStub {
+
+        ParameterKey.String fileFormat;
+        ParameterKey.String filePath;
+        ParameterKey.Boolean[] exportColumns;
+        ParameterKey.Boolean saveProtocol;
+
+        private boolean groundTruth;
+        private String[] columnHeaders;
+
+        public ExportDialog(Window owner, boolean groundTruth, String[] columnHeaders) {
+            super(new ParameterTracker("thunderstorm.io"), owner, "Export" + (groundTruth ? " ground-truth" : ""));
+            assert moduleNames != null && moduleNames.length > 0;
+            this.columnHeaders = columnHeaders;
+            this.groundTruth = groundTruth;
+
+            fileFormat = params.createStringField("fileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
+            filePath = params.createStringField("filePath", null, "");
+            exportColumns = new ParameterKey.Boolean[columnHeaders.length];
+            for(int i = 0; i < columnHeaders.length; i++) {
+                exportColumns[i] = params.createBooleanField(columnHeaders[i], null, i != 0);
+            }
+            if(!groundTruth) {
+                saveProtocol = params.createBooleanField("saveProtocol", null, true);
+            }
         }
+
+        ParameterTracker getParams() {
+            return params;
+        }
+
+        @Override
+        protected void layoutComponents() {
+            JPanel filePanel = new JPanel(new GridBagLayout());
+            filePanel.setBorder(new TitledBorder("Output File"));
+            JComboBox<String> fileFormatCBox = new JComboBox<String>(moduleNames);
+            JTextField filePathTextField = new JTextField(20);
+            filePathTextField.getDocument().addDocumentListener(createDocListener(filePathTextField, fileFormatCBox));
+            fileFormatCBox.addItemListener(createItemListener(filePathTextField, fileFormatCBox));
+            JButton browseButton = createBrowseButton(filePathTextField, true, new FileNameExtensionFilter(createFilterString(moduleExtensions), moduleExtensions));
+            fileFormat.registerComponent(fileFormatCBox);
+            filePath.registerComponent(filePathTextField);
+            JPanel filePathPanel = new JPanel(new BorderLayout());
+            filePathPanel.setPreferredSize(filePathTextField.getPreferredSize());
+            filePathPanel.add(filePathTextField);
+            filePathPanel.add(browseButton, BorderLayout.EAST);
+            filePanel.add(new JLabel("File format:"), GridBagHelper.leftCol());
+            filePanel.add(fileFormatCBox, GridBagHelper.rightCol());
+            filePanel.add(new JLabel("File path:"), GridBagHelper.leftCol());
+            filePanel.add(filePathPanel, GridBagHelper.rightCol());
+            add(filePanel, GridBagHelper.twoCols());
+
+            if(!groundTruth) {
+                JPanel protocolPanel = new JPanel(new GridBagLayout());
+                protocolPanel.setBorder(new TitledBorder("Protocol"));
+                protocolPanel.add(Box.createHorizontalStrut(filePathTextField.getPreferredSize().width / 2), GridBagHelper.leftCol());
+                protocolPanel.add(Box.createHorizontalStrut(filePathTextField.getPreferredSize().width), GridBagHelper.rightCol());
+                JCheckBox saveProtocolCheckBox = new JCheckBox();
+                saveProtocol.registerComponent(saveProtocolCheckBox);
+                protocolPanel.add(new JLabel("Save measurement protocol:"), GridBagHelper.leftCol());
+                protocolPanel.add(saveProtocolCheckBox, GridBagHelper.rightCol());
+                add(protocolPanel, GridBagHelper.twoCols());
+            }
+
+            JPanel columnsPanel = new JPanel(new GridBagLayout());
+            columnsPanel.setBorder(new TitledBorder("Columns to export"));
+            columnsPanel.add(Box.createHorizontalStrut(0), GridBagHelper.leftCol());
+            columnsPanel.add(Box.createHorizontalStrut(filePathTextField.getPreferredSize().width), GridBagHelper.rightCol());
+            for(int i = 0; i < columnHeaders.length; i++) {
+                columnsPanel.add(new JLabel(columnHeaders[i]), GridBagHelper.leftCol());
+                JCheckBox colCheckBox = new JCheckBox();
+                exportColumns[i].registerComponent(colCheckBox);
+                columnsPanel.add(colCheckBox, GridBagHelper.rightCol());
+            }
+            add(columnsPanel, GridBagHelper.twoCols());
+
+            add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
+            add(createButtonsPanel(), GridBagHelper.twoCols());
+            params.loadPrefs();
+
+            getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            pack();
+            setLocationRelativeTo(null);
+            setModal(true);
+        }
+    }
+
+    private String createFilterString(String[] moduleExtensions) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Known formats(");
+        for(String ext : moduleExtensions) {
+            sb.append(ext);
+            sb.append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(")");
+        return sb.toString();
+    }
+
+    private ItemListener createItemListener(final JTextField filePathTextField, final JComboBox<String> fileFormatCBox) {
+        return new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                final String fp = filePathTextField.getText();
+                if(!fp.isEmpty()) {
+                    if(fp.endsWith("\\") || fp.endsWith("/")) {
+                        filePathTextField.setText(fp + "results." + moduleExtensions[fileFormatCBox.getSelectedIndex()]);
+                    } else {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                int dotpos = fp.lastIndexOf('.');
+                                if(dotpos > 0) {
+                                    filePathTextField.setText(fp.substring(0, dotpos + 1) + moduleExtensions[fileFormatCBox.getSelectedIndex()]);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        };
+    }
+
+    private DocumentListener createDocListener(final JTextField filePathTextField, final JComboBox<String> fileFormatCBox) {
+        return new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                handle();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                handle();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+
+            private void handle() {
+                String fname = new File(filePathTextField.getText()).getName().trim();
+                if(fname.isEmpty()) {
+                    return;
+                }
+                int dotpos = fname.lastIndexOf('.');
+                if(dotpos >= 0) {
+                    String type = fname.substring(dotpos + 1).trim();
+                    for(int i = 0; i < moduleExtensions.length; i++) {
+                        if(type.equals(moduleExtensions[i])) {
+                            //found correct suffix, adjust type combobox and return
+                            fileFormatCBox.setSelectedIndex(i);
+                            return;
+                        }
+                    }
+                } else {
+                    //no suffix found
+                    if(!filePathTextField.isFocusOwner()) {
+                        //user is not writting text at the moment
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                String selectedTypeSuffix = moduleExtensions[fileFormatCBox.getSelectedIndex()];
+                                filePathTextField.setText(filePathTextField.getText() + "." + selectedTypeSuffix);
+                            }
+                        });
+                    }
+                }
+            }
+        };
     }
 }
