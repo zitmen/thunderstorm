@@ -139,9 +139,4 @@ public class EllipticGaussianPSF extends PSFModel {
     public double getDoF() {
         return 6;
     }
-
-    @Override
-    public double getDefaultSigma() {
-        return defaultSigma;
-    }
 }

@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.LSQ;
@@ -27,26 +28,28 @@ public class IntSymmetricGaussianEstimatorUI extends SymmetricGaussianEstimatorU
         double sigma = SIGMA.getValue();
         int fitradius = FITRAD.getValue();
         IntegratedSymmetricGaussianPSF psf = new IntegratedSymmetricGaussianPSF(sigma);
-        if(FULL_IMAGE_FITTING.getValue() == true) {
-            return new FullImageFitting(psf, method, crowdedField);
+        OneLocationFitter fitter;
+        if(LSQ.equals(method) || WLSQ.equals(method)) {
+            if(crowdedField.isEnabled()) {
+                fitter = crowdedField.getLSQImplementation(psf, sigma);
+            } else {
+                fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
+            }
+        } else if(MLE.equals(method)) {
+            if(crowdedField.isEnabled()) {
+                fitter = crowdedField.getMLEImplementation(psf, sigma);
+            } else {
+                fitter = new MLEFitter(psf, Params.BACKGROUND);
+
+            }
         } else {
-            if(LSQ.equals(method) || WLSQ.equals(method)) {
-                if(crowdedField.isEnabled()) {
-                    return crowdedField.getLSQImplementation(psf, sigma, fitradius);
-                } else {
-                    LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
-                    return new MultipleLocationsImageFitting(fitradius, fitter);
-                }
-            }
-            if(MLE.equals(method)) {
-                if(crowdedField.isEnabled()) {
-                    return crowdedField.getMLEImplementation(psf, sigma, fitradius);
-                } else {
-                    MLEFitter fitter = new MLEFitter(psf, Params.BACKGROUND);
-                    return new MultipleLocationsImageFitting(fitradius, fitter);
-                }
-            }
+            throw new IllegalArgumentException("Unknown fitting method: " + method);
         }
-        throw new IllegalArgumentException("Unknown fitting method: " + method);
+        if(FULL_IMAGE_FITTING.getValue()) {
+            return new FullImageFitting(fitter);
+        } else {
+            return new MultipleLocationsImageFitting(fitradius, fitter);
+        }
+
     }
 }

@@ -4,6 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
@@ -21,12 +22,12 @@ public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
         super();
         crowdedField = new CrowdedFieldEstimatorUI() {
             @Override
-            IEstimator getLSQImplementation(PSFModel psf, double sigma, int fitradius) {
+            OneLocationFitter getLSQImplementation(PSFModel psf, double sigma) {
                 return null;
             }
 
             @Override
-            IEstimator getMLEImplementation(PSFModel psf, double sigma, int fitradius) {
+            OneLocationFitter getMLEImplementation(PSFModel psf, double sigma) {
                 return null;
             }
 

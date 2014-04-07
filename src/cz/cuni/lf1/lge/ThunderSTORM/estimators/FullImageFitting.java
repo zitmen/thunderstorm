@@ -2,13 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.CrowdedFieldEstimatorUI;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.LSQ;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.MLE;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI.WLSQ;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import ij.process.FloatProcessor;
 import java.util.List;
 import java.util.Vector;
@@ -18,23 +12,14 @@ import java.util.Vector;
  */
 public class FullImageFitting implements IEstimator {
 
-    MFA_AbstractFitter fitter;
+    OneLocationFitter fitter;
     int [] xgrid;
     int [] ygrid;
 
-    public FullImageFitting(PSFModel psf, String method, CrowdedFieldEstimatorUI crowdedField) {
-        if(MLE.equals(method)) {
-            Range intensityRange = crowdedField.isFixedIntensity() ? crowdedField.getIntensityRange() : null;
-            fitter = new MFA_MLEFitter(psf, psf.getDefaultSigma(), crowdedField.getMaxMolecules(), crowdedField.getPValue(), crowdedField.isKeepSameIntensity(), intensityRange);
-        } else if(LSQ.equals(method) || WLSQ.equals(method)) {
-            Range intensityRange = crowdedField.isFixedIntensity() ? crowdedField.getIntensityRange() : null;
-            fitter = new MFA_LSQFitter(psf, psf.getDefaultSigma(), crowdedField.getMaxMolecules(), crowdedField.getPValue(), crowdedField.isKeepSameIntensity(), intensityRange);
-        } else {
-            fitter = null;
-            throw new IllegalArgumentException("Unknown fitting method: " + method);
-        }
+    public FullImageFitting(OneLocationFitter fitter) {
+        this.fitter = fitter;
     }
-
+    
     @Override
     public Vector<Molecule> estimateParameters(FloatProcessor image, Vector<Point> detections) throws StoppedByUserException {
         Vector results = new Vector<Molecule>();

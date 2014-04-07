@@ -128,8 +128,4 @@ public class SymmetricGaussianPSF extends PSFModel {
         return 5;
     }
 
-    @Override
-    public double getDefaultSigma() {
-        return defaultSigma;
-    }
 }

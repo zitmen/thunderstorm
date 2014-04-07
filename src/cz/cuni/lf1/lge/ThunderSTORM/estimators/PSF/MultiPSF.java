@@ -224,9 +224,4 @@ public class MultiPSF extends PSFModel {
     public void setFixedIntensities(boolean sameI) {
         this.sameI = sameI;
     }
-
-    @Override
-    public double getDefaultSigma() {
-        return defaultSigma;
-    }
 }

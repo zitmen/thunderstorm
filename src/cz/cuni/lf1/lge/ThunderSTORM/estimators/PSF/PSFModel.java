@@ -285,5 +285,4 @@ public abstract class PSFModel implements IModule {
     public abstract double[] getInitialSimplex();
     public abstract double[] getInitialParams(OneLocationFitter.SubImage subImage);
     public abstract Molecule newInstanceFromParams(double[] params, MoleculeDescriptor.Units subImageUnits);
-    public abstract double getDefaultSigma();
 }

@@ -1,9 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MFA_LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MFA_MLEFitter;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
@@ -143,16 +142,18 @@ public class CrowdedFieldEstimatorUI {
         params.resetToDefaults(true);
     }
 
-    IEstimator getMLEImplementation(PSFModel psf, double sigma, int fitradius) {
+    OneLocationFitter getMLEImplementation(PSFModel psf, double sigma) {
         Range intensityRange = isFixedIntensity() ? getIntensityRange() : null;
         MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, getMaxMolecules(), getPValue(), isKeepSameIntensity(), intensityRange);
-        return new MultipleLocationsImageFitting(fitradius, fitter);
+        return fitter;
+        //return new MultipleLocationsImageFitting(fitradius, fitter);
     }
 
-    IEstimator getLSQImplementation(PSFModel psf, double sigma, int fitradius) {
+    OneLocationFitter getLSQImplementation(PSFModel psf, double sigma) {
         Range intensityRange = isFixedIntensity() ? getIntensityRange() : null;
         MFA_LSQFitter fitter = new MFA_LSQFitter(psf, sigma, getMaxMolecules(), getPValue(), isKeepSameIntensity(), intensityRange);
-        return new MultipleLocationsImageFitting(fitradius, fitter);
+        return fitter;
+        //return new MultipleLocationsImageFitting(fitradius, fitter);
     }
     
     public boolean isFixedIntensity() {
