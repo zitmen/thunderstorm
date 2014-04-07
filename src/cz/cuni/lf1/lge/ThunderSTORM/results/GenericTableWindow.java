@@ -26,6 +26,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
@@ -44,12 +45,12 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 public class GenericTableWindow {
-    
+
     protected JFrame frame;
     protected ColoredTable table;
     protected final TripleStateTableModel model;
     protected JScrollPane tableScrollPane;
-    
+
     public GenericTableWindow(String frameTitle) {
         frame = new JFrame(frameTitle);
         frame.setIconImage(IJ.getInstance().getIconImage());
@@ -74,7 +75,7 @@ public class GenericTableWindow {
             public void mouseDragged(MouseEvent e) {
                 tableMouseDragged(e);
             }
-            
+
             @Override
             public void mouseMoved(MouseEvent e) {
                 tableMouseMoved(e);
@@ -85,73 +86,79 @@ public class GenericTableWindow {
             public void mouseClicked(MouseEvent e) {
                 tableMouseClicked(e);
             }
-            
+
             @Override
             public void mousePressed(MouseEvent e) {
                 tableMousePressed(e);
             }
-            
+
             @Override
             public void mouseReleased(MouseEvent e) {
                 tableMouseReleased(e);
             }
-            
+
             @Override
             public void mouseEntered(MouseEvent e) {
                 tableMouseEntered(e);
             }
-            
+
             @Override
             public void mouseExited(MouseEvent e) {
                 tableMouseExited(e);
             }
         });
     }
-    
+
     protected void packFrame() {
         Container contentPane = frame.getContentPane();
         contentPane.add(tableScrollPane);
         frame.setContentPane(contentPane);
         frame.pack();
     }
-    
+
     public TripleStateTableModel getModel() {
         return (TripleStateTableModel) table.getModel();
     }
-    
+
     public JTable getView() {
         return table;
     }
-    
+
     public void show(String title) {
         frame.setTitle(title);
         show();
     }
-    
+
     public void show() {
-        WindowManager.addWindow(frame); // ImageJ's own Window Manager
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                frame.setVisible(true);
-            }
-        });
-        WindowManager.setWindow(frame); // ImageJ's own Window Manager
+        try {
+            WindowManager.addWindow(frame); // ImageJ's own Window Manager
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    frame.setVisible(true);
+                }
+            });
+            WindowManager.setWindow(frame); // ImageJ's own Window Manager
+        } catch(InterruptedException ex) {
+            throw new RuntimeException(ex);
+        } catch(InvocationTargetException ex) {
+            throw new RuntimeException(ex.getCause());
+        }
     }
-    
+
     public void hide() {
         frame.setVisible(false);
         WindowManager.removeWindow(frame); // ImageJ's own Window Manager
     }
-    
+
     public boolean isVisible() {
         return frame.isVisible();
     }
-    
+
     private class UnitsContextMenu implements ActionListener {
-        
+
         private int column;
-        
+
         public UnitsContextMenu(MouseEvent e, int column) {
             this.column = column;
             Units selected = model.getColumnUnits(column);
@@ -210,7 +217,7 @@ public class GenericTableWindow {
             }
             popup.show(e.getComponent(), e.getX(), e.getY());
         }
-        
+
         @Override
         public void actionPerformed(ActionEvent e) {
             Units target = Units.fromString(e.getActionCommand());
@@ -230,9 +237,9 @@ public class GenericTableWindow {
             }
         }
     }
-    
+
     private class TableDropTarget extends DropTarget {
-        
+
         @Override
         public synchronized void drop(DropTargetDropEvent dtde) {
             dtde.acceptDrop(DnDConstants.ACTION_REFERENCE);
@@ -249,56 +256,56 @@ public class GenericTableWindow {
             dropFile(f);
         }
     }
-    
+
     protected void dropFile(File f) {
         new ImportExportPlugIn(f.getAbsolutePath()).run(ImportExportPlugIn.IMPORT + IJResultsTable.IDENTIFIER);
     }
-    
+
     protected void tableHeaderMouseClicked(MouseEvent e) {
         if(SwingUtilities.isRightMouseButton(e)) {
             new UnitsContextMenu(e, table.convertColumnIndexToModel(table.columnAtPoint(e.getPoint())));
         }
     }
-    
+
     protected void tableMouseDragged(MouseEvent e) {
         //
     }
-    
+
     protected void tableMouseMoved(MouseEvent e) {
         //
     }
-    
+
     protected void tableMouseClicked(MouseEvent e) {
         //
     }
-    
+
     protected void tableMousePressed(MouseEvent e) {
         //
     }
-    
+
     protected void tableMouseReleased(MouseEvent e) {
         //
     }
-    
+
     protected void tableMouseEntered(MouseEvent e) {
         //
     }
-    
+
     protected void tableMouseExited(MouseEvent e) {
         //
     }
 
     // =============================================================
     public class ColoredTable extends JTable {
-        
+
         public final Color LIGHT_ORANGE = new Color(255, 222, 200);
         public final Color LIGHT_RED = new Color(255, 222, 222);
         public final Color LIGHT_GREEN = new Color(222, 255, 222);
-        
+
         public ColoredTable(TableModel dm) {
             super(dm);
         }
-        
+
         @Override
         public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
             final Component c = super.prepareRenderer(renderer, row, column);
@@ -312,15 +319,15 @@ public class GenericTableWindow {
                     case FALSE_POSITIVE:
                         c.setBackground(LIGHT_RED);
                         break;
-                    
+
                     case FALSE_NEGATIVE:
                         c.setBackground(LIGHT_ORANGE);
                         break;
-                    
+
                     case TRUE_POSITIVE:
                         c.setBackground(LIGHT_GREEN);
                         break;
-                    
+
                     default:
                         c.setBackground(Color.WHITE);
                 }
