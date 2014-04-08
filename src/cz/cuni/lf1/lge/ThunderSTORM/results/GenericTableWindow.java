@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule.DetectionStatus.FALSE_NEGATIVE;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule.DetectionStatus.FALSE_POSITIVE;
@@ -26,7 +27,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
@@ -130,20 +130,14 @@ public class GenericTableWindow {
     }
 
     public void show() {
-        try {
-            WindowManager.addWindow(frame); // ImageJ's own Window Manager
-            SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    frame.setVisible(true);
-                }
-            });
-            WindowManager.setWindow(frame); // ImageJ's own Window Manager
-        } catch(InterruptedException ex) {
-            throw new RuntimeException(ex);
-        } catch(InvocationTargetException ex) {
-            throw new RuntimeException(ex.getCause());
-        }
+        WindowManager.addWindow(frame); // ImageJ's own Window Manager
+        GUI.runOnUIThreadAndWait(new Runnable() {
+            @Override
+            public void run() {
+                frame.setVisible(true);
+            }
+        });
+        WindowManager.setWindow(frame); // ImageJ's own Window Manager
     }
 
     public void hide() {
