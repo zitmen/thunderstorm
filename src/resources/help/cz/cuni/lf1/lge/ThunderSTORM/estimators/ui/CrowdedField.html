@@ -22,7 +22,7 @@ field problem,’’ in which single molecules are not adequately resolved.
 The reason for this is the limitation of the PSF models to fit only
 a single molecule. To help solve this problem, ThunderSTORM uses a
 multiple-emitter fitting analysis (MFA) approach similar to the algorithm
-described in <cite class="ltx_cite">[<a href="#bib.bib12" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite>.</p>
+described in <cite class="ltx_cite">[<a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite>.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">Multiple-emitter fitting analysis</h2>
@@ -60,7 +60,7 @@ raw data to find an approximate position of a third molecule in the
 residual image. This routine is repeated until the maximum number
 of molecules allowed in the fitting region is reached. Note that initial
 positions of the molecules are further adjusted, during the multiple-emitter
-fitting analysis, by a ‘‘Push&amp;Pull" process <cite class="ltx_cite">[<a href="#bib.bib12" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite>.
+fitting analysis, by a ‘‘Push&amp;Pull" process <cite class="ltx_cite">[<a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite>.
 To find the optimal number of molecules, statistical tests are required
 (see below).</p>
 </div>
@@ -79,21 +79,21 @@ to the same intensity for all fitted molecules.</p>
 
 <div id="Sx1.SSx2.p1" class="ltx_para">
 <p class="ltx_p">Because a model with more parameters will always be able to fit the
-data at least as well as a model with fewer parameters <cite class="ltx_cite">[<a href="#bib.bib15" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib3" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite>,
+data at least as well as a model with fewer parameters <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite>,
 statistical tests are required to determine whether the more complex
 model provides a significantly better fit of the underlying data.
 Statistical tests are usually based on pair-wise model comparison.
 Here a fit by <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi57.png" width="45" height="18" alt="\mathrm{PSF}_{1}"> is compared with a fit by <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi58.png" width="45" height="18" alt="\mathrm{PSF}_{2}">,
 the better of the two is compared with a fit by <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi59.png" width="45" height="18" alt="\mathrm{PSF}_{3}">,
-etc. Pair-wise comparisons are based on an F-test <cite class="ltx_cite">[<a href="#bib.bib15" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib3" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite>
-or on a log-likelihood ratio test <cite class="ltx_cite">[<a href="#bib.bib15" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib12" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite> as
+etc. Pair-wise comparisons are based on an F-test <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite>
+or on a log-likelihood ratio test <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite> as
 described below.</p>
 </div>
 <div id="Sx1.SSx2.SSSx1" class="ltx_subsubsection">
 <h3 class="ltx_title ltx_title_subsubsection">F-test</h3>
 
 <div id="Sx1.SSx2.SSSx1.p1" class="ltx_para">
-<p class="ltx_p">An F-test <cite class="ltx_cite">[<a href="#bib.bib15" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib3" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite> arises in the case of
+<p class="ltx_p">An F-test <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite> arises in the case of
 fitting by least squares methods, when we need to compare significance
 of the fit between two models, where one model (the null model) is
 a special case of the other (the alternative model) for some choice
@@ -136,7 +136,7 @@ distribution for a user-specified <img id="Sx1.SSx2.SSSx1.p2.m4" class="ltx_Math
 <div id="Sx1.SSx2.SSSx2.p1" class="ltx_para">
 <p class="ltx_p">To compare between the fits of two models, in the case of fitting
 by the maximum likelihood estimation method, we use a model selection
-criteria based on a log-likelihood ratio test <cite class="ltx_cite">[<a href="#bib.bib15" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib12" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite><em class="ltx_emph">.</em>
+criteria based on a log-likelihood ratio test <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite><em class="ltx_emph">.</em>
 Assuming that one model (the null model) is a special case of the
 other (the alternative model) for some choice of parameters, the log-likelihood
 ratio is given by the formula</p>
@@ -163,7 +163,7 @@ in Equation (<a href="#Sx1.E3" title="(3) ‣ Log-likelihood ratio test ‣ Mode
 the alternative model does not provide a significantly better fit
 than the null model, can be approximated by the <img id="Sx1.SSx2.SSSx2.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi52.png" width="23" height="22" alt="\chi^{2}"> distribution
 with <img id="Sx1.SSx2.SSSx2.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi64.png" width="58" height="17" alt="v_{1}-v_{0}"> degrees of freedom. This approximation is usually
-valid even for small sample sizes <cite class="ltx_cite">[<a href="#bib.bib15" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>]</cite>. Here <img id="Sx1.SSx2.SSSx2.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi63.png" width="20" height="14" alt="v_{0}">
+valid even for small sample sizes <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>]</cite>. Here <img id="Sx1.SSx2.SSSx2.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi63.png" width="20" height="14" alt="v_{0}">
 and <img id="Sx1.SSx2.SSSx2.p2.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi65.png" width="20" height="14" alt="v_{1}"> (where <img id="Sx1.SSx2.SSSx2.p2.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi62.png" width="60" height="16" alt="v_{0}&lt;v_{1}">) represent the number of free parameters
 of the null and alternative model, respectively. The null hypothesis
 is rejected if the log-likelihood ratio <img id="Sx1.SSx2.SSSx2.p2.m6" class="ltx_Math" style="vertical-align:-6px" src="mi/mi47.png" width="47" height="21" alt="\Lambda\left(\mathcal{D}\right)">
@@ -172,12 +172,32 @@ distribution for some <img id="Sx1.SSx2.SSSx2.p2.m8" class="ltx_Math" style="ver
 </div>
 </div>
 </div>
+<div id="Sx1.SSx3" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">How to set the parameters</h2>
+
+<div id="Sx1.SSx3.p1" class="ltx_para">
+<p class="ltx_p">Multiple emitter fitting analysis (MFA) can be used in high-density
+data to estimate the number of molecules detected as a single blob.
+We recommend setting 3 to 5 molecules per fitting region. The stability
+of the algorithm is improved if the molecular brightness is limited
+to a realistic range (perhaps 300 to 5000 photons), depending on the
+sample. This range can be estimated by ThunderSTORM by processing
+a few frames of the data and evaluating the number of detected photons
+from each molecule using the histogram function (this relies on correct
+entry of the camera parameters). The algorithm can also be more stable
+by forcing all molecules to have the same intensity. Unfortunately,
+multiple emitter analysis is a computationally costly method, and
+may run quite slowly depending on the user-specified maximum number
+of molecules within the fitting area. Note that the size of the fitting
+radius might need to be increased slightly to accommodate larger blobs.</p>
+</div>
+</div>
 </div>
 <div id="bib" class="ltx_bibliography">
 <h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib3" class="ltx_bibitem ltx_bib_book">
+<li id="bib.bib4" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. R. Bevington and D. K. Robinson</span><span class="ltx_text ltx_bib_year">(2003)</span>
 </span>
@@ -191,7 +211,7 @@ distribution for some <img id="Sx1.SSx2.SSSx2.p2.m8" class="ltx_Math" style="ver
 <a href="#Sx1.SSx2.p1" title="Model selection ‣ The Crowded-field problem" class="ltx_ref"><span class="ltx_text ltx_ref_title">Model selection</span></a>.
 </span>
 </li>
-<li id="bib.bib12" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib15" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. Huang, S. L. Schwartz, J. M. Byars and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2011)</span>
 </span>
@@ -207,7 +227,7 @@ distribution for some <img id="Sx1.SSx2.SSSx2.p2.m8" class="ltx_Math" style="ver
 <a href="#Sx1.p1" title="The Crowded-field problem" class="ltx_ref"><span class="ltx_text ltx_ref_title">The Crowded-field problem</span></a>.
 </span>
 </li>
-<li id="bib.bib15" class="ltx_bibitem ltx_bib_book">
+<li id="bib.bib18" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. Kendall and A. Stuart</span><span class="ltx_text ltx_bib_year">(1979)</span>
 </span>

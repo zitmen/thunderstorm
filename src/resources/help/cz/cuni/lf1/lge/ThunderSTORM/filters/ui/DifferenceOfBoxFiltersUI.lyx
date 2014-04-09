@@ -88,7 +88,7 @@ key "Huang2011"
 
 \end_inset
 
- is another type of a band-pass filter.
+ is a band-pass filter.
  The filtered image is obtained by subtracting images filtered with two
  
 \begin_inset ERT
@@ -114,7 +114,39 @@ F=I*K_{\mathrm{AV1}}-I*K_{\mathrm{AV2}}\,.
 
 \end_inset
 
+The size of the kernel 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
 
+\begin_inset Formula $K_{\mathrm{AV2}}$
+\end_inset
+
+ has to be larger than 
+\begin_inset Formula $K_{\mathrm{AV1}}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+.
 \end_layout
 
 \begin_layout Subsection*

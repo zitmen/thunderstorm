@@ -19,7 +19,7 @@
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">This algorithm finds the sub-pixel position of a molecule by determining
 the point with maximal radial symmetry in the data as described in
-<cite class="ltx_cite">[<a href="#bib.bib21" title="Rapid, accurate particle tracking by calculation of radial symmetry centers" class="ltx_ref">1</a>]</cite>. The general idea is to find the origin
+<cite class="ltx_cite">[<a href="#bib.bib24" title="Rapid, accurate particle tracking by calculation of radial symmetry centers" class="ltx_ref">1</a>]</cite>. The general idea is to find the origin
 of radial symmetry (i.e., the center of a molecule) as the point with
 the minimum distance to gradient-oriented lines passing through all
 data points. The calculation of each molecular position is very fast
@@ -83,7 +83,7 @@ system, given by</p>
 <div id="Sx1.p5" class="ltx_para">
 <p class="ltx_p">The origin of the radial symmetry <img id="Sx1.p5.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi126.png" width="60" height="21" alt="\left(\hat{x}_{0},\hat{y}_{0}\right)">
 can be determined as the point that minimizes the sum of weighed distances
-of all considered lines to that point. It can be shown <cite class="ltx_cite">[<a href="#bib.bib21" title="Rapid, accurate particle tracking by calculation of radial symmetry centers" class="ltx_ref">1</a>]</cite>
+of all considered lines to that point. It can be shown <cite class="ltx_cite">[<a href="#bib.bib24" title="Rapid, accurate particle tracking by calculation of radial symmetry centers" class="ltx_ref">1</a>]</cite>
 that the problem has an analytical solution. For simplicity, let index
 <img id="Sx1.p5.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi134.png" width="141" height="21" alt="j=x\left(2r+1\right)+y">, where <img id="Sx1.p5.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi139.png" width="67" height="19" alt="x,y\in\mathcal{D}">, thus <img id="Sx1.p5.m4" class="ltx_Math" style="vertical-align:-7px" src="mi/mi135.png" width="72" height="17" alt="s_{j}=s_{x,y}\,">,
 <img id="Sx1.p5.m5" class="ltx_Math" style="vertical-align:-7px" src="mi/mi138.png" width="81" height="17" alt="w_{j}=w_{x,y}\,">, and <img id="Sx1.p5.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi131.png" width="71" height="21" alt="b_{j}=b_{x,y}\,">. The analytical solution
@@ -124,7 +124,7 @@ to the <a href="CenterOfMassEstimatorUI.html" title="" class="ltx_ref">centroid 
 the gradient magnitudes <img id="Sx1.p6.m8" class="ltx_Math" style="vertical-align:-14px" src="mi/mi127.png" width="59" height="36" alt="\left|\nabla\tilde{I}_{x,y}\right|">.</p>
 </div>
 <div id="Sx1.p7" class="ltx_para">
-<p class="ltx_p">The implementation of the radial symmetry method is taken from <cite class="ltx_cite">[<a href="#bib.bib21" title="Rapid, accurate particle tracking by calculation of radial symmetry centers" class="ltx_ref">1</a>]</cite>,
+<p class="ltx_p">The implementation of the radial symmetry method is taken from <cite class="ltx_cite">[<a href="#bib.bib24" title="Rapid, accurate particle tracking by calculation of radial symmetry centers" class="ltx_ref">1</a>]</cite>,
 where the partial derivatives are additionally smoothed by a <img id="Sx1.p7.m1" class="ltx_Math" style="vertical-align:-3px" src="mi/mi121.png" width="43" height="17" alt="3\times 3">
 averaging filter in order to reduce noise and improve the accuracy
 of the results.
@@ -135,7 +135,7 @@ of the results.
 <h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib21" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib24" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. Parthasarathy</span><span class="ltx_text ltx_bib_year">(2012)</span>
 </span>

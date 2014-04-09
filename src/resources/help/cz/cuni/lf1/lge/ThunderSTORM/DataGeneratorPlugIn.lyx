@@ -97,7 +97,7 @@ key "Walter2010,Krizek2011"
  score using the Performance evaluation plugin.
  In addition to the image size and sequence length, users can specify the
  intensity, imaged size, and spatial density of the generated molecules.
- The resulting images can be subjected to a sample drift.
+ The resulting images can be subjected to sample drift.
  Noise in the generated images simulates the behavior of CCD or EMCCD cameras.
 \end_layout
 
@@ -109,25 +109,11 @@ Image formation
 For each frame, we first create an ideal, noise free, SMLM-like image to
  simulate the expected number of photons detected in each camera pixel.
  Image formation starts by creating a list of molecules with FWHM and intensity
- chosen randomly in user-specified ranges, and with random positions given
- by a user-specified spatial density (see below).
- An offset with user-specified variance is added to the generated image
- sequence to simulate photon background.
- Imaged molecules are modeled by an 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{estimators/ui/IntSymmetricGaussianEstimatorUI.html}{integrated form
- of a symmetric 2D Gaussian function}
-\end_layout
-
-\end_inset
-
-, and the generated molecules are added sequentially to the final image
+ chosen randomly in user-specified ranges, and with random positions of
+ molecules given by a user-specified spatial density (see below).
+ Users can also specify any of the implemented PSF models incuding 3D models
+ to create the simulated images of molecules.
+ The generated molecules are added sequentially to the final image similarly
  as in the 
 \begin_inset ERT
 status open
@@ -142,13 +128,22 @@ href{rendering/ui/DensityRenderingUI.html}{Gaussian rendering}
 \end_inset
 
  method.
+ A user-specified offset is added to the generated image sequence to simulate
+ photon background.
+ Alternatively, a gray-scale image, in which each pixel value is normalized
+ to the interval 
+\begin_inset Formula $\left[0,1\right]$
+\end_inset
+
+, can be used as a weighting factor of the offset level in different parts
+ of the generated images to simulate an irregular background as might be
+ encountered in real samples.
 \end_layout
 
 \begin_layout Standard
 In order to simulate the photon counting process in the generated images,
- each pixel value expressed in photons is modified by a Poisson random number
- generator.
- We use this simplification for CCD cameras.
+ each pixel value expressed in photons is modified by a Poisson-distributed
+ random number.
  The data generator can optionally simulate EM gain of EMCCD cameras.
  In this case we use a stochastic model described in 
 \begin_inset CommandInset citation
@@ -157,7 +152,8 @@ key "Hirsch2013"
 
 \end_inset
 
-, where the camera register is modeled by the Gamma distribution 
+, where the electron multiplication is modeled by the Gamma distribution
+ 
 \begin_inset Formula $\Gamma(k,g)$
 \end_inset
 
@@ -175,8 +171,8 @@ key "Hirsch2013"
 \end_layout
 
 \begin_layout Standard
-Finally, the signal in the camera register is digitized by converting photons
- to A/D counts.
+Finally, the signal in the camera register is digitized by converting the
+ photons to digital counts.
  The CCD sensitivity (in photons per A/D count), and the camera digitizer
  offset (in A/D counts) are user-specified in the 
 \begin_inset ERT
@@ -217,7 +213,18 @@ Users can specify a fixed or spatially varying density of simulated molecules
 \begin_inset Formula $\left[0,1\right]$
 \end_inset
 
- and used to represent the weighting factor .
+ and used to represent the weighting factor, see Figure
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:spatial-density"
+
+\end_inset
+
+.
  The average number of molecules at a given integer pixel position 
 \begin_inset Formula $\left(x,y\right)$
 \end_inset
@@ -238,11 +245,20 @@ where
 \begin_inset Formula $d_{\mathrm{max}}$
 \end_inset
 
- is the maximum spatial density of molecules per unit area.
+ is the maximum spatial density of molecules per unit areaas specified by
+ users.
 \end_layout
 
 \begin_layout Standard
-The process of generating molecular positions follows the Poisson distribution.
+The procedure for generating molecular positions follows the spatial Poisson
+ point process 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kendall1979"
+
+\end_inset
+
+.
  Thus for each value 
 \begin_inset Formula $\overline{d}\left(x,y\right)$
 \end_inset
@@ -253,6 +269,59 @@ The process of generating molecular positions follows the Poisson distribution.
 
  using a Poisson random number generator.
  Molecular centers are placed uniformly and randomly within that pixel.
+\end_layout
+
+\begin_layout Standard
+Note that the mask 
+\begin_inset Formula $M$
+\end_inset
+
+ should be the same size as the desired super-resolution image in order
+ to preserve high resolution in the final reconstruction.
+ The coordinates of molecular centers are down-scaled appropriately.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement bh
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename datagen.png
+	lyxscale 40
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:spatial-density"
+
+\end_inset
+
+SMLM data generated with variable spatial density of molecules.
+ a) gray-scale mask, b) average intensity time projection of raw data, c)
+ SMLM data reconstruction, d) zoomed region indicated in c).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection*

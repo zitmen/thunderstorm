@@ -69,7 +69,7 @@ Centroid of connected components
 
 \begin_layout Standard
 This algorithm is based on segmentation of molecules which is performed
- by applying a user-defined threshold on the filtered input image 
+ by applying a user-defined threshold on the filtered image 
 \begin_inset Formula $F$
 \end_inset
 

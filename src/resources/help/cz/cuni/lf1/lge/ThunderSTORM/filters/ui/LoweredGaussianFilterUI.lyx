@@ -130,15 +130,11 @@ K_{\mathrm{LG}}\left(x,y\mid\sigma\right)=K_{\mathrm{G}}\left(x,y\mid\sigma\righ
 \end_inset
 
 .
- The kernel size 
-\begin_inset Formula $l$
-\end_inset
-
- and the standard deviation 
+ The standard deviation 
 \begin_inset Formula $\sigma$
 \end_inset
 
- are user-specified parameters.
+ is a user-specified parameter.
 \end_layout
 
 \begin_layout Standard
@@ -155,7 +151,20 @@ F=I*K_{\mathrm{LG}}=I*K_{\mathrm{G}}-I*K_{\mathrm{AV}}\,.
 
 \end_inset
 
+The lowered Gaussian is a band-pass filter.
+ The sizes of both 
+\begin_inset Formula $K_{\mathrm{G}}$
+\end_inset
 
+ and 
+\begin_inset Formula $K_{\mathrm{AV}}$
+\end_inset
+
+ kernels are computed as 
+\begin_inset Formula $l=1+2\left\lceil 3\sigma\right\rceil $
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection*

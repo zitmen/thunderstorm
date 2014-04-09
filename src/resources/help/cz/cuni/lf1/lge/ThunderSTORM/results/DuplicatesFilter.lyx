@@ -65,10 +65,10 @@ Removing duplicates
 \end_layout
 
 \begin_layout Standard
-If two molecules are localized in the same image and their mutual distance
- is smaller than their localization uncertainty, then the molecule with
- lower localization uncertainty is kept and the other one is rejected.
- This post-processing method is suggested by Huang et
+Repeated localizations of single molecules in one frame may occur due to
+ overlapping fitting sub-regions when using multiple-emitter analysis approach.
+ To deal with the problem, ThunderSTORM uses a post-processing method suggested
+ by Huang et
 \begin_inset space ~
 \end_inset
 
@@ -80,10 +80,17 @@ key "Huang2011"
 
 \end_inset
 
- to deal with repeated localizations that can occur due to overlapping fitting
- sub-regions in crowded-field data.
- ThunderSTORM allows users to specify the distance threshold as an expression
- combining mathematical functions and parameters from the table of results.
+.
+ Here molecules with mutual distance smaller than their localization uncertainty
+ are grouped together, and in each group, only a molecule with the smallest
+ localization uncertainty is kept.
+ The other molecules are rejected.
+ ThunderSTORM generalizes this algorithm by allowing users to specify the
+ distance threshold for grouping the molecules as a mathematical expression.
+ Different distance threshold can be applied to individual molecules if
+ the mathematical expression results in a vector.
+ Same distance threshold is applied to all molecules if the results is a
+ scalar.
 \end_layout
 
 \begin_layout Standard

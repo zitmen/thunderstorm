@@ -16,14 +16,27 @@
 <div id="Sx1" class="ltx_section">
 <h1 class="ltx_title ltx_title_section">Camera setup</h1>
 
+<div id="Sx1.p1" class="ltx_para">
+<p class="ltx_p">As ThunderSTORM uses real units (photons, nanometers), accurate camera
+parameters need to be supplied by the user. The effective pixel size
+can be determined from the actual pixel pitch of the camera sensor
+and from the total magnification of the optical setup, or by performing
+a spatial calibration using a stage micrometer. The detector response
+(photoelectrons per A/D count and base level offset of the camera
+digitizer) can be obtained from the specification sheet supplied by
+the camera manufacturer or from photon transfer curve measurements
+(the dependence of the variance on the mean value of pixel intensities),
+see e.g. <cite class="ltx_cite">[<a href="#bib.bib27" title="CCD charge collection efficiency and the photon transfer technique" class="ltx_ref">1</a>, <a href="#bib.bib37" title="Image detectors for digital image microscopy" class="ltx_ref">2</a>]</cite>. Correct pixel size
+is important for proper spatial calibration of the rendered images.
+Camera conversion gain and offset influence simulated images and the
+estimates of localization precision.</p>
+</div>
 <div id="Sx1.SSx1" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">Pixel size </h2>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
 <p class="ltx_p">The size of one camera pixel projected to the sample plane. It is
-used to convert molecule coordinates from pixels to nm, to correctly
-calculate localization uncertainty of PSF fitting estimators and also
-in artificial data generator.</p>
+used to convert molecule coordinates from pixels to nm.</p>
 </div>
 </div>
 <div id="Sx1.SSx2" class="ltx_subsection">
@@ -36,15 +49,25 @@ the number of photoelectrons. The formula for conversion is</p>
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-18px" src="mi/mi1.png" width="106" height="43" alt="I=b+[g]\frac{i}{p}\,,"></td>
+<td class="ltx_align_center"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-18px" src="mi/mi1.png" width="79" height="43" alt="I=b+\frac{i}{p}"></td>
 <td class="ltx_eqn_pad"></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi2.png" width="13" height="16" alt="I"> is image intensity in A/D counts, <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi5.png" width="10" height="15" alt="i"> is the number of
-photolectrons and <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi6.png" width="45" height="19" alt="p,b,g"> are the following camera characteristics:</p>
+<p class="ltx_p">for the case without EM gain and</p>
+<table id="Sx1.Ex2" class="ltx_equation">
+
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.Ex2.m1" class="ltx_Math" style="vertical-align:-18px" src="mi/mi2.png" width="88" height="43" alt="I=b+g\frac{i}{p}"></td>
+<td class="ltx_eqn_pad"></td>
+</tr>
+</table>
+<p class="ltx_p">for the case with EM gain. Here, <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi3.png" width="13" height="16" alt="I"> is the image intensity in A/D
+counts, <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi6.png" width="10" height="15" alt="i"> is the number of photolectrons and <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi7.png" width="45" height="19" alt="p,b,g"> are the following
+camera characteristics:</p>
 </div>
 <div id="Sx1.SSx2.SSSx1" class="ltx_subsubsection">
-<h3 class="ltx_title ltx_title_subsubsection">Photoelectrons per A/D count, <img id="Sx1.SSx2.SSSx1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi7.png" width="13" height="15" alt="p">
+<h3 class="ltx_title ltx_title_subsubsection">Photoelectrons per A/D count, <img id="Sx1.SSx2.SSSx1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi8.png" width="13" height="15" alt="p">
 </h3>
 
 <div id="Sx1.SSx2.SSSx1.p1" class="ltx_para">
@@ -52,7 +75,7 @@ photolectrons and <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-alig
 </div>
 </div>
 <div id="Sx1.SSx2.SSSx2" class="ltx_subsubsection">
-<h3 class="ltx_title ltx_title_subsubsection">Base level, <img id="Sx1.SSx2.SSSx2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi3.png" width="11" height="16" alt="b">
+<h3 class="ltx_title ltx_title_subsubsection">Base level, <img id="Sx1.SSx2.SSSx2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi4.png" width="11" height="16" alt="b">
 </h3>
 
 <div id="Sx1.SSx2.SSSx2.p1" class="ltx_para">
@@ -60,7 +83,7 @@ photolectrons and <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-alig
 </div>
 </div>
 <div id="Sx1.SSx2.SSSx3" class="ltx_subsubsection">
-<h3 class="ltx_title ltx_title_subsubsection">EM gain, <img id="Sx1.SSx2.SSSx3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi4.png" width="13" height="15" alt="g">
+<h3 class="ltx_title ltx_title_subsubsection">EM gain, <img id="Sx1.SSx2.SSSx3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi5.png" width="13" height="15" alt="g">
 </h3>
 
 <div id="Sx1.SSx2.SSSx3.p1" class="ltx_para">
@@ -72,6 +95,34 @@ the stochastic nature of EM gain is modelled in <a href="DataGeneratorPlugIn.htm
 </div>
 </div>
 </div>
+</div>
+<div id="bib" class="ltx_bibliography">
+<h1 class="ltx_title ltx_title_bibliography">References</h1>
+
+<ul id="L1" class="ltx_biblist">
+<li id="bib.bib27" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. Janesick, K. Klaasen and T. Elliott</span><span class="ltx_text ltx_bib_year">(1985)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">CCD charge collection efficiency and the photon transfer technique</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_pages"> pp. 7–19</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Camera setup" class="ltx_ref"><span class="ltx_text ltx_ref_title">Camera setup</span></a>.
+</span>
+</li>
+<li id="bib.bib37" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">L. J. Van Vliet, F. R. Boddeke, D. Sudar and I. T. Young</span><span class="ltx_text ltx_bib_year">(1998)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Image detectors for digital image microscopy</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Digital Image Analysis of Microbes: Imaging, Morphometry, Fluorometry, and Motility Techniques and Applications</span>, <span class="ltx_text ltx_bib_pages"> pp. 37–63</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Camera setup" class="ltx_ref"><span class="ltx_text ltx_ref_title">Camera setup</span></a>.
+</span>
+</li>
+</ul>
 </div>
 </div>
 </div>

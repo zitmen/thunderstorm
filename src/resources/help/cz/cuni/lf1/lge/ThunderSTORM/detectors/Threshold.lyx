@@ -92,14 +92,26 @@ Threshold
 \end_layout
 
 \begin_layout Standard
-Threshold can be specified either as a fixed number or a formula containing
- image statistics.
- You can input the formula as a mathematical expression using a set of operators
-, functions and variables.
- The formula gets evaluated each time a new frame is processed, so you can
- have a different threshold for each frame.
- This way we can deal with intensity changing over time and provide some
- usable default threshold for unknown images.
+When finding the approximate position of molecules, choosing the right threshold
+ value is important for obtaining good results, because the threshold influences
+ the number of missed molecules (false negatives) and the number of erroneous
+ detections of non-existing molecules (false positive detections).
+ ThunderSTORM uses a single-valued intensity threshold which is updated
+ for every raw input image 
+\begin_inset Formula $I$
+\end_inset
+
+ and applied to the filtered image 
+\begin_inset Formula $F$
+\end_inset
+
+.
+ The threshold value can be specified by users as an expression combining
+ mathematical functions and operators with variables based on the current
+ raw or filtered image.
+ This is a powerful option, because users can specify the threshold value
+ systematically for unknown input images, where the global intensity may
+ slowly fluctuate over time.
 \end_layout
 
 \begin_layout Subsection*
@@ -213,8 +225,8 @@ Filters can provide more image variables.
 
 \begin_layout Standard
 Variables from a filter that is not selected can be used too.
- Then, the filtering operation will run multiple times: one filtered image
- is used for detection and other filtered image is used only to evaluate
+ Then, the filtering operation will run several times: one filtered image
+ is used for detection and the other filtered image is used only to evaluate
  the threshold.
  Prefix the variable with a short name of the filter and a dot to use a
  variable from other than the selected filter.
@@ -236,7 +248,7 @@ will evaluate to the mean value of the image filtered with median filter
 \end_layout
 
 \begin_layout Subsection*
-Functions
+Built-in functions
 \end_layout
 
 \begin_layout Standard
@@ -503,7 +515,7 @@ image with absolute value of each pixel
 \end_layout
 
 \begin_layout Subsection*
-Operators
+Built-in operators
 \end_layout
 
 \begin_layout Standard

@@ -644,6 +644,31 @@ key "Kendall1979"
 -value specified by the users.
 \end_layout
 
+\begin_layout Subsection*
+How to set the parameters
+\end_layout
+
+\begin_layout Standard
+Multiple emitter fitting analysis (MFA) can be used in high-density data
+ to estimate the number of molecules detected as a single blob.
+ We recommend setting 3 to 5 molecules per fitting region.
+ The stability of the algorithm is improved if the molecular brightness
+ is limited to a realistic range (perhaps 300 to 5000 photons), depending
+ on the sample.
+ This range can be estimated by ThunderSTORM by processing a few frames
+ of the data and evaluating the number of detected photons from each molecule
+ using the histogram function (this relies on correct entry of the camera
+ parameters).
+ The algorithm can also be more stable by forcing all molecules to have
+ the same intensity.
+ Unfortunately, multiple emitter analysis is a computationally costly method,
+ and may run quite slowly depending on the user-specified maximum number
+ of molecules within the fitting area.
+ Note that the size of the fitting radius might need to be increased slightly
+ to accommodate larger blobs.
+ 
+\end_layout
+
 \begin_layout Standard
 \begin_inset ERT
 status open

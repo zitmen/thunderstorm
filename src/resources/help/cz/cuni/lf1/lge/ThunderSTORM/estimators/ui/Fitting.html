@@ -21,7 +21,7 @@
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
 <p class="ltx_p">To approximate the data with a point-spread function, least-squares
-methods <cite class="ltx_cite">[<a href="#bib.bib15" title="The Advanced Theory of Statistics" class="ltx_ref">4</a>, <a href="#bib.bib3" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>, <a href="#bib.bib18" title="Optimized localization analysis for single-molecule tracking and super-resolution microscopy" class="ltx_ref">5</a>]</cite> are employed
+methods <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">4</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>, <a href="#bib.bib21" title="Optimized localization analysis for single-molecule tracking and super-resolution microscopy" class="ltx_ref">5</a>]</cite> are employed
 to minimize the sum of (weighted) squared residuals defined by</p>
 <table id="Sx1.E1" class="ltx_equation">
 
@@ -59,7 +59,7 @@ leads to an optimization problem formulated as</p>
 </tr>
 </table>
 <p class="ltx_p">which we solve by the Levenberg-Marquardt algorithm as
-implemented in the Apache Commons Math library <cite class="ltx_cite">[<a href="#bib.bib4" title="The Apache Commons Mathematics Library; version 3.2" class="ltx_ref">2</a>]</cite>.
+implemented in the Apache Commons Math library <cite class="ltx_cite">[<a href="#bib.bib6" title="The Apache Commons Mathematics Library; version 3.2" class="ltx_ref">2</a>]</cite>.
 The sub-pixel refinement of the coordinates is obtained as <img id="Sx1.SSx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi86.png" width="63" height="23" alt="\hat{x}_{0}=\hat{\theta}_{x}">
 and <img id="Sx1.SSx1.p3.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi87.png" width="61" height="26" alt="\hat{y}_{0}=\hat{\theta}_{y}">, where <img id="Sx1.SSx1.p3.m3" class="ltx_Math" style="vertical-align:-14px" src="mi/mi82.png" width="125" height="36" alt="\boldsymbol{\hat{\theta}}=\left[\hat{\theta}_{x},\hat{\theta}_{y},\ldots\right]">.
 Depending on the chosen PSF model, users have to set a starting point
@@ -93,7 +93,7 @@ number of photons is <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-a
 with the expected photon count <img id="Sx1.SSx2.p3.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi90.png" width="140" height="21" alt="\lambda=\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">
 given by the point-spread function model, and the observed photon
 count <img id="Sx1.SSx2.p3.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi88.png" width="91" height="24" alt="\kappa=\tilde{I}\left(x,y\right)"> given by the image intensity
-expressed in photons. The likelihood <cite class="ltx_cite">[<a href="#bib.bib15" title="The Advanced Theory of Statistics" class="ltx_ref">4</a>, <a href="#bib.bib18" title="Optimized localization analysis for single-molecule tracking and super-resolution microscopy" class="ltx_ref">5</a>, <a href="#bib.bib27" title="Fast, single-molecule localization that achieves theoretically minimum uncertainty" class="ltx_ref">7</a>, <a href="#bib.bib12" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">3</a>]</cite>
+expressed in photons. The likelihood <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">4</a>, <a href="#bib.bib21" title="Optimized localization analysis for single-molecule tracking and super-resolution microscopy" class="ltx_ref">5</a>, <a href="#bib.bib31" title="Fast, single-molecule localization that achieves theoretically minimum uncertainty" class="ltx_ref">7</a>, <a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">3</a>]</cite>
 of the vector of parameters <img id="Sx1.SSx2.p3.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="14" height="16" alt="\boldsymbol{\theta}"> can be modeled
 as</p>
 </div>
@@ -131,7 +131,7 @@ The maximization problem has the form</p>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(5)</span></td>
 </tr>
 </table>
-<p class="ltx_p">which we solve by the Nelder-Mead method <cite class="ltx_cite">[<a href="#bib.bib20" title="Algorithm AS 47–Function Minimization Using a Simplex Procedure" class="ltx_ref">6</a>]</cite>. The sub-pixel
+<p class="ltx_p">which we solve by the Nelder-Mead method <cite class="ltx_cite">[<a href="#bib.bib23" title="Algorithm AS 47–function minimization using a simplex procedure" class="ltx_ref">6</a>]</cite>. The sub-pixel
 refinement of the coordinates is obtained as <img id="Sx1.SSx2.p6.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi86.png" width="63" height="23" alt="\hat{x}_{0}=\hat{\theta}_{x}">
 and <img id="Sx1.SSx2.p6.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi87.png" width="61" height="26" alt="\hat{y}_{0}=\hat{\theta}_{y}">, where <img id="Sx1.SSx2.p6.m3" class="ltx_Math" style="vertical-align:-14px" src="mi/mi82.png" width="125" height="36" alt="\boldsymbol{\hat{\theta}}=\left[\hat{\theta}_{x},\hat{\theta}_{y},\ldots\right]">.
 Depending on the chosen PSF model, users have to set a starting point
@@ -163,7 +163,7 @@ stability of the fit.</p>
 <h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib3" class="ltx_bibitem ltx_bib_book">
+<li id="bib.bib4" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. R. Bevington and D. K. Robinson</span><span class="ltx_text ltx_bib_year">(2003)</span>
 </span>
@@ -176,7 +176,7 @@ stability of the fit.</p>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p1" title="Least-squares ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Least-squares</span></a>.
 </span>
 </li>
-<li id="bib.bib4" class="ltx_bibitem ltx_bib_misc">
+<li id="bib.bib6" class="ltx_bibitem ltx_bib_misc">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">Commons-Math</span><span class="ltx_text ltx_bib_year">(2013-04)</span>
 </span>
@@ -187,7 +187,7 @@ stability of the fit.</p>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p3" title="Least-squares ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Least-squares</span></a>.
 </span>
 </li>
-<li id="bib.bib12" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib15" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. Huang, S. L. Schwartz, J. M. Byars and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2011)</span>
 </span>
@@ -200,7 +200,7 @@ stability of the fit.</p>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx2.p3" title="Maximum-likelihood estimation ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
 </span>
 </li>
-<li id="bib.bib15" class="ltx_bibitem ltx_bib_book">
+<li id="bib.bib18" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[4]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. Kendall and A. Stuart</span><span class="ltx_text ltx_bib_year">(1979)</span>
 </span>
@@ -212,7 +212,7 @@ stability of the fit.</p>
 <a href="#Sx1.SSx2.p3" title="Maximum-likelihood estimation ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
 </span>
 </li>
-<li id="bib.bib18" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib21" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[5]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">K. I. Mortensen, L. S. Churchman, J. A. Spudich and H. Flyvbjerg</span><span class="ltx_text ltx_bib_year">(2010)</span>
 </span>
@@ -226,11 +226,11 @@ stability of the fit.</p>
 <a href="#Sx1.SSx2.p3" title="Maximum-likelihood estimation ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
 </span>
 </li>
-<li id="bib.bib20" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib23" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[6]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. O’Neill</span><span class="ltx_text ltx_bib_year">(1971)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Algorithm AS 47–Function Minimization Using a Simplex Procedure</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Algorithm AS 47–function minimization using a simplex procedure</span>,
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Applied Statistics</span> <span class="ltx_text ltx_bib_volume">20</span>, <span class="ltx_text ltx_bib_pages"> pp. 338–45</span>.
 </span>
@@ -239,7 +239,7 @@ stability of the fit.</p>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx2.p6" title="Maximum-likelihood estimation ‣ PSF fitting methods" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
 </span>
 </li>
-<li id="bib.bib27" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib31" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[7]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. S. Smith, N. Joseph, B. Rieger and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2010)</span>
 </span>

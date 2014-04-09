@@ -17,8 +17,8 @@
 <h1 class="ltx_title ltx_title_section">Lowered Gaussian filter</h1>
 
 <div id="Sx1.p1" class="ltx_para">
-<p class="ltx_p">This filter was reported to perform well in DAOPHOT <cite class="ltx_cite">[<a href="#bib.bib30" title="DAOPHOT - A computer program for crowded-field stellar photometry" class="ltx_ref">2</a>]</cite>
-and DAOSTORM <cite class="ltx_cite">[<a href="#bib.bib9" title="DAOSTORM: an algorithm for high- density super-resolution microscopy" class="ltx_ref">1</a>]</cite> algorithms. The <a href="Convolution.html" title="" class="ltx_ref">convolution</a>
+<p class="ltx_p">This filter was reported to perform well in DAOPHOT <cite class="ltx_cite">[<a href="#bib.bib34" title="DAOPHOT - A computer program for crowded-field stellar photometry" class="ltx_ref">2</a>]</cite>
+and DAOSTORM <cite class="ltx_cite">[<a href="#bib.bib12" title="DAOSTORM: an algorithm for high- density super-resolution microscopy" class="ltx_ref">1</a>]</cite> algorithms. The <a href="Convolution.html" title="" class="ltx_ref">convolution</a>
 kernel is based on the <a href="GaussianFilterUI.html" title="" class="ltx_ref">Gaussian</a> kernel,
 which has been lowered to have the sum of all its entries equal to
 zero,</p>
@@ -28,29 +28,30 @@ zero,</p>
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi53.png" width="266" height="21" alt="K_{\mathrm{LG}}\left(x,y\mid\sigma\right)=K_{\mathrm{G}}\left(x,y\mid\sigma%
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi70.png" width="266" height="21" alt="K_{\mathrm{LG}}\left(x,y\mid\sigma\right)=K_{\mathrm{G}}\left(x,y\mid\sigma%
 \right)-b\,,"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi55.png" width="11" height="16" alt="b"> is the mean value of all of the elements in <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi45.png" width="31" height="18" alt="K_{\mathrm{G}}">.
-The kernel size <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi6.png" width="9" height="16" alt="l"> and the standard deviation <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi46.png" width="14" height="11" alt="\sigma"> are user-specified
-parameters.</p>
+<p class="ltx_p">where <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi72.png" width="11" height="16" alt="b"> is the mean value of all of the elements in <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi64.png" width="31" height="18" alt="K_{\mathrm{G}}">.
+The standard deviation <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi65.png" width="14" height="11" alt="\sigma"> is a user-specified parameter.</p>
 </div>
 <div id="Sx1.p3" class="ltx_para">
-<p class="ltx_p">Although the kernel <img id="Sx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi54.png" width="39" height="18" alt="K_{\mathrm{LG}}"> is not separable, the filtered
+<p class="ltx_p">Although the kernel <img id="Sx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi71.png" width="39" height="18" alt="K_{\mathrm{LG}}"> is not separable, the filtered
 image can be obtained by subtracting two images filtered with two
 separable kernels,</p>
 <table id="Sx1.E2" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi52.png" width="270" height="18" alt="F=I*K_{\mathrm{LG}}=I*K_{\mathrm{G}}-I*K_{\mathrm{AV}}\,."></td>
+<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi69.png" width="270" height="18" alt="F=I*K_{\mathrm{LG}}=I*K_{\mathrm{G}}-I*K_{\mathrm{AV}}\,."></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
 </tr>
 </table>
+<p class="ltx_p">The lowered Gaussian is a band-pass filter. The sizes of both <img id="Sx1.p3.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi64.png" width="31" height="18" alt="K_{\mathrm{G}}">
+and <img id="Sx1.p3.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi2.png" width="39" height="18" alt="K_{\mathrm{AV}}"> kernels are computed as <img id="Sx1.p3.m4" class="ltx_Math" style="vertical-align:-6px" src="mi/mi68.png" width="111" height="21" alt="l=1+2\left\lceil 3\sigma\right\rceil">.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">Detector threshold formula</h2>
@@ -82,7 +83,7 @@ how filter results can be used to dynamically find threshold value.</p>
 <h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib9" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib12" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">S. J. Holden, S. Uphoff and A. N. Kapanidis</span><span class="ltx_text ltx_bib_year">(2011)</span>
 </span>
@@ -95,7 +96,7 @@ how filter results can be used to dynamically find threshold value.</p>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Lowered Gaussian filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Lowered Gaussian filter</span></a>.
 </span>
 </li>
-<li id="bib.bib30" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib34" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. B. Stetson</span><span class="ltx_text ltx_bib_year">(1987)</span>
 </span>

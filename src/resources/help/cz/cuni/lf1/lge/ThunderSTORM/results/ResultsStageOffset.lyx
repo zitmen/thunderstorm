@@ -69,7 +69,7 @@ Z-stage scanning
 
 \begin_layout Standard
 To extend the axial field of view in 3D SMLM experiments, data can be acquired
- in multiple Z-stage positions 
+ in multiple z-stage positions 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Huang-NM-2008"
@@ -105,7 +105,7 @@ href{../estimators/ui/EllipticGaussianEstimatorUI.html}{astigmatism}
  coordinate can be determined as
 \begin_inset Formula 
 \begin{equation}
-z_{\mathrm{abs}}=z_{0}+z_{\mathrm{rel}}+z_{\mathrm{step}}\left(\left\lfloor \frac{f-1}{n_{\mathrm{im}}}\right\rfloor \bmod n_{\mathrm{pos}}\right)\,.
+z_{\mathrm{abs}}=z_{0}+z_{\mathrm{rel}}+z_{\mathrm{step}}\left(\left\lfloor \frac{f-1}{n_{\mathrm{im}}}\right\rfloor \bmod n_{\mathrm{pos}}\right)\,,
 \end{equation}
 
 \end_inset
@@ -114,7 +114,7 @@ where
 \begin_inset Formula $z_{0}$
 \end_inset
 
- is the initial Z-stage offset, 
+ is the initial z-stage offset, 
 \begin_inset Formula $z_{\mathrm{rel}}$
 \end_inset
 
@@ -126,7 +126,7 @@ where
 \begin_inset Formula $z_{\mathrm{step}}$
 \end_inset
 
- is the step between two positions of the Z-stage, 
+ is the step between two positions of the z-stage, 
 \begin_inset Formula $f$
 \end_inset
 
@@ -138,7 +138,7 @@ where
 \begin_inset Formula $n_{\mathrm{pos}}$
 \end_inset
 
- is the number of Z-stage positions.
+ is the number of z-stage positions.
  All 
 \begin_inset Formula $z$
 \end_inset

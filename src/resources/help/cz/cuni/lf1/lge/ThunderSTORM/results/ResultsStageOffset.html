@@ -18,36 +18,36 @@
 
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">To extend the axial field of view in 3D SMLM experiments, data can
-be acquired in multiple Z-stage positions <cite class="ltx_cite">[<a href="#bib.bib10" title="Whole-cell 3D STORM reveals interactions between cellular structures with nanometer-scale resolution" class="ltx_ref">1</a>]</cite>. However,
+be acquired in multiple z-stage positions <cite class="ltx_cite">[<a href="#bib.bib13" title="Whole-cell 3D STORM reveals interactions between cellular structures with nanometer-scale resolution" class="ltx_ref">1</a>]</cite>. However,
 the <a href="../estimators/ui/EllipticGaussianEstimatorUI.html" title="" class="ltx_ref">astigmatism</a>
 method can estimate only the relative axial positions of molecules
-with respect to the focal plane. To find the absolute <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi7.png" width="13" height="11" alt="z"> coordinates,
+with respect to the focal plane. To find the absolute <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi20.png" width="13" height="11" alt="z"> coordinates,
 the correct offset must be added to the axial positions of each molecule.
-The new <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi7.png" width="13" height="11" alt="z"> coordinate can be determined as</p>
+The new <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi20.png" width="13" height="11" alt="z"> coordinate can be determined as</p>
 <table id="Sx1.E1" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi3.png" width="358" height="46" alt="z_{\mathrm{abs}}=z_{0}+z_{\mathrm{rel}}+z_{\mathrm{step}}\left(\left\lfloor%
-\frac{f-1}{n_{\mathrm{im}}}\right\rfloor\bmod n_{\mathrm{pos}}\right)\,."></td>
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi16.png" width="358" height="46" alt="z_{\mathrm{abs}}=z_{0}+z_{\mathrm{rel}}+z_{\mathrm{step}}\left(\left\lfloor%
+\frac{f-1}{n_{\mathrm{im}}}\right\rfloor\bmod n_{\mathrm{pos}}\right)\,,"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi8.png" width="20" height="14" alt="z_{0}"> is the initial Z-stage offset, <img id="Sx1.p1.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi10.png" width="29" height="14" alt="z_{\mathrm{rel}}">
-is the estimated molecular position relative to the focal plane (<img id="Sx1.p1.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi9.png" width="61" height="18" alt="z_{\mathrm{rel}}=0">
-for 2D data), <img id="Sx1.p1.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi11.png" width="38" height="17" alt="z_{\mathrm{step}}"> is the step between two positions
-of the Z-stage, <img id="Sx1.p1.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi4.png" width="14" height="19" alt="f"> is the image frame in which a given molecule
-appeared, <img id="Sx1.p1.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi5.png" width="31" height="14" alt="n_{\mathrm{im}}"> is the number of images taken in each
-Z-stage position, and <img id="Sx1.p1.m9" class="ltx_Math" style="vertical-align:-7px" src="mi/mi6.png" width="36" height="17" alt="n_{\mathrm{pos}}"> is the number of Z-stage
-positions. All <img id="Sx1.p1.m10" class="ltx_Math" style="vertical-align:-2px" src="mi/mi7.png" width="13" height="11" alt="z"> variables are in nm.</p>
+<p class="ltx_p">where <img id="Sx1.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi21.png" width="20" height="14" alt="z_{0}"> is the initial z-stage offset, <img id="Sx1.p1.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="29" height="14" alt="z_{\mathrm{rel}}">
+is the estimated molecular position relative to the focal plane (<img id="Sx1.p1.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi22.png" width="61" height="18" alt="z_{\mathrm{rel}}=0">
+for 2D data), <img id="Sx1.p1.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi24.png" width="38" height="17" alt="z_{\mathrm{step}}"> is the step between two positions
+of the z-stage, <img id="Sx1.p1.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi17.png" width="14" height="19" alt="f"> is the image frame in which a given molecule
+appeared, <img id="Sx1.p1.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi18.png" width="31" height="14" alt="n_{\mathrm{im}}"> is the number of images taken in each
+Z-stage position, and <img id="Sx1.p1.m9" class="ltx_Math" style="vertical-align:-7px" src="mi/mi19.png" width="36" height="17" alt="n_{\mathrm{pos}}"> is the number of z-stage
+positions. All <img id="Sx1.p1.m10" class="ltx_Math" style="vertical-align:-2px" src="mi/mi20.png" width="13" height="11" alt="z"> variables are in nm.</p>
 </div>
 </div>
 <div id="bib" class="ltx_bibliography">
 <h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib10" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib13" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">B. Huang, S. A. Jones, B. Brandenburg and X. Zhuang</span><span class="ltx_text ltx_bib_year">(2008)</span>
 </span>

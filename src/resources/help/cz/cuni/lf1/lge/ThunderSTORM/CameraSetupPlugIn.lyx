@@ -67,6 +67,31 @@
 Camera setup
 \end_layout
 
+\begin_layout Standard
+As ThunderSTORM uses real units (photons, nanometers), accurate camera parameter
+s need to be supplied by the user.
+ The effective pixel size can be determined from the actual pixel pitch
+ of the camera sensor and from the total magnification of the optical setup,
+ or by performing a spatial calibration using a stage micrometer.
+ The detector response (photoelectrons per A/D count and base level offset
+ of the camera digitizer) can be obtained from the specification sheet supplied
+ by the camera manufacturer or from photon transfer curve measurements (the
+ dependence of the variance on the mean value of pixel intensities), see
+ e.g.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "janesick1985ccd,van1998image"
+
+\end_inset
+
+.
+ Correct pixel size is important for proper spatial calibration of the rendered
+ images.
+ Camera conversion gain and offset influence simulated images and the estimates
+ of localization precision.
+\end_layout
+
 \begin_layout Subsection*
 Pixel
 \begin_inset space ~
@@ -77,9 +102,7 @@ size
 
 \begin_layout Standard
 The size of one camera pixel projected to the sample plane.
- It is used to convert molecule coordinates from pixels to nm, to correctly
- calculate localization uncertainty of PSF fitting estimators and also in
- artificial data generator.
+ It is used to convert molecule coordinates from pixels to nm.
 \end_layout
 
 \begin_layout Subsection*
@@ -92,16 +115,25 @@ These parameters are used to convert image intensity (A/D count) to the
  The formula for conversion is 
 \begin_inset Formula 
 \[
-I=b+[g]\frac{i}{p}\,,
+I=b+\frac{i}{p}
 \]
 
 \end_inset
 
-where 
+for the case without EM gain and 
+\begin_inset Formula 
+\[
+I=b+g\frac{i}{p}
+\]
+
+\end_inset
+
+for the case with EM gain.
+ Here, 
 \begin_inset Formula $I$
 \end_inset
 
- is image intensity in A/D counts, 
+ is the image intensity in A/D counts, 
 \begin_inset Formula $i$
 \end_inset
 
@@ -178,6 +210,32 @@ href{DataGeneratorPlugIn.html}{artificial data generator}
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand
+\backslash
+refname{References}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
 \end_layout
 
 \end_body

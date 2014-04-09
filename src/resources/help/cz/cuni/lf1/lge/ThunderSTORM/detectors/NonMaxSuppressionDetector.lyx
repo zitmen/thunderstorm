@@ -99,7 +99,7 @@ where
 \begin_inset Formula $F$
 \end_inset
 
- is an input image, 
+ is the filtered image, 
 \begin_inset Formula $S$
 \end_inset
 
@@ -130,20 +130,34 @@ href{LocalMaximaDetector.html}{local intensity maxima}
 \end_layout
 
 \begin_layout Standard
-We first perform a gray-scale dilation of the input image using a structuring
- element of size 
+We first perform a gray-scale dilation of the filtered image 
+\begin_inset Formula $F$
+\end_inset
+
+ using a structuring element 
+\begin_inset Formula $S$
+\end_inset
+
+ of size 
 \begin_inset Formula $l\times l$
 \end_inset
 
  with all entries set to zero, where 
-\begin_inset Formula $l$
+\begin_inset Formula $l=2r+1$
+\end_inset
+
+, and 
+\begin_inset Formula $r$
 \end_inset
 
  is a dilation radius given by the user.
  The approximate molecular positions are extracted by finding pixels in
- the original image that have intensities equal to corresponding pixels
- in the dilated image and also have an intensity greater than a user-specified
- threshold.
+ the original image 
+\begin_inset Formula $F$
+\end_inset
+
+ that have intensities equal to corresponding pixels in the dilated image
+ and also have an intensity greater than a user-specified threshold.
  Essentially, a binary image is built with all non-maximum pixels set to
  zero and with all local maxima set to one.
 \end_layout
@@ -171,6 +185,35 @@ href{Threshold.html}{Threshold}
 \end_inset
 
  for more information.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand
+\backslash
+refname{References}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
 \end_layout
 
 \end_body

@@ -86,12 +86,12 @@ key "Starck2002,Izeddin2012"
 trous
 \emph default
  in French) between the filter coefficients.
- The output of each filter level therefore contains the same number of samples
- as the input.
+ The output of each filter level, therefore, contains the same number of
+ samples as the input.
 \end_layout
 
 \begin_layout Standard
-The first step is based on separable 
+The first step of the filtering is based on separable 
 \begin_inset ERT
 status open
 
@@ -110,7 +110,7 @@ href{Convolution.html}{convolution}
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-V_{i}=\left(V_{i-1}*\boldsymbol{k}_{i}\right)*\boldsymbol{k}_{i}^{\top}\,,
+V_{f}=\left(V_{f-1}*\boldsymbol{k}_{f}\right)*\boldsymbol{k}_{f}^{\top}\,,\label{eq:wavelet-approx}
 \end{equation}
 
 \end_inset
@@ -120,69 +120,28 @@ where
 \end_inset
 
  is the input image, 
-\begin_inset Formula $i=1,\ldots,N$
+\begin_inset Formula $f=1,\ldots,N$
 \end_inset
 
-, and 
-\begin_inset Formula $\boldsymbol{k}_{i}$
+ are the levels, 
+\begin_inset Formula $\boldsymbol{k}_{f}=\left[k_{1,f},k_{2,f},\ldots,k_{l,f}\right]$
 \end_inset
 
- is a filter kernel at the corresponding level.
+ is a filter kernel at the corresponding level, and 
+\begin_inset Formula $l$
+\end_inset
+
+ is the kernel size.
  The number of levels is given by 
 \begin_inset Formula $N$
 \end_inset
 
 .
- The convolution kernel is usually based on a third-order B-spline scaling
- function 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Starck2002,Izeddin2012"
-
-\end_inset
-
-, where 
-\begin_inset Formula $\boldsymbol{k}_{1}=\left[\frac{1}{16},\frac{1}{4},\frac{3}{8},\frac{1}{4},\frac{1}{16}\right]^{\top}$
-\end_inset
-
-, 
-\begin_inset Formula $\boldsymbol{k}_{2}=\left[\frac{1}{16},0,\frac{1}{4},0,\frac{3}{8},0,\frac{1}{4},0,\frac{1}{16}\right]^{\top}$
-\end_inset
-
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-, 
-\begin_inset Formula $\boldsymbol{k}_{3}=\left[\frac{1}{16},0,0,0,\frac{1}{4},0,0,0,\frac{3}{8},0,0,0,\frac{1}{4},0,0,0,\frac{1}{16}\right]^{\top}$
-\end_inset
-
-
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-, etc.
 \end_layout
 
 \begin_layout Standard
 The wavelet transform of the input data at level 
-\begin_inset Formula $i$
+\begin_inset Formula $f$
 \end_inset
 
  is computed as the difference between two consecutive approximation levels
@@ -192,12 +151,13 @@ The wavelet transform of the input data at level
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-F_{i}=V_{i-1}-V_{i}\,.
+F_{f}=V_{f-1}-V_{f}\,.
 \end{equation}
 
 \end_inset
 
-Here, each wavelet level corresponds to different ranges of spatial frequencies.
+This expression acts as a band-pass filter, therefore each wavelet level
+ corresponds to a different range of spatial frequencies.
  The first level 
 \begin_inset Formula $F_{1}$
 \end_inset
@@ -208,21 +168,173 @@ Here, each wavelet level corresponds to different ranges of spatial frequencies.
 \end_layout
 
 \begin_layout Standard
-In our implementation, the output of the wavelet filter is the second wavelet
- level 
+In our case, the output of the wavelet filter is the second wavelet level
+ 
 \begin_inset Formula $F_{2}$
 \end_inset
 
- (optionally the third, 
-\begin_inset Formula $F_{3}$
+.
+ The standard deviation of values obtained in the first wavelet level 
+\begin_inset Formula $F_{1}$
 \end_inset
 
-), because at this level, most localization microscopy data contains structures
- with sizes close to the diffraction limit of the microscope (we note that
- this depends on the effective camera pixel size).
- The wavelet filter is the default option in ThunderSTORM as it performs
- very well on many of the localization microscopy data sets we have experimented
- with.
+ can be used as a threshold in the filtered image for an approximate localizatio
+n of molecules 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Izeddin2012"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The wavelet filter uses a convolution kernel based on normalized B-spline
+ basis functions
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Starck2002,Izeddin2012"
+
+\end_inset
+
+.
+ The 
+\begin_inset Formula $j$
+\end_inset
+
+-th B-spline basis function of degree 
+\begin_inset Formula $q\in\mathbb{N}^{+}$
+\end_inset
+
+ in the variable 
+\begin_inset Formula $t\in\mathbb{R}$
+\end_inset
+
+, written as 
+\begin_inset Formula $B_{j,q}\left(t\right)$
+\end_inset
+
+, is defined recursively as follows.
+ For 
+\begin_inset Formula $q=1$
+\end_inset
+
+, 
+\begin_inset Formula 
+\begin{equation}
+B_{j,1}\left(t\right)=\begin{cases}
+1 & \quad\mathrm{if}\; t_{j}\leq t<t_{j+1}\,,\\
+0 & \quad\mathrm{otherwise}\,,
+\end{cases}
+\end{equation}
+
+\end_inset
+
+and for 
+\begin_inset Formula $q>1$
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{equation}
+B_{j,q}\left(t\right)=\frac{t-t_{j}}{t_{j+q-1}-t_{j}}B_{j,q-1}\left(t\right)+\frac{t_{j+q}-t}{t_{j+q}-t_{j+1}}B_{j+1,q-1}\left(t\right).
+\end{equation}
+
+\end_inset
+
+Here 
+\begin_inset Formula $B_{j,q}\left(t\right)$
+\end_inset
+
+ has non-zero values in the interval 
+\begin_inset Formula $t_{j}\leq t<t_{j+q}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For the first wavelet level, the convolution kernel 
+\begin_inset Formula $\boldsymbol{k}_{1}$
+\end_inset
+
+ in Equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:wavelet-approx"
+
+\end_inset
+
+ is composed from values 
+\begin_inset Formula $k_{i,1}\left(x\mid q,s\right)=aB_{0,q}\left(\frac{x}{s}+\frac{q}{2}\right)$
+\end_inset
+
+, where 
+\begin_inset Formula $i=1,\ldots,l$
+\end_inset
+
+, 
+\begin_inset Formula $x=i-\left(l+1\right)/2$
+\end_inset
+
+, the kernel size 
+\begin_inset Formula $l=2\left\lceil \frac{qs}{2}\right\rceil -1$
+\end_inset
+
+, 
+\begin_inset Formula $s>0$
+\end_inset
+
+ is a sampling factor, and 
+\begin_inset Formula $a$
+\end_inset
+
+ is a constant scaling factor such that 
+\begin_inset Formula $\sum_{i}k_{i,1}=1$
+\end_inset
+
+.
+ Kernels for higher wavelet levels are obtained by inserting zeros between
+ the kernel coefficients.
+ Users need to input the degree 
+\begin_inset Formula $q$
+\end_inset
+
+ of the B-spline basis function and the sampling factor 
+\begin_inset Formula $s$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In our implementation, the default kernel uses a B-spline basis function
+ of the third degree with a sampling factor 
+\begin_inset Formula $s=2$
+\end_inset
+
+.
+ These settings yield kernels 
+\begin_inset Formula $\boldsymbol{k}_{1}=\left[\frac{1}{16},\frac{1}{4},\frac{3}{8},\frac{1}{4},\frac{1}{16}\right]^{\top}$
+\end_inset
+
+ and 
+\begin_inset Formula $\boldsymbol{k}_{2}=\left[\frac{1}{16},0,\frac{1}{4},0,\frac{3}{8},0,\frac{1}{4},0,\frac{1}{16}\right]^{\top}$
+\end_inset
+
+, as suggested in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Starck2002,Izeddin2012"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection*

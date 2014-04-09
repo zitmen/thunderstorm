@@ -18,11 +18,11 @@
 
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">This algorithm is based on segmentation of molecules which is performed
-by applying a user-defined threshold on the filtered input image <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi2.png" width="18" height="16" alt="F">.
-Users also have the option to combine the thresholded image with the
-result of a watershed algorithm <cite class="ltx_cite">[<a href="#bib.bib1" title="Image Processing, Analysis, and Machine Vision" class="ltx_ref">3</a>]</cite> applied to the image
-<img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi2.png" width="18" height="16" alt="F">. This procedure was proposed in <cite class="ltx_cite">[<a href="#bib.bib13" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>. The position
-of each molecule is determined by computing the centroid of the relevant
+by applying a user-defined threshold on the filtered image <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi2.png" width="18" height="16" alt="F">. Users
+also have the option to combine the thresholded image with the result
+of a watershed algorithm <cite class="ltx_cite">[<a href="#bib.bib1" title="Image Processing, Analysis, and Machine Vision" class="ltx_ref">3</a>]</cite> applied to the image <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi2.png" width="18" height="16" alt="F">.
+This procedure was proposed in <cite class="ltx_cite">[<a href="#bib.bib16" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>. The position of
+each molecule is determined by computing the centroid of the relevant
 segmented object using</p>
 </div>
 <div id="Sx1.p2" class="ltx_para">
@@ -40,7 +40,7 @@ segmented object using</p>
 in each object, and <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi5.png" width="31" height="17" alt="x_{i,p}"> and <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-7px" src="mi/mi6.png" width="30" height="17" alt="y_{i,p}"> are the integer pixel
 coordinates within each object. Segmented objects are determined as
 connected components by an algorithm based on a breadth-first search
-<cite class="ltx_cite">[<a href="#bib.bib16" title="The Art Of Computer Programming" class="ltx_ref">2</a>]</cite>. The watershed algorithm is based on the ImageJ
+<cite class="ltx_cite">[<a href="#bib.bib19" title="The Art Of Computer Programming" class="ltx_ref">2</a>]</cite>. The watershed algorithm is based on the ImageJ
 ‘‘Find Maxima’’ function.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
@@ -57,7 +57,7 @@ for more information.</p>
 <h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib13" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib16" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">I. Izeddin, J. Boulanger, V. Racine, C. G. Specht, A. Kechkar, D. Nair, A. Triller, D. Choquet, M. Dahan and J. B. Sibarita</span><span class="ltx_text ltx_bib_year">(2012)</span>
 </span>
@@ -70,7 +70,7 @@ for more information.</p>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Centroid of connected components" class="ltx_ref"><span class="ltx_text ltx_ref_title">Centroid of connected components</span></a>.
 </span>
 </li>
-<li id="bib.bib16" class="ltx_bibitem ltx_bib_book">
+<li id="bib.bib19" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">D. E. Knuth</span><span class="ltx_text ltx_bib_year">(1997)</span>
 </span>

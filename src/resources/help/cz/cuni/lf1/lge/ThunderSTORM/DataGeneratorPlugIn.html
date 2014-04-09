@@ -19,14 +19,14 @@
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">ThunderSTORM is capable of generating a sequence of SMLM-like images
 in which the ground-truth positions of the molecules are known. This
-allows users to perform Monte Carlo simulations <cite class="ltx_cite">[<a href="#bib.bib33" title="Real-time computation of subdiffraction-resolution fluorescence images" class="ltx_ref">3</a>, <a href="#bib.bib14" title="Minimizing detection errors in single molecule localization microscopy" class="ltx_ref">2</a>]</cite>
+allows users to perform Monte Carlo simulations <cite class="ltx_cite">[<a href="#bib.bib38" title="Real-time computation of subdiffraction-resolution fluorescence images" class="ltx_ref">4</a>, <a href="#bib.bib17" title="Minimizing detection errors in single molecule localization microscopy" class="ltx_ref">3</a>]</cite>
 and to quantitatively evaluate the performance of applied localization
-algorithms by calculating, e.g., the Jaccard index or <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi9.png" width="23" height="18" alt="F_{1}"> score
+algorithms by calculating, e.g., the Jaccard index or <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi10.png" width="23" height="18" alt="F_{1}"> score
 using the Performance evaluation plugin. In addition to the image
 size and sequence length, users can specify the intensity, imaged
 size, and spatial density of the generated molecules. The resulting
-images can be subjected to a sample drift. Noise in the generated
-images simulates the behavior of CCD or EMCCD cameras.</p>
+images can be subjected to sample drift. Noise in the generated images
+simulates the behavior of CCD or EMCCD cameras.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">Image formation</h2>
@@ -36,29 +36,32 @@ images simulates the behavior of CCD or EMCCD cameras.</p>
 to simulate the expected number of photons detected in each camera
 pixel. Image formation starts by creating a list of molecules with
 FWHM and intensity chosen randomly in user-specified ranges, and with
-random positions given by a user-specified spatial density (see below).
-An offset with user-specified variance is added to the generated image
-sequence to simulate photon background. Imaged molecules are modeled
-by an <a href="estimators/ui/IntSymmetricGaussianEstimatorUI.html" title="" class="ltx_ref">integrated form of a symmetric 2D Gaussian function</a>,
-and the generated molecules are added sequentially to the final image
+random positions of molecules given by a user-specified spatial density
+(see below). Users can also specify any of the implemented PSF models
+incuding 3D models to create the simulated images of molecules. The
+generated molecules are added sequentially to the final image similarly
 as in the <a href="rendering/ui/DensityRenderingUI.html" title="" class="ltx_ref">Gaussian rendering</a>
-method.</p>
+method. A user-specified offset is added to the generated image sequence
+to simulate photon background. Alternatively, a gray-scale image,
+in which each pixel value is normalized to the interval <img id="Sx1.SSx1.p1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi14.png" width="39" height="21" alt="\left[0,1\right]">,
+can be used as a weighting factor of the offset level in different
+parts of the generated images to simulate an irregular background
+as might be encountered in real samples.</p>
 </div>
 <div id="Sx1.SSx1.p2" class="ltx_para">
 <p class="ltx_p">In order to simulate the photon counting process in the generated
-images, each pixel value expressed in photons is modified by a Poisson
-random number generator. We use this simplification for CCD cameras.
-The data generator can optionally simulate EM gain of EMCCD cameras.
-In this case we use a stochastic model described in <cite class="ltx_cite">[<a href="#bib.bib8" title="A stochastic model for electron multiplication charge-coupled devices–from theory to practice." class="ltx_ref">1</a>]</cite>,
-where the camera register is modeled by the Gamma distribution <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi11.png" width="55" height="21" alt="\Gamma(k,g)">.
-The shape <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi17.png" width="13" height="16" alt="k"> is given by the number of photons detected in the simulated
-CCD register and the scale <img id="Sx1.SSx1.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi4.png" width="13" height="15" alt="g"> is given by the user-specified value
-of gain.</p>
+images, each pixel value expressed in photons is modified by a Poisson-distributed
+random number. The data generator can optionally simulate EM gain
+of EMCCD cameras. In this case we use a stochastic model described
+in <cite class="ltx_cite">[<a href="#bib.bib11" title="A stochastic model for electron multiplication charge-coupled devices–from theory to practice." class="ltx_ref">1</a>]</cite>, where the electron multiplication is modeled
+by the Gamma distribution <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi12.png" width="55" height="21" alt="\Gamma(k,g)">. The shape <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi18.png" width="13" height="16" alt="k"> is given
+by the number of photons detected in the simulated CCD register and
+the scale <img id="Sx1.SSx1.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi5.png" width="13" height="15" alt="g"> is given by the user-specified value of gain.</p>
 </div>
 <div id="Sx1.SSx1.p3" class="ltx_para">
 <p class="ltx_p">Finally, the signal in the camera register is digitized by converting
-photons to A/D counts. The CCD sensitivity (in photons per A/D count),
-and the camera digitizer offset (in A/D counts) are user-specified
+the photons to digital counts. The CCD sensitivity (in photons per
+A/D count), and the camera digitizer offset (in A/D counts) are user-specified
 in the <a href="CameraSetupPlugIn.html" title="" class="ltx_ref">camera setup</a>, as well as the
 camera pixel size (in nanometers) as projected to the sample plane.</p>
 </div>
@@ -69,30 +72,43 @@ camera pixel size (in nanometers) as projected to the sample plane.</p>
 <div id="Sx1.SSx2.p1" class="ltx_para">
 <p class="ltx_p">Users can specify a fixed or spatially varying density of simulated
 molecules in the generated images. The variability is achieved by
-a user-supplied gray-scale mask <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi10.png" width="23" height="16" alt="M">, in which each pixel value is
-normalized to the interval <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi13.png" width="39" height="21" alt="\left[0,1\right]"> and used to represent
-the weighting factor . The average number of molecules at a given
-integer pixel position <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi12.png" width="45" height="21" alt="\left(x,y\right)"> is then computed as</p>
+a user-supplied gray-scale mask <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi11.png" width="23" height="16" alt="M">, in which each pixel value is
+normalized to the interval <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi14.png" width="39" height="21" alt="\left[0,1\right]"> and used to represent
+the weighting factor, see Figure <a href="#Sx1.F1" title="Figure 1 ‣ Fixed or spatially varying density of molecules ‣ Artificial data generator" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>. The
+average number of molecules at a given integer pixel position <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi13.png" width="45" height="21" alt="\left(x,y\right)">
+is then computed as</p>
 <table id="Sx1.E1" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi8.png" width="208" height="24" alt="\overline{d}\left(x,y\right)=a^{2}M\left(x,y\right)d_{\mathrm{max}}\,,"></td>
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi9.png" width="208" height="24" alt="\overline{d}\left(x,y\right)=a^{2}M\left(x,y\right)d_{\mathrm{max}}\,,"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.SSx2.p1.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi15.png" width="13" height="11" alt="a"> is the camera pixel size as projected to the sample plane,
-and <img id="Sx1.SSx2.p1.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi16.png" width="40" height="19" alt="d_{\mathrm{max}}"> is the maximum spatial density of molecules
-per unit area.
-</p>
+<p class="ltx_p">where <img id="Sx1.SSx2.p1.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi16.png" width="13" height="11" alt="a"> is the camera pixel size as projected to the sample plane,
+and <img id="Sx1.SSx2.p1.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi17.png" width="40" height="19" alt="d_{\mathrm{max}}"> is the maximum spatial density of molecules
+per unit areaas specified by users.</p>
 </div>
 <div id="Sx1.SSx2.p2" class="ltx_para">
-<p class="ltx_p">The process of generating molecular positions follows the Poisson
-distribution. Thus for each value <img id="Sx1.SSx2.p2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi14.png" width="57" height="24" alt="\overline{d}\left(x,y\right)">,
-a random number of events (molecules) is created in the pixel <img id="Sx1.SSx2.p2.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi12.png" width="45" height="21" alt="\left(x,y\right)">
+<p class="ltx_p">The procedure for generating molecular positions follows the spatial
+Poisson point process <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">2</a>]</cite>. Thus for each value <img id="Sx1.SSx2.p2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi15.png" width="57" height="24" alt="\overline{d}\left(x,y\right)">,
+a random number of events (molecules) is created in the pixel <img id="Sx1.SSx2.p2.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi13.png" width="45" height="21" alt="\left(x,y\right)">
 using a Poisson random number generator. Molecular centers are placed
 uniformly and randomly within that pixel.</p>
+</div>
+<div id="Sx1.SSx2.p3" class="ltx_para">
+<p class="ltx_p">Note that the mask <img id="Sx1.SSx2.p3.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi11.png" width="23" height="16" alt="M"> should be the same size as the desired super-resolution
+image in order to preserve high resolution in the final reconstruction.
+The coordinates of molecular centers are down-scaled appropriately.</p>
+</div>
+<div id="Sx1.F1" class="ltx_figure">
+<object data="datagen.png" id="Sx1.F1.g1" class="ltx_graphics" width="541" height="133" alt=""></object>
+<div class="ltx_caption">
+<span class="ltx_tag ltx_tag_figure">Figure 1: </span>SMLM data generated with variable spatial
+density of molecules. a) gray-scale mask, b) average intensity time
+projection of raw data, c) SMLM data reconstruction, d) zoomed region
+indicated in c).</div>
 </div>
 </div>
 <div id="Sx1.SSx3" class="ltx_subsection">
@@ -109,7 +125,7 @@ of the drift, which is constant throughout the image sequence.</p>
 <h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib8" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib11" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. Hirsch, R. J. Wareham, M. L. Martin-Fernandez, M. P. Hobson and D. J. Rolfe</span><span class="ltx_text ltx_bib_year">(2013)</span>
 </span>
@@ -122,8 +138,19 @@ of the drift, which is constant throughout the image sequence.</p>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p2" title="Image formation ‣ Artificial data generator" class="ltx_ref"><span class="ltx_text ltx_ref_title">Image formation</span></a>.
 </span>
 </li>
-<li id="bib.bib14" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib18" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. Kendall and A. Stuart</span><span class="ltx_text ltx_bib_year">(1979)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">The Advanced Theory of Statistics</span>,
+</span>
+<span class="ltx_bibblock"> <span class="ltx_text ltx_bib_publisher">London: Charles Griffin</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx2.p2" title="Fixed or spatially varying density of molecules ‣ Artificial data generator" class="ltx_ref"><span class="ltx_text ltx_ref_title">Fixed or spatially varying density of molecules</span></a>.
+</span>
+</li>
+<li id="bib.bib17" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. Křížek, I. Raška and G. M. Hagen</span><span class="ltx_text ltx_bib_year">(2011)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Minimizing detection errors in single molecule localization microscopy</span>,
@@ -135,8 +162,8 @@ of the drift, which is constant throughout the image sequence.</p>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Artificial data generator" class="ltx_ref"><span class="ltx_text ltx_ref_title">Artificial data generator</span></a>.
 </span>
 </li>
-<li id="bib.bib33" class="ltx_bibitem ltx_bib_article">
-<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
+<li id="bib.bib38" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[4]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">S. Wolter, M. Schüttpelz, M. Tscherepanow, S. van de Linde, M. Heilemann and M. Sauer</span><span class="ltx_text ltx_bib_year">(2010)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Real-time computation of subdiffraction-resolution fluorescence images</span>,

@@ -121,6 +121,10 @@ href{Convolution.html}{convolution}
 \begin_inset Formula $x=i-\left(l+1\right)/2$
 \end_inset
 
+, 
+\begin_inset Formula $l=1+2\left\lceil 3\sigma\right\rceil $
+\end_inset
+
 , and 
 \begin_inset Formula $a$
 \end_inset
@@ -134,17 +138,8 @@ constant scaling factor such that
 \end_inset
 
 .
- Users need to input the kernel size 
-\begin_inset Formula $l$
-\end_inset
-
- and the standard deviation 
+ Users need to input the standard deviation 
 \begin_inset Formula $\sigma$
-\end_inset
-
-.
- It is a common practice to set the kernel size to 
-\begin_inset Formula $l=1+2\left\lceil 3\sigma\right\rceil $
 \end_inset
 
 .

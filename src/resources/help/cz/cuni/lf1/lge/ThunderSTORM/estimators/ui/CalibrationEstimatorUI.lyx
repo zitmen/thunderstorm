@@ -351,11 +351,11 @@ reference "eq:psfeg"
 
 \begin_layout Enumerate
 To estimate the coefficients 
-\begin_inset Formula $a_{1},b_{1},c_{1}$
+\begin_inset Formula $a_{1},b_{1},c_{1},d_{1}$
 \end_inset
 
  and 
-\begin_inset Formula $a_{2},b_{2},c_{2}$
+\begin_inset Formula $a_{2},b_{2},c_{2},d_{2}$
 \end_inset
 
  in Equations 

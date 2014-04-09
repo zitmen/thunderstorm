@@ -18,14 +18,18 @@
 
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">In some SMLM experiments, a single photoactivated molecule may appear
-in several sequential images. If this is the case, ThunderSTORM is
-able to identify such sequences of molecular locations and combine
-them into one single molecule. The new position, imaged size, and
-background of the resulting signal is calculated as the mean value
-of the original data, while the intensity is calculated as the sum.
-The localization uncertainty of the merged molecule is calculated
-from the new values. The distance within which molecules are merged
-together is a user-specified value.</p>
+in several sequential images, then disappear for a while, appear again,
+and finally bleach completely. If this is the case, ThunderSTORM attempts
+to identify such sequences of molecular locations and combines them
+into one single molecule. The new position, imaged size, and background
+of the resulting signal is calculated as the mean value of the original
+data, while the intensity is calculated as the sum. The localization
+uncertainty of the merged molecule is calculated from the new values.
+The distance within which molecules are merged together in the subsequent
+frames, as well as the allowed number of frames in which the molecule
+can disappear, are user-specified values. The merging algorithm is
+based on finding nearest-neighbors between active molecules from the
+previous frames and the current frame.</p>
 </div>
 </div>
 </div>

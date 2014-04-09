@@ -15,13 +15,19 @@
  * packages so some lyx features cannot be converted to html correctly.</li>
  * <li>xml -> html. Using latexmlpost, a part of latexml.</li>
  * </ul>
- *
+ * <p>
  * There is an ant target for the conversion (compile-html-help) and there is
  * another ant target (clean html help) to delete intermediate files created
- * during the conversion.
- * <p/>
+ * during the conversion. The compile-html-help target processes only lyx files
+ * that are newer than the corresponding html. touch utility can be used on a
+ * lyx file to force recompilation. For example the following bash script
+ * touches all lyx files that changed from last commit:
+ * {@code git diff --name-only  | grep .lyx  | while read x ; do touch $x ; done}
+ * </p>
+ * <p>
  * The file {@code customRules.css} is linked to all files during coversion.
  * Additional rules can be added to this file to customize appearance.
+ * </p>
  *
  */
 package resources.help;

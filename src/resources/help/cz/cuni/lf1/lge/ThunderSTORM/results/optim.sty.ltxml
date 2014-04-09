@@ -1,0 +1,12 @@
+
+use LaTeXML::Package;
+use strict;
+RequirePackage('amsmath');
+RawTeX('\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\erf}{erf}
+\DeclareMathOperator*{\atantwo}{atan2}
+\DeclareMathOperator*{\expe}{e}');
+
+
+1;

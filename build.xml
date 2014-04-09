@@ -169,6 +169,7 @@
                 <include name="**/*.tex"/>
                 <include name="**/*.xml"/>
                 <include name="**/*.cache"/>
+                <include name="**/*.eps"/>
             </fileset>
         </delete>
     </target>
