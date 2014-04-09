@@ -14,14 +14,18 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Roi;
+import ij.gui.ShapeRoi;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Rectangle2D;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
@@ -132,24 +136,90 @@ public class ResultsFilter extends PostProcessingModule {
         double mag = new EmptyRendererUI().magnification.getValue();
         IJResultsTable rt = IJResultsTable.getResultsTable();
         ImagePlus preview = rt.getPreviewImage();
-        Rectangle roi = null;
+        Roi roi2 = null;
         if(preview != null) {
-            roi = preview.getProcessor().getRoi();
+            roi2 = preview.getRoi();
         }
-        if(roi == null) {
+        if(roi2 == null) {
             GUI.showBalloonTip(restrictToROIButton, "There is no ROI in the preview image!");
             return;
+        }
+        Rectangle2D[] rectangleList;
+        if(roi2 instanceof ShapeRoi) {
+            ShapeRoi shapeRoi = (ShapeRoi) roi2;
+            Roi[] roiList = shapeRoi.getRois();
+            rectangleList = new Rectangle2D[roiList.length];
+            for(int i = 0; i < roiList.length; i++) {
+                rectangleList[i] = roiList[i].getBounds();
+            }
+        } else {
+            rectangleList = new Rectangle2D[]{roi2.getBounds()};
         }
         Units ux = rt.getColumnUnits(LABEL_X);
         Units uy = rt.getColumnUnits(LABEL_Y);
         //
-        double leftVal = Units.PIXEL.convertTo(ux, Math.ceil(roi.getMinX() / mag));
-        double rightVal = Units.PIXEL.convertTo(ux, Math.ceil(roi.getMaxX() / mag));
-        double topVal = Units.PIXEL.convertTo(uy, Math.ceil(roi.getMinY() / mag));
-        double bottomVal = Units.PIXEL.convertTo(uy, Math.ceil(roi.getMaxY() / mag));
-        //
-        rt.addNewFilter("x", leftVal, rightVal);
-        rt.addNewFilter("y", topVal, bottomVal);
+        for(int i = 0; i < rectangleList.length; i++) {
+            rectangleList[i] = convertRectangleUnits(rectangleList[i], ux, uy, mag);
+        }
+        addNewRectanglesFilter(rectangleList);
+    }
+
+    private Rectangle2D.Double convertRectangleUnits(Rectangle2D rect, Units ux, Units uy, double magnification) {
+        Rectangle2D.Double ret = new Rectangle2D.Double(
+                Units.PIXEL.convertTo(ux, rect.getMinX() / magnification),
+                Units.PIXEL.convertTo(uy, rect.getMinY() / magnification),
+                0, 0);
+
+        ret.add(Units.PIXEL.convertTo(ux, rect.getMaxX() / magnification),
+                Units.PIXEL.convertTo(uy, rect.getMaxY() / magnification));
+        return ret;
+    }
+    
+    void addNewFilter(String paramName, double greaterThan, double lessThan) {
+        String formula = getFilterFormula().trim();
+        StringBuilder sb = new StringBuilder(formula);
+        if(!formula.isEmpty()) {
+            sb.append(" & ");
+        }
+        sb.append("(");
+        sb.append(paramName).append(" > ").append(BigDecimal.valueOf(greaterThan).round(new MathContext(6)).toString());
+        sb.append(" & ");
+        sb.append(paramName).append(" < ").append(BigDecimal.valueOf(lessThan).round(new MathContext(6)).toString());
+        sb.append(")");
+        setFilterFormula(sb.toString());
+    }
+
+    public void addNewRectanglesFilter(Rectangle2D[] rectangles) {
+        StringBuilder sb = new StringBuilder();
+        String currentFilterFormula = getFilterFormula();
+        if(currentFilterFormula != null && !currentFilterFormula.isEmpty()) {
+            sb.append(currentFilterFormula);
+            sb.append(" & ");
+        }
+        sb.append(createRectanglesFilter(rectangles));
+        setFilterFormula(sb.toString());
+    }
+
+    public static String createRectanglesFilter(Rectangle2D[] rectangles) {
+        StringBuilder sb = new StringBuilder();
+        if(rectangles.length > 1) {
+            sb.append("(");
+        }
+        for(int i = 0; i < rectangles.length; i++) {
+            sb.append("(");
+            sb.append("x > ").append(BigDecimal.valueOf(rectangles[i].getMinX()).round(new MathContext(6)).toString());
+            sb.append("& x < ").append(BigDecimal.valueOf(rectangles[i].getMaxX()).round(new MathContext(6)).toString());
+            sb.append("& y > ").append(BigDecimal.valueOf(rectangles[i].getMinY()).round(new MathContext(6)).toString());
+            sb.append("& y < ").append(BigDecimal.valueOf(rectangles[i].getMaxY()).round(new MathContext(6)).toString());
+            sb.append(")");
+            if(i != rectangles.length - 1) {
+                sb.append(" | ");
+            }
+        }
+        if(rectangles.length > 1) {
+            sb.append(")");
+        }
+        return sb.toString();
     }
 
     private void applyToModel(GenericTableModel model, String text) {

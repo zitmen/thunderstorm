@@ -800,6 +800,6 @@ public final class IJHistogramWindow extends ImageWindow implements Measurements
         double leftVal  = cal.getCValue(stats.histMin + indexLeft  * stats.binSize);    // param > val
         double rightVal = cal.getCValue(stats.histMin + indexRight * stats.binSize);    // param < val
         
-        IJResultsTable.getResultsTable().addNewFilter(paramName, leftVal, rightVal);
+        IJResultsTable.getResultsTable().tableWindow.getFilter().addNewFilter(paramName, leftVal, rightVal);
     }
 }

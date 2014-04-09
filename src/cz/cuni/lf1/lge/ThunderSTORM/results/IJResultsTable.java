@@ -107,7 +107,7 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
     public void showPreview() {
         tableWindow.showPreview();
     }
-    
+
     public ImagePlus getPreviewImage() {
         return tableWindow.getPreviewImage();
     }
@@ -132,21 +132,6 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
         return tableWindow.getPostProcessingModules();
     }
 
-    void addNewFilter(String paramName, double greaterThan, double lessThan) {
-        ResultsFilter filter = tableWindow.getFilter();
-        String formula = filter.getFilterFormula().trim();
-        StringBuilder sb = new StringBuilder(formula);
-        if(!formula.isEmpty()) {
-            sb.append(" & ");
-        }
-        sb.append("(");
-        sb.append(paramName).append(" > ").append(BigDecimal.valueOf(greaterThan).round(new MathContext(6)).toString());
-        sb.append(" & ");
-        sb.append(paramName).append(" < ").append(BigDecimal.valueOf(lessThan).round(new MathContext(6)).toString());
-        sb.append(")");
-        filter.setFilterFormula(sb.toString());
-    }
-
     @Override
     public String getFrameTitle() {
         return IJResultsTable.TITLE;
@@ -157,4 +142,3 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
         return IJResultsTable.IDENTIFIER;
     }
 }
-    
