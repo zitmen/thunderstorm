@@ -74,9 +74,8 @@ camera pixel size (in nanometers) as projected to the sample plane.</p>
 molecules in the generated images. The variability is achieved by
 a user-supplied gray-scale mask <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi11.png" width="23" height="16" alt="M">, in which each pixel value is
 normalized to the interval <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi14.png" width="39" height="21" alt="\left[0,1\right]"> and used to represent
-the weighting factor, see Figure <a href="#Sx1.F1" title="Figure 1 ‣ Fixed or spatially varying density of molecules ‣ Artificial data generator" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>. The
-average number of molecules at a given integer pixel position <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi13.png" width="45" height="21" alt="\left(x,y\right)">
-is then computed as</p>
+the weighting factor. The average number of molecules at a given integer
+pixel position <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi13.png" width="45" height="21" alt="\left(x,y\right)"> is then computed as</p>
 <table id="Sx1.E1" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
@@ -101,14 +100,6 @@ uniformly and randomly within that pixel.</p>
 <p class="ltx_p">Note that the mask <img id="Sx1.SSx2.p3.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi11.png" width="23" height="16" alt="M"> should be the same size as the desired super-resolution
 image in order to preserve high resolution in the final reconstruction.
 The coordinates of molecular centers are down-scaled appropriately.</p>
-</div>
-<div id="Sx1.F1" class="ltx_figure">
-<object data="datagen.png" id="Sx1.F1.g1" class="ltx_graphics" width="541" height="133" alt=""></object>
-<div class="ltx_caption">
-<span class="ltx_tag ltx_tag_figure">Figure 1: </span>SMLM data generated with variable spatial
-density of molecules. a) gray-scale mask, b) average intensity time
-projection of raw data, c) SMLM data reconstruction, d) zoomed region
-indicated in c).</div>
 </div>
 </div>
 <div id="Sx1.SSx3" class="ltx_subsection">

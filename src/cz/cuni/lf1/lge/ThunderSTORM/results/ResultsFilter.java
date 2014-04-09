@@ -208,9 +208,9 @@ public class ResultsFilter extends PostProcessingModule {
         for(int i = 0; i < rectangles.length; i++) {
             sb.append("(");
             sb.append("x > ").append(BigDecimal.valueOf(rectangles[i].getMinX()).round(new MathContext(6)).toString());
-            sb.append("& x < ").append(BigDecimal.valueOf(rectangles[i].getMaxX()).round(new MathContext(6)).toString());
-            sb.append("& y > ").append(BigDecimal.valueOf(rectangles[i].getMinY()).round(new MathContext(6)).toString());
-            sb.append("& y < ").append(BigDecimal.valueOf(rectangles[i].getMaxY()).round(new MathContext(6)).toString());
+            sb.append(" & x < ").append(BigDecimal.valueOf(rectangles[i].getMaxX()).round(new MathContext(6)).toString());
+            sb.append(" & y > ").append(BigDecimal.valueOf(rectangles[i].getMinY()).round(new MathContext(6)).toString());
+            sb.append(" & y < ").append(BigDecimal.valueOf(rectangles[i].getMaxY()).round(new MathContext(6)).toString());
             sb.append(")");
             if(i != rectangles.length - 1) {
                 sb.append(" | ");

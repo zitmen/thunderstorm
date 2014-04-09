@@ -18,8 +18,4 @@ public class NoMoleculesFittedException extends RuntimeException {
         super(cause);
     }
 
-    public NoMoleculesFittedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-    
 }
