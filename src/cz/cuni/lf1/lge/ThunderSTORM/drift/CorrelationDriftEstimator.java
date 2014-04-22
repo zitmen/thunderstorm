@@ -54,11 +54,11 @@ public class CorrelationDriftEstimator {
         RenderingMethod lowResRenderer = new ASHRendering.Builder().roi(0, imageWidth, 0, imageHeight).resolution(1).shifts(2).build();
 
         FloatProcessor firstImage = (FloatProcessor) renderer.getRenderedImage(bins.xBinnedByFrame[0], bins.yBinnedByFrame[0], null, null).getProcessor().convertToFloat();
-        int paddedSize = nextPowerOf2(MathProxy.max(firstImage.getWidth(), firstImage.getHeight()));
+        int paddedSize = MathProxy.nextPowerOf2(MathProxy.max(firstImage.getWidth(), firstImage.getHeight()));
         FHT firstImageFFT = createPaddedFFTImage(firstImage, paddedSize);
 
         FloatProcessor lowResFirstImage = (FloatProcessor) lowResRenderer.getRenderedImage(bins.xBinnedByFrame[0], bins.yBinnedByFrame[0], null, null).getProcessor().convertToFloat();
-        int lowResPaddedSize = nextPowerOf2(MathProxy.max(lowResFirstImage.getWidth(), lowResFirstImage.getHeight()));
+        int lowResPaddedSize = MathProxy.nextPowerOf2(MathProxy.max(lowResFirstImage.getWidth(), lowResFirstImage.getHeight()));
         FHT lowResFirstImageFFT = createPaddedFFTImage(lowResFirstImage, lowResPaddedSize);
 
         ImageStack correlationImages = null;
@@ -232,13 +232,6 @@ public class CorrelationDriftEstimator {
         return maxFrame;
     }
 
-    private static int nextPowerOf2(int num) {
-        int powof2 = 1;
-        while(powof2 < num) {
-            powof2 <<= 1;
-        }
-        return powof2;
-    }
 
     static Point2D.Double findMaxima(FloatProcessor crossCorrelationImage) {
         float[] pixels = (float[]) crossCorrelationImage.getPixels();

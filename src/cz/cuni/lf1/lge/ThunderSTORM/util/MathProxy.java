@@ -201,4 +201,12 @@ public class MathProxy {
         }
         return seq;
     }
+
+    public static int nextPowerOf2(int num) {
+        int powof2 = 1;
+        while(powof2 < num) {
+            powof2 <<= 1;
+        }
+        return powof2;
+    }
 }
