@@ -1,19 +1,24 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.max;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.max;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeMatcher;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
-import fiji.util.gui.GenericDialogPlus;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import ij.IJ;
 import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
@@ -23,6 +28,11 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 public class PerformanceEvaluationPlugIn implements PlugIn {
     
@@ -48,21 +58,19 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         //
         try {
             // Create and show the dialog
-            GenericDialogPlus gd = new GenericDialogPlus("ThunderSTORM: Performance evaluation");
-            gd.addNumericField("Tolerance radius [nm]: ", 50, 0);
-            gd.showDialog();
-            
-            if(!gd.wasCanceled()) {
-                double dist = readParams(gd);
-                runEvaluation(dist*dist, Units.NANOMETER);
+            PerformanceEvaluationDialog dialog = new PerformanceEvaluationDialog();
+            if(MacroParser.isRanFromMacro()) {
+                dialog.getParams().readMacroOptions();
+            } else {
+                if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
+                    return;
+                }
             }
+            double dist = dialog.getToleranceRadius();
+            runEvaluation(dist*dist, Units.NANOMETER);
         } catch (Exception ex) {
             IJ.handleException(ex);
         }
-    }
-    
-    private double readParams(GenericDialogPlus gd) {
-        return gd.getNextNumber();
     }
     
     private void prepareResultsTable(Units units) {
@@ -273,6 +281,39 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
                 framesMolList.get(frame).add(mol);
             }
             return framesMolList;
+        }
+    }
+    
+    //---------------GUI-----------------------
+    class PerformanceEvaluationDialog extends DialogStub {
+
+        ParameterKey.Double toleranceRadius;
+        
+        public PerformanceEvaluationDialog() {
+            super(new ParameterTracker("thunderstorm.evaluation"), IJ.getInstance(), "ThunderSTORM: Performance evaluation");
+            toleranceRadius = params.createDoubleField("toleranceRadius", DoubleValidatorFactory.positiveNonZero(), 50.0);
+        }
+
+        public ParameterTracker getParams() {
+            return params;
+        }
+        
+        public double getToleranceRadius() {
+            return toleranceRadius.getValue();
+        }
+
+        @Override
+        protected void layoutComponents() {
+            JTextField toleranceTextField = new JTextField(20);
+            toleranceRadius.registerComponent(toleranceTextField);
+            add(new JLabel("Tolerance radius [nm]:"), GridBagHelper.leftCol());
+            add(toleranceTextField, GridBagHelper.rightCol());
+            add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
+            add(createButtonsPanel(), GridBagHelper.twoCols());
+            params.loadPrefs();
+            getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            setLocationRelativeTo(null);
+            setModal(true);
         }
     }
 

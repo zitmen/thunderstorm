@@ -1,11 +1,17 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import fiji.util.gui.GenericDialogPlus;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import ij.IJ;
 import ij.Menus;
 import ij.Prefs;
 import ij.plugin.PlugIn;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
@@ -19,12 +25,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class UpdaterPlugIn implements PlugIn {
 
     @Override
     public void run(String arg) {
+        GUI.setLookAndFeel();
         IJ.showStatus("Checking the file access rights...");
         File file = new File(Menus.getPlugInsPath() + "/" + ThunderSTORM.FILE_NAME + ".jar");
         if (!file.exists()) {
@@ -62,47 +74,13 @@ public class UpdaterPlugIn implements PlugIn {
     }
 
     int showDialog(List<Version> versions) {
-        Version newestVersion;
-        Version current = new Version(version());
-        boolean upToDate;
-        if(current.isStable()){
-            newestVersion = getNewestStable(versions);
-            upToDate = !(current.compareTo(newestVersion) < 0);
-        }else{
-            newestVersion = getNewestDev(versions);
-            upToDate = !(current.compareTo(newestVersion) < 0);
+        UpdaterDialog dialog = new UpdaterDialog(versions);
+        if(!MacroParser.isRanFromMacro()) {
+            if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
+                return -1;
+            }
         }
-        //
-        GenericDialogPlus gd = new GenericDialogPlus("ThunderSTORM Updater");
-        String branch = current.isStable() ? "stable" : "development";
-        if(upToDate) {
-            JLabel label = new JLabel("ThunderSTORM is up to date! (" + branch + ")");
-            label.setForeground(new Color(0, 128, 0));
-            gd.addComponent(label);
-        } else {
-            JLabel label = new JLabel("New " + branch + " version of ThunderSTORM is available!");
-            label.setForeground(new Color(128, 0, 0));
-            gd.addComponent(label);
-        }
-        
-        String[] versionStrings = new String[versions.size()];
-        for(int i = 0; i < versions.size(); i ++){
-            versionStrings[i] = versions.get(i).toString();
-        }
-        
-        gd.addChoice("Available versions:", versionStrings, newestVersion.toString());
-        String msg =
-                "You are currently running version " + current.toString() + ".\n"
-                + " \n"
-                + "If you click \"OK\", ImageJ will download the selected\n"
-                + "version and reload ThunderSTORM.\n";
-        gd.addMessage(msg);
-        gd.showDialog();
-        if (gd.wasCanceled()) {
-            return -1;
-        } else {
-            return gd.getNextChoiceIndex();
-        }
+        return dialog.getChoiceIndex();
     }
 
     byte[] getJar(String address) {
@@ -281,6 +259,80 @@ public class UpdaterPlugIn implements PlugIn {
                 }
             }
             return 0;
+        }
+    }
+    
+    //---------------GUI-----------------------
+    class UpdaterDialog extends DialogStub {
+
+        private List<Version> versions;
+        private JComboBox versionsComboBox;
+        
+        public UpdaterDialog(List<Version> versions) {
+            super(new ParameterTracker("thunderstorm.updater"), IJ.getInstance(), "ThunderSTORM Updater");
+            this.versions = versions;
+        }
+        
+        public int getChoiceIndex() {
+            return versionsComboBox.getSelectedIndex();
+        }
+
+        @Override
+        protected void layoutComponents() {
+            Version newestVersion;
+            Version current = new Version(version());
+            boolean upToDate;
+            if(current.isStable()){
+                newestVersion = getNewestStable(versions);
+                upToDate = !(current.compareTo(newestVersion) < 0);
+            }else{
+                newestVersion = getNewestDev(versions);
+                upToDate = !(current.compareTo(newestVersion) < 0);
+            }
+            //
+            String branch = current.isStable() ? "stable" : "development";
+            if(upToDate) {
+                JLabel label = new JLabel("ThunderSTORM is up to date! (" + branch + ")");
+                label.setForeground(new Color(0, 128, 0));
+                add(label, GridBagHelper.twoCols());
+            } else {
+                JLabel label = new JLabel("New " + branch + " version of ThunderSTORM is available!");
+                label.setForeground(new Color(128, 0, 0));
+                add(label, GridBagHelper.twoCols());
+            }
+            //
+            String[] versionStrings = new String[versions.size()];
+            for(int i = 0; i < versions.size(); i ++){
+                versionStrings[i] = versions.get(i).toString();
+            }
+            //
+            add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
+            add(new JLabel("Available versions:"), GridBagHelper.leftCol());
+            versionsComboBox = new JComboBox(versionStrings);
+            versionsComboBox.setSelectedItem(newestVersion.toString());
+            add(versionsComboBox, GridBagHelper.rightCol());
+            add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
+            String msg =  "<html>"
+                        + "You are currently running version " + current.toString() + ".<br><br>"
+                        + "If you click \"OK\", ImageJ will download the selected<br>"
+                        + "version and reload ThunderSTORM.<br>"
+                        + "</html>";
+            add(new JLabel(msg), GridBagHelper.twoCols());
+            add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
+            //
+            JPanel buttons = new JPanel(new GridBagLayout());
+            GridBagConstraints glueConstraints = new GridBagConstraints();
+            glueConstraints.fill = GridBagConstraints.HORIZONTAL;
+            glueConstraints.weightx = 1;
+            buttons.add(Box.createHorizontalGlue(), glueConstraints);
+            buttons.add(createOKButton());
+            buttons.add(createCancelButton());
+            add(buttons, GridBagHelper.twoCols());
+            //
+            params.loadPrefs();
+            getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            setLocationRelativeTo(null);
+            setModal(true);
         }
     }
 }
