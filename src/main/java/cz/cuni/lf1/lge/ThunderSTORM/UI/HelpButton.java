@@ -24,6 +24,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.EditorKit;
+import org.fit.cssbox.swingbox.BrowserPane;
+import org.fit.cssbox.swingbox.SwingBoxEditorKit;
 
 public class HelpButton extends JButton {
 
@@ -100,6 +102,8 @@ public class HelpButton extends JButton {
 
         Class c2 = Class.forName("org.fit.cssbox.swingbox.SwingBoxEditorKit", true, our);
         editor.setEditorKit((EditorKit) c2.newInstance());
+//        JEditorPane editor = new BrowserPane();
+//        editor.setEditorKit(new SwingBoxEditorKit());
         return editor;
     }
 

@@ -49,7 +49,7 @@ public class MeasurementProtocol {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(fpath));
-            writer.write("ThunderSTORM (" + ThunderSTORM.VERSION + ")");
+            writer.write("ThunderSTORM (" + ThunderSTORM.getVersion() + ")");
             writer.newLine();
             writer.newLine();
             Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
