@@ -72,7 +72,7 @@ public class EstimatorsTest {
     private void testEstimator(IEstimator estimator) throws FormulaParserException {
 
         String basePath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-        FloatProcessor image = (FloatProcessor) IJ.openImage(basePath + "resources/tubulins1_00020.tif").getProcessor().convertToFloat();
+        FloatProcessor image = (FloatProcessor) IJ.openImage(basePath + "tubulins1_00020.tif").getProcessor().convertToFloat();
         FloatProcessor filtered = (new CompoundWaveletFilter()).filterImage(image);
         Vector<Point> detections = (new CentroidOfConnectedComponentsDetector("16", true)).detectMoleculeCandidates(filtered);
         Vector<Molecule> fits = estimator.estimateParameters(image, detections);
@@ -81,7 +81,7 @@ public class EstimatorsTest {
         }
         Vector<Molecule> ground_truth = null;
         try {
-            ground_truth = CSV.csv2psf(basePath + "resources/tubulins1_00020.csv", 1, 2);
+            ground_truth = CSV.csv2psf(basePath + "tubulins1_00020.csv", 1, 2);
         } catch(Exception ex) {
             fail(ex.getMessage());
         }

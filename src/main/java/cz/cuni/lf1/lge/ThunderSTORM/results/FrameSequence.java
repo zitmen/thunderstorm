@@ -13,9 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import net.sf.javaml.core.kdtree.KDTree;
-import net.sf.javaml.core.kdtree.KeyDuplicateException;
-import net.sf.javaml.core.kdtree.KeySizeException;
+import cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree.KDTree;
+import cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree.KeyDuplicateException;
+import cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree.KeySizeException;
 
 //
 // ===================================================================

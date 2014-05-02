@@ -16,6 +16,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
 import java.util.Collections;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -42,45 +43,49 @@ public class CrowdedFieldEstimatorsTest {
     public static final double P_VAL = 1e-6;
     public static final double SIGMA = 1.6;
     
-    @Test
-    public void foo() {
-        //
-    }
-/* THESE TESTS NEED TO BE FIXED IN ORDER TO WORK PROPERLY!!! THE CURRENT TEST CASES ARE NOT REALISTIC!
+    @Ignore
     @Test
     public void testLSQSym() {
         testEstimator(new MFA_LSQFitter(new SymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL, true, null));
     }
 
+    @Ignore
     @Test
     public void testLSQIntSym() {
         testEstimator(new MFA_LSQFitter(new IntegratedSymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL, true, null));
     }
     
+    @Ignore
     @Test
     public void testMLEIntSym() {
         testEstimator(new MFA_MLEFitter(new IntegratedSymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL, true, null));
     }
+    
+    @Ignore
     @Test
     public void testMLESym() {
         testEstimator(new MFA_MLEFitter(new SymmetricGaussianPSF(SIGMA), SIGMA, MAX_N, P_VAL, true, null));
     }
 
+    @Ignore
     @Test
     public void testLSQEllipticAngle() {
         testEstimator(new MFA_LSQFitter(new EllipticGaussianWAnglePSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL, true, null));
     }
 
+    @Ignore
     @Test
     public void testMLEEllipticAngle() {
         testEstimator(new MFA_MLEFitter(new EllipticGaussianWAnglePSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL, true, null));
     }
 
+    @Ignore
     @Test
     public void testLSQElliptic() {
         testEstimator(new MFA_LSQFitter(new EllipticGaussianPSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL, true, null));
     }
 
+    @Ignore
     @Test
     public void testMLEElliptic() {
         testEstimator(new MFA_MLEFitter(new EllipticGaussianPSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL, true, null));
@@ -176,5 +181,5 @@ public class CrowdedFieldEstimatorsTest {
                 xgrid, ygrid, values[dataset - 1], 0.0, 0.0, MoleculeDescriptor.Units.DIGITAL)),
                 FITRADIUS, FITRADIUS);
     }
-*/
+
 }

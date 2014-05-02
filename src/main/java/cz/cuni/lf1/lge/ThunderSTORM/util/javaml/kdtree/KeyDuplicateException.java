@@ -23,26 +23,24 @@
  * based on work by Simon Levy
  * http://www.cs.wlu.edu/~levy/software/kd/
  */
-package net.sf.javaml.core.kdtree;
+package cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree;
 
 
  /**
-  * KeySizeException is thrown when a KDTree method is invoked on a
-  * key whose size (array length) mismatches the one used in the that
-  * KDTree's constructor.
+  * KeyDuplicateException is thrown when the <TT>KDTree.insert</TT> method
+  * is invoked on a key already in the KDTree.
   *
   * @author      Simon Levy
   * @version     %I%, %G%
   * @since JDK1.2 
   */
 
-public class KeySizeException extends Exception {
+public class KeyDuplicateException extends Exception {
 
-    protected KeySizeException() {
-	super("Key size mismatch");
+    protected KeyDuplicateException() {
+	super("Key already in tree");
     }
     
     // arbitrary; every serializable class has to have one of these
-    public static final long serialVersionUID = 2L;
-    
+    public static final long serialVersionUID = 1L;
 }

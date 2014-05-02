@@ -23,7 +23,7 @@
  * based on work by Simon Levy
  * http://www.cs.wlu.edu/~levy/software/kd/
  */
-package net.sf.javaml.core.kdtree;
+package cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree;
 
 class PriorityQueue implements java.io.Serializable {
 

@@ -8,13 +8,63 @@
     <packaging>jar</packaging>
 
     <name>ThunderSTORM</name>
-    <url>http://maven.apache.org</url>
-
+    <description>ThunderSTORM: a comprehensive ImageJ plugin for PALM and STORM data analysis and super-resolution imaging</description>
+    <url>https://code.google.com/p/thunder-storm/</url>
+    
     <properties>
+        <skipTests>true</skipTests>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>    
-        <imagej.path>c:\Program Files (x86)\ImageJ</imagej.path>
+        <imagej.path>c:\Program Files\ImageJ</imagej.path>
+        <imagej1.version>1.45</imagej1.version>
     </properties>
+    
+    <!--
+    <parent>
+        <groupId>org.scijava</groupId>
+        <artifactId>>pom-scijava</artifactId>
+        <version>2.0</version>
+        <relativePath />
+    </parent>
+    -->
 
+    <issueManagement>
+        <system>GoogleCode</system>
+        <url>https://code.google.com/p/thunder-storm/issues/</url>
+    </issueManagement>
+    
+    <licenses>
+        <license>
+            <name>GNU GPL v3</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <id>zitmen</id>
+            <name>Martin Ovesný</name>
+            <email>zitmen@gmail.com</email>
+            <organization>Institute of Cellular Biology and Pathology, First Faculty of Medicine, Charles University in Prague</organization>
+            <organizationUrl>http://lge.lf1.cuni.cz/</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>pepa_borkovec</id>
+            <name>Josef Borkovec</name>
+            <email>vmodrosedem@gmail.com</email>
+            <organization>Institute of Cellular Biology and Pathology, First Faculty of Medicine, Charles University in Prague</organization>
+            <organizationUrl>http://lge.lf1.cuni.cz/</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+        
+    <scm>
+        <connection>scm:git:git://github.com/imagej/image5d</connection>
+        <developerConnection>scm:git:https://code.google.com/p/thunder-storm/</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://code.google.com/p/thunder-storm/source/checkout</url>
+    </scm>
     
     <build>
         <resources>
@@ -30,6 +80,14 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -79,7 +137,7 @@
                 </executions>
                 <configuration>
                     <executable>java</executable>
-                    <commandlineArgs>-jar -agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} "${imagej.path}/ij.jar"</commandlineArgs>
+                    <commandlineArgs>-jar "${imagej.path}/ij.jar"</commandlineArgs>
                     <workingDirectory>${imagej.path}</workingDirectory>
                 </configuration>
             </plugin>
@@ -90,23 +148,13 @@
         <dependency>
             <groupId>gov.nih.imagej</groupId>
             <artifactId>imagej</artifactId>
-            <version>1.45</version>
+            <version>${imagej1.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.cssbox</groupId>
             <artifactId>swingbox</artifactId>
-            <version>1.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>logback-core</artifactId>
-                    <groupId>ch.qos.logback</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>logback-classic</artifactId>
-                    <groupId>ch.qos.logback</groupId>
-                </exclusion>
-            </exclusions>
+            <version>1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.java.balloontip</groupId>
@@ -149,15 +197,21 @@
             <version>1.13</version>
         </dependency>
         <dependency>
-            <groupId>cz.cuni.lf1.lge.ThunderSTORM.util</groupId>
-            <artifactId>MacroAwareUI</artifactId>
-            <version>1.0-SNAPSHOT</version>                
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cz.cuni.lf1.lge.ThunderSTORM.util</groupId>
+            <artifactId>MacroAwareUI</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 </project>

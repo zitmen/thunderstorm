@@ -101,7 +101,8 @@ public class CentroidOfConnectedComponentsDetectorTest {
     public void testDetectMoleculeCandidates2() {
         // seven molecules close together that needs watershed segmentation to resolve them
         String basePath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-        FloatProcessor fp = (FloatProcessor) IJ.openImage(basePath + "resources/7peaksWaveletFiltered.tif").getProcessor().convertToFloat();
+        System.out.println(basePath);
+        FloatProcessor fp = (FloatProcessor) IJ.openImage(basePath + "7peaksWaveletFiltered.tif").getProcessor().convertToFloat();
         CentroidOfConnectedComponentsDetector detector = new CentroidOfConnectedComponentsDetector("2", true);
         List<Point> detections = detector.detectMoleculeCandidates(fp);
         assertEquals(7, detections.size());

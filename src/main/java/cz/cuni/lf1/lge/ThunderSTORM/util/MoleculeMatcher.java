@@ -9,10 +9,9 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LAB
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
-import net.sf.javaml.core.kdtree.KDTree;
-import net.sf.javaml.core.kdtree.KeyDuplicateException;
-import net.sf.javaml.core.kdtree.KeySizeException;
-import robotutils.planning.StableMatching;
+import cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree.KDTree;
+import cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree.KeyDuplicateException;
+import cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree.KeySizeException;
 import java.util.List;
 import java.util.Map;
 

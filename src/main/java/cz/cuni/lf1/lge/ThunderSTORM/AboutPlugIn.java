@@ -27,7 +27,7 @@ public class AboutPlugIn implements PlugIn {
     public void run(String arg) {
         try {
             GUI.setLookAndFeel();
-            JDialog dialog = new JDialog(IJ.getInstance(), "About ThunderSTORM (" + ThunderSTORM.getVersion() + ")");
+            JDialog dialog = new JDialog(IJ.getInstance(), "About ThunderSTORM (" + ThunderSTORM.VERSION + ")");
             if(IJ.isJava17()) {
                 dialog.setType(Window.Type.UTILITY);
             }

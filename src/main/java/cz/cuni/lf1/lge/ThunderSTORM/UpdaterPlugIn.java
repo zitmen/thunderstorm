@@ -153,7 +153,7 @@ public class UpdaterPlugIn implements PlugIn {
     }
 
     String version() {
-        return ThunderSTORM.getVersion();
+        return ThunderSTORM.VERSION;
     }
 
     boolean isMac() {

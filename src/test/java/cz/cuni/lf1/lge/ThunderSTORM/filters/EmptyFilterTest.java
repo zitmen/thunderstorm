@@ -14,7 +14,7 @@ public class EmptyFilterTest {
     public void testFilterImage() {
         System.out.println("EmptyFilter::filterImage");
         String basePath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-        FloatProcessor image = (FloatProcessor) IJ.openImage(basePath + "resources/rice.png").getProcessor().convertToFloat();
+        FloatProcessor image = (FloatProcessor) IJ.openImage(basePath + "rice.png").getProcessor().convertToFloat();
         EmptyFilter instance = new EmptyFilter();
         FloatProcessor result = instance.filterImage(image);
         assertEquals(image, result);
