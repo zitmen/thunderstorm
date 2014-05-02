@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -77,8 +77,7 @@ s need to be supplied by the user.
  of the camera digitizer) can be obtained from the specification sheet supplied
  by the camera manufacturer or from photon transfer curve measurements (the
  dependence of the variance on the mean value of pixel intensities), see
- e.g.
- 
+ e.g., 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "janesick1985ccd,van1998image"
@@ -93,110 +92,64 @@ key "janesick1985ccd,van1998image"
 \end_layout
 
 \begin_layout Subsection*
-Pixel
-\begin_inset space ~
-\end_inset
-
-size 
+Pixel size 
 \end_layout
 
 \begin_layout Standard
-The size of one camera pixel projected to the sample plane.
- It is used to convert molecule coordinates from pixels to nm.
-\end_layout
-
-\begin_layout Subsection*
-Image intensity to photoelectrons
-\end_layout
-
-\begin_layout Standard
-These parameters are used to convert image intensity (A/D count) to the
- number of photoelectrons.
- The formula for conversion is 
-\begin_inset Formula 
-\[
-I=b+\frac{i}{p}
-\]
-
-\end_inset
-
-for the case without EM gain and 
-\begin_inset Formula 
-\[
-I=b+g\frac{i}{p}
-\]
-
-\end_inset
-
-for the case with EM gain.
- Here, 
-\begin_inset Formula $I$
-\end_inset
-
- is the image intensity in A/D counts, 
-\begin_inset Formula $i$
-\end_inset
-
- is the number of photolectrons and 
-\begin_inset Formula $p,b,g$
-\end_inset
-
- are the following camera characteristics:
-\end_layout
-
-\begin_layout Subsubsection*
-Photoelectrons
-\begin_inset space ~
-\end_inset
-
-per
-\begin_inset space ~
-\end_inset
-
-A/D
-\begin_inset space ~
-\end_inset
-
-count, 
-\begin_inset Formula $p$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-CCD sensitivity.
+Pixel size is used to convert molecular coordinates from pixels to nm.
+ It is the size of one camera pixel as projected to the sample plane.
  
 \end_layout
 
-\begin_layout Subsubsection*
-Base level, 
-\begin_inset Formula $b$
-\end_inset
-
-
+\begin_layout Subsection*
+Conversion of image intensity to photoelectrons
 \end_layout
 
 \begin_layout Standard
-Constant offset added to the image intensity by the camera.
-\end_layout
+For CCD cameras, the image intensity is converted to the number of photoelectron
+s according to the formula
+\begin_inset Formula 
+\[
+i=p\left(I-b\right)\,,
+\]
 
-\begin_layout Subsubsection*
-EM gain, 
+\end_inset
+
+and for EMCCD cameras, the conversion is according to the formula 
+\begin_inset Formula 
+\[
+i=\frac{p}{g}\left(I-b\right)\,.
+\]
+
+\end_inset
+
+Here 
+\begin_inset Formula $i$
+\end_inset
+
+ is the number of photolectrons, 
+\begin_inset Formula $p$
+\end_inset
+
+ is the CCD sensitivity (in photons per A/D count), 
 \begin_inset Formula $g$
 \end_inset
 
+ is the EM gain for EMCCD cameras, 
+\begin_inset Formula $I$
+\end_inset
 
+ is the image intensity (in A/D counts), and 
+\begin_inset Formula $b$
+\end_inset
+
+ is the base level specifying the camera digitizer offset (in A/D counts).
+ If the EM gain checkbox is not selected, a CCD camera is assumed.
 \end_layout
 
 \begin_layout Standard
-EM gain for EMCCD cameras.
- If the checkbox is not selected a CCD camera is assumed.
- Note that the outcome of setting the EM gain to 1 and unchecking the button
- is different.
- Different formulas for calculating localization uncertainty are used for
- CCD and EMCCD cameras.
- Also the stochastic nature of EM gain is modelled in 
+Note that the outcome of setting the EM gain to 1 and unchecking the EM
+ gain checkbox is different as the 
 \begin_inset ERT
 status open
 
@@ -204,7 +157,22 @@ status open
 
 
 \backslash
-href{DataGeneratorPlugIn.html}{artificial data generator}
+href{estimators/ui/LocalizationUncertainty.html}{localization uncertainty}
+\end_layout
+
+\end_inset
+
+ of molecular positions is computed using different formulas for CCD and
+ EMCCD cameras.
+ Also a stochastic nature of EM gain is modeled in the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{DataGeneratorPlugIn.html}{generator of simulated data}
 \end_layout
 
 \end_inset
@@ -213,21 +181,6 @@ href{DataGeneratorPlugIn.html}{artificial data generator}
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand
-\backslash
-refname{References}
-\end_layout
-
-\end_inset
-
-
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "references"

@@ -49,8 +49,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -69,20 +69,59 @@ About ThunderSTORM
 \end_layout
 
 \begin_layout Standard
-ThunderSTORM is an open-source plug-in for ImageJ, which provides automated
- processing of data acquired by single molecule localization microscopy
- methods such as PALM or STORM.
- The plugin includes a collection of methods for reducing noise, detection
- and sub-pixel localization of molecules, as well as post-processing steps
- such as drift correction, removing molecules with poor localization accuracy,
- and rendering of super-resolution images.
- ThunderSTORM also offers a set of tools for creation and analysis of simulated
+ThunderSTORM is an open-source, interactive, and modular plug-in for ImageJ
+ designed for automated processing, analysis, and visualization of data
+ acquired by single molecule localization microscopy methods such as PALM
+ and STORM.
+ ThunderSTORM offers an extensive collection of processing and post-processing
+ methods so that users can easily adapt the process of analysis to their
  data.
- Our philosophy in developing ThunderSTORM has been to offer a collection
- of processing and post-processing methods so that users can adapt the analysis
- process to their data and to use all the advantages of ImageJ including
- its rich collection of other plug-ins, simple macro language and scripting
- support.
+ ThunderSTORM also offers a set of tools for creation of simulated data
+ and for quantitative performance evaluation of localization algorithms
+ using Monte-Carlo simulations.
+\end_layout
+
+\begin_layout Subsubsection*
+Authors and affiliation
+\end_layout
+
+\begin_layout Standard
+Martin Ovesný, Pavel Křížek, Josef Borkovec, Zdeněk Švindrych, and Guy M.
+ Hagen.
+\end_layout
+
+\begin_layout Standard
+Institute of Cellular Biology and Pathology, First Faculty of Medicine,
+ Charles University in Prague, Czech Republic.
+\end_layout
+
+\begin_layout Subsubsection*
+How to cite ThunderSTORM
+\end_layout
+
+\begin_layout Standard
+If you use ThunderSTORM to process your data, please, cite our 
+\begin_inset CommandInset href
+LatexCommand href
+name "paper"
+target "http://dx.doi.org/10.1093/bioinformatics/btu202"
+
+\end_inset
+
+: M.
+ Ovesný, P.
+ Křížek, J.
+ Borkovec, Z.
+ Švindrych, G.
+ M.
+ Hagen.
+ 
+\emph on
+ThunderSTORM: a comprehensive ImageJ plugin for PALM and STORM data analysis
+ and super-resolution imaging.
+
+\emph default
+ Bioinformatics (2014).
 \end_layout
 
 \begin_layout Subsubsection*
@@ -94,7 +133,7 @@ The latest version of ThunderSTORM, including source code and documentation,
  is available at 
 \begin_inset CommandInset href
 LatexCommand href
-name "Google code"
+name "https://code.google.com/p/thunder-storm/"
 target "https://code.google.com/p/thunder-storm/"
 
 \end_inset
@@ -103,67 +142,50 @@ target "https://code.google.com/p/thunder-storm/"
 \end_layout
 
 \begin_layout Subsubsection*
-Report a bug
-\end_layout
-
-\begin_layout Standard
-In the case of malfunction, please let us know by using the 
-\begin_inset CommandInset href
-LatexCommand href
-name "issue tracking"
-target "https://code.google.com/p/thunder-storm/issues/list"
-
-\end_inset
-
- system.
- Specify the malfunction and describe the procedure to reproduce the error.
- If an exception occurs, copy the stacktrace into the description box.
- In addition, specify your platform, i.e.
- Java version, ImageJ version, ThunderSTORM version, and possibly the version
- of your operating system.
-\end_layout
-
-\begin_layout Subsubsection*
-Authors
-\end_layout
-
-\begin_layout Standard
-This software is being developped at Institute of Cellular Biology and Pathology
-, First Faculty of Medicine, Charles University in Prague, Czech Republic
- by: Martin Ovesný, Pavel Křížek, Josef Borkovec, Zdeněk Švindrych, and
- Guy M.
- Hagen.
-\end_layout
-
-\begin_layout Subsubsection*
-Citation
-\end_layout
-
-\begin_layout Standard
-If you use ThunderSTORM to process your data, please consider citing our
- paper: 
-\end_layout
-
-\begin_layout Standard
-!!!Insert formatted citation here!!!
-\end_layout
-
-\begin_layout Subsubsection*
 License
 \end_layout
 
 \begin_layout Standard
-ThunderSTORM is licensed under the terms of GPLv3.
- Get a copy 
+ThunderSTORM is licensed under the terms of 
 \begin_inset CommandInset href
 LatexCommand href
-name "here"
+name "GNU GPLv3"
 target "http://www.gnu.org/licenses/gpl.html"
 
 \end_inset
 
-.
+ licence.
  
+\end_layout
+
+\begin_layout Subsubsection*
+Report a bug
+\end_layout
+
+\begin_layout Standard
+Prior to submitting a bug report, please upgrade to the latest version of
+ ThunderSTORM and see if the error still occurs.
+\end_layout
+
+\begin_layout Standard
+If you receive an exception that ImageJ ran out of memory, try to increase
+ the memory limit or to load the SMLM data as a virtual stack.
+\end_layout
+
+\begin_layout Standard
+In the case of a malfunction, please let us know by using the 
+\begin_inset CommandInset href
+LatexCommand href
+name "Google Code issue tracking system"
+target "https://code.google.com/p/thunder-storm/issues/list"
+
+\end_inset
+
+.
+ Specify the malfunction, and describe the procedure to reproduce the error.
+ If an exception occurs, copy the stacktrace into the description box and
+ specify your platform, i.e., your version of Java, ImageJ, ThunderSTORM,
+ and operating system.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -171,7 +193,83 @@ Redistributed third-party libraries
 \end_layout
 
 \begin_layout Standard
-The binary release includes theese dependencies:
+The binary release includes these dependencies:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "ANTLR runtime "
+target "http://www.antlr3.org/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "BSD"
+target "http://www.antlr3.org/license.html"
+
+\end_inset
+
+ license
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Balloon tip"
+target "https://balloontip.java.net/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "BSD New"
+target "http://opensource.org/licenses/BSD-3-Clause"
+
+\end_inset
+
+ license
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Commons IO"
+target "http://commons.apache.org/proper/commons-io/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Commons lang"
+target "http://commons.apache.org/proper/commons-lang/"
+
+\end_inset
+
+ , 
+\begin_inset CommandInset href
+LatexCommand href
+name "Apache License 2.0"
+target "http://www.apache.org/licenses/LICENSE-2.0"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -215,12 +313,31 @@ target "http://www.apache.org/licenses/LICENSE-2.0"
 \begin_layout Itemize
 \begin_inset CommandInset href
 LatexCommand href
-name "Commons lang"
-target "http://commons.apache.org/proper/commons-lang/"
+name "CSSBox + SwingBox + jStyleParser"
+target "http://cssbox.sourceforge.net/"
 
 \end_inset
 
- , 
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "LGPLv3"
+target "http://www.gnu.org/licenses/lgpl.html"
+
+\end_inset
+
+ license
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Gson"
+target "https://code.google.com/p/google-gson/"
+
+\end_inset
+
+, 
 \begin_inset CommandInset href
 LatexCommand href
 name "Apache License 2.0"
@@ -245,8 +362,27 @@ target "http://rsb.info.nih.gov/ij/"
 \begin_layout Itemize
 \begin_inset CommandInset href
 LatexCommand href
-name "Gson"
-target "https://code.google.com/p/google-gson/"
+name "MacroAwareUI"
+target "http://bitbucket.org/pepa_borkovec/macroawareui"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "GPLv3"
+target "http://www.gnu.org/licenses/gpl.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "NekoHTML "
+target "http://nekohtml.sourceforge.net/"
 
 \end_inset
 
@@ -300,86 +436,49 @@ target "http://opensource.org/licenses/BSD-3-Clause"
 \end_layout
 
 \begin_layout Itemize
+Question mark icon by 
+\begin_inset CommandInset href
+LatexCommand href
+name "Yusuke Kamiyamane"
+target "http://p.yusukekamiyamane.com/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Creative commons attribution 3.0"
+target "http://creativecommons.org/licenses/by/3.0/"
+
+\end_inset
+
+ license
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "SLF4J api"
+target "http://www.slf4j.org/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "MIT"
+target "http://www.slf4j.org/license.html"
+
+\end_inset
+
+ license
+\end_layout
+
+\begin_layout Itemize
 \begin_inset CommandInset href
 LatexCommand href
 name "Snakeyaml"
 target "https://code.google.com/p/snakeyaml/"
-
-\end_inset
-
-, 
-\begin_inset CommandInset href
-LatexCommand href
-name "Apache License 2.0"
-target "http://www.apache.org/licenses/LICENSE-2.0"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset CommandInset href
-LatexCommand href
-name "Balloon tip"
-target "https://balloontip.java.net/"
-
-\end_inset
-
-, 
-\begin_inset CommandInset href
-LatexCommand href
-name "BSD New"
-target "http://opensource.org/licenses/BSD-3-Clause"
-
-\end_inset
-
- license
-\end_layout
-
-\begin_layout Itemize
-\begin_inset CommandInset href
-LatexCommand href
-name "CSSBox + SwingBox + jStyleParser"
-target "http://cssbox.sourceforge.net/"
-
-\end_inset
-
-, 
-\begin_inset CommandInset href
-LatexCommand href
-name "LGPLv3"
-target "http://www.gnu.org/licenses/lgpl.html"
-
-\end_inset
-
- license
-\end_layout
-
-\begin_layout Itemize
-\begin_inset CommandInset href
-LatexCommand href
-name "MacroAwareUI"
-target "http://bitbucket.org/pepa_borkovec/macroawareui"
-
-\end_inset
-
-, 
-\begin_inset CommandInset href
-LatexCommand href
-name "GPLv3"
-target "http://www.gnu.org/licenses/gpl.html"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset CommandInset href
-LatexCommand href
-name "NekoHTML "
-target "http://nekohtml.sourceforge.net/"
 
 \end_inset
 
@@ -438,83 +537,6 @@ target "http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Itemize
-\begin_inset CommandInset href
-LatexCommand href
-name "ANTLR runtime "
-target "http://www.antlr3.org/"
-
-\end_inset
-
-, 
-\begin_inset CommandInset href
-LatexCommand href
-name "BSD"
-target "http://www.antlr3.org/license.html"
-
-\end_inset
-
- license
-\end_layout
-
-\begin_layout Itemize
-\begin_inset CommandInset href
-LatexCommand href
-name "SLF4J api"
-target "http://www.slf4j.org/"
-
-\end_inset
-
-, 
-\begin_inset CommandInset href
-LatexCommand href
-name "MIT"
-target "http://www.slf4j.org/license.html"
-
-\end_inset
-
- license
-\end_layout
-
-\begin_layout Itemize
-\begin_inset CommandInset href
-LatexCommand href
-name "Commons IO"
-target "http://commons.apache.org/proper/commons-io/"
-
-\end_inset
-
-, 
-\begin_inset CommandInset href
-LatexCommand href
-name "Apache License 2.0"
-target "http://www.apache.org/licenses/LICENSE-2.0"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Question mark icon by 
-\begin_inset CommandInset href
-LatexCommand href
-name "Yusuke Kamiyamane"
-target "http://p.yusukekamiyamane.com/"
-
-\end_inset
-
-, 
-\begin_inset CommandInset href
-LatexCommand href
-name "Creative commons attribution 3.0"
-target "http://creativecommons.org/licenses/by/3.0/"
-
-\end_inset
-
- license
 \end_layout
 
 \end_body

@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -64,7 +64,7 @@
 \begin_body
 
 \begin_layout Section*
-Averaging filter
+Averaging (Box) filter
 \end_layout
 
 \begin_layout Standard
@@ -152,7 +152,7 @@ href{../../detectors/Threshold.html}{Threshold}
 \end_layout
 
 \begin_layout Standard
-Only the two default variables are provided by this filter:
+Variables provided by this filter:
 \begin_inset ERT
 status open
 

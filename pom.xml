@@ -16,6 +16,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>    
         <imagej.path>c:\Program Files\ImageJ</imagej.path>
         <imagej1.version>1.45</imagej1.version>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
     
     <!--

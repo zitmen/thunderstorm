@@ -49,8 +49,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -65,7 +65,7 @@
 \begin_body
 
 \begin_layout Section*
-Artificial data generator
+Generator of simulated data
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Image-formation-model"
@@ -76,12 +76,8 @@ name "sec:Image-formation-model"
 \end_layout
 
 \begin_layout Standard
-ThunderSTORM is capable of generating a
-\begin_inset space ~
-\end_inset
-
-sequence of SMLM-like images in which the ground-truth positions of the
- molecules are known.
+ThunderSTORM is capable of generating a sequence of SMLM-like images in
+ which the ground-truth positions of the molecules are known.
  This allows users to perform Monte Carlo simulations 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -94,7 +90,20 @@ key "Walter2010,Krizek2011"
 \begin_inset Formula $F_{1}$
 \end_inset
 
- score using the Performance evaluation plugin.
+ score using the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{PerformanceEvaluationPlugIn.html}{Performance evaluation plugin}
+\end_layout
+
+\end_inset
+
+.
  In addition to the image size and sequence length, users can specify the
  intensity, imaged size, and spatial density of the generated molecules.
  The resulting images can be subjected to sample drift.
@@ -111,8 +120,8 @@ For each frame, we first create an ideal, noise free, SMLM-like image to
  Image formation starts by creating a list of molecules with FWHM and intensity
  chosen randomly in user-specified ranges, and with random positions of
  molecules given by a user-specified spatial density (see below).
- Users can also specify any of the implemented PSF models incuding 3D models
- to create the simulated images of molecules.
+ Users can also specify any of the implemented PSF models, including 3D
+ models, to create the simulated images of molecules.
  The generated molecules are added sequentially to the final image similarly
  as in the 
 \begin_inset ERT
@@ -234,8 +243,8 @@ where
 \begin_inset Formula $d_{\mathrm{max}}$
 \end_inset
 
- is the maximum spatial density of molecules per unit areaas specified by
- users.
+ is the maximum spatial density of molecules per unit area as specified
+ by users.
 \end_layout
 
 \begin_layout Standard
@@ -265,9 +274,9 @@ Note that the mask
 \begin_inset Formula $M$
 \end_inset
 
- should be the same size as the desired super-resolution image in order
- to preserve high resolution in the final reconstruction.
- The coordinates of molecular centers are down-scaled appropriately.
+ should be at least the same size as the desired super-resolution image
+ in order to preserve high resolution in the final reconstruction.
+ The coordinates of the molecular centers are down-scaled appropriately.
 \end_layout
 
 \begin_layout Subsection*
@@ -282,21 +291,6 @@ The generated molecular positions in the image sequence can be subjected
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand
-\backslash
-refname{References}
-\end_layout
-
-\end_inset
-
-
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "references"

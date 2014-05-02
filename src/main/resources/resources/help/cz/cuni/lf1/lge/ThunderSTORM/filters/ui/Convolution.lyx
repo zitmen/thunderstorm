@@ -45,8 +45,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -66,9 +66,6 @@ Convolution
 
 \begin_layout Standard
 A two-dimensional discrete convolution is defined as
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 \left(I*K\right)\left(x,y\right)=\sum_{-\infty}^{+\infty}\sum_{-\infty}^{+\infty}I\left(u,v\right)K\left(x-u,y-v\right)\,,\label{eq:conv}
@@ -76,7 +73,7 @@ A two-dimensional discrete convolution is defined as
 
 \end_inset
 
-where 
+ where 
 \begin_inset Formula $I$
 \end_inset
 
@@ -120,7 +117,7 @@ reference "eq:conv"
 \begin_inset Formula $K$
 \end_inset
 
- as 
+ as
 \begin_inset Formula 
 \begin{equation}
 F=I*K=\left(I*\boldsymbol{k}\right)*\boldsymbol{k}^{\top}\label{eq:conv-separable}

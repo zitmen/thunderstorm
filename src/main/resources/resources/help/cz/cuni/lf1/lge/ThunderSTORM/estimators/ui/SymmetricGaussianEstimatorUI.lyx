@@ -179,9 +179,8 @@ Fitting of model parameters
 \end_layout
 
 \begin_layout Standard
-Fitting of the model parameters can be done using least squares or maximum-likel
-ihood methods.
- See 
+Fitting of the model parameters can be performed by (weighted) least squares
+ methods or maximum-likelihood estimation, see 
 \begin_inset ERT
 status open
 
@@ -198,13 +197,12 @@ href{Fitting.html}{PSF fitting methods}
 \end_layout
 
 \begin_layout Subsection*
-Crowded-field
+The Crowded-field problem
 \end_layout
 
 \begin_layout Standard
 ThunderSTORM supports fitting of multiple PSF models in a single fitting
- region.
- See 
+ region, see 
 \begin_inset ERT
 status open
 
@@ -212,7 +210,7 @@ status open
 
 
 \backslash
-href{CrowdedField.html}{crowded field}
+href{CrowdedField.html}{The crowded field problem}
 \end_layout
 
 \end_inset
@@ -225,74 +223,13 @@ Localization uncertainty
 \end_layout
 
 \begin_layout Standard
-Let 
-\begin_inset Formula $\sigma$
-\end_inset
+For more information about the localization uncertainty of molecular
+ 
+\lang english
+positions in lateral dimension 
+see 
+\lang english
 
- be the standard deviation of a fitted Gaussian PSF in nm, 
-\begin_inset Formula $a$
-\end_inset
-
- is the (backprojected) pixel size in nm, 
-\begin_inset Formula $N$
-\end_inset
-
- is the number of photons detected for a given molecule, and 
-\begin_inset Formula $b$
-\end_inset
-
- is the background signal level in photons calculated as the standard deviation
- of the residuals between the raw data and the fitted PSF model 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Krizek2011"
-
-\end_inset
-
-.
- The uncertainty in the lateral position of a molecule can be approximated
- by the formula 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Thompson2002"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-\left\langle (\Delta x)^{2}\right\rangle =\frac{\sigma^{2}+a^{2}/12}{N}+\frac{8\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,.\label{eq:thompson_ccd}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The previous equation can be further adjusted to take EM gain of EMCCD cameras
- into account 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Quan2010"
-
-\end_inset
-
-, giving the expression 
-\begin_inset Formula 
-\begin{equation}
-\left\langle (\Delta x)^{2}\right\rangle =\frac{2\sigma^{2}+a^{2}/12}{N}+\frac{8\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,.\label{eq:thompson_emccd}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -300,14 +237,12 @@ status open
 
 
 \backslash
-renewcommand
-\backslash
-bibname{References}
+href{LocalizationUncertainty.html}{Localization uncertainty}
 \end_layout
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Standard

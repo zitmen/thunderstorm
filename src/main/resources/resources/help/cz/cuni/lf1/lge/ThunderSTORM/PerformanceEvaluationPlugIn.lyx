@@ -1,0 +1,274 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\usepackage{upgreek}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Performance evaluation
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Performance-evaluation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The performance of localization algorithms and post-processing methods can
+ be evaluated by comparing the obtained molecular positions with the ground-trut
+h positions.
+ ThunderSTORM provides a tool for computing statistical measures related
+ to the number of correctly detected molecules (TP, true positive detections),
+ to the number of erroneous detections of non-existent molecules (FP, false
+ positive detections), and to the number of missed molecules (FN, false
+ negatives).
+\end_layout
+
+\begin_layout Standard
+Localized molecular positions and ground-truth coordinates can be imported/expor
+ted to/from ThunderSTORM in various data formats, thus the performance can
+ also be evaluated for other SMLM localization software.
+\end_layout
+
+\begin_layout Subsection*
+Counting localized and missed molecules
+\end_layout
+
+\begin_layout Standard
+The process of performance evaluation starts by pairing the localized molecules
+ with the closest molecule in the ground-truth data.
+ The numbers of correctly and incorrectly identified molecules are counted
+ as follows.
+ If the distance between the paired molecules is smaller than a user-specified
+ radius, then the localization is counted as a TP detection and the localized
+ molecule is associated with the ground-truth position.
+ If the distance is greater than or equal to that radius, then the localization
+ is counted as a FP detection.
+ Ground-truth molecules which were not associated with the localized molecules
+ are counted as FNs.
+ With a growing density of molecules it becomes more important how the algorithm
+ performs the matching.
+ To solve the problem of finding the correct matching between localized
+ molecules and the ground-truth data, the Gale-Shapley algorithm 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Gale1962"
+
+\end_inset
+
+ is used.
+ KD-trees 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Knuth1997"
+
+\end_inset
+
+ are employed for an effective implementation.
+\end_layout
+
+\begin_layout Subsection*
+Precision and recall
+\end_layout
+
+\begin_layout Standard
+Statistical measures related to the number of correctly or incorrectly detected
+ molecules, or missed molecules, are the recall 
+\begin_inset Formula $r$
+\end_inset
+
+ (also called sensitivity) and the precision 
+\begin_inset Formula $p$
+\end_inset
+
+ (also called positive predictive value) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Tan-DataMining2005,Walter2010,Krizek2011"
+
+\end_inset
+
+.
+ Their definitions are given by
+\begin_inset Formula 
+\begin{eqnarray*}
+r & = & \frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FN}}\,,\\
+p & = & \frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FP}}\,.
+\end{eqnarray*}
+
+\end_inset
+
+Recall measures the fraction of correctly identified molecules, and precision
+ measures the portion of correctly identified molecules in the set of all
+ localizations.
+ The theoretical optimum is achieved for values of recall and precision
+ both equal to 1.0.
+\end_layout
+
+\begin_layout Subsection*
+F1 score
+\end_layout
+
+\begin_layout Standard
+For purposes of comparison between multiple algorithms, it is convenient
+ to combine precision and recall into a single measure of performance with
+ some trade-off between both values.
+ A traditional method for this applies the 
+\begin_inset Formula $F_{1}$
+\end_inset
+
+ score 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Tan-DataMining2005,Krizek2011"
+
+\end_inset
+
+ defined by
+\begin_inset Formula 
+\[
+F_{1}=\frac{2pr}{p+r}\,.
+\]
+
+\end_inset
+
+Values of the 
+\begin_inset Formula $F_{1}$
+\end_inset
+
+ score close to zero indicate both bad recall and precision while values
+ approaching 1.0 signify a good ratio between recall and precision.
+\end_layout
+
+\begin_layout Subsection*
+Jaccard index
+\end_layout
+
+\begin_layout Standard
+Another measure suitable for comparing similarity and diversity of sets
+ of samples is the Jaccard index 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Tan-DataMining2005"
+
+\end_inset
+
+ defined by the formula
+\begin_inset Formula 
+\[
+J=\frac{\left|\mathcal{A}\cap\mathcal{B}\right|}{\left|\mathcal{A}\cup\mathcal{B}\right|}\,.
+\]
+
+\end_inset
+
+Here 
+\begin_inset Formula $\mathcal{A}$
+\end_inset
+
+ is the set of ground-truth molecular positions, 
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+ is the set of all molecular positions localized by processing the data,
+ intersection 
+\begin_inset Formula $\left|\mathcal{A}\cap\mathcal{B}\right|=\mathrm{TP}$
+\end_inset
+
+ gives the number of true positive detections, union 
+\begin_inset Formula $\left|\mathcal{A}\cup\mathcal{B}\right|=\mathrm{TP}+\mathrm{FP}+\mathrm{FN}$
+\end_inset
+
+, and 
+\begin_inset Formula $\left|\cdot\right|$
+\end_inset
+
+ denotes the size of the set.
+ The Jaccard index ranges from zero to one and a theoretical optimum is
+ achieved for values of the Jaccard index equal to 1.0.
+\end_layout
+
+\begin_layout Subsection*
+RMS distance
+\end_layout
+
+\begin_layout Standard
+For all molecules identified as true positives, we also calculate the root-mean
+ square distance between the ground-truth positions of the molecules and
+ their localizations.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
