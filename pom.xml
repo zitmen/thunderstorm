@@ -1,0 +1,217 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cz.cuni.lf1.lge</groupId>
+    <artifactId>ThunderSTORM</artifactId>
+    <version>dev-2014-04-28-b1</version>
+    <packaging>jar</packaging>
+
+    <name>ThunderSTORM</name>
+    <description>ThunderSTORM: a comprehensive ImageJ plugin for PALM and STORM data analysis and super-resolution imaging</description>
+    <url>https://code.google.com/p/thunder-storm/</url>
+    
+    <properties>
+        <skipTests>true</skipTests>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>    
+        <imagej.path>c:\Program Files\ImageJ</imagej.path>
+        <imagej1.version>1.45</imagej1.version>
+    </properties>
+    
+    <!--
+    <parent>
+        <groupId>org.scijava</groupId>
+        <artifactId>>pom-scijava</artifactId>
+        <version>2.0</version>
+        <relativePath />
+    </parent>
+    -->
+
+    <issueManagement>
+        <system>GoogleCode</system>
+        <url>https://code.google.com/p/thunder-storm/issues/</url>
+    </issueManagement>
+    
+    <licenses>
+        <license>
+            <name>GNU GPL v3</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <id>zitmen</id>
+            <name>Martin Ovesný</name>
+            <email>zitmen@gmail.com</email>
+            <organization>Institute of Cellular Biology and Pathology, First Faculty of Medicine, Charles University in Prague</organization>
+            <organizationUrl>http://lge.lf1.cuni.cz/</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>pepa_borkovec</id>
+            <name>Josef Borkovec</name>
+            <email>vmodrosedem@gmail.com</email>
+            <organization>Institute of Cellular Biology and Pathology, First Faculty of Medicine, Charles University in Prague</organization>
+            <organizationUrl>http://lge.lf1.cuni.cz/</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+        
+    <scm>
+        <connection>scm:git:git://github.com/imagej/image5d</connection>
+        <developerConnection>scm:git:https://code.google.com/p/thunder-storm/</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://code.google.com/p/thunder-storm/source/checkout</url>
+    </scm>
+    
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory></directory>
+                <includes>
+                    <include>thunderstorm.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <!--<minimizeJar>true</minimizeJar>-->
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>uber</shadedClassifierName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copytoplugins</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy tofile="${imagej.path}/plugins/Thunder_STORM.jar" file= "target/${project.build.finalName}-uber.jar"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>java</executable>
+                    <commandlineArgs>-jar "${imagej.path}/ij.jar"</commandlineArgs>
+                    <workingDirectory>${imagej.path}</workingDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+  
+    <dependencies>
+        <dependency>
+            <groupId>gov.nih.imagej</groupId>
+            <artifactId>imagej</artifactId>
+            <version>${imagej1.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.cssbox</groupId>
+            <artifactId>swingbox</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.balloontip</groupId>
+            <artifactId>balloontip</artifactId>
+            <version>1.2.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-primitives</groupId>
+            <artifactId>commons-primitives</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.13</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cz.cuni.lf1.lge.ThunderSTORM.util</groupId>
+            <artifactId>MacroAwareUI</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,4 +1,2 @@
-nbproject/private
-/dist/
-/build/
-build.properties
+target/
+IJ_Prefs.txt
