@@ -5,8 +5,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import ij.ImagePlus;
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.List;
 import javax.swing.SwingUtilities;
 
@@ -98,6 +96,7 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
     @Override
     public void reset() {
         super.reset();
+        setMeasurementProtocol(null);
         tableWindow.setPreviewRenderer(null);
         tableWindow.getOperationHistoryPanel().removeAllOperations();
         tableWindow.setStatus(null);
