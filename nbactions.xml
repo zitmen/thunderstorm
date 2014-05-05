@@ -92,6 +92,16 @@
                 <skipTests>false</skipTests>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-Generate HTML Help</actionName>
+            <displayName>Generate HTML Help</displayName>
+            <goals>
+                <goal>generate-sources</goal>
+            </goals>
+            <properties>
+                <skipHelpCompilation>false</skipHelpCompilation>
+            </properties>
+        </action>
         
         
         
