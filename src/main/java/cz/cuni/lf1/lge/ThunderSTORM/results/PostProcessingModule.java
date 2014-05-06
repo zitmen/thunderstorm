@@ -124,9 +124,9 @@ public abstract class PostProcessingModule {
             //dummy record the param options
             boolean oldRecording = Recorder.record;
             Recorder.record = true;
-
             params.recordMacroOptions();
             options = Recorder.getCommandOptions();
+            if(!oldRecording) Recorder.saveCommand();   // remove from macro recorder if not recording!
             Recorder.record = oldRecording;
         }
 
