@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -78,29 +78,16 @@ status open
 
 
 \backslash
-href{Convolution.html}{convolution}
+href{Convolution.html}{convolution kernel}
 \end_layout
 
 \end_inset
 
- kernel is formed as the difference of two 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{GaussianFilterUI.html}{Gaussian}
-\end_layout
-
-\end_inset
-
- kernels
+ is formed as the difference of two Gaussian kernels
 \begin_inset Formula 
-\begin{equation}
+\[
 K_{\mathrm{DoG}}\left(x,y\mid\sigma_{1},\sigma_{2}\right)=K_{\mathrm{G1}}-K_{\mathrm{G2}}\,,
-\end{equation}
+\]
 
 \end_inset
 
@@ -139,23 +126,7 @@ Although the kernel
 \end_inset
 
  is not separable, the filtered image can be obtained by subtracting two
- images filtered with Gaussian kernels having different standard deviations,
-\begin_inset Formula 
-\begin{equation}
-F=I*K_{\mathrm{DoG}}=I*K_{\mathrm{G}1}-I*K_{\mathrm{G}2}\,.
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection*
-Detector threshold formula
-\end_layout
-
-\begin_layout Standard
-Refer to 
+ images filtered with 
 \begin_inset ERT
 status open
 
@@ -163,26 +134,44 @@ status open
 
 
 \backslash
-href{../../detectors/Threshold.html}{Threshold}
+href{GaussianFilterUI.html}{Gaussian kernels}
 \end_layout
 
 \end_inset
 
- to see how filter results can be used to dynamically find threshold value.
- 
+ having different standard deviations,
+\begin_inset Formula 
+\[
+F=I*K_{\mathrm{DoG}}=I*K_{\mathrm{G}1}-I*K_{\mathrm{G}2}\,.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Threshold for approximate localization of molecules
 \end_layout
 
 \begin_layout Standard
-The two default variables and images filtered with each of the two gaussian
- kernels 
-\begin_inset Formula $K_{\mathrm{G1}}$
+The 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../detectors/Threshold.html}{threshold}
+\end_layout
+
 \end_inset
 
- and 
-\begin_inset Formula $K_{\mathrm{G2}}$
-\end_inset
-
- are provided by this filter:
+ value can be specified by users as an expression combining mathematical
+ functions and operators with variables based on the current raw or filtered
+ image.
+ Variables provided by this filter are:
 \begin_inset ERT
 status open
 
@@ -233,7 +222,7 @@ DoG.I
 \begin_inset Text
 
 \begin_layout Plain Layout
-current unfiltered image
+current raw input image
 \end_layout
 
 \end_inset
@@ -265,7 +254,7 @@ DoG.F
 \begin_inset Text
 
 \begin_layout Plain Layout
-current filtered image
+corresponding filtered image
 \end_layout
 
 \end_inset
@@ -297,7 +286,7 @@ DoG.G1
 \begin_inset Text
 
 \begin_layout Plain Layout
-current image filtered with 
+result of filtering only with 
 \begin_inset Formula $K_{\mathrm{G1}}$
 \end_inset
 
@@ -333,7 +322,7 @@ DoG.G2
 \begin_inset Text
 
 \begin_layout Plain Layout
-current image filtered with 
+result of filtering only with 
 \begin_inset Formula $K_{\mathrm{G2}}$
 \end_inset
 

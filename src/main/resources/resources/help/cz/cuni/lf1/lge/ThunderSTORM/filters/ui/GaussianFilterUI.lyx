@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -68,15 +68,26 @@ Gaussian filter
 \end_layout
 
 \begin_layout Standard
-Convolution with a Gaussian kernel (also referred to as a Gaussian blur
- or as a Gaussian filter) is one of the most commonly used filters in image
- processing.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Convolution.html}{Convolution}
+\end_layout
+
+\end_inset
+
+ with a Gaussian kernel (also referred to as a Gaussian blur or as a Gaussian
+ filter) is one of the most commonly used filters in image processing.
  The Gaussian kernel is formed by a matrix that contains the values of a
  rotationally symmetric Gaussian function
 \begin_inset Formula 
-\begin{equation}
-K_{\mathrm{G}}\left(x,y\mid\sigma\right)=a^{2}\exp{\left(-\frac{x^{2}+y^{2}}{2\sigma^{2}}\right)}\,.\label{eq:GaussFilter}
-\end{equation}
+\[
+K_{\mathrm{G}}\left(x,y\mid\sigma\right)=a^{2}\exp{\left(-\frac{x^{2}+y^{2}}{2\sigma^{2}}\right)}\,.
+\]
 
 \end_inset
 
@@ -104,7 +115,7 @@ status open
 
 
 \backslash
-href{Convolution.html}{convolution}
+href{Convolution.html}{convolution with separable kernels}
 \end_layout
 
 \end_inset
@@ -129,11 +140,7 @@ href{Convolution.html}{convolution}
 \begin_inset Formula $a$
 \end_inset
 
- is a
-\begin_inset space ~
-\end_inset
-
-constant scaling factor such that 
+ is a scaling factor such that 
 \begin_inset Formula $\sum_{i}k_{i}=1$
 \end_inset
 
@@ -146,11 +153,11 @@ constant scaling factor such that
 \end_layout
 
 \begin_layout Subsection*
-Detector threshold formula
+Threshold for approximate localization of molecules
 \end_layout
 
 \begin_layout Standard
-Refer to 
+The 
 \begin_inset ERT
 status open
 
@@ -158,17 +165,15 @@ status open
 
 
 \backslash
-href{../../detectors/Threshold.html}{Threshold}
+href{../../detectors/Threshold.html}{threshold}
 \end_layout
 
 \end_inset
 
- to see how filter results can be used to dynamically find threshold value.
- 
-\end_layout
-
-\begin_layout Standard
-Only the two default variables are provided by this filter:
+ value can be specified by users as an expression combining mathematical
+ functions and operators with variables based on the current raw or filtered
+ image.
+ Variables provided by this filter are:
 \begin_inset ERT
 status open
 
@@ -219,7 +224,7 @@ Gauss.I
 \begin_inset Text
 
 \begin_layout Plain Layout
-current unfiltered image
+current raw input image
 \end_layout
 
 \end_inset
@@ -251,7 +256,7 @@ Gauss.F
 \begin_inset Text
 
 \begin_layout Plain Layout
-current filtered image
+corresponding filtered image
 \end_layout
 
 \end_inset

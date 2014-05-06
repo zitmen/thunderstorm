@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -64,36 +64,7 @@
 \begin_body
 
 \begin_layout Section*
-Fitting PSF models: Symmetric 2D Gaussian function
-\end_layout
-
-\begin_layout Standard
-The impulse response of a microscope to a point-like source is described
- by the point-spread function (PSF).
- Because a single molecule emitter can be treated as an incoherent point
- source in SMLM data, the result of fitting a PSF model to an image of a
- single molecule is an estimate of the molecular position, its imaged size,
- and its intensity.
-\end_layout
-
-\begin_layout Subsection*
-PSF model
-\end_layout
-
-\begin_layout Standard
-It has been shown 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Thompson2002,Rieger2010"
-
-\end_inset
-
- that the Gaussian function provides a very good approximation of the real
- PSF of a microscope.
- This is mainly due to pixelation effects and the presence of noise, which
- makes the difference between the Gaussian function and the real PSF negligible.
- The advantage of Gaussian PSF models are their simplicity, robustness,
- and computational efficiency.
+PSF model: Symmetric 2D Gaussian function
 \end_layout
 
 \begin_layout Standard
@@ -175,12 +146,10 @@ where
 \end_layout
 
 \begin_layout Subsection*
-Fitting of model parameters
+See also
 \end_layout
 
-\begin_layout Standard
-Fitting of the model parameters can be performed by (weighted) least squares
- methods or maximum-likelihood estimation, see 
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -188,21 +157,15 @@ status open
 
 
 \backslash
-href{Fitting.html}{PSF fitting methods}
+href{PSF.html}{Point-spread function (PSF)}
 \end_layout
 
 \end_inset
 
- for more information.
+
 \end_layout
 
-\begin_layout Subsection*
-The Crowded-field problem
-\end_layout
-
-\begin_layout Standard
-ThunderSTORM supports fitting of multiple PSF models in a single fitting
- region, see 
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -210,26 +173,32 @@ status open
 
 
 \backslash
-href{CrowdedField.html}{The crowded field problem}
+href{CrowdedField.html}{Multiple-emitter fitting analysis}
 \end_layout
 
 \end_inset
 
- for more information.
+
 \end_layout
 
-\begin_layout Subsection*
-Localization uncertainty
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{Least-squares and maximum likelihood estimation fitting
+ methods}
 \end_layout
 
-\begin_layout Standard
-For more information about the localization uncertainty of molecular
- 
-\lang english
-positions in lateral dimension 
-see 
-\lang english
+\end_inset
 
+
+\end_layout
+
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -239,17 +208,6 @@ status open
 \backslash
 href{LocalizationUncertainty.html}{Localization uncertainty}
 \end_layout
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset bibtex
-LatexCommand bibtex
-bibfiles "references"
-options "plain"
 
 \end_inset
 

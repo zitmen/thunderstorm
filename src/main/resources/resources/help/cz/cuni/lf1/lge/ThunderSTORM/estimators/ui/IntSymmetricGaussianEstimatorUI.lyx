@@ -49,8 +49,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -65,26 +65,26 @@
 \begin_body
 
 \begin_layout Section*
-Fitting PSF models: Integral form of a symmetric 2D Gaussian function
+PSF model: Integrated form of a symmetric 2D Gaussian function
 \end_layout
 
 \begin_layout Standard
-The impulse response of a microscope to a point-like source is described
- by the point-spread function (PSF).
- Because a single molecule emitter can be treated as an incoherent point
- source in SMLM data, the result of fitting a PSF model to an image of a
- single molecule is an estimate of the molecular position, its imaged size,
- and its intensity.
+The integrated form of a 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{SymmetricGaussianEstimatorUI.html}{symmetric two-dimensional Gaussian
+ function}
 \end_layout
 
-\begin_layout Subsection*
-PSF model
-\end_layout
+\end_inset
 
-\begin_layout Standard
-The integrated form of a symmetric two-dimensional Gaussian function can
- be used to help to take into account the discrete nature of pixels present
- in digital cameras 
+ can be used to help to take into account the discrete nature of pixels
+ present in digital cameras 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Smith2010,Huang2011"
@@ -98,9 +98,9 @@ key "Smith2010,Huang2011"
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{equation}
-\mathrm{PSF_{IG}}\left(x,y\mid\boldsymbol{\theta}\right)=\theta_{N}E_{x}E_{y}+\theta_{b}\,,\label{eq:psfig}
-\end{equation}
+\[
+\mathrm{PSF_{IG}}\left(x,y\mid\boldsymbol{\theta}\right)=\theta_{N}E_{x}E_{y}+\theta_{b}\,,
+\]
 
 \end_inset
 
@@ -121,10 +121,10 @@ where
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{eqnarray}
+\begin{eqnarray*}
 E_{x} & = & \frac{1}{2}\erf\left(\frac{x-\theta_{x}+\frac{1}{2}}{\sqrt{2}\theta_{\sigma}}\right)-\frac{1}{2}\erf\left(\frac{x-\theta_{x}-\frac{1}{2}}{\sqrt{2}\theta_{\sigma}}\right)\,,\\
 E_{y} & = & \frac{1}{2}\erf\left(\frac{y-\theta_{y}+\frac{1}{2}}{\sqrt{2}\theta_{\sigma}}\right)-\frac{1}{2}\erf\left(\frac{y-\theta_{y}-\frac{1}{2}}{\sqrt{2}\theta_{\sigma}}\right)\,.
-\end{eqnarray}
+\end{eqnarray*}
 
 \end_inset
 
@@ -157,13 +157,10 @@ The entries of the vector
 \end_layout
 
 \begin_layout Subsection*
-Fitting of model parameters
+See also
 \end_layout
 
-\begin_layout Standard
-Fitting of the model parameters can be done using least squares or maximum-likel
-ihood methods.
- See 
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -171,22 +168,15 @@ status open
 
 
 \backslash
-href{Fitting.html}{PSF fitting methods}
+href{PSF.html}{Point-spread function (PSF)}
 \end_layout
 
 \end_inset
 
- for more information.
+
 \end_layout
 
-\begin_layout Subsection*
-Crowded-field
-\end_layout
-
-\begin_layout Standard
-ThunderSTORM supports fitting of multiple PSF models in a single fitting
- region.
- See 
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -194,21 +184,32 @@ status open
 
 
 \backslash
-href{CrowdedField.html}{crowded field}
+href{CrowdedField.html}{Multiple-emitter fitting analysis}
 \end_layout
 
 \end_inset
 
- for more information.
+
 \end_layout
 
-\begin_layout Subsection*
-Localization uncertainty
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{Least-squares and maximum likelihood estimation fitting
+ methods}
 \end_layout
 
-\begin_layout Standard
-For more information about the localization uncertainty of molecular positions
- in lateral dimension see 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -221,7 +222,7 @@ href{LocalizationUncertainty.html}{Localization uncertainty}
 
 \end_inset
 
-.
+
 \end_layout
 
 \begin_layout Standard

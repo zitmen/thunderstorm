@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -68,7 +68,7 @@ Detection of local intensity maxima
 \end_layout
 
 \begin_layout Standard
-This method passes through each pixel of the input image 
+This method passes through each pixel of the filtered image 
 \begin_inset Formula $F$
 \end_inset
 
@@ -76,22 +76,7 @@ This method passes through each pixel of the input image
 \begin_inset Formula $F\left(x,y\right)$
 \end_inset
 
- is greater than a user-specified threshold and at the same time greater
- than or equal to all values within a 4- or 8-connected neighborhood.
- If this condition holds, the point is accepted as a candidate molecule
- for further processing.
-\end_layout
-
-\begin_layout Subsection*
-Threshold
-\end_layout
-
-\begin_layout Standard
-Only local maxima with intensity higher than a threshold value are used
- as molecule candidates.
- Threshold can be specified as a fixed number or a formula containing image
- statistics.
- See 
+ is greater than a user-specified 
 \begin_inset ERT
 status open
 
@@ -99,12 +84,15 @@ status open
 
 
 \backslash
-href{Threshold.html}{Threshold}
+href{Threshold.html}{threshold}
 \end_layout
 
 \end_inset
 
- for more information.
+ and at the same time greater than or equal to all values within a 4- or
+ 8-connected neighborhood.
+ If this condition holds, the point is accepted as a candidate molecule
+ for further processing.
 \end_layout
 
 \end_body

@@ -50,8 +50,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -66,7 +66,7 @@
 \begin_body
 
 \begin_layout Section*
-Fitting PSF models: The astigmatism method
+PSF model: Rotated elliptical Gaussian function (3D using astigmatism)
 \end_layout
 
 \begin_layout Standard
@@ -90,16 +90,9 @@ key "Huang2008"
  of the imaged molecules.
 \end_layout
 
-\begin_layout Subsection*
-PSF model
-\end_layout
-
 \begin_layout Standard
 A common PSF model for astigmatic 3D imaging is a rotated, elliptical Gaussian
  function given by the formula
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 \mathrm{PSF}_{\mathrm{EG}}\left(x,y\mid\boldsymbol{\theta},\phi\right)=\frac{\theta_{N}}{2\pi\theta_{\sigma_{1}}\theta_{\sigma_{2}}}\exp\left(-\frac{x'{}^{2}}{2\theta_{\sigma_{1}}^{2}}-\frac{y'^{2}}{2\theta_{\sigma_{2}}^{2}}\right)+\theta_{b}\,,\label{eq:psfeg}
@@ -115,11 +108,11 @@ where
 \begin_inset Formula $\left(x,y\right)$
 \end_inset
 
- for a vector of parameters 
+ for the parameters 
 \begin_inset Formula $\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{\sigma_{1}},\theta_{\sigma_{2}},\theta_{N},\theta_{b}\right]$
 \end_inset
 
-, and 
+, and
 \begin_inset Formula 
 \begin{eqnarray*}
 x' & = & \left(x-\theta_{x}\right)\cos\phi-\left(y-\theta_{y}\right)\sin\phi\,,\\
@@ -194,52 +187,6 @@ The entries of the vector
 \end_layout
 
 \begin_layout Subsection*
-Fitting of model parameters
-\end_layout
-
-\begin_layout Standard
-Fitting of the model parameters can be done using least squares or maximum-likel
-ihood methods.
- See 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{Fitting.html}{PSF fitting methods}
-\end_layout
-
-\end_inset
-
- for more information.
-\end_layout
-
-\begin_layout Subsection*
-Crowded-field
-\end_layout
-
-\begin_layout Standard
-ThunderSTORM supports fitting of multiple PSF models in a single fitting
- region.
- See 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{CrowdedField.html}{crowded field}
-\end_layout
-
-\end_inset
-
- for more information.
-\end_layout
-
-\begin_layout Subsection*
 Estimating axial position
 \end_layout
 
@@ -248,7 +195,7 @@ The estimate of the axial position
 \begin_inset Formula $\hat{z}$
 \end_inset
 
- of a moleculeis determined by minimizing the distance between the fitted
+ of a molecule is determined by minimizing the distance between the fitted
  values 
 \begin_inset Formula $\hat{\theta}_{\sigma_{1}},\hat{\theta}_{\sigma_{2}}$
 \end_inset
@@ -290,34 +237,23 @@ key "Huang2008"
 \end_inset
 
 .
- The minimization was performed by the conjugate gradient method as implemented
+ The minimization is performed by the conjugate gradient method as implemented
  in the Apache Commons Math library 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Apache"
+key "MathApache"
 
 \end_inset
 
- which was initialized from randomized starting points to help avoid local
+ which is initialized from randomized starting points to help avoid local
  minima.
 \end_layout
 
 \begin_layout Subsection*
-Calibration of the imaging system
+See also
 \end_layout
 
-\begin_layout Standard
-A file with values of the angle of rotation 
-\begin_inset Formula $\phi$
-\end_inset
-
- and approximations of the calibration curves 
-\begin_inset Formula $\hat{\sigma}_{1}\left(z\right),\hat{\sigma}_{2}\left(z\right)$
-\end_inset
-
- is required.
- It can be created using the Cylindrical lens calibration plugin.
- See 
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -325,91 +261,15 @@ status open
 
 
 \backslash
-href{CalibrationEstimatorUI.html}{Astigmatism calibration}
+href{PSF.html}{Point-spread function (PSF)}
 \end_layout
-
-\end_inset
-
- for more information.
- 
-\end_layout
-
-\begin_layout Subsection*
-Localization uncertainty
-\end_layout
-
-\begin_layout Standard
-Let 
-\begin_inset Formula $\sigma$
-\end_inset
-
- be the standard deviation of a fitted Gaussian blob in nm, 
-\begin_inset Formula $a$
-\end_inset
-
- is the (backprojected) pixel size in nm, 
-\begin_inset Formula $N$
-\end_inset
-
- is the number of photons detected for a given molecule, and 
-\begin_inset Formula $b$
-\end_inset
-
- is the background signal level in photons calculated as the standard deviation
- of the residuals between the raw data and the fitted PSF model.
- The uncertainty in the lateral position of a molecule can be approximated
- by the formula 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Thompson2002"
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-\left\langle (\Delta x)^{2}\right\rangle =\frac{\sigma^{2}+a^{2}/12}{N}+\frac{8\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,.\label{eq:thompson_ccd}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The previous equation can be further adjusted to take EM gain of EMCCD cameras
- into account 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Quan2010"
-
-\end_inset
-
-, giving the expression 
-\begin_inset Formula 
-\begin{equation}
-\left\langle (\Delta x)^{2}\right\rangle =\frac{2\sigma^{2}+a^{2}/12}{N}+\frac{8\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,.\label{eq:thompson_emccd}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We use the same equations for three dimensional localization but we use
- 
-\begin_inset Formula $\sigma^{2}=\hat{\theta}_{\sigma_{1}}\hat{\theta}_{\sigma_{2}}$
-\end_inset
-
-.
- In the axial direction, we use a constant, user-specified value.
-\end_layout
-
-\begin_layout Standard
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -417,9 +277,7 @@ status open
 
 
 \backslash
-renewcommand
-\backslash
-refname{References}
+href{CrowdedField.html}{Multiple-emitter fitting analysis}
 \end_layout
 
 \end_inset
@@ -427,7 +285,54 @@ refname{References}
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{Least-squares and maximum likelihood estimation fitting
+ methods}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{LocalizationUncertainty.html}{Localization uncertainty}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{CalibrationEstimatorUI.html}{Calibration of the imaging system for the
+ astigmatism method}
+\end_layout
+
+\end_inset
+
+
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "references,D:/Pepa/Java/thunderstorm-imagej-plugin/src/resources/help/references"

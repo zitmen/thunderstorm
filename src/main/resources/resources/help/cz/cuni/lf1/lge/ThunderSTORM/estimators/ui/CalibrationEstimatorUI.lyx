@@ -66,7 +66,7 @@
 \begin_body
 
 \begin_layout Section*
-Astigmatism method calibration
+Calibration of the imaging system (astigmatism method)
 \end_layout
 
 \begin_layout Standard
@@ -267,6 +267,21 @@ m
  nm.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+pepa was using 
+\backslash
+upmu instead of mu
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection*
 Determining the orientation angle
 \end_layout
@@ -396,13 +411,10 @@ The final coefficients are obtained by fitting the pair of polynomials to
 \end_layout
 
 \begin_layout Subsection*
-Fitting of model parameters
+See also
 \end_layout
 
-\begin_layout Standard
-Fitting of the model parameters can be done using least squares or maximum-likel
-ihood methods.
- See 
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -410,15 +422,15 @@ status open
 
 
 \backslash
-href{Fitting.html}{PSF fitting methods}
+href{PSF.html}{Point-spread function (PSF)}
 \end_layout
 
 \end_inset
 
- for more information.
+
 \end_layout
 
-\begin_layout Standard
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -426,9 +438,57 @@ status open
 
 
 \backslash
-renewcommand
+href{EllipticGaussianEstimatorUI.html}{Rotated elliptical Gaussian function
+ PSF model (3D using astigmatism)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
 \backslash
-refname{References}
+href{CrowdedField.html}{Multiple-emitter fitting analysis}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{Least-squares and maximum likelihood estimation fitting
+ methods}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{LocalizationUncertainty.html}{Localization uncertainty}
 \end_layout
 
 \end_inset

@@ -71,20 +71,32 @@ Averaging (Box) filter
 Applying an averaging filter (also known as mean or box filter) results
  in an image in which the value of each pixel is equal to the average intensity
  of pixels from the input image in a given neighborhood.
- Filtering can be defined as a convolution of the image with a kernel given
- by an 
+ Filtering can be defined as a 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Convolution.html}{convolution}
+\end_layout
+
+\end_inset
+
+ of the image with a kernel given by an 
 \begin_inset Formula $l\times l$
 \end_inset
 
  matrix containing equal entries that sum to one, thus
 \begin_inset Formula 
-\begin{equation}
+\[
 K_{\mathrm{AV}}=\frac{1}{l^{2}}\left[\begin{array}{ccc}
 1 & \cdots & 1\\
 \vdots & \ddots & \vdots\\
 1 & \cdots & 1
 \end{array}\right]\,.
-\end{equation}
+\]
 
 \end_inset
 
@@ -108,7 +120,7 @@ status open
 
 
 \backslash
-href{Convolution.html}{convolution}
+href{Convolution.html}{convolution with separable kernels}
 \end_layout
 
 \end_inset
@@ -130,11 +142,11 @@ href{Convolution.html}{convolution}
 \end_layout
 
 \begin_layout Subsection*
-Detector threshold formula
+Threshold for approximate localization of molecules
 \end_layout
 
 \begin_layout Standard
-Refer to 
+The 
 \begin_inset ERT
 status open
 
@@ -142,17 +154,15 @@ status open
 
 
 \backslash
-href{../../detectors/Threshold.html}{Threshold}
+href{../../detectors/Threshold.html}{threshold}
 \end_layout
 
 \end_inset
 
- to see how filter results can be used to dynamically find threshold value.
- 
-\end_layout
-
-\begin_layout Standard
-Variables provided by this filter:
+ value can be specified by users as an expression combining mathematical
+ functions and operators with variables based on the current raw or filtered
+ image.
+ Variables provided by this filter are:
 \begin_inset ERT
 status open
 
@@ -203,7 +213,7 @@ Box.I
 \begin_inset Text
 
 \begin_layout Plain Layout
-current unfiltered image
+current raw input image
 \end_layout
 
 \end_inset
@@ -235,7 +245,7 @@ Box.F
 \begin_inset Text
 
 \begin_layout Plain Layout
-current filtered image
+corresponding filtered image
 \end_layout
 
 \end_inset
