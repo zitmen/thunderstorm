@@ -18,10 +18,30 @@
         <imagej1.version>1.45</imagej1.version>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
-        <skipHelpCompilation>true</skipHelpCompilation>
         <lyx.path>/cygdrive/c/Program Files (x86)/Lyx 2.0/bin/LyX.exe</lyx.path>
         <help.dir>${basedir}/src/main/resources/resources/help</help.dir>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>no-html-help</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <skipHelpCompilation>true</skipHelpCompilation>
+            </properties>
+        </profile>
+        <profile>
+            <id>html-help</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <skipHelpCompilation>false</skipHelpCompilation>
+            </properties>
+        </profile>
+    </profiles>
     
     <!--
     <parent>
