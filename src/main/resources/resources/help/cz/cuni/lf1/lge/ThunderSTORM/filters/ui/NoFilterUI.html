@@ -14,18 +14,11 @@
 <div class="ltx_page_content">
 <div class="ltx_document">
 <div id="Sx1" class="ltx_section">
-<h1 class="ltx_title ltx_title_section">Median filter</h1>
+<h1 class="ltx_title ltx_title_section">No filter</h1>
 
 <div id="Sx1.p1" class="ltx_para">
-<p class="ltx_p">A median filter is a non-linear image filter often used to remove
-impulse noise (i.e., salt and pepper noise). The value of each pixel
-in the resulting image is equal to the median of the intensity values
-from the original image in a given neighborhood. If the neighborhood
-mask has an odd number of entries, the median is the middle element
-of all numerically sorted entries. For an even number of entries,
-the median is calculated as the mean of the two entries in the middle.
-Users need to input the kernel size and the type of neighborhood mask,
-which can be a cross (4-connected) or box (8-connected) pattern.</p>
+<p class="ltx_p">This selection leaves the input data as it is for further processing,
+i.e., <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi70.png" width="50" height="16" alt="F=I">.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">Threshold for approximate localization of molecules</h2>
@@ -40,11 +33,11 @@ image. Variables provided by this filter are:</p>
 <table class="ltx_tabular ltx_align_middle">
 <tbody class="ltx_tbody">
 <tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">Med.I</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">I</span></td>
 <td class="ltx_td ltx_align_left">current raw input image</td>
 </tr>
 <tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">Med.F</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">F</span></td>
 <td class="ltx_td ltx_align_left">corresponding filtered image</td>
 </tr>
 </tbody>

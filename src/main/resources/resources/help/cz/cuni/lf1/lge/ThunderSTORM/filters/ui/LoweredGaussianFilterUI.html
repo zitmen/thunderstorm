@@ -2,7 +2,7 @@
 <html>
 <head>
 <title></title>
-<!--Generated on Tue May  6 17:05:04 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Generated on Tue May  6 19:18:47 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
@@ -17,62 +17,56 @@
 <h1 class="ltx_title ltx_title_section">Lowered Gaussian filter</h1>
 
 <div id="Sx1.p1" class="ltx_para">
-<p class="ltx_p">This filter was reported to perform well in DAOPHOT <cite class="ltx_cite">[<a href="#bib.bib34" title="DAOPHOT - A computer program for crowded-field stellar photometry" class="ltx_ref">2</a>]</cite>
-and DAOSTORM <cite class="ltx_cite">[<a href="#bib.bib12" title="DAOSTORM: an algorithm for high- density super-resolution microscopy" class="ltx_ref">1</a>]</cite> algorithms. The <a href="Convolution.html" title="" class="ltx_ref">convolution</a>
-kernel is based on the <a href="GaussianFilterUI.html" title="" class="ltx_ref">Gaussian</a> kernel,
-which has been lowered to have the sum of all its entries equal to
-zero,</p>
-</div>
-<div id="Sx1.p2" class="ltx_para">
-<table id="Sx1.E1" class="ltx_equation">
+<p class="ltx_p">This filter was reported to perform well in the DAOPHOT <cite class="ltx_cite">[<a href="#bib.bib34" title="DAOPHOT - A computer program for crowded-field stellar photometry" class="ltx_ref">2</a>]</cite>
+and DAOSTORM <cite class="ltx_cite">[<a href="#bib.bib12" title="DAOSTORM: an algorithm for high- density super-resolution microscopy" class="ltx_ref">1</a>]</cite> algorithms. The <a href="Convolution.html" title="" class="ltx_ref">convolution kernel</a>
+is based on the <a href="GaussianFilterUI.html" title="" class="ltx_ref">Gaussian kernel</a> which
+has been lowered to have the sum of all its entries equal to zero,</p>
+<table id="Sx1.Ex1" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi70.png" width="265" height="21" alt="K_{\mathrm{LG}}\left(x,y\mid\sigma\right)=K_{\mathrm{G}}\left(x,y\mid\sigma%
+<td class="ltx_align_center"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi67.png" width="265" height="21" alt="K_{\mathrm{LG}}\left(x,y\mid\sigma\right)=K_{\mathrm{G}}\left(x,y\mid\sigma%
 \right)-b\,,"></td>
 <td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi72.png" width="12" height="16" alt="b"> is the mean value of all of the elements in <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi64.png" width="31" height="18" alt="K_{\mathrm{G}}">.
-The standard deviation <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi65.png" width="15" height="12" alt="\sigma"> is a user-specified parameter.</p>
+<p class="ltx_p">where <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi69.png" width="12" height="16" alt="b"> is the mean value of all of the elements in <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi61.png" width="31" height="18" alt="K_{\mathrm{G}}">.
+The standard deviation <img id="Sx1.p1.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi62.png" width="15" height="12" alt="\sigma"> is a user-specified parameter.</p>
 </div>
-<div id="Sx1.p3" class="ltx_para">
-<p class="ltx_p">Although the kernel <img id="Sx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi71.png" width="40" height="18" alt="K_{\mathrm{LG}}"> is not separable, the filtered
+<div id="Sx1.p2" class="ltx_para">
+<p class="ltx_p">Although the kernel <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi68.png" width="40" height="18" alt="K_{\mathrm{LG}}"> is not separable, the filtered
 image can be obtained by subtracting two images filtered with two
-separable kernels,</p>
-<table id="Sx1.E2" class="ltx_equation">
+separable kernels (see <a href="Convolution.html" title="" class="ltx_ref">convolution with separable kernels</a>),</p>
+<table id="Sx1.Ex2" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi69.png" width="268" height="18" alt="F=I*K_{\mathrm{LG}}=I*K_{\mathrm{G}}-I*K_{\mathrm{AV}}\,."></td>
+<td class="ltx_align_center"><img id="Sx1.Ex2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi66.png" width="268" height="18" alt="F=I*K_{\mathrm{LG}}=I*K_{\mathrm{G}}-I*K_{\mathrm{AV}}\,."></td>
 <td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
 </tr>
 </table>
-<p class="ltx_p">The lowered Gaussian is a band-pass filter. The sizes of both <img id="Sx1.p3.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi64.png" width="31" height="18" alt="K_{\mathrm{G}}">
-and <img id="Sx1.p3.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi2.png" width="39" height="18" alt="K_{\mathrm{AV}}"> kernels are computed as <img id="Sx1.p3.m4" class="ltx_Math" style="vertical-align:-6px" src="mi/mi68.png" width="110" height="21" alt="l=1+2\left\lceil 3\sigma\right\rceil">.</p>
+<p class="ltx_p">The lowered Gaussian is a band-pass filter. The sizes of both <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi61.png" width="31" height="18" alt="K_{\mathrm{G}}">
+and <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi2.png" width="39" height="18" alt="K_{\mathrm{AV}}"> kernels are computed as <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-6px" src="mi/mi65.png" width="110" height="21" alt="l=1+2\left\lceil 3\sigma\right\rceil">.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Detector threshold formula</h2>
+<h2 class="ltx_title ltx_title_subsection">Threshold for approximate localization of molecules</h2>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
-<p class="ltx_p">Refer to <a href="../../detectors/Threshold.html" title="" class="ltx_ref">Threshold</a> to see
-how filter results can be used to dynamically find threshold value.</p>
+<p class="ltx_p">The <a href="../../detectors/Threshold.html" title="" class="ltx_ref">threshold</a> value can be
+specified by users as an expression combining mathematical functions
+and operators with variables based on the current raw or filtered
+image. Variables provided by this filter are:</p>
 </div>
 <div id="Sx1.SSx1.p2" class="ltx_para">
-<p class="ltx_p">Only the two default variables are provided by this filter:</p>
-</div>
-<div id="Sx1.SSx1.p3" class="ltx_para">
 <table class="ltx_tabular ltx_align_middle">
 <tbody class="ltx_tbody">
 <tr class="ltx_tr">
 <td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">LowGauss.I</span></td>
-<td class="ltx_td ltx_align_left">current unfiltered image</td>
+<td class="ltx_td ltx_align_left">current raw input image</td>
 </tr>
 <tr class="ltx_tr">
 <td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">LowGauss.F</span></td>
-<td class="ltx_td ltx_align_left">current filtered image</td>
+<td class="ltx_td ltx_align_left">corresponding filtered image</td>
 </tr>
 </tbody>
 </table>
@@ -114,7 +108,7 @@ how filter results can be used to dynamically find threshold value.</p>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Tue May  6 17:05:04 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Tue May  6 19:18:47 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

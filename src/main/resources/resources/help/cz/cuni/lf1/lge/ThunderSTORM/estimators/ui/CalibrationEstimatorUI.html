@@ -2,7 +2,7 @@
 <html>
 <head>
 <title></title>
-<!--Generated on Tue May  6 17:04:31 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Generated on Tue May  6 19:18:10 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
@@ -14,7 +14,7 @@
 <div class="ltx_page_content">
 <div class="ltx_document">
 <div id="Sx1" class="ltx_section">
-<h1 class="ltx_title ltx_title_section">Astigmatism method calibration</h1>
+<h1 class="ltx_title ltx_title_section">Calibration of the imaging system (astigmatism method)</h1>
 
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">3D SMLM imaging can be performed by introducing a weak cylindrical
@@ -128,7 +128,7 @@ range of about 2 <img id="Sx1.SSx2.p2.m2" class="ltx_Math" style="vertical-align
 <p class="ltx_p">A sequence of images from a Z-stack is processed slice-by-slice using
 the same methods as during analysis (image denoising, rough localization,
 PSF fitting). Images of the beads are fit independently using the
-elliptical Gaussian PSF given by Equation (<a href="#Sx1.E1" title="(1) ‣ PSF model ‣ Astigmatism method calibration" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>) with <span class="ltx_text ltx_markedasmath"><img id="I1.i1.p1.m1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="15" height="19" alt="\phi"></span>
+elliptical Gaussian PSF given by Equation (<a href="#Sx1.E1" title="(1) ‣ PSF model ‣ Calibration of the imaging system (astigmatism method)" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>) with <span class="ltx_text ltx_markedasmath"><img id="I1.i1.p1.m1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="15" height="19" alt="\phi"></span>
 as a free parameter.</p>
 </div>
 </li>
@@ -173,14 +173,14 @@ beads.</p>
 <p class="ltx_p">Using the approximate positions of the beads in multiple Z-planes
 and the orientation angle <img id="I2.i1.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="15" height="19" alt="\phi">, both determined in the previous
 step, the images of the beads are fit again using the elliptical Gaussian
-PSF given by Equation (<a href="#Sx1.E1" title="(1) ‣ PSF model ‣ Astigmatism method calibration" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>), but with a fixed angle <img id="I2.i1.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="15" height="19" alt="\phi">.</p>
+PSF given by Equation (<a href="#Sx1.E1" title="(1) ‣ PSF model ‣ Calibration of the imaging system (astigmatism method)" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>), but with a fixed angle <img id="I2.i1.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="15" height="19" alt="\phi">.</p>
 </div>
 </li>
 <li id="I2.i2" class="ltx_item" style="list-style-type:none;">
 <span class="ltx_tag ltx_tag_enumerate">2.</span> 
 <div id="I2.i2.p1" class="ltx_para">
 <p class="ltx_p">To estimate the coefficients <img id="I2.i2.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi34.png" width="93" height="19" alt="a_{1},b_{1},c_{1},d_{1}"> and <img id="I2.i2.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi35.png" width="93" height="19" alt="a_{2},b_{2},c_{2},d_{2}">
-in Equations (<a href="#Sx1.E2" title="(2) ‣ Calibration of the imaging system ‣ Astigmatism method calibration" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>) and (<a href="#Sx1.E3" title="(3) ‣ Calibration of the imaging system ‣ Astigmatism method calibration" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>),
+in Equations (<a href="#Sx1.E2" title="(2) ‣ Calibration of the imaging system ‣ Calibration of the imaging system (astigmatism method)" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>) and (<a href="#Sx1.E3" title="(3) ‣ Calibration of the imaging system ‣ Calibration of the imaging system (astigmatism method)" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>),
 we first fit the pair of polynomials for each bead separately using
 an iterative least-squares algorithm which automatically discards
 outliers.</p>
@@ -206,12 +206,41 @@ to all shifted data points.</p>
 </div>
 </div>
 <div id="Sx1.SSx3" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Fitting of model parameters</h2>
+<h2 class="ltx_title ltx_title_subsection">See also</h2>
 
 <div id="Sx1.SSx3.p1" class="ltx_para">
-<p class="ltx_p">Fitting of the model parameters can be done using least squares or
-maximum-likelihood methods. See <a href="Fitting.html" title="" class="ltx_ref">PSF fitting methods</a>
-for more information.</p>
+<ul id="I3" class="ltx_itemize">
+<li id="I3.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I3.i1.p1" class="ltx_para">
+<p class="ltx_p"><a href="PSF.html" title="" class="ltx_ref">Point-spread function (PSF)</a></p>
+</div>
+</li>
+<li id="I3.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I3.i2.p1" class="ltx_para">
+<p class="ltx_p"><a href="EllipticGaussianEstimatorUI.html" title="" class="ltx_ref">Rotated elliptical Gaussian function PSF model (3D using astigmatism)</a></p>
+</div>
+</li>
+<li id="I3.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I3.i3.p1" class="ltx_para">
+<p class="ltx_p"><a href="CrowdedField.html" title="" class="ltx_ref">Multiple-emitter fitting analysis</a></p>
+</div>
+</li>
+<li id="I3.i4" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I3.i4.p1" class="ltx_para">
+<p class="ltx_p"><a href="Fitting.html" title="" class="ltx_ref">Least-squares and maximum likelihood estimation fitting methods</a></p>
+</div>
+</li>
+<li id="I3.i5" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I3.i5.p1" class="ltx_para">
+<p class="ltx_p"><a href="LocalizationUncertainty.html" title="" class="ltx_ref">Localization uncertainty</a></p>
+</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -229,7 +258,7 @@ for more information.</p>
 </span>
 <span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1126/science.1153529" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
 </span>
-<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Astigmatism method calibration" class="ltx_ref"><span class="ltx_text ltx_ref_title">Astigmatism method calibration</span></a>.
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Calibration of the imaging system (astigmatism method)" class="ltx_ref"><span class="ltx_text ltx_ref_title">Calibration of the imaging system (astigmatism method)</span></a>.
 </span>
 </li>
 </ul>
@@ -237,7 +266,7 @@ for more information.</p>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Tue May  6 17:04:31 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Tue May  6 19:18:10 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

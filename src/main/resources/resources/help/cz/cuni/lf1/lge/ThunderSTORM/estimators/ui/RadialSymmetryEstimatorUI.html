@@ -2,7 +2,7 @@
 <html>
 <head>
 <title></title>
-<!--Generated on Tue May  6 17:04:45 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Generated on Tue May  6 19:18:29 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
@@ -17,7 +17,7 @@
 <h1 class="ltx_title ltx_title_section">Radial symmetry</h1>
 
 <div id="Sx1.p1" class="ltx_para">
-<p class="ltx_p">This algorithm finds the sub-pixel position of a molecule by determining
+<p class="ltx_p">his algorithm finds the sub-pixel position of a molecule by determining
 the point with maximal radial symmetry in the data as described in
 <cite class="ltx_cite">[<a href="#bib.bib24" title="Rapid, accurate particle tracking by calculation of radial symmetry centers" class="ltx_ref">1</a>]</cite>. The general idea is to find the origin
 of radial symmetry (i.e., the center of a molecule) as the point with
@@ -66,8 +66,6 @@ using the Roberts cross operator <cite class="ltx_cite">[<a href="#bib.bib1" tit
 point <img id="Sx1.p3.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi123.png" width="190" height="22" alt="A_{x,y}=\left(x+0.5,y+0.5\right)"> and the slope of a gradient-oriented
 line passing through the point <img id="Sx1.p3.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi124.png" width="38" height="21" alt="A_{x,y}"> is, in a <img id="Sx1.p3.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi37.png" width="23" height="15" alt="xy"> coordinate
 system, given by</p>
-</div>
-<div id="Sx1.p4" class="ltx_para">
 <table id="Sx1.E2" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
@@ -80,16 +78,14 @@ system, given by</p>
 </tr>
 </table>
 </div>
-<div id="Sx1.p5" class="ltx_para">
-<p class="ltx_p">The origin of the radial symmetry <img id="Sx1.p5.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi126.png" width="60" height="21" alt="\left(\hat{x}_{0},\hat{y}_{0}\right)">
+<div id="Sx1.p4" class="ltx_para">
+<p class="ltx_p">The origin of the radial symmetry <img id="Sx1.p4.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi127.png" width="60" height="21" alt="\left(\hat{x}_{0},\hat{y}_{0}\right)">
 can be determined as the point that minimizes the sum of weighed distances
 of all considered lines to that point. It can be shown <cite class="ltx_cite">[<a href="#bib.bib24" title="Rapid, accurate particle tracking by calculation of radial symmetry centers" class="ltx_ref">1</a>]</cite>
 that the problem has an analytical solution. For simplicity, let index
-<img id="Sx1.p5.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi134.png" width="141" height="21" alt="j=x\left(2r+1\right)+y">, where <img id="Sx1.p5.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi139.png" width="67" height="19" alt="x,y\in\mathcal{D}">, thus <img id="Sx1.p5.m4" class="ltx_Math" style="vertical-align:-7px" src="mi/mi135.png" width="72" height="17" alt="s_{j}=s_{x,y}\,">,
-<img id="Sx1.p5.m5" class="ltx_Math" style="vertical-align:-7px" src="mi/mi138.png" width="81" height="17" alt="w_{j}=w_{x,y}\,">, and <img id="Sx1.p5.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi131.png" width="71" height="21" alt="b_{j}=b_{x,y}\,">. The analytical solution
+<img id="Sx1.p4.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi134.png" width="141" height="21" alt="j=x\left(2r+1\right)+y">, where <img id="Sx1.p4.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi139.png" width="67" height="19" alt="x,y\in\mathcal{D}">, thus <img id="Sx1.p4.m4" class="ltx_Math" style="vertical-align:-7px" src="mi/mi135.png" width="72" height="17" alt="s_{j}=s_{x,y}\,">,
+<img id="Sx1.p4.m5" class="ltx_Math" style="vertical-align:-7px" src="mi/mi138.png" width="81" height="17" alt="w_{j}=w_{x,y}\,">, and <img id="Sx1.p4.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi131.png" width="71" height="21" alt="b_{j}=b_{x,y}\,">. The analytical solution
 is given by the following equations</p>
-</div>
-<div id="Sx1.p6" class="ltx_para">
 <table id="Sx1.EGx2" class="ltx_equationgroup ltx_eqn_eqnarray">
 
 <tr id="Sx1.E3" class="ltx_equation ltx_align_baseline">
@@ -113,21 +109,21 @@ is given by the following equations</p>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(4)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.p6.m1" class="ltx_Math" style="vertical-align:-10px" src="mi/mi130.png" width="355" height="30" alt="a=\bigl(\sum_{j\in\mathcal{D}}{s_{j}w_{j}}\bigr)^{2}-\bigl(\sum_{j\in\mathcal{%
+<p class="ltx_p">where <img id="Sx1.p4.m7" class="ltx_Math" style="vertical-align:-10px" src="mi/mi130.png" width="355" height="30" alt="a=\bigl(\sum_{j\in\mathcal{D}}{s_{j}w_{j}}\bigr)^{2}-\bigl(\sum_{j\in\mathcal{%
 D}}{s_{j}^{2}w_{j}}\bigr)\bigl(\sum_{j\in\mathcal{D}}{w_{j}}\bigr)\,">,
-<img id="Sx1.p6.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi132.png" width="99" height="21" alt="b_{j}=y-s_{j}x\,">, and <img id="Sx1.p6.m3" class="ltx_Math" style="vertical-align:-15px" src="mi/mi137.png" width="83" height="34" alt="w_{j}=\frac{\tilde{w}_{j}}{s_{j}^{2}+1}\,">.
-The point-to-line distances are weighted by the factor <img id="Sx1.p6.m4" class="ltx_Math" style="vertical-align:-12px" src="mi/mi129.png" width="171" height="38" alt="\tilde{w}_{j}=\tilde{w}_{x,y}=\frac{\left|\nabla\tilde{I}_{x,y}\right|^{2}}{d%
-\left(A_{x,y},C\right)}\,">,
-where <img id="Sx1.p6.m5" class="ltx_Math" style="vertical-align:-7px" src="mi/mi133.png" width="85" height="22" alt="d\left(A_{x,y},C\right)"> is the Euclidean distance of point
-<img id="Sx1.p6.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi124.png" width="38" height="21" alt="A_{x,y}"> to the centroid <img id="Sx1.p6.m7" class="ltx_Math" style="vertical-align:-2px" src="mi/mi125.png" width="18" height="16" alt="C">. The centroid is computed analogously
-to the <a href="CenterOfMassEstimatorUI.html" title="" class="ltx_ref">centroid estimator</a> from
-the gradient magnitudes <img id="Sx1.p6.m8" class="ltx_Math" style="vertical-align:-14px" src="mi/mi127.png" width="59" height="35" alt="\left|\nabla\tilde{I}_{x,y}\right|">.</p>
+<img id="Sx1.p4.m8" class="ltx_Math" style="vertical-align:-7px" src="mi/mi132.png" width="99" height="21" alt="b_{j}=y-s_{j}x\,">, and <img id="Sx1.p4.m9" class="ltx_Math" style="vertical-align:-15px" src="mi/mi137.png" width="83" height="34" alt="w_{j}=\frac{\tilde{w}_{j}}{s_{j}^{2}+1}\,">.
+The point-to-line distances are weighted by the factor <img id="Sx1.p4.m10" class="ltx_Math" style="vertical-align:-20px" src="mi/mi129.png" width="176" height="49" alt="\tilde{w}_{j}=\tilde{w}_{x,y}=\frac{\bigl|\nabla\tilde{I}_{x,y}\bigr|^{2}}{d%
+\bigl(A_{x,y},C\bigr)}\,">,
+where <img id="Sx1.p4.m11" class="ltx_Math" style="vertical-align:-8px" src="mi/mi133.png" width="85" height="25" alt="d\bigl(A_{x,y},C\bigr)"> is the Euclidean distance of point
+<img id="Sx1.p4.m12" class="ltx_Math" style="vertical-align:-7px" src="mi/mi124.png" width="38" height="21" alt="A_{x,y}"> to the centroid <img id="Sx1.p4.m13" class="ltx_Math" style="vertical-align:-2px" src="mi/mi125.png" width="18" height="16" alt="C">. The centroid is computed analogously
+to <a href="CenterOfMassEstimatorUI.html" title="" class="ltx_ref">centroid estimator</a> but from
+the gradient magnitudes <img id="Sx1.p4.m14" class="ltx_Math" style="vertical-align:-8px" src="mi/mi126.png" width="59" height="26" alt="\bigl|\nabla\tilde{I}_{x,y}\bigr|">.</p>
 </div>
-<div id="Sx1.p7" class="ltx_para">
+<div id="Sx1.p5" class="ltx_para">
 <p class="ltx_p">The implementation of the radial symmetry method is taken from <cite class="ltx_cite">[<a href="#bib.bib24" title="Rapid, accurate particle tracking by calculation of radial symmetry centers" class="ltx_ref">1</a>]</cite>,
-where the partial derivatives are additionally smoothed by a <img id="Sx1.p7.m1" class="ltx_Math" style="vertical-align:-3px" src="mi/mi121.png" width="43" height="17" alt="3\times 3">
-averaging filter in order to reduce noise and improve the accuracy
-of the results.
+where the partial derivatives are additionally smoothed by a <img id="Sx1.p5.m1" class="ltx_Math" style="vertical-align:-3px" src="mi/mi121.png" width="43" height="17" alt="3\times 3">
+averaging filter, see Section <span class="ltx_ref ltx_ref_self">LABEL:sub:Averaging-filter</span>, in order
+to reduce noise and improve the accuracy of the results.
 </p>
 </div>
 </div>
@@ -146,8 +142,8 @@ of the results.
 <span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1038/nmeth.2071" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Radial symmetry" class="ltx_ref"><span class="ltx_text ltx_ref_title">Radial symmetry</span></a>,
-<a href="#Sx1.p5" title="Radial symmetry" class="ltx_ref"><span class="ltx_text ltx_ref_title">Radial symmetry</span></a>,
-<a href="#Sx1.p7" title="Radial symmetry" class="ltx_ref"><span class="ltx_text ltx_ref_title">Radial symmetry</span></a>.
+<a href="#Sx1.p4" title="Radial symmetry" class="ltx_ref"><span class="ltx_text ltx_ref_title">Radial symmetry</span></a>,
+<a href="#Sx1.p5" title="Radial symmetry" class="ltx_ref"><span class="ltx_text ltx_ref_title">Radial symmetry</span></a>.
 </span>
 </li>
 <li id="bib.bib1" class="ltx_bibitem ltx_bib_book">
@@ -166,7 +162,7 @@ of the results.
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Tue May  6 17:04:45 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Tue May  6 19:18:29 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>
