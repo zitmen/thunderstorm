@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -91,7 +91,35 @@ trous
 \end_layout
 
 \begin_layout Standard
-The first step of the filtering is based on separable 
+The wavelet transform of the input data at level 
+\begin_inset Formula $j=1,\ldots,N$
+\end_inset
+
+ is computed as
+\begin_inset Formula 
+\begin{equation}
+F_{j}=V_{j-1}-V_{j}\,,\label{eq:filter_wavelet}
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{equation}
+V_{j}=\left(V_{j-1}*\boldsymbol{k}_{j}\right)*\boldsymbol{k}_{j}^{\top}\,.\label{eq:wavelet-approx}
+\end{equation}
+
+\end_inset
+
+Here 
+\begin_inset Formula $V_{0}=I$
+\end_inset
+
+ is the input image, 
+\begin_inset Formula $\boldsymbol{k}_{j}$
+\end_inset
+
+ is a filter kernel (see 
 \begin_inset ERT
 status open
 
@@ -99,35 +127,12 @@ status open
 
 
 \backslash
-href{Convolution.html}{convolution}
+href{Convolution.html}{convolution with separable kernels}
 \end_layout
 
 \end_inset
 
- to obtain the smoothed approximations 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-V_{f}=\left(V_{f-1}*\boldsymbol{k}_{f}\right)*\boldsymbol{k}_{f}^{\top}\,,\label{eq:wavelet-approx}
-\end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $V_{0}=I$
-\end_inset
-
- is the input image, 
-\begin_inset Formula $f=1,\ldots,N$
-\end_inset
-
- are the levels, 
-\begin_inset Formula $\boldsymbol{k}_{f}=\left[k_{1,f},k_{2,f},\ldots,k_{l,f}\right]$
-\end_inset
-
- is a filter kernel at the corresponding level, and 
+) at the corresponding level, and 
 \begin_inset Formula $l$
 \end_inset
 
@@ -140,24 +145,15 @@ where
 \end_layout
 
 \begin_layout Standard
-The wavelet transform of the input data at level 
-\begin_inset Formula $f$
-\end_inset
-
- is computed as the difference between two consecutive approximation levels
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-F_{f}=V_{f-1}-V_{f}\,.
-\end{equation}
+The expression in Equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:filter_wavelet"
 
 \end_inset
 
-This expression acts as a band-pass filter, therefore each wavelet level
- corresponds to a different range of spatial frequencies.
+ acts as a band-pass filter.
+ Each wavelet level thus corresponds to a different range of spatial frequencies.
  The first level 
 \begin_inset Formula $F_{1}$
 \end_inset
@@ -165,10 +161,7 @@ This expression acts as a band-pass filter, therefore each wavelet level
  contains mainly the high spatial frequencies present in the input image
  including noise.
  Higher levels contain ranges of lower and lower image frequency components.
-\end_layout
-
-\begin_layout Standard
-In our case, the output of the wavelet filter is the second wavelet level
+ In our case, the output of the wavelet filter is the second wavelet level
  
 \begin_inset Formula $F_{2}$
 \end_inset
@@ -178,8 +171,20 @@ In our case, the output of the wavelet filter is the second wavelet level
 \begin_inset Formula $F_{1}$
 \end_inset
 
- can be used as a threshold in the filtered image for an approximate localizatio
-n of molecules 
+ can be used as a molecular detection 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../detectors/Threshold.html}{threshold}
+\end_layout
+
+\end_inset
+
+ in the filtered image 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Izeddin2012"
@@ -190,12 +195,20 @@ key "Izeddin2012"
 \end_layout
 
 \begin_layout Standard
-The wavelet filter uses a convolution kernel based on normalized B-spline
- basis functions
-\begin_inset space ~
+The wavelet filter typically uses a 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Convolution.html}{convolution kernel}
+\end_layout
+
 \end_inset
 
-
+ based on normalized B-spline basis functions 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Starck2002,Izeddin2012"
@@ -203,11 +216,7 @@ key "Starck2002,Izeddin2012"
 \end_inset
 
 .
- The 
-\begin_inset Formula $j$
-\end_inset
-
--th B-spline basis function of degree 
+ In our case, the B-spline basis function of order 
 \begin_inset Formula $q\in\mathbb{N}^{+}$
 \end_inset
 
@@ -216,7 +225,7 @@ key "Starck2002,Izeddin2012"
 \end_inset
 
 , written as 
-\begin_inset Formula $B_{j,q}\left(t\right)$
+\begin_inset Formula $B_{q}\left(t\right)$
 \end_inset
 
 , is defined recursively as follows.
@@ -226,12 +235,12 @@ key "Starck2002,Izeddin2012"
 
 , 
 \begin_inset Formula 
-\begin{equation}
-B_{j,1}\left(t\right)=\begin{cases}
-1 & \quad\mathrm{if}\; t_{j}\leq t<t_{j+1}\,,\\
+\[
+B_{1}\left(t\right)=\begin{cases}
+1 & \quad\mathrm{if}\;0\leq t<1\,,\\
 0 & \quad\mathrm{otherwise}\,,
 \end{cases}
-\end{equation}
+\]
 
 \end_inset
 
@@ -241,40 +250,37 @@ and for
 
 ,
 \begin_inset Formula 
-\begin{equation}
-B_{j,q}\left(t\right)=\frac{t-t_{j}}{t_{j+q-1}-t_{j}}B_{j,q-1}\left(t\right)+\frac{t_{j+q}-t}{t_{j+q}-t_{j+1}}B_{j+1,q-1}\left(t\right).
-\end{equation}
+\[
+B_{q}\left(t\right)=\frac{t}{q-1}B_{q-1}\left(t\right)+\frac{q-t}{q-1}B_{q-1}\left(t-1\right).
+\]
 
 \end_inset
 
 Here 
-\begin_inset Formula $B_{j,q}\left(t\right)$
+\begin_inset Formula $B_{q}\left(t\right)$
 \end_inset
 
- has non-zero values in the interval 
-\begin_inset Formula $t_{j}\leq t<t_{j+q}$
+ has non-zero values only in the interval 
+\begin_inset Formula $0\leq t<q$
 \end_inset
 
 .
 \end_layout
 
 \begin_layout Standard
-For the first wavelet level, the convolution kernel 
-\begin_inset Formula $\boldsymbol{k}_{1}$
+The first wavelet level 
+\begin_inset Formula $F_{1}$
 \end_inset
 
- in Equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:wavelet-approx"
-
-\end_inset
-
- is composed from values 
-\begin_inset Formula $k_{i,1}\left(x\mid q,s\right)=aB_{0,q}\left(\frac{x}{s}+\frac{q}{2}\right)$
+ is computed using the convolution kernel 
+\begin_inset Formula $\boldsymbol{k}_{1}=\left[k_{1,1},\ldots,k_{1,l}\right]$
 \end_inset
 
 , where 
+\begin_inset Formula $k_{1,i}\left(x\mid q,s\right)=aB_{q}\left(\frac{x}{s}+\frac{q}{2}\right)$
+\end_inset
+
+, 
 \begin_inset Formula $i=1,\ldots,l$
 \end_inset
 
@@ -282,30 +288,35 @@ reference "eq:wavelet-approx"
 \begin_inset Formula $x=i-\left(l+1\right)/2$
 \end_inset
 
-, the kernel size 
+, and 
 \begin_inset Formula $l=2\left\lceil \frac{qs}{2}\right\rceil -1$
 \end_inset
 
-, 
+.
+ Here 
 \begin_inset Formula $s>0$
 \end_inset
 
- is a sampling factor, and 
+ defines a scaling factor of the variable 
+\begin_inset Formula $x$
+\end_inset
+
+, and 
 \begin_inset Formula $a$
 \end_inset
 
- is a constant scaling factor such that 
-\begin_inset Formula $\sum_{i}k_{i,1}=1$
+ is a scaling factor such that 
+\begin_inset Formula $\sum_{i}k_{1,i}=1$
 \end_inset
 
 .
  Kernels for higher wavelet levels are obtained by inserting zeros between
  the kernel coefficients.
- Users need to input the degree 
+ Users need to input the order 
 \begin_inset Formula $q$
 \end_inset
 
- of the B-spline basis function and the sampling factor 
+ of the B-spline basis function and the scaling factor 
 \begin_inset Formula $s$
 \end_inset
 
@@ -314,7 +325,7 @@ reference "eq:wavelet-approx"
 
 \begin_layout Standard
 In our implementation, the default kernel uses a B-spline basis function
- of the third degree with a sampling factor 
+ of the third order with a scaling factor 
 \begin_inset Formula $s=2$
 \end_inset
 
@@ -338,11 +349,11 @@ key "Starck2002,Izeddin2012"
 \end_layout
 
 \begin_layout Subsection*
-Detector threshold formula
+Threshold for approximate localization of molecules
 \end_layout
 
 \begin_layout Standard
-Refer to 
+The 
 \begin_inset ERT
 status open
 
@@ -350,22 +361,15 @@ status open
 
 
 \backslash
-href{../../detectors/Threshold.html}{Threshold}
+href{../../detectors/Threshold.html}{threshold}
 \end_layout
 
 \end_inset
 
- to see how filter results can be used to dynamically find threshold value.
- 
-\end_layout
-
-\begin_layout Standard
-This filter provides the two default variables and all the calculated wavelet
- levels 
-\begin_inset Formula $F_{i}$
-\end_inset
-
-:
+ value can be specified by users as an expression combining mathematical
+ functions and operators with variables based on the current raw or filtered
+ image.
+ Variables provided by this filter are:
 \begin_inset ERT
 status open
 
@@ -386,7 +390,7 @@ arraystretch}{2}
 \begin_layout Standard
 \noindent
 \begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="2">
+<lyxtabular version="3" rows="4" columns="2">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
@@ -416,7 +420,7 @@ Wave.I
 \begin_inset Text
 
 \begin_layout Plain Layout
-current unfiltered image
+current raw input image
 \end_layout
 
 \end_inset
@@ -448,7 +452,7 @@ Wave.F
 \begin_inset Text
 
 \begin_layout Plain Layout
-current filtered image
+corresponding filtered image
 \end_layout
 
 \end_inset
@@ -484,7 +488,7 @@ first wavelet level
 \begin_inset Formula $F_{1}$
 \end_inset
 
- of the current image
+ of the current input image
 \end_layout
 
 \end_inset
@@ -520,71 +524,13 @@ second wavelet level
 \begin_inset Formula $F_{2}$
 \end_inset
 
- of the current image
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-Wave.F3
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-third wavelet level 
-\shape italic
-
-\begin_inset Formula $F_{3}$
-\end_inset
-
-
-\shape default
- of the current image
+ of the current input image
 \end_layout
 
 \end_inset
 </cell>
 </row>
 </lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand
-\backslash
-refname{References}
-\end_layout
 
 \end_inset
 

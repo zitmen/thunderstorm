@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -61,39 +64,60 @@
 \begin_body
 
 \begin_layout Section*
-Centroid of local neighborhood
+No estimator
 \end_layout
 
 \begin_layout Standard
-Calculation of the centroid in a local image neighborhood is a very fast
- method for sub-pixel molecule localization and is used in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "QuickPALM-NM-2010"
+This option returns only the list of approximate molecular positions.
+\end_layout
 
-\end_inset
+\begin_layout Subsection*
+See also
+\end_layout
 
-.
- The algorithm does not estimate the intensity or imaged size of molecules,
- and is sensitive to noise.
- The main idea is simply to calculate the mean pixel positions weighted
- by the intensity of the image data.
- The sub-pixel refinement of the coordinates is calculated as
-\begin_inset Formula 
-\[
-\hat{x}_{0}=\frac{\sum_{x,y\in\mathcal{D}}{x\tilde{I}\left(x_{,}y\right)}}{\sum_{x,y\in\mathcal{D}}{\tilde{I}\left(x_{,}y\right)}}\,,\quad\hat{y}_{0}=\frac{\sum_{x,y\in\mathcal{D}}{y\tilde{I}\left(x,y\right)}}{\sum_{x,y\in\mathcal{D}}{\tilde{I}\left(x,y\right)}}\,.
-\]
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../detectors/LocalMaximaDetector.html}{Detection of local intensity maxima}
+\end_layout
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset CommandInset bibtex
-LatexCommand bibtex
-bibfiles "references"
-options "plain"
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../detectors/NonMaxSuppressionDetector.html}{Non-maximum suppression}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../detectors/CentroidOfConnectedComponentsDetector.html}{Centroid of
+ connected components}
+\end_layout
 
 \end_inset
 

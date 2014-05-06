@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -64,11 +64,11 @@
 \begin_body
 
 \begin_layout Section*
-PSF fitting methods
+Fitting point-spread function models
 \end_layout
 
 \begin_layout Subsection*
-Least-squares
+Least-squares methods
 \end_layout
 
 \begin_layout Standard
@@ -130,7 +130,7 @@ Here the residual value for the
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
- is the vector of parameters.
+ are the PSF parameters.
  The residual value can be further weighted by 
 \begin_inset Formula $w=1$
 \end_inset
@@ -167,18 +167,15 @@ weighted by
 \end_layout
 
 \begin_layout Standard
-The search for a vector of parameters 
+The search for parameters 
 \begin_inset Formula $\boldsymbol{\hat{\theta}}$
 \end_inset
 
-, which minimizes 
+ which minimize 
 \begin_inset Formula $\chi^{2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)$
 \end_inset
 
-, leads to an optimization problem formulated as 
-\end_layout
-
-\begin_layout Standard
+, leads to an optimization problem formulated as
 \begin_inset Formula 
 \begin{equation}
 \boldsymbol{\hat{\theta}}=\argmin_{\boldsymbol{\theta}}\chi^{2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)\,,\label{eq:lsq}
@@ -196,6 +193,23 @@ key "MathApache"
 \end_inset
 
 .
+ The starting point for the optimization process is computed from the data
+ as the difference between the maximum and the minimum intensity values
+ for the molecular intensity 
+\begin_inset Formula $\theta_{N}$
+\end_inset
+
+, and as the minimum intensity value for the background offset 
+\begin_inset Formula $\theta_{b}$
+\end_inset
+
+.
+ Users have to choose the starting point for the approximate molecular width
+ 
+\begin_inset Formula $\theta_{\sigma}$
+\end_inset
+
+.
  The sub-pixel refinement of the coordinates is obtained as 
 \begin_inset Formula $\hat{x}_{0}=\hat{\theta}_{x}$
 \end_inset
@@ -209,12 +223,6 @@ key "MathApache"
 \end_inset
 
 .
- Depending on the chosen PSF model, users have to set a starting point for
- the optimization process, e.g., the approximate width 
-\begin_inset Formula $\theta_{\sigma}$
-\end_inset
-
- for the Gaussian PSF.
 \end_layout
 
 \begin_layout Subsection*
@@ -234,9 +242,6 @@ This approach assumes that the number of photons collected by a single camera
 \end_inset
 
 , is given by
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 p\left(\kappa\mid\lambda\right)=\frac{\lambda^{\kappa}\mathrm{e}^{-\lambda}}{\kappa!}\,.\label{eq:poisson}
@@ -266,14 +271,11 @@ key "Kendall1979,Mortensen-NM-2010,Smith2010,Huang2011"
 
 \end_inset
 
- of the vector of parameters 
+ of the parameters 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
- can be modeled as 
-\end_layout
-
-\begin_layout Standard
+ can be modeled as
 \begin_inset Formula 
 \begin{equation}
 L(\boldsymbol{\theta}\mid\mathcal{D})=\prod_{x,y\in\mathcal{D}}\frac{\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)^{\tilde{I}\left(x,y\right)}\mathrm{e}^{-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)}}{\tilde{I}\left(x,y\right)!}\,.
@@ -285,7 +287,7 @@ L(\boldsymbol{\theta}\mid\mathcal{D})=\prod_{x,y\in\mathcal{D}}\frac{\mathrm{PSF
 \end_layout
 
 \begin_layout Standard
-The maximum likelihood estimate of the vector of parameters 
+The maximum likelihood estimate of the parameters 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -304,9 +306,6 @@ The maximum likelihood estimate of the vector of parameters
 
  that best agrees with the data.
  The maximization problem has the form
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 \boldsymbol{\hat{\theta}}=\argmax_{\boldsymbol{\theta}}\sum_{x,y\in\mathcal{D}}{\left[\tilde{I}\left(x,y\right)\ln{\left(\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)\right)}-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)\right]}\,,\label{eq:loglik}
@@ -319,6 +318,23 @@ which we solve by the Nelder-Mead method
 LatexCommand cite
 key "NelderMead"
 
+\end_inset
+
+.
+ The starting point for the optimization process is computed from the data
+ as the difference between the maximum and the minimum intensity values
+ for the molecular intensity 
+\begin_inset Formula $\theta_{N}$
+\end_inset
+
+, and as the minimum intensity value for the background offset 
+\begin_inset Formula $\theta_{b}$
+\end_inset
+
+.
+ Users have to choose the starting point for the approximate molecular width
+ 
+\begin_inset Formula $\theta_{\sigma}$
 \end_inset
 
 .
@@ -335,12 +351,6 @@ key "NelderMead"
 \end_inset
 
 .
- Depending on the chosen PSF model, users have to set a starting point for
- the optimization process, e.g., the approximate width 
-\begin_inset Formula $\theta_{\sigma}$
-\end_inset
-
- for the Gaussian PSF.
 \end_layout
 
 \begin_layout Subsection*
@@ -349,7 +359,7 @@ Constraining parameters of PSF models
 
 \begin_layout Standard
 The Levenberg-Marquardt algorithm and the Nelder-Mead method used above
- search for values the vector of parameters 
+ search for values of the parameters 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -395,17 +405,51 @@ reference "eq:loglik"
 transformation also improves the stability of the fit.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
 \begin_layout Plain Layout
 
-%
+
 \backslash
-renewcommand
+href{PSF.html}{Point-spread function (PSF)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
 \backslash
-bibname{References}%
+href{CrowdedField.html}{Multiple-emitter fitting analysis}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{LocalizationUncertainty.html}{Localization uncertainty}
 \end_layout
 
 \end_inset

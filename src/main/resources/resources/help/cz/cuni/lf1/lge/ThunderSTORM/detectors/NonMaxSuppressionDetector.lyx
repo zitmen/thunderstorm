@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -68,16 +68,8 @@ Non-maximum suppression
 \end_layout
 
 \begin_layout Standard
-Non-maximum suppression 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SHB2007"
-
-\end_inset
-
- is a way to eliminate all image information that is not part of the local
- intensity maxima by setting all non-maximal pixels to zero.
- Our implementation is based on morphological gray-scale dilation 
+Our implementation of non-maximum suppression is based on morphological
+ gray-scale dilation 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SHB2007"
@@ -85,13 +77,10 @@ key "SHB2007"
 \end_inset
 
  defined by the formula
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
-\begin{equation}
+\[
 \left(F\oplus S\right)\left(x,y\right)=\max_{\left(x',y'\right)\in D_{S}}\left[F\left(x-x',y-y'\right)+S\left(x',y'\right)\right]\,,
-\end{equation}
+\]
 
 \end_inset
 
@@ -152,57 +141,27 @@ We first perform a gray-scale dilation of the filtered image
 
  is a dilation radius given by the user.
  The approximate molecular positions are extracted by finding pixels in
- the original image 
+ the image 
 \begin_inset Formula $F$
 \end_inset
 
  that have intensities equal to corresponding pixels in the dilated image
- and also have an intensity greater than a user-specified threshold.
+ and also have an intensity greater than a user-specified 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Threshold.html}{threshold}
+\end_layout
+
+\end_inset
+
+.
  Essentially, a binary image is built with all non-maximum pixels set to
  zero and with all local maxima set to one.
-\end_layout
-
-\begin_layout Subsection*
-Threshold
-\end_layout
-
-\begin_layout Standard
-Only local maxima with intensity higher than a threshold value are used
- as molecule candidates.
- Threshold can be specified as a fixed number or a formula containing image
- statistics.
- See 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{Threshold.html}{Threshold}
-\end_layout
-
-\end_inset
-
- for more information.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand
-\backslash
-refname{References}
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard

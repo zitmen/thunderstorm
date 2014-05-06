@@ -64,85 +64,15 @@
 \begin_body
 
 \begin_layout Section*
-Difference of averaging filters
+No filter
 \end_layout
 
 \begin_layout Standard
-The difference of averaging filters 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Huang2011"
-
-\end_inset
-
- is another type of a band-pass filter.
- The filtered image is obtained by subtracting images filtered with two
+This selection leaves the input data as it is for further processing, i.e.,
  
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{BoxFilterUI.html}{averaging filters}
-\end_layout
-
+\begin_inset Formula $F=I$
 \end_inset
 
- having different user-specified kernel sizes,
-\begin_inset Formula 
-\[
-F=I*K_{\mathrm{AV1}}-I*K_{\mathrm{AV2}}\,.
-\]
-
-\end_inset
-
-Similar to the 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{DifferenceOfGaussiansFilterUI.html}{difference-of-Gaussians filter}
-\end_layout
-
-\end_inset
-
-, the size of the kernel 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $K_{\mathrm{AV2}}$
-\end_inset
-
- has to be larger than 
-\begin_inset Formula $K_{\mathrm{AV1}}$
-\end_inset
-
-
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
 .
 \end_layout
 
@@ -188,7 +118,7 @@ arraystretch}{2}
 \begin_layout Standard
 \noindent
 \begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="2">
+<lyxtabular version="3" rows="2" columns="2">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
@@ -204,7 +134,7 @@ status open
 
 \begin_layout Plain Layout
 
-DoB.I
+I
 \end_layout
 
 \end_inset
@@ -236,7 +166,7 @@ status open
 
 \begin_layout Plain Layout
 
-DoB.F
+F
 \end_layout
 
 \end_inset
@@ -256,90 +186,7 @@ corresponding filtered image
 \end_inset
 </cell>
 </row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-DoB.B1
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-result of filtering only with 
-\begin_inset Formula $K_{\mathrm{AV1}}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-DoB.B2
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-result of filtering only with 
-\begin_inset Formula $K_{\mathrm{AV2}}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
 </lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset bibtex
-LatexCommand bibtex
-bibfiles "references"
-options "plain"
 
 \end_inset
 

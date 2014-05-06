@@ -64,96 +64,42 @@
 \begin_body
 
 \begin_layout Section*
-Localization uncertainty
+Point-spread function (PSF)
 \end_layout
 
 \begin_layout Standard
-Let 
-\begin_inset Formula $\sigma$
-\end_inset
-
- be the standard deviation of a fitted Gaussian PSF in nm, 
-\begin_inset Formula $a$
-\end_inset
-
- is the (backprojected) pixel size in nm, 
-\begin_inset Formula $N$
-\end_inset
-
- is the number of photons detected for a given molecule, and 
-\begin_inset Formula $b$
-\end_inset
-
- is the background signal level in photons calculated as the standard deviation
- of the residuals between the raw data and the fitted PSF model 
+The impulse response of a microscope to a point-like source is described
+ by the point-spread function (PSF).
+ Because a single molecule emitter can be treated as an incoherent point
+ source in SMLM data, the result of fitting a PSF model to an image of a
+ single molecule is an estimate of the molecular position, its imaged size,
+ and its intensity.
+ ThunderSTORM offers a choice between several PSF models and fitting procedures
+ based on (weighted or unweighted) least-squares methods and maximum likelihood
+ estimation 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Krizek2011"
+key "Kendall1979,Mortensen-NM-2010"
 
 \end_inset
 
 .
- The uncertainty in the lateral position of a molecule can be approximated
- by the formula 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Thompson2002"
-
-\end_inset
-
-
-\begin_inset Formula 
-\begin{equation}
-\left\langle (\Delta x)^{2}\right\rangle =\frac{\sigma^{2}+a^{2}/12}{N}+\frac{8\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,.\label{eq:thompson_ccd}
-\end{equation}
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
-The previous equation can be further adjusted to take EM gain of EMCCD cameras
- into account 
+It has been shown 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Quan2010"
+key "Thompson2002,Rieger2010"
 
 \end_inset
 
-, giving the expression
-\begin_inset Formula 
-\begin{equation}
-\left\langle (\Delta x)^{2}\right\rangle =\frac{2\sigma^{2}+a^{2}/12}{N}+\frac{8\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,.\label{eq:thompson_emccd}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In the 3D case, the localization uncertainty of molecular positions in the
- lateral direction is determined according to Equations 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:thompson_emccd"
-
-\end_inset
-
- or 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:thompson_ccd"
-
-\end_inset
-
-, where we use 
-\begin_inset Formula $\sigma^{2}=\hat{\theta}_{\sigma_{1}}\hat{\theta}_{\sigma_{2}}$
-\end_inset
-
-.
- In the axial direction, we use a constant, user-specified value.
+ that the Gaussian function provides a very good approximation of the real
+ PSF of a microscope.
+ This is mainly due to pixelation effects and the presence of noise, which
+ makes the difference between the Gaussian function and the real PSF negligible.
+ The advantage of Gaussian PSF models are their simplicity, robustness,
+ and computational efficiency.
 \end_layout
 
 \begin_layout Subsection*
@@ -168,7 +114,42 @@ status open
 
 
 \backslash
-href{PSF.html}{Point-spread function (PSF)}
+href{SymmetricGaussianEstimatorUI.html}{Symmetric 2D Gaussian function PSF
+ model}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{IntSymmetricGaussianEstimatorUI.html}{Integrated form of a symmetric
+ 2D Gaussian function PSF model}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{EllipticGaussianEstimatorUI.html}{Rotated elliptical Gaussian function
+ PSF model (3D using astigmatism)}
 \end_layout
 
 \end_inset
@@ -202,6 +183,22 @@ status open
 \backslash
 href{Fitting.html}{Least-squares and maximum likelihood estimation fitting
  methods}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{LocalizationUncertainty.html}{Localization uncertainty}
 \end_layout
 
 \end_inset

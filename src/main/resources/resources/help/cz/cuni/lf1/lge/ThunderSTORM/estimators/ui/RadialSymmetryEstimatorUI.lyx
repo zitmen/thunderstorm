@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -68,7 +68,7 @@ Radial symmetry
 \end_layout
 
 \begin_layout Standard
-This algorithm finds the sub-pixel position of a molecule by determining
+his algorithm finds the sub-pixel position of a molecule by determining
  the point with maximal radial symmetry in the data as described in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -88,7 +88,7 @@ key "Parthasarathy2012"
 \end_layout
 
 \begin_layout Standard
-The calculation starts by determining the intensity co-gradient 
+The calculation starts by determining the intensity co-gradient
 \begin_inset Formula 
 \begin{equation}
 \nabla\tilde{I}_{x,y}=\left[\frac{\partial\tilde{I}\left(x,y\right)}{\partial u},\frac{\partial\tilde{I}\left(x,y\right)}{\partial v}\right]^{\top}
@@ -155,9 +155,6 @@ The computed co-gradient
 \end_inset
 
  coordinate system, given by
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 \mathit{s_{x,y}}=\left(\frac{\partial I\left(x,y\right)}{\partial u}+\frac{\partial I\left(x,y\right)}{\partial v}\right)\left(\frac{\partial I\left(x,y\right)}{\partial u}-\frac{\partial I\left(x,y\right)}{\partial v}\right)^{-1}\,.
@@ -205,9 +202,6 @@ key "Parthasarathy2012"
 
 .
  The analytical solution is given by the following equations
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
 \hat{x}_{0} & = & a^{-1}\biggl[\Bigl(\sum_{j\in\mathcal{D}}{s_{j}w_{j}b_{j}}\Bigr)\Bigl(\sum_{j\in\mathcal{D}}{w_{j}}\Bigr)-\Bigl(\sum_{j\in\mathcal{D}}{w_{j}b_{j}}\Bigr)\Bigl(\sum_{j\in\mathcal{D}}{s_{j}w_{j}}\Bigr)\biggr]\,,\\
@@ -230,11 +224,11 @@ where
 
 .
  The point-to-line distances are weighted by the factor 
-\begin_inset Formula $\tilde{w}_{j}=\tilde{w}_{x,y}=\frac{\left|\nabla\tilde{I}_{x,y}\right|^{2}}{d\left(A_{x,y},C\right)}\,$
+\begin_inset Formula $\tilde{w}_{j}=\tilde{w}_{x,y}=\frac{\bigl|\nabla\tilde{I}_{x,y}\bigr|^{2}}{d\bigl(A_{x,y},C\bigr)}\,$
 \end_inset
 
 , where 
-\begin_inset Formula $d\left(A_{x,y},C\right)$
+\begin_inset Formula $d\bigl(A_{x,y},C\bigr)$
 \end_inset
 
  is the Euclidean distance of point 
@@ -246,7 +240,7 @@ where
 \end_inset
 
 .
- The centroid is computed analogously to the 
+ The centroid is computed analogously to 
 \begin_inset ERT
 status open
 
@@ -259,8 +253,8 @@ href{CenterOfMassEstimatorUI.html}{centroid estimator}
 
 \end_inset
 
- from the gradient magnitudes 
-\begin_inset Formula $\left|\nabla\tilde{I}_{x,y}\right|$
+ but from the gradient magnitudes 
+\begin_inset Formula $\bigl|\nabla\tilde{I}_{x,y}\bigr|$
 \end_inset
 
 .
@@ -278,26 +272,14 @@ key "Parthasarathy2012"
 \begin_inset Formula $3\times3$
 \end_inset
 
- averaging filter in order to reduce noise and improve the accuracy of the
- results.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand
-\backslash
-refname{References}
-\end_layout
+ averaging filter, see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Averaging-filter"
 
 \end_inset
 
-
+, in order to reduce noise and improve the accuracy of the results.
 \end_layout
 
 \begin_layout Standard

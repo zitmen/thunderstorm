@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -68,7 +68,7 @@ Lowered Gaussian filter
 \end_layout
 
 \begin_layout Standard
-This filter was reported to perform well in DAOPHOT 
+This filter was reported to perform well in the DAOPHOT 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Stetson1987"
@@ -91,12 +91,12 @@ status open
 
 
 \backslash
-href{Convolution.html}{convolution}
+href{Convolution.html}{convolution kernel}
 \end_layout
 
 \end_inset
 
- kernel is based on the 
+ is based on the 
 \begin_inset ERT
 status open
 
@@ -104,24 +104,20 @@ status open
 
 
 \backslash
-href{GaussianFilterUI.html}{Gaussian}
+href{GaussianFilterUI.html}{Gaussian kernel}
 \end_layout
 
 \end_inset
 
- kernel, which has been lowered to have the sum of all its entries equal
- to zero,
-\end_layout
-
-\begin_layout Standard
+ which has been lowered to have the sum of all its entries equal to zero,
 \begin_inset Formula 
-\begin{equation}
+\[
 K_{\mathrm{LG}}\left(x,y\mid\sigma\right)=K_{\mathrm{G}}\left(x,y\mid\sigma\right)-b\,,
-\end{equation}
+\]
 
 \end_inset
 
- where 
+where 
 \begin_inset Formula $b$
 \end_inset
 
@@ -143,11 +139,24 @@ Although the kernel
 \end_inset
 
  is not separable, the filtered image can be obtained by subtracting two
- images filtered with two separable kernels, 
+ images filtered with two separable kernels (see 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Convolution.html}{convolution with separable kernels}
+\end_layout
+
+\end_inset
+
+),
 \begin_inset Formula 
-\begin{equation}
+\[
 F=I*K_{\mathrm{LG}}=I*K_{\mathrm{G}}-I*K_{\mathrm{AV}}\,.
-\end{equation}
+\]
 
 \end_inset
 
@@ -168,11 +177,11 @@ The lowered Gaussian is a band-pass filter.
 \end_layout
 
 \begin_layout Subsection*
-Detector threshold formula
+Threshold for approximate localization of molecules
 \end_layout
 
 \begin_layout Standard
-Refer to 
+The 
 \begin_inset ERT
 status open
 
@@ -180,17 +189,15 @@ status open
 
 
 \backslash
-href{../../detectors/Threshold.html}{Threshold}
+href{../../detectors/Threshold.html}{threshold}
 \end_layout
 
 \end_inset
 
- to see how filter results can be used to dynamically find threshold value.
- 
-\end_layout
-
-\begin_layout Standard
-Only the two default variables are provided by this filter:
+ value can be specified by users as an expression combining mathematical
+ functions and operators with variables based on the current raw or filtered
+ image.
+ Variables provided by this filter are:
 \begin_inset ERT
 status open
 
@@ -241,7 +248,7 @@ LowGauss.I
 \begin_inset Text
 
 \begin_layout Plain Layout
-current unfiltered image
+current raw input image
 \end_layout
 
 \end_inset
@@ -273,31 +280,13 @@ LowGauss.F
 \begin_inset Text
 
 \begin_layout Plain Layout
-current filtered image
+corresponding filtered image
 \end_layout
 
 \end_inset
 </cell>
 </row>
 </lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand
-\backslash
-refname{References}
-\end_layout
 
 \end_inset
 

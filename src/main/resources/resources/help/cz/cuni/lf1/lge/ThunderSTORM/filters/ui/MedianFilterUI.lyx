@@ -81,11 +81,11 @@ A median filter is a non-linear image filter often used to remove impulse
 \end_layout
 
 \begin_layout Subsection*
-Detector threshold formula
+Threshold for approximate localization of molecules
 \end_layout
 
 \begin_layout Standard
-Refer to 
+The 
 \begin_inset ERT
 status open
 
@@ -93,17 +93,15 @@ status open
 
 
 \backslash
-href{../../detectors/Threshold.html}{Threshold}
+href{../../detectors/Threshold.html}{threshold}
 \end_layout
 
 \end_inset
 
- to see how filter results can be used to dynamically find threshold value.
- 
-\end_layout
-
-\begin_layout Standard
-Variables provided by this filter:
+ value can be specified by users as an expression combining mathematical
+ functions and operators with variables based on the current raw or filtered
+ image.
+ Variables provided by this filter are:
 \begin_inset ERT
 status open
 
@@ -154,7 +152,7 @@ Med.I
 \begin_inset Text
 
 \begin_layout Plain Layout
-current unfiltered image
+current raw input image
 \end_layout
 
 \end_inset
@@ -186,7 +184,7 @@ Med.F
 \begin_inset Text
 
 \begin_layout Plain Layout
-current filtered image
+corresponding filtered image
 \end_layout
 
 \end_inset

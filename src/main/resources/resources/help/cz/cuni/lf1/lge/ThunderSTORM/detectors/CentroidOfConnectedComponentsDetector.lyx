@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -69,7 +69,20 @@ Centroid of connected components
 
 \begin_layout Standard
 This algorithm is based on segmentation of molecules which is performed
- by applying a user-defined threshold on the filtered image 
+ by applying a user-defined 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Threshold.html}{threshold}
+\end_layout
+
+\end_inset
+
+ on the filtered image 
 \begin_inset Formula $F$
 \end_inset
 
@@ -97,9 +110,6 @@ key "Izeddin2012"
 .
  The position of each molecule is determined by computing the centroid of
  the relevant segmented object using
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 \tilde{x}_{p}=\frac{1}{c_{p}}\sum_{i=1}^{c_{p}}{x_{i,p}}\,,\quad\tilde{y}_{p}=\frac{1}{c_{p}}\sum_{i=1}^{c_{p}}{y_{i,p}}\,.
@@ -142,47 +152,6 @@ Find Maxima
 \end_inset
 
  function.
-\end_layout
-
-\begin_layout Subsection*
-Threshold
-\end_layout
-
-\begin_layout Standard
-The threshold used for image segmentation can be specified as a fixed number
- or a formula containing image statistics.
- See 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{Threshold.html}{Threshold}
-\end_layout
-
-\end_inset
-
- for more information.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand
-\backslash
-refname{References}
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
