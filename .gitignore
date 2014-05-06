@@ -1,3 +1,7 @@
 target/
 IJ_Prefs.txt
 *.lyx~
+*.iml
+.idea
+nb-configuration.xml
+nbactions.xml
