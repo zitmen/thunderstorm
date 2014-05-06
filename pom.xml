@@ -16,8 +16,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>    
         <imagej.path>c:\Program Files\ImageJ</imagej.path>
         <imagej1.version>1.45</imagej1.version>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <skipHelpCompilation>true</skipHelpCompilation>
+        <lyx.path>/cygdrive/c/Program Files (x86)/Lyx 2.0/bin/LyX.exe</lyx.path>
+        <help.dir>${basedir}/src/main/resources/resources/help</help.dir>
     </properties>
     
     <!--
@@ -62,7 +65,6 @@
     </developers>
         
     <scm>
-        <connection>scm:git:git://github.com/imagej/image5d</connection>
         <developerConnection>scm:git:https://code.google.com/p/thunder-storm/</developerConnection>
         <tag>HEAD</tag>
         <url>https://code.google.com/p/thunder-storm/source/checkout</url>
@@ -129,17 +131,40 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2</version>
+                <version>1.3</version>
                 <executions>
                     <execution>
                         <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>compile-html-help</id>
+                        <phase>generate-sources</phase>
+                        <goals>
                             <goal>exec</goal>
                         </goals>
+                        <configuration>
+                            <skip>${skipHelpCompilation}</skip>
+                            <workingDirectory>${help.dir}</workingDirectory>
+<!-- Note that the BAT file contains the path to cygwin installation. -->
+                            <executable>compile-html-help.bat</executable>
+                            <commandlineArgs>"${lyx.path}"</commandlineArgs>
+                        </configuration>
+<!-- Unix-based systems (TODO: create profiles)
+                        <configuration>
+                            <skip>${skipHelpCompilation}</skip>
+                            <workingDirectory>${help.dir}</workingDirectory>
+                            <executable>compile-html-help.sh</executable>
+                            <commandlineArgs>"${lyx.path}"</commandlineArgs>
+                        </configuration>
+-->
                     </execution>
                 </executions>
                 <configuration>
                     <executable>java</executable>
                     <commandlineArgs>-jar "${imagej.path}/ij.jar"</commandlineArgs>
+                    <mainClass>ij.ImageJ</mainClass>
                     <workingDirectory>${imagej.path}</workingDirectory>
                 </configuration>
             </plugin>
