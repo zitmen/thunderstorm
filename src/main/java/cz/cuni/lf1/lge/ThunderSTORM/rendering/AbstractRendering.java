@@ -274,7 +274,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             double dxVal = useDefaultDX ? defaultDX : fit.getParam(LABEL_THOMPSON, PIXEL);
             double dzVal = useDefaultDZ ? defaultDZ : fit.getParam(LABEL_UNCERTAINTY_Z, NANOMETER);
             //
-            drawPoint(fit.getX(PIXEL), fit.getY(PIXEL), zVal, dxVal, dzVal);    // TODO: OTAZKA: NANOMETRY (100), nebo VOXELY (5)? A KDE SE PISE JAK VELKY VOXEL JE??!!
+            drawPoint(fit.getX(PIXEL), fit.getY(PIXEL), zVal, dxVal, dzVal);
         }
     }
 
