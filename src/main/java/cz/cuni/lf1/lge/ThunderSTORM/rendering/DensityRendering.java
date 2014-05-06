@@ -49,7 +49,7 @@ public class DensityRendering extends AbstractRendering implements IncrementalRe
     }
 
     @Override
-    protected void drawPoint(double x, double y, double z, double dx) {
+    protected void drawPoint(double x, double y, double z, double dx, double dz) {
         //3D gaussian blob integrated in over voxel 
         //mathematica function for definite integral:
         //Integrate[1/(Sqrt[(2*Pi)^3*s1^2*s2^2*s3^2]*E^((1/2)*((x - x0)^2/s1^2 + (y - y0)^2/s2^2 + (z - z0)^2/s3^2))), {z, a, b}, {x, ax, ax + 1}, {y, ay , ay + 1}]
@@ -64,14 +64,14 @@ public class DensityRendering extends AbstractRendering implements IncrementalRe
             double sqrt2dx = Math.sqrt(2) * dx;
 
             int w = threeDimensions ? ((int) ((z - zFrom) / zStep)) : 0;
-            int affectedImages = Math.max((int) (3 * defaultDZ / zStep), 1);
+            int affectedImages = Math.max((int) (3 * dz / zStep), 1);
             for(int idz = w - affectedImages; idz <= w + affectedImages; idz++) {
                 if(idz >= 0 && idz < zSlices) {
                     double zerfdif;
                     if(threeDimensions) {
                         double aerf = (z - zFrom) - (idz - 1) * zStep;
                         double berf = (z - zFrom) - idz * zStep;
-                        zerfdif = (-erf(berf / (Math.sqrt(2) * defaultDZ)) + erf(aerf / (Math.sqrt(2) * defaultDZ)));
+                        zerfdif = (-erf(berf / (Math.sqrt(2) * dz)) + erf(aerf / (Math.sqrt(2) * dz)));
                     } else {
                         zerfdif = 2;
                     }

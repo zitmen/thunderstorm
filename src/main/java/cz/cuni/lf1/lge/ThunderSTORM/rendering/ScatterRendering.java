@@ -28,8 +28,16 @@ public class ScatterRendering extends AbstractRendering implements IncrementalRe
         }
     }
 
+    /**
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @param dx
+     * @param dz ignored
+     */
     @Override
-    protected void drawPoint(double x, double y, double z, double dx) {
+    protected void drawPoint(double x, double y, double z, double dx, double dz) {
         if(isInBounds(x, y)) {
             int u = (int) ((x - xmin) / resolution);
             int v = (int) ((y - ymin) / resolution);

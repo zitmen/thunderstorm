@@ -49,13 +49,13 @@ public class HistogramRendering extends AbstractRendering implements Incremental
     }
 
     @Override
-    protected void drawPoint(double x, double y, double z, double dx) {
+    protected void drawPoint(double x, double y, double z, double dx, double dz) {
 
         if(avg >= 1) {
             for(int i = 0; i < avg; i++) {
                 double newX = x + rnd.nextGaussian() * dx;
                 double newY = y + rnd.nextGaussian() * dx;
-                double newZ = z + rnd.nextGaussian() * defaultDZ;
+                double newZ = z + rnd.nextGaussian() * dz;
                 if(isInBounds(newX, newY)) {
                     int u = (int) ((newX - xmin) / resolution);
                     int v = (int) ((newY - ymin) / resolution);

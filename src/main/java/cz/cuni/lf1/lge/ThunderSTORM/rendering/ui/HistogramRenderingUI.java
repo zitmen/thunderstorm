@@ -25,8 +25,9 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
     //parameter names
     private ParameterKey.Integer avg;
     private ParameterKey.Double dx;
-    private ParameterKey.Boolean forceDx;
     private ParameterKey.Double dz;
+    private ParameterKey.Boolean forceDx;
+    private ParameterKey.Boolean forceDz;
 
     public HistogramRenderingUI() {
         initPars();
@@ -62,8 +63,9 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
             }
         };
         dx = parameters.createDoubleField("dx", DoubleValidatorFactory.positiveNonZero(), 20, avgGTZeroCondition);
-        forceDx = parameters.createBooleanField("dxforce", null, false, avgGTZeroCondition);
         dz = parameters.createDoubleField("dz", DoubleValidatorFactory.positiveNonZero(), 100, threeDAndAvgGTZeroCondition);
+        forceDx = parameters.createBooleanField("dxforce", null, false, avgGTZeroCondition);
+        forceDz = parameters.createBooleanField("dzforce", null, false, avgGTZeroCondition);
     }
 
     @Override
@@ -92,16 +94,25 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
         latUncertaintyPanel.add(forceDXCheckBox);
         panel.add(latUncertaintyPanel, GridBagHelper.rightCol());
         //dz
+        final JCheckBox forceDZCheckBox = new JCheckBox("Force", false);
+        forceDZCheckBox.setBorder(BorderFactory.createEmptyBorder());
+        parameters.registerComponent(forceDz, forceDZCheckBox);
+        JPanel axUncertaintyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         final JLabel dzLabel = new JLabel("Axial uncertainty [nm]:");
         panel.add(dzLabel, GridBagHelper.leftCol());
-        final JTextField dzTextField = new JTextField("", 20);
+        final JTextField dzTextField = new JTextField("", 10);
         parameters.registerComponent(dz, dzTextField);
-        panel.add(dzTextField, GridBagHelper.rightCol());
+        axUncertaintyPanel.add(dzTextField);
+        axUncertaintyPanel.add(Box.createHorizontalStrut(5));
+        axUncertaintyPanel.add(forceDZCheckBox);
+        panel.add(axUncertaintyPanel, GridBagHelper.rightCol());
+        //3D
         final JCheckBox threeDCheckBox = (JCheckBox) parameters.getRegisteredComponent(threeD);
         threeDCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dzLabel.setEnabled(threeDCheckBox.isSelected());
+                forceDZCheckBox.setEnabled(threeDCheckBox.isSelected());
                 dzTextField.setEnabled(threeDCheckBox.isSelected());
             }
         });
@@ -120,15 +131,18 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
                     .defaultDX(dx.getValue() / CameraSetupPlugIn.getPixelSize())
                     .forceDefaultDX(forceDx.getValue())
                     .defaultDZ(dz.getValue())
+                    .forceDefaultDZ(forceDz.getValue())
                     .colorizeZ(colorizeZ.getValue())
-                    .zRange(zRange.from, zRange.to, zRange.step).build();
+                    .zRange(zRange.from, zRange.to, zRange.step)
+                    .build();
         } else {
             return new HistogramRendering.Builder()
                     .roi(left, left+sizeX, top, top+sizeY)
                     .resolution(1 / magnification.getValue())
                     .average(avg.getValue())
                     .defaultDX(dx.getValue() / CameraSetupPlugIn.getPixelSize())
-                    .forceDefaultDX(forceDx.getValue()).build();
+                    .forceDefaultDX(forceDx.getValue())
+                    .build();
         }
     }
 }

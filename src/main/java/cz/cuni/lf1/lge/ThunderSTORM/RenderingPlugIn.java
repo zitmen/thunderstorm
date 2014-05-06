@@ -77,6 +77,10 @@ public class RenderingPlugIn implements PlugIn {
         if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_THOMPSON)) {
             dx = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_THOMPSON, MoleculeDescriptor.Units.PIXEL);
         }
+        double[] dz = null;
+        if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z)) {
+            dz = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z, MoleculeDescriptor.Units.NANOMETER);
+        }
 
         List<IRendererUI> knownRenderers = ModuleLoader.getUIModules(IRendererUI.class);
         //do not show EmptyRenderer
@@ -149,7 +153,7 @@ public class RenderingPlugIn implements PlugIn {
             }
 
             method.reset();
-            method.addToImage(xpos, ypos, z, dx);
+            method.addToImage(xpos, ypos, z, dx, dz);
             new RenderingQueue.DefaultRepaintTask(method.getRenderedImage()).run();
         }
     }

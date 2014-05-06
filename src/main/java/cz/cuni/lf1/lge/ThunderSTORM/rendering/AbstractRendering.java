@@ -1,6 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
+
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
@@ -28,8 +31,9 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     protected double resolution;
     protected int imSizeX, imSizeY;
     protected double defaultDX;
+    protected double defaultDZ;
     protected boolean forceDefaultDX;
-    protected double defaultDZ = 5;
+    protected boolean forceDefaultDZ;
     protected double zFrom, zTo, zStep;
     protected int zSlices;
     protected boolean threeDimensions;
@@ -49,6 +53,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         protected final static double defaultResolution = 20;
         private double defaultDX = 0.2;
         private boolean forceDefaultDX = true;
+        private boolean forceDefaultDZ = true;
         private double defaultDZ = 5;
         private double zFrom = Double.NEGATIVE_INFINITY, zTo = Double.POSITIVE_INFINITY, zStep = Double.POSITIVE_INFINITY;
         private int zSlices = 1;
@@ -113,6 +118,14 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             return (BuilderType) this;
         }
 
+        public BuilderType defaultDZ(double defaultDZ) {
+            if(defaultDZ <= 0) {
+                throw new IllegalArgumentException("Default dz must be positive. Passed value = " + defaultDZ);
+            }
+            this.defaultDZ = defaultDZ;
+            return (BuilderType) this;
+        }
+
         /**
          * Specifies whether the defaultDX value is used even if a dx (lateral
          * uncertainty) value is provided for each molecule
@@ -122,11 +135,8 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             return (BuilderType) this;
         }
 
-        public BuilderType defaultDZ(double defaultDZ) {
-            if(defaultDZ <= 0) {
-                throw new IllegalArgumentException("Default dz must be positive. Passed value = " + defaultDZ);
-            }
-            this.defaultDZ = defaultDZ;
+        public BuilderType forceDefaultDZ(boolean bool) {
+            this.forceDefaultDZ = bool;
             return (BuilderType) this;
         }
 
@@ -205,8 +215,9 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         this.resolution = builder.resolution;
         this.imSizeX = builder.imSizeX;
         this.imSizeY = builder.imSizeY;
-        this.defaultDX = builder.defaultDX;
         this.forceDefaultDX = builder.forceDefaultDX;
+        this.forceDefaultDZ = builder.forceDefaultDZ;
+        this.defaultDX = builder.defaultDX;
         this.defaultDZ = builder.defaultDZ;
         this.zFrom = builder.zFrom;
         this.zSlices = builder.zSlices;
@@ -239,11 +250,12 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     }
 
     @Override
-    public void addToImage(double[] x, double[] y, double[] z, double[] dx) {
+    public void addToImage(double[] x, double[] y, double[] z, double[] dx, double[] dz) {
         for(int i = 0; i < x.length; i++) {
             double zVal = z != null ? z[i] : 0;
             double dxVal = dx != null && !forceDefaultDX ? dx[i] : defaultDX;
-            drawPoint(x[i], y[i], zVal, dxVal);
+            double dzVal = dz != null && !forceDefaultDZ ? dz[i] : defaultDZ;
+            drawPoint(x[i], y[i], zVal, dxVal, dzVal);
         }
     }
 
@@ -254,13 +266,15 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         }
         MoleculeDescriptor descriptor = fits.get(0).descriptor;
         boolean useDefaultDX = forceDefaultDX || !descriptor.hasParam(LABEL_THOMPSON);
+        boolean useDefaultDZ = forceDefaultDZ || !descriptor.hasParam(LABEL_UNCERTAINTY_Z);
 
         for(int i = 0, im = fits.size(); i < im; i++) {
             Molecule fit = fits.elementAt(i);
             double zVal = fit.getZ();
             double dxVal = useDefaultDX ? defaultDX : fit.getParam(LABEL_THOMPSON, PIXEL);
+            double dzVal = useDefaultDZ ? defaultDZ : fit.getParam(LABEL_UNCERTAINTY_Z, NANOMETER);
             //
-            drawPoint(fit.getX(PIXEL), fit.getY(PIXEL), zVal, dxVal);
+            drawPoint(fit.getX(PIXEL), fit.getY(PIXEL), zVal, dxVal, dzVal);    // TODO: OTAZKA: NANOMETRY (100), nebo VOXELY (5)? A KDE SE PISE JAK VELKY VOXEL JE??!!
         }
     }
 
@@ -270,13 +284,13 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     }
 
     @Override
-    public ImagePlus getRenderedImage(double[] x, double[] y, double[] z, double[] dx) {
+    public ImagePlus getRenderedImage(double[] x, double[] y, double[] z, double[] dx, double[] dz) {
         reset();
-        addToImage(x, y, z, dx);
+        addToImage(x, y, z, dx, dz);
         return getRenderedImage();
     }
 
-    protected abstract void drawPoint(double x, double y, double z, double dx);
+    protected abstract void drawPoint(double x, double y, double z, double dx, double dz);
 
     @Override
     public void reset() {

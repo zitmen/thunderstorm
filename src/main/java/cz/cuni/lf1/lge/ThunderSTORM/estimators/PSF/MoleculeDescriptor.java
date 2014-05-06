@@ -288,6 +288,7 @@ public class MoleculeDescriptor implements Cloneable {
     public static class Fitting {
 
         public static final String LABEL_THOMPSON = "uncertainty";
+        public static final String LABEL_UNCERTAINTY_Z = "uncertainty_z";
 
         // return uncertainty in nanometers
         public static double ccdThompson(Molecule molecule) throws ThompsonNotApplicableException {

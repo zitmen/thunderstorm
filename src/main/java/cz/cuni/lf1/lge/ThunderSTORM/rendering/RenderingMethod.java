@@ -15,7 +15,8 @@ public interface RenderingMethod {
    * @param x x coordinates of localized molecules
    * @param y y coordinates of localized molecules
    * @param z z coordinates of localized molecules. When null, 0 is used for all molecules. 
-   * @param dx localization uncertainty (not used in all implementations). When null, default value is used. 
+   * @param dx localization XY uncertainty (not used in all implementations). When null, default value is used.
+   * @param dz localization Z uncertainty (not used in all implementations). When null, default value is used.
    */
-  ImagePlus getRenderedImage(double[] x, double[] y, double[] z, double[] dx);
+  ImagePlus getRenderedImage(double[] x, double[] y, double[] z, double[] dx, double[] dz);
 }
