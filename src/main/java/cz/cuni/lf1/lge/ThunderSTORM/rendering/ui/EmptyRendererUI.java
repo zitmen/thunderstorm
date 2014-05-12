@@ -25,7 +25,7 @@ public class EmptyRendererUI extends AbstractRenderingUI {
     }
 
     @Override
-    public void setSize(int width, int height) {
+    public void setSize(double width, double height) {
     }
 
     @Override

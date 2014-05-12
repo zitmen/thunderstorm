@@ -33,7 +33,7 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
         initPars();
     }
 
-    public HistogramRenderingUI(int sizeX, int sizeY) {
+    public HistogramRenderingUI(double sizeX, double sizeY) {
         super(sizeX, sizeY);
         initPars();
     }

@@ -16,7 +16,6 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
 import java.awt.Color;
-import static java.lang.Math.ceil;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -179,18 +178,18 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
                 if(!resolutionWasSet) {
                     resolution = defaultResolution;
                 }
-                imSizeX = (int) (ceil((xmax - xmin) / resolution));
-                imSizeY = (int) (ceil((ymax - ymin) / resolution));
+                imSizeX = (int)((xmax - xmin) / resolution);
+                imSizeY = (int)((ymax - ymin) / resolution);
             } else {
                 if(resolutionWasSet) {
-                    int newImSizeX = (int) ceil((xmax - xmin) / resolution);
-                    int newImSizeY = (int) ceil((ymax - ymin) / resolution);
+                    int newImSizeX = (int)((xmax - xmin) / resolution);
+                    int newImSizeY = (int)((ymax - ymin) / resolution);
                     if(newImSizeX != imSizeX || newImSizeY != imSizeY) {
                         throw new IllegalArgumentException("Invalid combination of image size, roi and resolution. Set only two of them.");
                     }
                 } else {
                     resolution = (xmax - xmin) / imSizeX;
-                    if(Math.abs(resolution - (ymax - ymin) / imSizeY) > 0.0001) {
+                    if(Math.abs(resolution - (ymax - ymin) / imSizeY) > 0.001) {
                         throw new IllegalArgumentException("Resolution in x and y appears to be different.");
                     }
                 }
