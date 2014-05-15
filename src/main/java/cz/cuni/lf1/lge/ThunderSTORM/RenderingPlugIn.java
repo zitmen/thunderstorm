@@ -100,10 +100,10 @@ public class RenderingPlugIn implements PlugIn {
             MacroParser parser = new MacroParser(null, null, null, knownRenderers);
             selectedRendererUI = parser.getRendererUI();
 
-            left = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imleft", "0"));
-            top = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imtop", "0"));
-            sizeX = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imwidth", "0"));
-            sizeY = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imheight", "0"));
+            left = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imleft", "0"));
+            top = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imtop", "0"));
+            sizeX = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imwidth", "0"));
+            sizeY = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imheight", "0"));
         } else {
             ImagePlus im;
             double guessedLeft, guessedTop, guessedWidth, guessedHeight;
