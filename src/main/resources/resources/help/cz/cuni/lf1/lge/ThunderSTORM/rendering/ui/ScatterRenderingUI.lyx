@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -65,12 +68,49 @@ Scatter plot
 \end_layout
 
 \begin_layout Standard
-Scatter plot rendering is the simplest method, and does not usually provide
- high quality results.
+Scatter plot visualization 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Baddeley2010"
+
+\end_inset
+
+ is the simplest method, and does not usually provide high quality results.
  A simple binary image is created with pixel intensity values set to one
  at locations corresponding to molecular positions.
  All other pixel intensity values are set to zero.
  This method is fast but does not reflect the density of molecules.
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Rendering.html}{Visualization methods}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
 \end_layout
 
 \end_body

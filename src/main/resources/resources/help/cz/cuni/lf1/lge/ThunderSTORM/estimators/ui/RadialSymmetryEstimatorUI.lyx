@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation skip
-\defskip medskip
+\paragraph_separation indent
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -68,7 +68,7 @@ Radial symmetry
 \end_layout
 
 \begin_layout Standard
-his algorithm finds the sub-pixel position of a molecule by determining
+This algorithm finds the sub-pixel position of a molecule by determining
  the point with maximal radial symmetry in the data as described in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -280,6 +280,42 @@ reference "sub:Averaging-filter"
 \end_inset
 
 , in order to reduce noise and improve the accuracy of the results.
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Estimators.html}{Sub-pixel 2D localization of molecules}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{FittingRegion.html}{Definition of the fitting region}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

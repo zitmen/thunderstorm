@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -66,7 +69,20 @@ Removing duplicates
 
 \begin_layout Standard
 Repeated localizations of single molecules in one frame may occur due to
- overlapping fitting sub-regions when using multiple-emitter analysis approach.
+ overlapping fitting sub-regions when using the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../estimators/ui/CrowdedField.html}{multiple-emitter analysis approach}
+\end_layout
+
+\end_inset
+
+.
  To deal with the problem, ThunderSTORM uses a post-processing method suggested
  by Huang et
 \begin_inset space ~
@@ -81,19 +97,23 @@ key "Huang2011"
 \end_inset
 
 .
- Here molecules with mutual distance smaller than their localization uncertainty
- are grouped together, and in each group, only a molecule with the smallest
+ Here molecules with a mutual distance smaller than their localization uncertain
+ty are grouped together, and in each group, only the molecule with the smallest
  localization uncertainty is kept.
  The other molecules are rejected.
  ThunderSTORM generalizes this algorithm by allowing users to specify the
  distance threshold for grouping the molecules as a mathematical expression.
- Different distance threshold can be applied to individual molecules if
+ A different distance threshold can be applied to individual molecules if
  the mathematical expression results in a vector.
- Same distance threshold is applied to all molecules if the results is a
- scalar.
+ The same distance threshold is applied to all molecules if the result is
+ a scalar.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -101,9 +121,7 @@ status open
 
 
 \backslash
-renewcommand
-\backslash
-bibname{References}
+href{Postprocessing.html}{Post-processing analysis}
 \end_layout
 
 \end_inset

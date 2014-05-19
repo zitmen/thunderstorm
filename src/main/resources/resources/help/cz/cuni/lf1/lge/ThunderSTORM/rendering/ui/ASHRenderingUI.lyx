@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -65,8 +68,8 @@ Averaged shifted histograms
 \end_layout
 
 \begin_layout Standard
-This rendering algorithm uses a density estimation approach based on averaged
- shifted histograms 
+This visualization algorithm uses a density estimation approach based on
+ averaged shifted histograms 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Scott1985"
@@ -117,7 +120,11 @@ key "Scott1985"
  in the lateral and axial directions can be specified independently.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -125,9 +132,7 @@ status open
 
 
 \backslash
-renewcommand
-\backslash
-bibname{References}
+href{Rendering.html}{Visualization methods}
 \end_layout
 
 \end_inset

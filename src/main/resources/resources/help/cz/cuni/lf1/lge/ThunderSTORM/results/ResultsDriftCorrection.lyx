@@ -77,8 +77,8 @@ Long time-series data acquisitions usually suffer from sample drift.
  The trajectory of the relative sample drift can be saved to a file and
  applied later, possibly to a different dataset.
  For example, drift estimated from a sub-region of the data can be applied
- the whole dataset, or drift estimated from one channel can be applied to
- correct drift in another channel.
+ to the whole dataset, or drift estimated from one channel can be applied
+ to correct drift in another channel.
 \end_layout
 
 \begin_layout Subsection*
@@ -86,8 +86,8 @@ Fiducial markers
 \end_layout
 
 \begin_layout Standard
-A common approach for the drift correction is performed by tracking fiducial
- markers inserted into the sample and by subtracting their relative motion
+A common approach for correcting drift is performed by tracking fiducial
+ markers present in the sample and then subtracting their relative motion
  from the molecular localizations.
  ThunderSTORM can identify fiducial markers automatically from the localization
  results as molecules that stay in the 
@@ -99,8 +99,9 @@ on
 \end_inset
 
  state at one position for a substantial amount of time.
- Therefore, all localizations that arise from more than a given number of
- frames are considered as fiducial markers and are used for the drift correction.
+ Therefore, all localizations that arise from more than a user-specified
+ number of frames are considered as fiducial markers and are used for the
+ drift correction.
  Assigning molecular localizations in subsequent frames to a single fiducial
  marker is performed by the 
 \begin_inset ERT
@@ -119,13 +120,13 @@ href{ResultsGrouping.html}{merging algorithm}
 \end_layout
 
 \begin_layout Standard
-The trajectory of the relative sample drift is obtained by combing all identifie
-d fiducial markers into a single dataset.
- The relative sample drift at each frame 
+The sample drift is obtained by averaging the relative trajectories of all
+ identified fiducial markers into a single trajectory.
+ The sample drift at each frame 
 \begin_inset Formula $t=1,\ldots,T$
 \end_inset
 
-, in either of the coordinates 
+, is computed (for 
 \begin_inset Formula $x$
 \end_inset
 
@@ -133,10 +134,7 @@ d fiducial markers into a single dataset.
 \begin_inset Formula $y$
 \end_inset
 
-, is computed according to the formula
-\end_layout
-
-\begin_layout Standard
+) according to the formula
 \begin_inset Formula 
 \begin{equation}
 \overline{x}_{t}=\frac{1}{M}\sum_{i=1}^{M}\left(x_{i,t}-\theta_{i}\right)\,.\label{eq:drift-markers-av}
@@ -152,11 +150,11 @@ Here
 \begin_inset Formula $x_{i,t}$
 \end_inset
 
- is an absolute position of an 
+ is the absolute position of the 
 \begin_inset Formula $i$
 \end_inset
 
--th marker at a frame 
+-th marker at frame 
 \begin_inset Formula $t$
 \end_inset
 
@@ -165,11 +163,12 @@ Here
 \end_inset
 
 , and 
-\begin_inset Formula $\theta_{i}\in\mathbb{R}$
+\begin_inset Formula $\theta_{i}$
 \end_inset
 
  is an unknown offset which has to be subtracted from the absolute marker
- position to obtain the relative sample drift.
+ position to obtain the relative position.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -177,16 +176,13 @@ The offset
 \begin_inset Formula $\theta_{i}$
 \end_inset
 
- is estimated by least squares minimization of a sum of squared differences
- between relative marker position and the relative sample drift, summed
+ is estimated by least squares minimization of the sum of squared differences
+ between the relative marker positions and the relative sample drift, summed
  over all markers and frames.
  The optimization is defined by the formula
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\hat{\boldsymbol{\theta}}=\argmin_{\theta=\left[\theta_{1},\ldots,\theta_{M}\right]}\sum_{t=1}^{T}\sum_{i=1}^{M}\left(\left(x_{i,t}-\theta_{i}\right)-\overline{x}_{t}\right)^{2}\,,\label{eq:drift-markes-offset}
+\hat{\boldsymbol{\theta}}=\argmin_{\boldsymbol{\theta}=\left[\theta_{1},\ldots,\theta_{M}\right]}\sum_{t=1}^{T}\sum_{i=1}^{M}\left(\left(x_{i,t}-\theta_{i}\right)-\overline{x}_{t}\right)^{2}\,,\label{eq:drift-markes-offset}
 \end{equation}
 
 \end_inset
@@ -203,7 +199,7 @@ In reality, some of the points
 \begin_inset Formula $x_{i,t}$
 \end_inset
 
- may be missing, because markers might not be localized in some frames.
+ may be missing because the markers might not be localized in some frames.
  If this is the case, the relative sample drift in Equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -211,15 +207,16 @@ reference "eq:drift-markers-av"
 
 \end_inset
 
- is computed only from the corresponding number of fiducial markers and
- the corresponding sum of squared differences in Equation 
+ is computed only from the corresponding number of fiducial markers.
+ For the missing markers, the corresponding sum of squared differences in
+ Equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:drift-markes-offset"
 
 \end_inset
 
- is set zero.
+ is set to zero.
 \end_layout
 
 \begin_layout Standard
@@ -232,24 +229,24 @@ key "Cleveland-1979"
 \end_inset
 
 .
- Users can specify the maximum merging distance, the minimum number of frames,
- where a molecule must appear to be considered as a fiducial marker, and
- the trajectory smoothing factor.
+ Users can specify the maximum merging distance and the minimum number of
+ frames in which a molecule must appear to be considered as a fiducial marker,
+ and the trajectory smoothing factor.
 \end_layout
 
 \begin_layout Standard
 Note that analyzing samples with fiducial markers yields localizations of
  both the blinking fluorophores and the fiducial markers.
- This will slow down computations.
- Faster execution and better precision can be achieved by limiting the SMLM
- data analysis process to regions containing only the fiducial markers.
- The drift trajectory can be saved to a file and applied later to the whole
- dataset.
- 
+ This may slow down the merging algorithm used for automatic identification
+ of the markers.
+ For faster marker identification, the merging process can be limited to
+ regions containing only the fiducial markers.
+ The drift trajectory can then be saved to a file and applied later to the
+ whole dataset.
 \end_layout
 
 \begin_layout Subsubsection*
-How to set the parameters
+Guidelines for the choice of parameters
 \end_layout
 
 \begin_layout Standard
@@ -317,8 +314,8 @@ key "Mlodzianoski2011"
  The localized peaks are assigned to the central frame of each batch sequence
  and the drift for intermediate frames is determined by local regression
  using third degree polynomials.
- The original molecular coordinates are corrected for the drift using the
- estimated values.
+ The original molecular coordinates are corrected for drift using the estimated
+ values.
 \end_layout
 
 \begin_layout Standard
@@ -335,9 +332,20 @@ href{../rendering/ui/ASHRenderingUI.html}{average shifted histograms}
 
 \end_inset
 
- method, cross-correlation images are computed by Fast Fourier Transform
- methods as implemented in ImageJ, and the location of global intensity
- maximum peaks is determined with sub-pixel precision using the 
+ method described in Section
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Averaged-shifted-histograms"
+
+\end_inset
+
+, cross-correlation images are computed by Fast Fourier Transform methods
+ as implemented in ImageJ, and the location of global intensity maximum
+ peaks is determined with sub-pixel precision using the 
 \begin_inset ERT
 status open
 
@@ -350,15 +358,26 @@ href{../estimators/ui/RadialSymmetryEstimatorUI.html}{radial symmetry}
 
 \end_inset
 
- method.
+ method described in Section
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Radial-symmetry"
+
+\end_inset
+
+.
  The number of batches 
 \begin_inset Formula $n$
 \end_inset
 
  and the magnification of super-resolution images is defined by users.
  For better stability of the solution, intensity maximum peaks are first
- localized on cross-correlation images computed from reconstructed images
- with magnification of one.
+ localized in cross-correlation images computed from reconstructed images
+ with a magnification of one.
  The peak position is refined afterwards using cross-correlation images
  computed from super-resolution images with a user specified magnification.
  The final position of the peak is obtained as a local intensity maximum
@@ -366,7 +385,7 @@ href{../estimators/ui/RadialSymmetryEstimatorUI.html}{radial symmetry}
 \end_layout
 
 \begin_layout Subsubsection*
-How to set the parameters
+Guidelines for the choice of parameters
 \end_layout
 
 \begin_layout Standard
@@ -387,7 +406,11 @@ ion image.
  the "Show cross-correlations" checkbox.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -395,9 +418,7 @@ status open
 
 
 \backslash
-renewcommand
-\backslash
-bibname{References}
+href{Postprocessing.html}{Post-processing analysis}
 \end_layout
 
 \end_inset

@@ -5,7 +5,6 @@
 \textclass article
 \begin_preamble
 \usepackage[unicode=true] {hyperref}
-\usepackage{upgreek}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -50,7 +49,7 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation skip
-\defskip medskip
+\defskip bigskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -86,11 +85,13 @@ Authors and affiliation
 \end_layout
 
 \begin_layout Standard
+\noindent
 Martin Ovesný, Pavel Křížek, Josef Borkovec, Zdeněk Švindrych, and Guy M.
  Hagen.
 \end_layout
 
 \begin_layout Standard
+\noindent
 Institute of Cellular Biology and Pathology, First Faculty of Medicine,
  Charles University in Prague, Czech Republic.
 \end_layout

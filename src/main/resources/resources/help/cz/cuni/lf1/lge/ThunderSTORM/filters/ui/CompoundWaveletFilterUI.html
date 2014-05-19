@@ -2,7 +2,7 @@
 <html>
 <head>
 <title></title>
-<!--Generated on Tue May  6 17:04:53 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Generated on Mon May 19 13:46:17 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
@@ -26,138 +26,143 @@ of each filter level, therefore, contains the same number of samples
 as the input.</p>
 </div>
 <div id="Sx1.p2" class="ltx_para">
-<p class="ltx_p">The first step of the filtering is based on separable <a href="Convolution.html" title="" class="ltx_ref">convolution</a>
-to obtain the smoothed approximations</p>
-</div>
-<div id="Sx1.p3" class="ltx_para">
+<p class="ltx_p">The wavelet transform of the input data at level <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi24.png" width="100" height="19" alt="j=1,\ldots,N"> is
+computed as</p>
 <table id="Sx1.E1" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-9px" src="mi/mi11.png" width="182" height="27" alt="V_{f}=\left(V_{f-1}*\boldsymbol{k}_{f}\right)*\boldsymbol{k}_{f}^{\top}\,,"></td>
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-7px" src="mi/mi10.png" width="129" height="21" alt="F_{j}=V_{j-1}-V_{j}\,,"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi18.png" width="55" height="18" alt="V_{0}=I"> is the input image, <img id="Sx1.p3.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi25.png" width="102" height="19" alt="f=1,\ldots,N"> are the levels,
-<img id="Sx1.p3.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi22.png" width="190" height="22" alt="\boldsymbol{k}_{f}=\left[k_{1,f},k_{2,f},\ldots,k_{l,f}\right]">
-is a filter kernel at the corresponding level, and <img id="Sx1.p3.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi6.png" width="10" height="16" alt="l"> is the kernel
-size. The number of levels is given by <img id="Sx1.p3.m5" class="ltx_Math" style="vertical-align:-2px" src="mi/mi17.png" width="20" height="16" alt="N">.</p>
-</div>
-<div id="Sx1.p4" class="ltx_para">
-<p class="ltx_p">The wavelet transform of the input data at level <img id="Sx1.p4.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi26.png" width="15" height="19" alt="f"> is computed
-as the difference between two consecutive approximation levels</p>
-</div>
-<div id="Sx1.p5" class="ltx_para">
+<p class="ltx_p">where</p>
 <table id="Sx1.E2" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-7px" src="mi/mi10.png" width="134" height="21" alt="F_{f}=V_{f-1}-V_{f}\,."></td>
+<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-9px" src="mi/mi11.png" width="177" height="27" alt="V_{j}=\left(V_{j-1}*\boldsymbol{k}_{j}\right)*\boldsymbol{k}_{j}^{\top}\,."></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
 </tr>
 </table>
-<p class="ltx_p">This expression acts as a band-pass filter, therefore each wavelet
-level corresponds to a different range of spatial frequencies. The
-first level <img id="Sx1.p5.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi13.png" width="23" height="18" alt="F_{1}"> contains mainly the high spatial frequencies
-present in the input image including noise. Higher levels contain
-ranges of lower and lower image frequency components.</p>
+<p class="ltx_p">Here <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi17.png" width="55" height="18" alt="V_{0}=I"> is the input image, <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi21.png" width="23" height="21" alt="\boldsymbol{k}_{j}"> is a filter
+kernel (see <a href="Convolution.html" title="" class="ltx_ref">convolution with separable kernels</a>)
+at the corresponding level, and <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi6.png" width="10" height="16" alt="l"> is the kernel size. The number
+of levels is given by <img id="Sx1.p2.m5" class="ltx_Math" style="vertical-align:-2px" src="mi/mi16.png" width="20" height="16" alt="N">.</p>
 </div>
-<div id="Sx1.p6" class="ltx_para">
-<p class="ltx_p">In our case, the output of the wavelet filter is the second wavelet
-level <img id="Sx1.p6.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="23" height="18" alt="F_{2}">. The standard deviation of values obtained in the first
-wavelet level <img id="Sx1.p6.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi13.png" width="23" height="18" alt="F_{1}"> can be used as a threshold in the filtered
-image for an approximate localization of molecules <cite class="ltx_cite">[<a href="#bib.bib16" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>.</p>
+<div id="Sx1.p3" class="ltx_para">
+<p class="ltx_p">The expression in Equation (<a href="#Sx1.E1" title="(1) ‣ Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>) acts as a band-pass
+filter. Each wavelet level thus corresponds to a different range of
+spatial frequencies. The first level <img id="Sx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="23" height="18" alt="F_{1}"> contains mainly the
+high spatial frequencies present in the input image including noise.
+Higher levels contain ranges of lower and lower image frequency components.
+In our case, the output of the wavelet filter is the second wavelet
+level <img id="Sx1.p3.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi15.png" width="23" height="18" alt="F_{2}">. The standard deviation of values obtained in the first
+wavelet level <img id="Sx1.p3.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="23" height="18" alt="F_{1}"> can be used as a molecular detection <a href="../../detectors/Threshold.html" title="" class="ltx_ref">threshold</a>
+in the filtered image <cite class="ltx_cite">[<a href="#bib.bib16" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>.</p>
 </div>
-<div id="Sx1.p7" class="ltx_para">
-<p class="ltx_p">The wavelet filter uses a convolution kernel based on normalized B-spline
-basis functions <cite class="ltx_cite">[<a href="#bib.bib33" title="Astronomical Image and Data Analysis" class="ltx_ref">2</a>, <a href="#bib.bib16" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>. The <img id="Sx1.p7.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi27.png" width="12" height="19" alt="j">-th B-spline
-basis function of degree <img id="Sx1.p7.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi33.png" width="59" height="21" alt="q\in\mathbb{N}^{+}"> in the variable <img id="Sx1.p7.m3" class="ltx_Math" style="vertical-align:-3px" src="mi/mi37.png" width="45" height="17" alt="t\in\mathbb{R}">,
-written as <img id="Sx1.p7.m4" class="ltx_Math" style="vertical-align:-7px" src="mi/mi12.png" width="58" height="22" alt="B_{j,q}\left(t\right)">, is defined recursively as follows.
-For <img id="Sx1.p7.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi30.png" width="45" height="19" alt="q=1">,</p>
-<table id="Sx1.E3" class="ltx_equation">
+<div id="Sx1.p4" class="ltx_para">
+<p class="ltx_p">The wavelet filter typically uses a <a href="Convolution.html" title="" class="ltx_ref">convolution kernel</a>
+based on normalized B-spline basis functions <cite class="ltx_cite">[<a href="#bib.bib33" title="Astronomical Image and Data Analysis" class="ltx_ref">2</a>, <a href="#bib.bib16" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>.
+In our case, the B-spline basis function of order <img id="Sx1.p4.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi30.png" width="59" height="21" alt="q\in\mathbb{N}^{+}">
+in the variable <img id="Sx1.p4.m2" class="ltx_Math" style="vertical-align:-3px" src="mi/mi34.png" width="45" height="17" alt="t\in\mathbb{R}">, written as <img id="Sx1.p4.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi13.png" width="48" height="22" alt="B_{q}\left(t\right)">,
+is defined recursively as follows. For <img id="Sx1.p4.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi27.png" width="45" height="19" alt="q=1">,</p>
+<table id="Sx1.Ex1" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-24px" src="mi/mi8.png" width="265" height="57" alt="B_{j,1}\left(t\right)=\begin{cases}1&amp;\quad\mathrm{if}\;t_{j}\leq t&lt;t_{j+1}\,,%
-\\
+<td class="ltx_align_center"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-24px" src="mi/mi8.png" width="227" height="57" alt="B_{1}\left(t\right)=\begin{cases}1&amp;\quad\mathrm{if}\;0\leq t&lt;1\,,\\
 0&amp;\quad\mathrm{otherwise}\,,\end{cases}"></td>
 <td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(3)</span></td>
 </tr>
 </table>
-<p class="ltx_p">and for <img id="Sx1.p7.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi31.png" width="45" height="19" alt="q&gt;1">,</p>
-<table id="Sx1.E4" class="ltx_equation">
+<p class="ltx_p">and for <img id="Sx1.p4.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi28.png" width="45" height="19" alt="q&gt;1">,</p>
+<table id="Sx1.Ex2" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E4.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi9.png" width="451" height="44" alt="B_{j,q}\left(t\right)=\frac{t-t_{j}}{t_{j+q-1}-t_{j}}B_{j,q-1}\left(t\right)+%
-\frac{t_{j+q}-t}{t_{j+q}-t_{j+1}}B_{j+1,q-1}\left(t\right)."></td>
+<td class="ltx_align_center"><img id="Sx1.Ex2.m1" class="ltx_Math" style="vertical-align:-18px" src="mi/mi9.png" width="341" height="42" alt="B_{q}\left(t\right)=\frac{t}{q-1}B_{q-1}\left(t\right)+\frac{q-t}{q-1}B_{q-1}%
+\left(t-1\right)."></td>
 <td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(4)</span></td>
 </tr>
 </table>
-<p class="ltx_p">Here <img id="Sx1.p7.m7" class="ltx_Math" style="vertical-align:-7px" src="mi/mi12.png" width="58" height="22" alt="B_{j,q}\left(t\right)"> has non-zero values in the interval
-<img id="Sx1.p7.m8" class="ltx_Math" style="vertical-align:-7px" src="mi/mi38.png" width="103" height="20" alt="t_{j}\leq t&lt;t_{j+q}">.</p>
+<p class="ltx_p">Here <img id="Sx1.p4.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi13.png" width="48" height="22" alt="B_{q}\left(t\right)"> has non-zero values only in the interval
+<img id="Sx1.p4.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi12.png" width="75" height="19" alt="0\leq t&lt;q">.</p>
 </div>
-<div id="Sx1.p8" class="ltx_para">
-<p class="ltx_p">For the first wavelet level, the convolution kernel <img id="Sx1.p8.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi20.png" width="23" height="19" alt="\boldsymbol{k}_{1}">
-in Equation (<a href="#Sx1.E1" title="(1) ‣ Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>) is composed from values <img id="Sx1.p8.m2" class="ltx_Math" style="vertical-align:-8px" src="mi/mi28.png" width="225" height="25" alt="k_{i,1}\left(x\mid q,s\right)=aB_{0,q}\left(\frac{x}{s}+\frac{q}{2}\right)">,
-where <img id="Sx1.p8.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi4.png" width="87" height="19" alt="i=1,\ldots,l">, <img id="Sx1.p8.m4" class="ltx_Math" style="vertical-align:-6px" src="mi/mi39.png" width="135" height="21" alt="x=i-\left(l+1\right)/2">, the kernel size
-<img id="Sx1.p8.m5" class="ltx_Math" style="vertical-align:-8px" src="mi/mi29.png" width="110" height="25" alt="l=2\left\lceil\frac{qs}{2}\right\rceil-1">, <img id="Sx1.p8.m6" class="ltx_Math" style="vertical-align:-3px" src="mi/mi35.png" width="45" height="16" alt="s&gt;0"> is a sampling
-factor, and <img id="Sx1.p8.m7" class="ltx_Math" style="vertical-align:-2px" src="mi/mi24.png" width="13" height="12" alt="a"> is a constant scaling factor such that <img id="Sx1.p8.m8" class="ltx_Math" style="vertical-align:-7px" src="mi/mi23.png" width="90" height="22" alt="\sum_{i}k_{i,1}=1">.
-Kernels for higher wavelet levels are obtained by inserting zeros
-between the kernel coefficients. Users need to input the degree <img id="Sx1.p8.m9" class="ltx_Math" style="vertical-align:-5px" src="mi/mi32.png" width="13" height="15" alt="q">
-of the B-spline basis function and the sampling factor <img id="Sx1.p8.m10" class="ltx_Math" style="vertical-align:-2px" src="mi/mi36.png" width="12" height="12" alt="s">.</p>
+<div id="Sx1.p5" class="ltx_para">
+<p class="ltx_p">The first wavelet level <img id="Sx1.p5.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="23" height="18" alt="F_{1}"> is computed using the convolution
+kernel <img id="Sx1.p5.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi19.png" width="149" height="22" alt="\boldsymbol{k}_{1}=\left[k_{1,1},\ldots,k_{1,l}\right]">,
+where <img id="Sx1.p5.m3" class="ltx_Math" style="vertical-align:-8px" src="mi/mi25.png" width="214" height="25" alt="k_{1,i}\left(x\mid q,s\right)=aB_{q}\left(\frac{x}{s}+\frac{q}{2}\right)">,
+<img id="Sx1.p5.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi4.png" width="87" height="19" alt="i=1,\ldots,l">, <img id="Sx1.p5.m5" class="ltx_Math" style="vertical-align:-6px" src="mi/mi35.png" width="135" height="21" alt="x=i-\left(l+1\right)/2">, and <img id="Sx1.p5.m6" class="ltx_Math" style="vertical-align:-8px" src="mi/mi26.png" width="110" height="25" alt="l=2\left\lceil\frac{qs}{2}\right\rceil-1">.
+Here <img id="Sx1.p5.m7" class="ltx_Math" style="vertical-align:-3px" src="mi/mi32.png" width="45" height="16" alt="s&gt;0"> defines a scaling factor of the variable <img id="Sx1.p5.m8" class="ltx_Math" style="vertical-align:-2px" src="mi/mi36.png" width="14" height="12" alt="x">, and <img id="Sx1.p5.m9" class="ltx_Math" style="vertical-align:-2px" src="mi/mi23.png" width="13" height="12" alt="a">
+is a scaling factor such that <img id="Sx1.p5.m10" class="ltx_Math" style="vertical-align:-7px" src="mi/mi22.png" width="90" height="22" alt="\sum_{i}k_{1,i}=1">. Kernels for higher
+wavelet levels are obtained by inserting zeros between the kernel
+coefficients. Users need to input the order <img id="Sx1.p5.m11" class="ltx_Math" style="vertical-align:-5px" src="mi/mi29.png" width="13" height="15" alt="q"> of the B-spline basis
+function and the scaling factor <img id="Sx1.p5.m12" class="ltx_Math" style="vertical-align:-2px" src="mi/mi33.png" width="12" height="12" alt="s">.</p>
 </div>
-<div id="Sx1.p9" class="ltx_para">
+<div id="Sx1.p6" class="ltx_para">
 <p class="ltx_p">In our implementation, the default kernel uses a B-spline basis function
-of the third degree with a sampling factor <img id="Sx1.p9.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi34.png" width="45" height="16" alt="s=2">. These settings
-yield kernels <img id="Sx1.p9.m2" class="ltx_Math" style="vertical-align:-8px" src="mi/mi19.png" width="174" height="29" alt="\boldsymbol{k}_{1}=\left[\frac{1}{16},\frac{1}{4},\frac{3}{8},\frac{1}{4},%
+of the third order with a scaling factor <img id="Sx1.p6.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi31.png" width="45" height="16" alt="s=2">. These settings yield
+kernels <img id="Sx1.p6.m2" class="ltx_Math" style="vertical-align:-8px" src="mi/mi18.png" width="174" height="29" alt="\boldsymbol{k}_{1}=\left[\frac{1}{16},\frac{1}{4},\frac{3}{8},\frac{1}{4},%
 \frac{1}{16}\right]^{\top}">
-and <img id="Sx1.p9.m3" class="ltx_Math" style="vertical-align:-8px" src="mi/mi21.png" width="241" height="29" alt="\boldsymbol{k}_{2}=\left[\frac{1}{16},0,\frac{1}{4},0,\frac{3}{8},0,\frac{1}{4%
+and <img id="Sx1.p6.m3" class="ltx_Math" style="vertical-align:-8px" src="mi/mi20.png" width="241" height="29" alt="\boldsymbol{k}_{2}=\left[\frac{1}{16},0,\frac{1}{4},0,\frac{3}{8},0,\frac{1}{4%
 },0,\frac{1}{16}\right]^{\top}">,
 as suggested in <cite class="ltx_cite">[<a href="#bib.bib33" title="Astronomical Image and Data Analysis" class="ltx_ref">2</a>, <a href="#bib.bib16" title="Wavelet analysis for single molecule localization microscopy" class="ltx_ref">1</a>]</cite>.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Detector threshold formula</h2>
+<h2 class="ltx_title ltx_title_subsection">Threshold for approximate localization of molecules</h2>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
-<p class="ltx_p">Refer to <a href="../../detectors/Threshold.html" title="" class="ltx_ref">Threshold</a> to see
-how filter results can be used to dynamically find threshold value.</p>
+<p class="ltx_p">The <a href="../../detectors/Threshold.html" title="" class="ltx_ref">threshold</a> value can be
+specified by users as an expression combining mathematical functions
+and operators with variables based on the current raw or filtered
+image. Variables provided by this filter are:</p>
 </div>
 <div id="Sx1.SSx1.p2" class="ltx_para">
-<p class="ltx_p">This filter provides the two default variables and all the calculated
-wavelet levels <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi16.png" width="21" height="18" alt="F_{i}">:</p>
-</div>
-<div id="Sx1.SSx1.p3" class="ltx_para">
 <table class="ltx_tabular ltx_align_middle">
 <thead class="ltx_thead">
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">Wave.I</span></th>
-<th class="ltx_td ltx_align_left">current unfiltered image</th>
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">Wave.I</span></th>
+<th class="ltx_td ltx_align_left">current raw input image</th>
 </tr>
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">Wave.F</span></th>
-<th class="ltx_td ltx_align_left">current filtered image</th>
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">Wave.F</span></th>
+<th class="ltx_td ltx_align_left">corresponding filtered image</th>
 </tr>
 </thead>
 <tbody class="ltx_tbody">
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">Wave.F1</span></th>
-<td class="ltx_td ltx_align_left">first wavelet level <img id="Sx1.SSx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi13.png" width="23" height="18" alt="F_{1}"> of the current image</td>
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">Wave.F1</span></th>
+<td class="ltx_td ltx_align_left">first wavelet level <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="23" height="18" alt="F_{1}"> of the current input image</td>
 </tr>
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">Wave.F2</span></th>
-<td class="ltx_td ltx_align_left">second wavelet level <img id="Sx1.SSx1.p3.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="23" height="18" alt="F_{2}"> of the current image</td>
-</tr>
-<tr class="ltx_tr">
-<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">Wave.F3</span></th>
-<td class="ltx_td ltx_align_left">third wavelet level <img id="Sx1.SSx1.p3.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi15.png" width="23" height="18" alt="F_{3}"> of the current image</td>
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">Wave.F2</span></th>
+<td class="ltx_td ltx_align_left">second wavelet level <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi15.png" width="23" height="18" alt="F_{2}"> of the current input image</td>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div id="Sx1.SSx2" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">See also</h2>
+
+<div id="Sx1.SSx2.p1" class="ltx_para">
+<ul id="I1" class="ltx_itemize">
+<li id="I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i1.p1" class="ltx_para">
+<p class="ltx_p"><a href="Filters.html" title="" class="ltx_ref">Image filtering and feature enhancement</a></p>
+</div>
+</li>
+<li id="I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i2.p1" class="ltx_para">
+<p class="ltx_p"><a href="../../detectors/Detectors.html" title="" class="ltx_ref">Finding approximate positions of molecules</a></p>
+</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -176,9 +181,9 @@ wavelet levels <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-
 <span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/OE.20.002081" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>,
-<a href="#Sx1.p6" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>,
-<a href="#Sx1.p7" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>,
-<a href="#Sx1.p9" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>.
+<a href="#Sx1.p3" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>,
+<a href="#Sx1.p4" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>,
+<a href="#Sx1.p6" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>.
 </span>
 </li>
 <li id="bib.bib33" class="ltx_bibitem ltx_bib_book">
@@ -190,8 +195,8 @@ wavelet levels <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-
 <span class="ltx_bibblock"> <span class="ltx_text ltx_bib_publisher">Springer-Verlag</span>.
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>,
-<a href="#Sx1.p7" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>,
-<a href="#Sx1.p9" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>.
+<a href="#Sx1.p4" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>,
+<a href="#Sx1.p6" title="Wavelet filter" class="ltx_ref"><span class="ltx_text ltx_ref_title">Wavelet filter</span></a>.
 </span>
 </li>
 </ul>
@@ -199,7 +204,7 @@ wavelet levels <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Tue May  6 17:04:53 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Mon May 19 13:46:17 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

@@ -34,7 +34,7 @@ div > .ltx_listingblock + .ltx_p {
 }
 /*remove default margin for paragraphs*/
 .ltx_p{
-    margin: 0px;
+    margin: 1em 0em;
     /* make line spacing smaller, for some odd reason Swingbox has it bigger than it should be */
     line-height: 0.9;
 }
@@ -49,3 +49,7 @@ div > .ltx_listingblock + .ltx_p {
 	margin-top: 0.5em;
     margin-bottom: 0.5em;
 }
+
+/*remove paragraphs indentation*/
+div > .ltx_para > .ltx_p,
+section > .ltx_para > .ltx_p { text-indent:0em; }

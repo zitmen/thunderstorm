@@ -2,7 +2,7 @@
 <html>
 <head>
 <title></title>
-<!--Generated on Tue May  6 17:04:57 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Generated on Mon May 19 13:46:24 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
@@ -17,68 +17,102 @@
 <h1 class="ltx_title ltx_title_section">Difference of averaging filters</h1>
 
 <div id="Sx1.p1" class="ltx_para">
-<p class="ltx_p">Similar to the <a href="DifferenceOfGaussiansFilterUI.html" title="" class="ltx_ref">Difference of Gaussians</a>
-filter, the difference of averaging filters <cite class="ltx_cite">[]</cite> is a
-band-pass filter. The filtered image is obtained by subtracting images
-filtered with two <a href="BoxFilterUI.html" title="" class="ltx_ref">averaging filters</a> having
-different user-specified kernel sizes,</p>
-</div>
-<div id="Sx1.p2" class="ltx_para">
-<table id="Sx1.E1" class="ltx_equation">
+<p class="ltx_p">The difference of averaging filters <cite class="ltx_cite">[<a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">1</a>]</cite> is another type
+of a band-pass filter. The filtered image is obtained by subtracting
+images filtered with two <a href="BoxFilterUI.html" title="" class="ltx_ref">averaging filters</a>
+having different user-specified kernel sizes,
+</p>
+<table id="Sx1.Ex1" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi49.png" width="206" height="18" alt="F=I*K_{\mathrm{AV1}}-I*K_{\mathrm{AV2}}\,."></td>
+<td class="ltx_align_center"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi46.png" width="206" height="18" alt="F=I*K_{\mathrm{AV1}}-I*K_{\mathrm{AV2}}\,."></td>
 <td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">The size of the kernel <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi51.png" width="46" height="18" alt="K_{\mathrm{AV2}}"> has to be larger than <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi50.png" width="46" height="18" alt="K_{\mathrm{AV1}}">.</p>
+<p class="ltx_p">Similar to the <a href="DifferenceOfGaussiansFilterUI.html" title="" class="ltx_ref">difference-of-Gaussians filter</a>,
+the size of the kernel <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi48.png" width="46" height="18" alt="K_{\mathrm{AV2}}"> has to be larger than <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi47.png" width="46" height="18" alt="K_{\mathrm{AV1}}">.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Detector threshold formula</h2>
+<h2 class="ltx_title ltx_title_subsection">Threshold for approximate localization of molecules</h2>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
-<p class="ltx_p">Refer to <a href="../../detectors/Threshold.html" title="" class="ltx_ref">Threshold</a> to see
-how filter results can be used to dynamically find threshold value.</p>
+<p class="ltx_p">The <a href="../../detectors/Threshold.html" title="" class="ltx_ref">threshold</a> value can be
+specified by users as an expression combining mathematical functions
+and operators with variables based on the current raw or filtered
+image. Variables provided by this filter are:</p>
 </div>
 <div id="Sx1.SSx1.p2" class="ltx_para">
-<p class="ltx_p">The two default variables and images filtered with each of the two
-box kernels <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi50.png" width="46" height="18" alt="K_{\mathrm{AV1}}"> and <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi51.png" width="46" height="18" alt="K_{\mathrm{AV2}}"> are provided
-by this filter:</p>
-</div>
-<div id="Sx1.SSx1.p3" class="ltx_para">
 <table class="ltx_tabular ltx_align_middle">
 <thead class="ltx_thead">
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">DoB.I</span></th>
-<th class="ltx_td ltx_align_left">current unfiltered image</th>
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">DoB.I</span></th>
+<th class="ltx_td ltx_align_left">current raw input image</th>
 </tr>
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">DoB.F</span></th>
-<th class="ltx_td ltx_align_left">current filtered image</th>
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">DoB.F</span></th>
+<th class="ltx_td ltx_align_left">corresponding filtered image</th>
 </tr>
 </thead>
 <tbody class="ltx_tbody">
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">DoB.B1</span></th>
-<td class="ltx_td ltx_align_left">current image filtered with <img id="Sx1.SSx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi50.png" width="46" height="18" alt="K_{\mathrm{AV1}}">
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">DoB.B1</span></th>
+<td class="ltx_td ltx_align_left">result of filtering only with <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi47.png" width="46" height="18" alt="K_{\mathrm{AV1}}">
 </td>
 </tr>
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">DoB.B2</span></th>
-<td class="ltx_td ltx_align_left">current image filtered with <img id="Sx1.SSx1.p3.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi51.png" width="46" height="18" alt="K_{\mathrm{AV2}}">
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">DoB.B2</span></th>
+<td class="ltx_td ltx_align_left">result of filtering only with <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi48.png" width="46" height="18" alt="K_{\mathrm{AV2}}">
 </td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
+<div id="Sx1.SSx2" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">See also</h2>
+
+<div id="Sx1.SSx2.p1" class="ltx_para">
+<ul id="I1" class="ltx_itemize">
+<li id="I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i1.p1" class="ltx_para">
+<p class="ltx_p"><a href="Filters.html" title="" class="ltx_ref">Image filtering and feature enhancement</a></p>
+</div>
+</li>
+<li id="I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i2.p1" class="ltx_para">
+<p class="ltx_p"><a href="../../detectors/Detectors.html" title="" class="ltx_ref">Finding approximate positions of molecules</a></p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="bib" class="ltx_bibliography">
+<h1 class="ltx_title ltx_title_bibliography">References</h1>
+
+<ul id="L1" class="ltx_biblist">
+<li id="bib.bib15" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. Huang, S. L. Schwartz, J. M. Byars and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2011)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Simultaneous multiple-emitter fitting for single molecule super-resolution imaging</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Biomedical Optics Express</span> <span class="ltx_text ltx_bib_volume">2</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 1377–93</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/BOE.2.001377" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Difference of averaging filters" class="ltx_ref"><span class="ltx_text ltx_ref_title">Difference of averaging filters</span></a>.
+</span>
+</li>
+</ul>
 </div>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Tue May  6 17:04:57 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Mon May 19 13:46:24 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

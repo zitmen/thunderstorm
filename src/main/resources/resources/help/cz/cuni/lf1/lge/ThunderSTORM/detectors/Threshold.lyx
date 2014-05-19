@@ -4,30 +4,7 @@
 \begin_header
 \textclass article
 \begin_preamble
-\makeatletter
-\let\orig@item\item
-
-\def\item{%
-    \@ifnextchar{[}%
-        {\lstinline@item}%
-        {\orig@item}%
-}
-
-\begingroup
-\catcode`\]=\active
-\gdef\lstinline@item[{%
-    \setbox0\hbox\bgroup
-        \catcode`\]=\active
-        \let]\lstinline@item@end
-}
-\endgroup
-
-\def\lstinline@item@end{%
-    \egroup
-    \orig@item[\usebox0]%
-}
-
-\makeatother
+\usepackage[unicode=true] {hyperref}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -71,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation skip
-\defskip medskip
+\paragraph_separation indent
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -114,33 +91,53 @@ When finding the approximate position of molecules, choosing the right threshold
  may slowly fluctuate over time.
 \end_layout
 
+\begin_layout Subsection*
+Guidelines for the choice of parameters
+\end_layout
+
 \begin_layout Standard
-Note that Izeddin et
-\begin_inset space ~
+Our experiments indicate that the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{LocalMaximaDetector.html}{local maximum}
+\end_layout
+
 \end_inset
 
-al.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Izeddin2012"
+ approach with 8-connected neighborhoods provides the highest 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../PerformanceEvaluationPlugIn.html}{F1-score}
+\end_layout
 
 \end_inset
 
- suggested to use the second wavelet level 
-\begin_inset Formula $F_{2}$
+ compared to 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Detectors.html}{other methods}
+\end_layout
+
 \end_inset
 
- as the filtered image 
-\begin_inset Formula $F$
-\end_inset
-
- and to choose the threshold value between 0.5 and 2 times the standard deviation
- of the intensity values from the first wavelet level 
-\begin_inset Formula $F_{1}$
-\end_inset
-
-, see 
+.
+ The suggested threshold applied to the filtered images, in the case of
+ the 
 \begin_inset ERT
 status open
 
@@ -153,11 +150,27 @@ href{../filters/ui/CompoundWaveletFilterUI.html}{wavelet filter}
 
 \end_inset
 
- for the definition of wavelet levels.
+, usually ranges from 0.5 to 2 times the standard deviation of the 1st wavelet
+ level, e.g., 
+\family typewriter
+1*std(Wave.F1)
+\family default
+.
+ Such a value is recommended by Izeddin et al.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Izeddin2012"
+
+\end_inset
+
+ and works well for typical SMLM data.
+ Increasing the threshold value will lead to less false positive detections
+ at the expense of more missed molecules and vice versa.
 \end_layout
 
-\begin_layout Section*
-Formula interpreter
+\begin_layout Subsection*
+Formula interpreter syntax
 \end_layout
 
 \begin_layout Standard
@@ -166,29 +179,14 @@ The formula interpreter provides several built-in statistical functions
  A brief description of the syntax and semantic rules follows.
 \end_layout
 
-\begin_layout Subsection*
+\begin_layout Subsubsection*
 Variables
 \end_layout
 
 \begin_layout Standard
-Variables are images you can use in your formula, that are obtained during
- the filtering operation.
- There are two variables that are always present:
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand{
-\backslash
-arraystretch}{2}
-\end_layout
-
-\end_inset
-
-
+Variables used in formulas can be scalars (numbers) or images (matrices).
+ Image variables are provided by image filters.
+ Two variables are always present:
 \end_layout
 
 \begin_layout Standard
@@ -203,19 +201,9 @@ arraystretch}{2}
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
+\family typewriter
 I
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -224,7 +212,7 @@ I
 \begin_inset Text
 
 \begin_layout Plain Layout
-current unfiltered image
+current raw input image
 \end_layout
 
 \end_inset
@@ -235,19 +223,9 @@ current unfiltered image
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
+\family typewriter
 F
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -256,7 +234,7 @@ F
 \begin_inset Text
 
 \begin_layout Plain Layout
-current filtered image
+corresponding filtered image
 \end_layout
 
 \end_inset
@@ -270,43 +248,145 @@ current filtered image
 \end_layout
 
 \begin_layout Standard
-Filters can provide more image variables.
- For example wavelet filter provides all the used wavelet planes.
- See help for individual filters for possible variable names.
+\begin_inset VSpace medskip
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Variables from a filter that is not selected can be used too.
- Then, the filtering operation will run several times: one filtered image
- is used for detection and the other filtered image is used only to evaluate
- the threshold.
- Prefix the variable with a short name of the filter and a dot to use a
- variable from other than the selected filter.
- For example the threshold formula 
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline false
+Note that some of the filters can provide more variables, see help of individual
+ 
+\begin_inset ERT
 status open
 
 \begin_layout Plain Layout
 
-mean(Med.F)
+
+\backslash
+href{../filters/ui/Filters.html}{image filters}
 \end_layout
 
 \end_inset
 
-will evaluate to the mean value of the image filtered with median filter
- even if your selected filter is for example the wavelet filter.
+ for possible variable names.
+ The formula interpreter can also use any of the variables provided by image
+ filters even if the filter was not selected for image filtering.
 \end_layout
 
-\begin_layout Subsection*
-Built-in operators
+\begin_layout Standard
+For example, suppose that a Gaussian filter is selected as an image filter
+ and the threshold for the approximate localization of molecules is defined
+ by the formula
+\family typewriter
+ mean(Med.F)+10*std(Wave.F1)
+\family default
+.
+ The image filtering operation will run several times in this case, because
+ the formula interpreter will determine the mean intensity value of the
+ input image filtered using a median filter and will add ten times the standard
+ deviation of intensity values obtained as a first wavelet level of the
+ input image.
+ This threshold value will be applied to the input image filtered using
+ the selected Gaussian filter.
+\end_layout
+
+\begin_layout Subsubsection*
+Operators
 \end_layout
 
 \begin_layout Standard
 Operators can take images or scalars as operands.
- The behavior changes accordingly.
- The supported operators are:
+ All image operations are performed element-wise, therefore image matrices
+ must have the same size.
+ The semantics is as follows:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+scalar + scalar = scalar
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+image + image = image
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+image + scalar = image
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(scalar is added to each element of the image)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+The supported operators are:
 \end_layout
 
 \begin_layout Standard
@@ -321,28 +401,18 @@ Operators can take images or scalars as operands.
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
+\family typewriter
 a + b
 \end_layout
 
 \end_inset
-
-
-\end_layout
-
-\end_inset
 </cell>
 <cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-addition, element by element for images
+addition
 \end_layout
 
 \end_inset
@@ -353,28 +423,18 @@ addition, element by element for images
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
+\family typewriter
 a - b
 \end_layout
 
 \end_inset
-
-
-\end_layout
-
-\end_inset
 </cell>
 <cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-subtraction, element by element for images
+subtraction
 \end_layout
 
 \end_inset
@@ -385,28 +445,18 @@ subtraction, element by element for images
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
+\family typewriter
 a * b
 \end_layout
 
 \end_inset
-
-
-\end_layout
-
-\end_inset
 </cell>
 <cell alignment="left" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-multiplication, element by element for images
+multiplication
 \end_layout
 
 \end_inset
@@ -417,28 +467,18 @@ multiplication, element by element for images
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
+\family typewriter
 a / b
 \end_layout
 
 \end_inset
-
-
-\end_layout
-
-\end_inset
 </cell>
 <cell alignment="left" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-division, element by element for images
+division
 \end_layout
 
 \end_inset
@@ -449,28 +489,18 @@ division, element by element for images
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
+\family typewriter
 a % b
 \end_layout
 
 \end_inset
-
-
-\end_layout
-
-\end_inset
 </cell>
 <cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-modulo, element by element for images
+modulo
 \end_layout
 
 \end_inset
@@ -481,19 +511,9 @@ modulo, element by element for images
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
+\family typewriter
 a ^ b
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -502,7 +522,11 @@ a ^ b
 \begin_inset Text
 
 \begin_layout Plain Layout
-exponentiation, the second argument can only be a scalar
+exponentiation (
+\family typewriter
+b
+\family default
+ must be a scalar)
 \end_layout
 
 \end_inset
@@ -515,32 +539,13 @@ exponentiation, the second argument can only be a scalar
 
 \end_layout
 
-\begin_layout Subsection*
-Built-in functions
+\begin_layout Subsubsection*
+Functions
 \end_layout
 
 \begin_layout Standard
-The syntax to use the function is the name followed by the argument in parenthes
-is: 
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline false
-status open
-
-\begin_layout Plain Layout
-
-name(argument)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Functions can take both an image or a scalar value (where it is meaningfull)
- as an argument.
- Expressions that evaluate to an image or scalar value can also be used.
+Functions can take an image or a scalar as an argument or a result of a
+ function which is an image or a scalar.
  The supported functions are:
 \end_layout
 
@@ -744,6 +749,42 @@ x
 </cell>
 </row>
 </lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../filters/ui/Filters.html}{Image filtering and feature enhancement}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Detectors.html}{Finding approximate positions of molecules}
+\end_layout
 
 \end_inset
 

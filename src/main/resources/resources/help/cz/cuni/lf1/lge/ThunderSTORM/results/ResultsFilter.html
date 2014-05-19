@@ -2,7 +2,7 @@
 <html>
 <head>
 <title></title>
-<!--Generated on Tue May  6 17:05:17 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Generated on Mon May 19 13:46:56 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../LaTeXML.css" type="text/css">
@@ -14,208 +14,267 @@
 <div class="ltx_page_content">
 <div class="ltx_document">
 <div id="Sx1" class="ltx_section">
-<h1 class="ltx_title ltx_title_section">Removing molecules with poor localization</h1>
+<h1 class="ltx_title ltx_title_section">Filtering according to a user-defined criteria</h1>
 
 <div id="Sx1.p1" class="ltx_para">
-<p class="ltx_p">ThunderSTORM can remove unwanted molecules according to user-defined
-criteria. The criteria is formulated as an expression combining mathematical
+<p class="ltx_p">ThunderSTORM can remove unwanted molecules according to a user-defined
+criteria, or display molecules in a <a href="ROIselection.html" title="" class="ltx_ref">user-specified region</a>.
+The filtering criteria is formulated as an expression combining mathematical
 and logical functions and operators with parameters from the table
-of results obtained from previous data analysis. Users can also display
-histograms of particular measured parameters and select thresholds
-to define the filtering criteria. All molecules with parameters not
-accepted by the criteria are removed.</p>
+of results obtained from previous data analysis. All molecules with
+parameters not accepted by the criteria are removed. Note that users
+can also display histograms of particular measured parameters and
+select thresholds to define the filtering criteria.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Filter formula syntax</h2>
-
-<div id="Sx1.SSx1.p1" class="ltx_para">
-<p class="ltx_p">The filtering criteria can be specified using a formula built-up from
-a combination of functions, operators and variables. The result of
-the formula must be a vector of boolean values containing 1 for each
-row that should stay in the results table and 0 for the rows that
-should be deleted.</p>
-</div>
-<div id="Sx1.SSx1.SSSx1" class="ltx_subsubsection">
-<h3 class="ltx_title ltx_title_subsubsection">Variables</h3>
-
-<div id="Sx1.SSx1.SSSx1.p1" class="ltx_para">
-<p class="ltx_p">Variable is a vector containing all values from a specified column
-in the results table. All columns that are present in the results
-table can be used as variables. To use the variable in the filter
-formula, simply input the name of the column (without the units in
-square brackets).</p>
-</div>
-</div>
-<div id="Sx1.SSx1.SSSx2" class="ltx_subsubsection">
-<h3 class="ltx_title ltx_title_subsubsection">Functions</h3>
-
-<div id="Sx1.SSx1.SSSx2.p1" class="ltx_para">
-<p class="ltx_p">The syntax to use the function is the name followed by the argument
-in parenthesis:</p>
-</div>
-<div id="Sx1.SSx1.SSSx2.p2" class="ltx_para">
-<div id="LSTx1" class="ltx_listingblock ltx_lstlisting ltx_listing">
-<table class="ltx_tabular">
-<tr class="ltx_tr">
-<td class="ltx_td"><span class="ltx_text ltx_lst_line ltx_font_typewriter">name(argument)</span></td>
-</tr>
-</table>
-</div>
-</div>
-<div id="Sx1.SSx1.SSSx2.p3" class="ltx_para">
-<p class="ltx_p">Functions can take both a vector or a scalar value (where it is meaningfull)
-as an argument. Expressions that evaluate to a vector or a scalar
-value can also be used. The supported functions are:</p>
-</div>
-<div id="Sx1.SSx1.SSSx2.p4" class="ltx_para">
-<table class="ltx_tabular ltx_align_middle">
-<tbody class="ltx_tbody">
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">std</span></td>
-<td class="ltx_td ltx_align_left">standard deviation</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">mean</span></td>
-<td class="ltx_td ltx_align_left">mean value</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">median</span></td>
-<td class="ltx_td ltx_align_left">median value</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">max</span></td>
-<td class="ltx_td ltx_align_left">maximum value</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">min</span></td>
-<td class="ltx_td ltx_align_left">minimum value</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">sum</span></td>
-<td class="ltx_td ltx_align_left">sum of all the values</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">abs</span></td>
-<td class="ltx_td ltx_align_left">absoulte value</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div id="Sx1.SSx1.SSSx3" class="ltx_subsubsection">
-<h3 class="ltx_title ltx_title_subsubsection">Operators</h3>
-
-<div id="Sx1.SSx1.SSSx3.p1" class="ltx_para">
-<p class="ltx_p">There are two types of operators: arithmetic and logical.
-</p>
-</div>
-<div id="Sx1.SSx1.SSSx3.p2" class="ltx_para">
-<p class="ltx_p">Arithmetic operators can take numeric vectors or scalars as operands.
-The behaviour changes accordingly. The output of arithmetic operators
-is a numeric vector if at least one of the operands is a vector, or
-a scalar if both operands are scalar. The supported arithmetic operators
-are:</p>
-</div>
-<div id="Sx1.SSx1.SSSx3.p3" class="ltx_para">
-<table class="ltx_tabular ltx_align_middle">
-<tbody class="ltx_tbody">
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">+</span></td>
-<td class="ltx_td ltx_align_left">addition, element by element for vectors</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">-</span></td>
-<td class="ltx_td ltx_align_left">subtraction, element by element for vectors</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">*</span></td>
-<td class="ltx_td ltx_align_left">multiplication, element by element for vectors</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">/</span></td>
-<td class="ltx_td ltx_align_left">division, element by element for vectors</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">^</span></td>
-<td class="ltx_td ltx_align_left">exponentiation, the second argument can only be a scalar</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="Sx1.SSx1.SSSx3.p4" class="ltx_para">
-<p class="ltx_p">Logical operators perform logical operations on vectors. All these
-operations are performed element-wise. The output is a vector of boolean
-values. The supported logical operators are:</p>
-</div>
-<div id="Sx1.SSx1.SSSx3.p5" class="ltx_para">
-<table class="ltx_tabular ltx_align_middle">
-<tbody class="ltx_tbody">
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">&amp;</span></td>
-<td class="ltx_td ltx_align_left">logical and</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">|</span></td>
-<td class="ltx_td ltx_align_left">logical or</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">!</span></td>
-<td class="ltx_td ltx_align_left">negation (unary)</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">&lt;</span></td>
-<td class="ltx_td ltx_align_left">smaller than</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">&gt;</span></td>
-<td class="ltx_td ltx_align_left">greater than</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting">=</span></td>
-<td class="ltx_td ltx_align_left">equals</td>
-</tr>
-<tr class="ltx_tr">
-<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_lstlisting">!=</span></td>
-<td class="ltx_td ltx_align_left">not equals</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="Sx1.SSx2" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">Examples of filter formulas</h2>
 
-<div id="Sx1.SSx2.p1" class="ltx_para">
+<div id="Sx1.SSx1.p1" class="ltx_para">
 <ul id="I1" class="ltx_itemize">
 <li id="I1.i1" class="ltx_item" style="list-style-type:none;">
 <span class="ltx_tag ltx_tag_itemize">•</span> 
 <div id="I1.i1.p1" class="ltx_para">
-<p class="ltx_p"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">sigma<span class="ltx_text ltx_lst_space"> </span>&gt;<span class="ltx_text ltx_lst_space"> </span>15</span></p>
+<p class="ltx_p"><span class="ltx_text ltx_font_typewriter">sigma &gt; 15</span></p>
 </div>
 </li>
 <li id="I1.i2" class="ltx_item" style="list-style-type:none;">
 <span class="ltx_tag ltx_tag_itemize">•</span> 
 <div id="I1.i2.p1" class="ltx_para">
-<p class="ltx_p"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">frame<span class="ltx_text ltx_lst_space"> </span>&lt;<span class="ltx_text ltx_lst_space"> </span>1000<span class="ltx_text ltx_lst_space"> </span>|<span class="ltx_text ltx_lst_space"> </span>frame<span class="ltx_text ltx_lst_space"> </span>&gt;<span class="ltx_text ltx_lst_space"> </span>200</span></p>
+<p class="ltx_p"><span class="ltx_text ltx_font_typewriter">frame &lt; 1000 | frame &gt; 2000</span></p>
 </div>
 </li>
 <li id="I1.i3" class="ltx_item" style="list-style-type:none;">
 <span class="ltx_tag ltx_tag_itemize">•</span> 
 <div id="I1.i3.p1" class="ltx_para">
-<p class="ltx_p"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">intensity<span class="ltx_text ltx_lst_space"> </span>&gt;<span class="ltx_text ltx_lst_space"> </span>100<span class="ltx_text ltx_lst_space"> </span>&amp;<span class="ltx_text ltx_lst_space"> </span>uncertainty<span class="ltx_text ltx_lst_space"> </span>&lt;<span class="ltx_text ltx_lst_space"> </span>2</span></p>
+<p class="ltx_p"><span class="ltx_text ltx_font_typewriter">intensity &gt; 100 &amp; uncertainty &lt; 20</span></p>
 </div>
 </li>
 <li id="I1.i4" class="ltx_item" style="list-style-type:none;">
 <span class="ltx_tag ltx_tag_itemize">•</span> 
 <div id="I1.i4.p1" class="ltx_para">
-<p class="ltx_p"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">(x<span class="ltx_text ltx_lst_space"> </span>&gt;<span class="ltx_text ltx_lst_space"> </span>5000<span class="ltx_text ltx_lst_space"> </span>&amp;<span class="ltx_text ltx_lst_space"> </span>x<span class="ltx_text ltx_lst_space"> </span>&lt;<span class="ltx_text ltx_lst_space"> </span>10000<span class="ltx_text ltx_lst_space"> </span>&amp;<span class="ltx_text ltx_lst_space"> </span>y<span class="ltx_text ltx_lst_space"> </span>&gt;<span class="ltx_text ltx_lst_space"> </span>5000<span class="ltx_text ltx_lst_space"> </span>&amp;<span class="ltx_text ltx_lst_space"> </span>y<span class="ltx_text ltx_lst_space"> </span>&lt;<span class="ltx_text ltx_lst_space"> </span>10000)</span></p>
+<p class="ltx_p"><span class="ltx_text ltx_font_typewriter">(x &gt; 5000 &amp; x &lt; 10000 &amp; y &gt;
+5000 &amp; y &lt; 10000)</span></p>
 </div>
 </li>
 <li id="I1.i5" class="ltx_item" style="list-style-type:none;">
 <span class="ltx_tag ltx_tag_itemize">•</span> 
 <div id="I1.i5.p1" class="ltx_para">
-<p class="ltx_p"><span class="ltx_text ltx_lstlisting ltx_font_typewriter">(x-10000)^2<span class="ltx_text ltx_lst_space"> </span>+<span class="ltx_text ltx_lst_space"> </span>(y-10000)^2<span class="ltx_text ltx_lst_space"> </span>&lt;<span class="ltx_text ltx_lst_space"> </span>2000^2</span></p>
+<p class="ltx_p"><span class="ltx_text ltx_font_typewriter">(x-10000)^2 + (y-10000)^2
+&lt; 2000^2</span></p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div id="Sx1.SSx2" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">Formula interpreter syntax</h2>
+
+<div id="Sx1.SSx2.p1" class="ltx_para">
+<p class="ltx_p">The filtering criteria is specified as an expression combining statistical
+and logical functions and operators with variables from the table
+of localization results. The result of the formula must be a vector
+of Boolean values containing “true” for each row that should stay
+in the table and “false” for the rows that should be deleted. A
+brief description of the syntax and semantic rules follows.</p>
+</div>
+<div id="Sx1.SSx2.SSSx1" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">Variables</h3>
+
+<div id="Sx1.SSx2.SSSx1.p1" class="ltx_para">
+<p class="ltx_p">Variables used in formulas can be numerical scalars or vectors, or
+logical vectors. Numerical vectors are provided by columns in the
+table of results. To use a column as a variable, input its name (without
+square brackets with units). Any column can be used as a variable.</p>
+</div>
+</div>
+<div id="Sx1.SSx2.SSSx2" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">Operators</h3>
+
+<div id="Sx1.SSx2.SSSx2.p1" class="ltx_para">
+<p class="ltx_p">Operators take variables as operands. All vector operations are performed
+element-wise, therefore vectors must have the same size. The semantics
+is as follows:</p>
+</div>
+<div id="Sx1.SSx2.SSSx2.p2" class="ltx_para">
+<table class="ltx_tabular ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">scalar + scalar = scalar</span></td>
+<td class="ltx_td"></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">vector + vector = vector</span></td>
+<td class="ltx_td"></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">vector + scalar = vector</span></td>
+<td class="ltx_td ltx_align_left">(scalar is added to each element of the vector)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="Sx1.SSx2.SSSx3" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">Arithmetical operators</h3>
+
+<div id="Sx1.SSx2.SSSx3.p1" class="ltx_para">
+<p class="ltx_p">Arithmetical operators can take numerical vectors or scalars as operands.
+The behavior changes accordingly. The output is a numerical vector
+if at least one of the operands is a vector, or a scalar if both operands
+are scalar. The supported arithmetical operators are:</p>
+</div>
+<div id="Sx1.SSx2.SSSx3.p2" class="ltx_para">
+<table class="ltx_tabular ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a + b</span></th>
+<td class="ltx_td ltx_align_left">addition</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a - b</span></th>
+<td class="ltx_td ltx_align_left">subtraction</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a * b</span></th>
+<td class="ltx_td ltx_align_left">multiplication</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a / b</span></th>
+<td class="ltx_td ltx_align_left">division</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a % b</span></th>
+<td class="ltx_td ltx_align_left">modulo</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a ^ b</span></th>
+<td class="ltx_td ltx_align_left">exponentiation (<span class="ltx_text ltx_font_typewriter">b</span> must be a scalar)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="Sx1.SSx2.SSSx4" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">Logical operators</h3>
+
+<div id="Sx1.SSx2.SSSx4.p1" class="ltx_para">
+<p class="ltx_p">Logical operators perform logical operations on vectors. All operations
+are performed element-wise. The output is a vector of Boolean values.
+The supported logical operators are:
+</p>
+</div>
+<div id="Sx1.SSx2.SSSx4.p2" class="ltx_para">
+<table class="ltx_tabular ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a &amp; b</span></td>
+<td class="ltx_td ltx_align_left">logical AND</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a | b</span></td>
+<td class="ltx_td ltx_align_left">logical OR</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a &lt; b</span></td>
+<td class="ltx_td ltx_align_left">smaller than</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a &gt; b</span></td>
+<td class="ltx_td ltx_align_left">greater than</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a = b</span></td>
+<td class="ltx_td ltx_align_left">equals</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">a != b</span></td>
+<td class="ltx_td ltx_align_left">not equals</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">!a</span></td>
+<td class="ltx_td ltx_align_left">negation</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="Sx1.SSx2.SSSx5" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">Functions</h3>
+
+<div id="Sx1.SSx2.SSSx5.p1" class="ltx_para">
+<p class="ltx_p">Functions can take a numerical vector or a scalar as an argument or
+a result of a function which is a numerical vector or a scalar. The
+supported functions are:</p>
+</div>
+<div id="Sx1.SSx2.SSSx5.p2" class="ltx_para">
+<table class="ltx_tabular ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">var(x)</span></td>
+<td class="ltx_td ltx_align_left">variance of <span class="ltx_text ltx_font_typewriter">x</span>
+</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">std(x)</span></td>
+<td class="ltx_td ltx_align_left">standard deviation of <span class="ltx_text ltx_font_typewriter">x</span>
+</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">mean(x)</span></td>
+<td class="ltx_td ltx_align_left">mean value of <span class="ltx_text ltx_font_typewriter">x</span>
+</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">median(x)</span></td>
+<td class="ltx_td ltx_align_left">median of <span class="ltx_text ltx_font_typewriter">x</span>
+</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">min(x)</span></td>
+<td class="ltx_td ltx_align_left">minimum value in <span class="ltx_text ltx_font_typewriter">x</span>
+</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">max(x)</span></td>
+<td class="ltx_td ltx_align_left">maximum value in <span class="ltx_text ltx_font_typewriter">x</span>
+</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">sum(x)</span></td>
+<td class="ltx_td ltx_align_left">sum of all items in <span class="ltx_text ltx_font_typewriter">x</span>
+</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">abs(x)</span></td>
+<td class="ltx_td ltx_align_left">absolute value of <span class="ltx_text ltx_font_typewriter">x</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="Sx1.SSx3" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">See also</h2>
+
+<div id="Sx1.SSx3.p1" class="ltx_para">
+<ul id="I2" class="ltx_itemize">
+<li id="I2.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I2.i1.p1" class="ltx_para">
+<p class="ltx_p"><a href="Postprocessing.html" title="" class="ltx_ref">Post-processing analysis</a></p>
+</div>
+</li>
+<li id="I2.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I2.i2.p1" class="ltx_para">
+<p class="ltx_p"><a href="https://code.google.com/p/thunder-storm/wiki/PostProcessing#Filter" title="" class="ltx_ref">Tutorial to create a filter expression using a histogram</a></p>
+</div>
+</li>
+<li id="I2.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I2.i3.p1" class="ltx_para">
+<p class="ltx_p"><a href="https://code.google.com/p/thunder-storm/wiki/PostProcessing#Visualizing_and_exporting_molecular_localizations_from_a_region" title="" class="ltx_ref">Tutorial to create a filter expression by selecting a region of interest</a></p>
 </div>
 </li>
 </ul>
@@ -225,7 +284,7 @@ values. The supported logical operators are:</p>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Tue May  6 17:05:17 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Mon May 19 13:46:56 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

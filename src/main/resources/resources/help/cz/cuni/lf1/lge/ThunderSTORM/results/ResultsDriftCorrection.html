@@ -2,7 +2,7 @@
 <html>
 <head>
 <title></title>
-<!--Generated on Tue May  6 17:05:14 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Generated on Mon May 19 13:46:53 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../LaTeXML.css" type="text/css">
@@ -24,31 +24,29 @@ and the second on cross-correlation of similar structures in reconstructed
 super-resolution images. The trajectory of the relative sample drift
 can be saved to a file and applied later, possibly to a different
 dataset. For example, drift estimated from a sub-region of the data
-can be applied the whole dataset, or drift estimated from one channel
+can be applied to the whole dataset, or drift estimated from one channel
 can be applied to correct drift in another channel.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">Fiducial markers</h2>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
-<p class="ltx_p">A common approach for the drift correction is performed by tracking
-fiducial markers inserted into the sample and by subtracting their
-relative motion from the molecular localizations. ThunderSTORM can
-identify fiducial markers automatically from the localization results
-as molecules that stay in the ‘‘on’’ state at one position for a
-substantial amount of time. Therefore, all localizations that arise
-from more than a given number of frames are considered as fiducial
+<p class="ltx_p">A common approach for correcting drift is performed by tracking fiducial
+markers present in the sample and then subtracting their relative
+motion from the molecular localizations. ThunderSTORM can identify
+fiducial markers automatically from the localization results as molecules
+that stay in the “on” state at one position for a substantial
+amount of time. Therefore, all localizations that arise from more
+than a user-specified number of frames are considered as fiducial
 markers and are used for the drift correction. Assigning molecular
 localizations in subsequent frames to a single fiducial marker is
 performed by the <a href="ResultsGrouping.html" title="" class="ltx_ref">merging algorithm</a>.</p>
 </div>
 <div id="Sx1.SSx1.p2" class="ltx_para">
-<p class="ltx_p">The trajectory of the relative sample drift is obtained by combing
-all identified fiducial markers into a single dataset. The relative
-sample drift at each frame <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi11.png" width="95" height="19" alt="t=1,\ldots,T">, in either of the coordinates
-<img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi13.png" width="14" height="12" alt="x"> and <img id="Sx1.SSx1.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi15.png" width="13" height="15" alt="y">, is computed according to the formula</p>
-</div>
-<div id="Sx1.SSx1.p3" class="ltx_para">
+<p class="ltx_p">The sample drift is obtained by averaging the relative trajectories
+of all identified fiducial markers into a single trajectory. The sample
+drift at each frame <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi10.png" width="95" height="19" alt="t=1,\ldots,T">, is computed (for <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi12.png" width="14" height="12" alt="x"> and <img id="Sx1.SSx1.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="13" height="15" alt="y">)
+according to the formula</p>
 <table id="Sx1.E1" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
@@ -58,57 +56,56 @@ sample drift at each frame <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vert
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">Here <img id="Sx1.SSx1.p3.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi3.png" width="23" height="16" alt="M"> is the number of fiducial markers, <img id="Sx1.SSx1.p3.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi14.png" width="30" height="17" alt="x_{i,t}"> is an absolute
-position of an <img id="Sx1.SSx1.p3.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi8.png" width="10" height="16" alt="i">-th marker at a frame <img id="Sx1.SSx1.p3.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi12.png" width="11" height="15" alt="t">, <img id="Sx1.SSx1.p3.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi7.png" width="100" height="19" alt="i=1,\ldots,M">, and
-<img id="Sx1.SSx1.p3.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi6.png" width="52" height="19" alt="\theta_{i}\in\mathbb{R}"> is an unknown offset which has to be subtracted
-from the absolute marker position to obtain the relative sample drift.</p>
+<p class="ltx_p">Here <img id="Sx1.SSx1.p2.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi3.png" width="23" height="16" alt="M"> is the number of fiducial markers, <img id="Sx1.SSx1.p2.m5" class="ltx_Math" style="vertical-align:-7px" src="mi/mi13.png" width="30" height="17" alt="x_{i,t}"> is the absolute
+position of the <img id="Sx1.SSx1.p2.m6" class="ltx_Math" style="vertical-align:-2px" src="mi/mi7.png" width="10" height="16" alt="i">-th marker at frame <img id="Sx1.SSx1.p2.m7" class="ltx_Math" style="vertical-align:-2px" src="mi/mi11.png" width="11" height="15" alt="t">, <img id="Sx1.SSx1.p2.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi6.png" width="100" height="19" alt="i=1,\ldots,M">, and
+<img id="Sx1.SSx1.p2.m9" class="ltx_Math" style="vertical-align:-5px" src="mi/mi5.png" width="18" height="19" alt="\theta_{i}"> is an unknown offset which has to be subtracted from
+the absolute marker position to obtain the relative position.</p>
 </div>
-<div id="Sx1.SSx1.p4" class="ltx_para">
-<p class="ltx_p">The offset <img id="Sx1.SSx1.p4.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi5.png" width="18" height="19" alt="\theta_{i}"> is estimated by least squares minimization
-of a sum of squared differences between relative marker position and
-the relative sample drift, summed over all markers and frames. The
-optimization is defined by the formula</p>
-</div>
-<div id="Sx1.SSx1.p5" class="ltx_para">
+<div id="Sx1.SSx1.p3" class="ltx_para">
+<p class="ltx_p">The offset <img id="Sx1.SSx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi5.png" width="18" height="19" alt="\theta_{i}"> is estimated by least squares minimization
+of the sum of squared differences between the relative marker positions
+and the relative sample drift, summed over all markers and frames.
+The optimization is defined by the formula</p>
 <table id="Sx1.E2" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-25px" src="mi/mi1.png" width="322" height="58" alt="\hat{\boldsymbol{\theta}}=\argmin_{\theta=\left[\theta_{1},\ldots,\theta_{M}%
-\right]}\sum_{t=1}^{T}\sum_{i=1}^{M}\left(\left(x_{i,t}-\theta_{i}\right)-%
-\overline{x}_{t}\right)^{2}\,,"></td>
+<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-25px" src="mi/mi1.png" width="323" height="58" alt="\hat{\boldsymbol{\theta}}=\argmin_{\boldsymbol{\theta}=\left[\theta_{1},\ldots%
+,\theta_{M}\right]}\sum_{t=1}^{T}\sum_{i=1}^{M}\left(\left(x_{i,t}-\theta_{i}%
+\right)-\overline{x}_{t}\right)^{2}\,,"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.SSx1.p5.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi4.png" width="134" height="35" alt="\hat{\boldsymbol{\theta}}=\left[\hat{\theta}_{1},\ldots,\hat{\theta}_{M}\right]">
+<p class="ltx_p">where <img id="Sx1.SSx1.p3.m2" class="ltx_Math" style="vertical-align:-14px" src="mi/mi4.png" width="134" height="35" alt="\hat{\boldsymbol{\theta}}=\left[\hat{\theta}_{1},\ldots,\hat{\theta}_{M}\right]">
 are the values of the estimated offset for each of the markers.</p>
 </div>
-<div id="Sx1.SSx1.p6" class="ltx_para">
-<p class="ltx_p">In reality, some of the points <img id="Sx1.SSx1.p6.m1" class="ltx_Math" style="vertical-align:-7px" src="mi/mi14.png" width="30" height="17" alt="x_{i,t}"> may be missing, because
+<div id="Sx1.SSx1.p4" class="ltx_para">
+<p class="ltx_p">In reality, some of the points <img id="Sx1.SSx1.p4.m1" class="ltx_Math" style="vertical-align:-7px" src="mi/mi13.png" width="30" height="17" alt="x_{i,t}"> may be missing because the
 markers might not be localized in some frames. If this is the case,
 the relative sample drift in Equation (<a href="#Sx1.E1" title="(1) ‣ Fiducial markers ‣ Lateral drift correction" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>)
-is computed only from the corresponding number of fiducial markers
-and the corresponding sum of squared differences in Equation (<a href="#Sx1.E2" title="(2) ‣ Fiducial markers ‣ Lateral drift correction" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>)
-is set zero.</p>
+is computed only from the corresponding number of fiducial markers.
+For the missing markers, the corresponding sum of squared differences
+in Equation (<a href="#Sx1.E2" title="(2) ‣ Fiducial markers ‣ Lateral drift correction" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>) is set to zero.</p>
 </div>
-<div id="Sx1.SSx1.p7" class="ltx_para">
+<div id="Sx1.SSx1.p5" class="ltx_para">
 <p class="ltx_p">The final drift trajectory is smoothed by robust locally weighted
 regression <cite class="ltx_cite">[<a href="#bib.bib5" title="Robust Locally Weighted Regression and Smoothing Scatterplots" class="ltx_ref">1</a>]</cite>. Users can specify the maximum merging
-distance, the minimum number of frames, where a molecule must appear
-to be considered as a fiducial marker, and the trajectory smoothing
+distance and the minimum number of frames in which a molecule must
+appear to be considered as a fiducial marker, and the trajectory smoothing
 factor.</p>
 </div>
-<div id="Sx1.SSx1.p8" class="ltx_para">
+<div id="Sx1.SSx1.p6" class="ltx_para">
 <p class="ltx_p">Note that analyzing samples with fiducial markers yields localizations
-of both the blinking fluorophores and the fiducial markers. This will
-slow down computations. Faster execution and better precision can
-be achieved by limiting the SMLM data analysis process to regions
-containing only the fiducial markers. The drift trajectory can be
-saved to a file and applied later to the whole dataset.</p>
+of both the blinking fluorophores and the fiducial markers. This may
+slow down the merging algorithm used for automatic identification
+of the markers. For faster marker identification, the merging process
+can be limited to regions containing only the fiducial markers. The
+drift trajectory can then be saved to a file and applied later to
+the whole dataset.</p>
 </div>
 <div id="Sx1.SSx1.SSSx1" class="ltx_subsubsection">
-<h3 class="ltx_title ltx_title_subsubsection">How to set the parameters</h3>
+<h3 class="ltx_title ltx_title_subsubsection">Guidelines for the choice of parameters</h3>
 
 <div id="Sx1.SSx1.SSSx1.p1" class="ltx_para">
 <p class="ltx_p">Fiducial markers are automatically detected as molecules that stay
@@ -139,36 +136,39 @@ the whole dataset.</p>
 <div id="Sx1.SSx2.p1" class="ltx_para">
 <p class="ltx_p">ThunderSTORM also supports lateral drift correction using the method
 of Mlodzianoski et al. <cite class="ltx_cite">[<a href="#bib.bib20" title="Sample drift correction in 3D fluorescence photoactivation localization microscopy" class="ltx_ref">2</a>]</cite>. Here, the list
-of localized molecules is split into <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-3px" src="mi/mi9.png" width="45" height="17" alt="n+1"> batches based on the frame
+of localized molecules is split into <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-3px" src="mi/mi8.png" width="45" height="17" alt="n+1"> batches based on the frame
 in which they appeared. Each batch is used to create one super-resolution
 image. The presumption of this method is that similar structures will
 appear in all reconstructed images. Cross-correlation methods are
 used to determine the shift between the first image and each of the
-subsequent images. This leads to <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi10.png" width="15" height="12" alt="n"> cross-correlation images, where
+subsequent images. This leads to <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi9.png" width="15" height="12" alt="n"> cross-correlation images, where
 the shift in the position caused by the drift corresponds to the relative
 position between the global intensity maximum peaks. The localized
 peaks are assigned to the central frame of each batch sequence and
 the drift for intermediate frames is determined by local regression
 using third degree polynomials. The original molecular coordinates
-are corrected for the drift using the estimated values.</p>
+are corrected for drift using the estimated values.
+</p>
 </div>
 <div id="Sx1.SSx2.p2" class="ltx_para">
 <p class="ltx_p">In our implementation, super-resolution images are created by the
 <a href="../rendering/ui/ASHRenderingUI.html" title="" class="ltx_ref">average shifted histograms</a>
-method, cross-correlation images are computed by Fast Fourier Transform
-methods as implemented in ImageJ, and the location of global intensity
-maximum peaks is determined with sub-pixel precision using the <a href="../estimators/ui/RadialSymmetryEstimatorUI.html" title="" class="ltx_ref">radial symmetry</a>
-method. The number of batches <img id="Sx1.SSx2.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi10.png" width="15" height="12" alt="n"> and the magnification of super-resolution
-images is defined by users. For better stability of the solution,
-intensity maximum peaks are first localized on cross-correlation images
-computed from reconstructed images with magnification of one. The
-peak position is refined afterwards using cross-correlation images
-computed from super-resolution images with a user specified magnification.
-The final position of the peak is obtained as a local intensity maximum
-in close proximity to the peak obtained at lower magnification.</p>
+method described in Section <span class="ltx_ref ltx_ref_self">LABEL:sub:Averaged-shifted-histograms</span>,
+cross-correlation images are computed by Fast Fourier Transform methods
+as implemented in ImageJ, and the location of global intensity maximum
+peaks is determined with sub-pixel precision using the <a href="../estimators/ui/RadialSymmetryEstimatorUI.html" title="" class="ltx_ref">radial symmetry</a>
+method described in Section <span class="ltx_ref ltx_ref_self">LABEL:sub:Radial-symmetry</span>. The number
+of batches <img id="Sx1.SSx2.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi9.png" width="15" height="12" alt="n"> and the magnification of super-resolution images is
+defined by users. For better stability of the solution, intensity
+maximum peaks are first localized in cross-correlation images computed
+from reconstructed images with a magnification of one. The peak position
+is refined afterwards using cross-correlation images computed from
+super-resolution images with a user specified magnification. The final
+position of the peak is obtained as a local intensity maximum in close
+proximity to the peak obtained at lower magnification.</p>
 </div>
 <div id="Sx1.SSx2.SSSx1" class="ltx_subsubsection">
-<h3 class="ltx_title ltx_title_subsubsection">How to set the parameters</h3>
+<h3 class="ltx_title ltx_title_subsubsection">Guidelines for the choice of parameters</h3>
 
 <div id="Sx1.SSx2.SSSx1.p1" class="ltx_para">
 <p class="ltx_p">The parameter “Number of bins”
@@ -183,9 +183,23 @@ in each sub-sequence. This decreases the time resolution of the drift
 estimation. A smaller magnification setting can also help to obtain
 resolvable peaks in cross-correlation images created from images with
 less data or with unclear structures. Cross-correlation images with
-detected peaks can be viewed by checking the "Show cross-correlations"
+detected peaks can be viewed by checking the ”Show cross-correlations”
 checkbox.</p>
 </div>
+</div>
+</div>
+<div id="Sx1.SSx3" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">See also</h2>
+
+<div id="Sx1.SSx3.p1" class="ltx_para">
+<ul id="I1" class="ltx_itemize">
+<li id="I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i1.p1" class="ltx_para">
+<p class="ltx_p"><a href="Postprocessing.html" title="" class="ltx_ref">Post-processing analysis</a></p>
+</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -203,7 +217,7 @@ checkbox.</p>
 </span>
 <span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.2307/2286407" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
 </span>
-<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p7" title="Fiducial markers ‣ Lateral drift correction" class="ltx_ref"><span class="ltx_text ltx_ref_title">Fiducial markers</span></a>.
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p5" title="Fiducial markers ‣ Lateral drift correction" class="ltx_ref"><span class="ltx_text ltx_ref_title">Fiducial markers</span></a>.
 </span>
 </li>
 <li id="bib.bib20" class="ltx_bibitem ltx_bib_article">
@@ -224,7 +238,7 @@ checkbox.</p>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Tue May  6 17:05:14 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Mon May 19 13:46:53 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

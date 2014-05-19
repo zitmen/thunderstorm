@@ -4,6 +4,7 @@
 \begin_header
 \textclass article
 \begin_preamble
+\usepackage[unicode=true] {hyperref}
 \usepackage{erf}
 \end_preamble
 \use_default_options true
@@ -71,7 +72,7 @@ Gaussian rendering
 This method draws a normalized symmetric 2D Gaussian function integrated
  over the voxel volume for every localized molecule, with a standard deviation
  equal to the computed, or user-specified localization uncertainty.
- The rendered molecules are added sequentially to the final super-resolution
+ The visualized molecules are added sequentially to the final super-resolution
  images.
  The contribution of one molecule to the voxel intensity at the integer
  position 
@@ -79,9 +80,6 @@ This method draws a normalized symmetric 2D Gaussian function integrated
 \end_inset
 
  is computed as
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 v\left(x,y,z\mid\boldsymbol{\theta}_{p}\right)=E_{x}E_{y}E_{z}\,,
@@ -111,9 +109,6 @@ where
 \end_inset
 
  is the axial localization uncertainty,
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray}
 E_{x} & = & \frac{1}{2}\erf\left(\frac{x-\hat{x}+\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy}}\right)-\frac{1}{2}\erf\left(\frac{x-\hat{x}-\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy}}\right)\,,\\
@@ -210,7 +205,7 @@ and by
 \uwave default
 \noun default
 \color inherit
-For rendering in the 2D case, 
+For data visualization in the 2D case, 
 \begin_inset Formula $z=0$
 \end_inset
 
@@ -219,6 +214,26 @@ For rendering in the 2D case,
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Rendering.html}{Visualization methods}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body

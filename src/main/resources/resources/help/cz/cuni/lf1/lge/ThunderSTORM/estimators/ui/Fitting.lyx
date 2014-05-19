@@ -4,6 +4,7 @@
 \begin_header
 \textclass article
 \begin_preamble
+\usepackage[unicode=true] {hyperref}
 \usepackage{optim}
 \end_preamble
 \use_default_options true
@@ -48,8 +49,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation skip
-\defskip medskip
+\paragraph_separation indent
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -406,6 +407,49 @@ transformation also improves the stability of the fit.
 \end_layout
 
 \begin_layout Subsection*
+Guidelines for the choice of parameters
+\end_layout
+
+\begin_layout Standard
+Fitting PSF models by maximum likelihood estimation generally gives slightly
+ better results than fitting by least square methods, particularly when
+ the photon counts are low.
+ Maximum likelihood estimation requires correct setup of the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../CameraSetupPlugIn.html}{camera parameters}
+\end_layout
+
+\end_inset
+
+ (photoelectrons per A/D count and the digitizer offset level).
+ The recommended PSF model, which generally works well, is the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{IntSymmetricGaussianEstimatorUI.html}{integrated Gaussian}
+\end_layout
+
+\end_inset
+
+.
+ The initial size of sigma can be found by running ThunderSTORM on few images
+ of the data sequence.
+ A histogram of the fitted sizes of sigma (in pixels) can help to find the
+ initial value.
+ The size of the fitting radius should be an integer number close to 3*sigma.
+\end_layout
+
+\begin_layout Subsection*
 See also
 \end_layout
 
@@ -417,7 +461,55 @@ status open
 
 
 \backslash
+href{Estimators.html}{Sub-pixel 2D localization of molecules}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
 href{PSF.html}{Point-spread function (PSF)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{FittingRegion.html}{Definition of the fitting region}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{LocalizationUncertainty.html}{Localization uncertainty}
 \end_layout
 
 \end_inset
@@ -449,7 +541,7 @@ status open
 
 
 \backslash
-href{LocalizationUncertainty.html}{Localization uncertainty}
+href{../../CameraSetupPlugIn.html}{Camera setup}
 \end_layout
 
 \end_inset

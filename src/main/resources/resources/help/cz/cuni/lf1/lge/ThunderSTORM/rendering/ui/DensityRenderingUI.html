@@ -2,7 +2,7 @@
 <html>
 <head>
 <title></title>
-<!--Generated on Tue May  6 17:05:11 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Generated on Mon May 19 13:46:47 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
@@ -20,11 +20,9 @@
 <p class="ltx_p">This method draws a normalized symmetric 2D Gaussian function integrated
 over the voxel volume for every localized molecule, with a standard
 deviation equal to the computed, or user-specified localization uncertainty.
-The rendered molecules are added sequentially to the final super-resolution
+The visualized molecules are added sequentially to the final super-resolution
 images. The contribution of one molecule to the voxel intensity at
 the integer position <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi26.png" width="62" height="21" alt="\left(x,y,z\right)"> is computed as</p>
-</div>
-<div id="Sx1.p2" class="ltx_para">
 <table id="Sx1.E1" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
@@ -34,14 +32,12 @@ the integer position <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi28.png" width="13" height="15" alt="p"> indexes the molecules, and the parameters <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi22.png" width="206" height="22" alt="\boldsymbol{\theta}_{p}=\left[\hat{x}_{p},\hat{y}_{p},\hat{z}_{p},\hat{\sigma}%
+<p class="ltx_p">where <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi28.png" width="13" height="15" alt="p"> indexes the molecules, and the parameters <img id="Sx1.p1.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi22.png" width="206" height="22" alt="\boldsymbol{\theta}_{p}=\left[\hat{x}_{p},\hat{y}_{p},\hat{z}_{p},\hat{\sigma}%
 _{xy,p},\hat{\sigma}_{z,p}\right]">.
-Here <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi25.png" width="71" height="21" alt="\hat{x}_{p},\hat{y}_{p},\hat{z}_{p}"> is the estimated position
-of a molecule, <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-7px" src="mi/mi23.png" width="42" height="21" alt="\hat{\sigma}_{xy,p}"> is the corresponding lateral
-localization uncertainty, <img id="Sx1.p2.m5" class="ltx_Math" style="vertical-align:-7px" src="mi/mi24.png" width="34" height="21" alt="\hat{\sigma}_{z,p}"> is the axial localization
+Here <img id="Sx1.p1.m4" class="ltx_Math" style="vertical-align:-7px" src="mi/mi25.png" width="71" height="21" alt="\hat{x}_{p},\hat{y}_{p},\hat{z}_{p}"> is the estimated position
+of a molecule, <img id="Sx1.p1.m5" class="ltx_Math" style="vertical-align:-7px" src="mi/mi23.png" width="42" height="21" alt="\hat{\sigma}_{xy,p}"> is the corresponding lateral
+localization uncertainty, <img id="Sx1.p1.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi24.png" width="34" height="21" alt="\hat{\sigma}_{z,p}"> is the axial localization
 uncertainty,</p>
-</div>
-<div id="Sx1.p3" class="ltx_para">
 <table id="Sx1.EGx1" class="ltx_equationgroup ltx_eqn_eqnarray">
 
 <tr id="Sx1.E2" class="ltx_equation ltx_align_baseline">
@@ -75,17 +71,32 @@ z}}{2}}{\sqrt{2}\hat{\sigma}_{z}}\right)\,,"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(4)</span></td>
 </tr>
 </table>
-<p class="ltx_p">and <img id="Sx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi27.png" width="28" height="19" alt="\triangle_{z}"> is the size of a voxel in the axial direction.
+<p class="ltx_p">and <img id="Sx1.p1.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi27.png" width="28" height="19" alt="\triangle_{z}"> is the size of a voxel in the axial direction.
 Contributions from one molecule are limited to an interval given by
-a circle with radius of <img id="Sx1.p3.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi19.png" width="51" height="21" alt="3\hat{\sigma}_{xy,p}"> around the molecule
-position in lateral dimension and by <img id="Sx1.p3.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi20.png" width="43" height="21" alt="3\hat{\sigma}_{z,p}"> in axial
-direction. For rendering in the 2D case, <img id="Sx1.p3.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi29.png" width="45" height="16" alt="z=0"> and the term <img id="Sx1.p3.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi21.png" width="57" height="18" alt="E_{z}=1">.</p>
+a circle with radius of <img id="Sx1.p1.m8" class="ltx_Math" style="vertical-align:-7px" src="mi/mi19.png" width="51" height="21" alt="3\hat{\sigma}_{xy,p}"> around the molecule
+position in lateral dimension and by <img id="Sx1.p1.m9" class="ltx_Math" style="vertical-align:-7px" src="mi/mi20.png" width="43" height="21" alt="3\hat{\sigma}_{z,p}"> in axial
+direction. For data visualization in the 2D case, <img id="Sx1.p1.m10" class="ltx_Math" style="vertical-align:-2px" src="mi/mi29.png" width="45" height="16" alt="z=0"> and the term
+<img id="Sx1.p1.m11" class="ltx_Math" style="vertical-align:-5px" src="mi/mi21.png" width="57" height="18" alt="E_{z}=1">.</p>
+</div>
+<div id="Sx1.SSx1" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">See also</h2>
+
+<div id="Sx1.SSx1.p1" class="ltx_para">
+<ul id="I1" class="ltx_itemize">
+<li id="I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i1.p1" class="ltx_para">
+<p class="ltx_p"><a href="Rendering.html" title="" class="ltx_ref">Visualization methods</a></p>
+</div>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Tue May  6 17:05:11 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Mon May 19 13:46:47 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

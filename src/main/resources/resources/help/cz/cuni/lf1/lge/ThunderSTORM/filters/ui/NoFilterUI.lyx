@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation skip
-\defskip medskip
+\paragraph_separation indent
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -98,21 +98,6 @@ href{../../detectors/Threshold.html}{threshold}
  functions and operators with variables based on the current raw or filtered
  image.
  Variables provided by this filter are:
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand{
-\backslash
-arraystretch}{2}
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -127,19 +112,9 @@ arraystretch}{2}
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
+\family typewriter
 I
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -159,19 +134,9 @@ current raw input image
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
+\family typewriter
 F
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -187,6 +152,42 @@ corresponding filtered image
 </cell>
 </row>
 </lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Filters.html}{Image filtering and feature enhancement}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../detectors/Detectors.html}{Finding approximate positions of molecules}
+\end_layout
 
 \end_inset
 

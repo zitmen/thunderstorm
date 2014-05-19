@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation skip
-\defskip medskip
+\paragraph_separation indent
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -93,6 +93,42 @@ href{Threshold.html}{threshold}
  8-connected neighborhood.
  If this condition holds, the point is accepted as a candidate molecule
  for further processing.
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Detectors.html}{Finding approximate positions of molecules}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Threshold.html}{Threshold selection}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body

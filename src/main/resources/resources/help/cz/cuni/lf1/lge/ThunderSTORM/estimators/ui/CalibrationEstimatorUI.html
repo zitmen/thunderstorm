@@ -2,7 +2,7 @@
 <html>
 <head>
 <title></title>
-<!--Generated on Tue May  6 17:04:31 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Generated on Mon May 19 13:45:29 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
@@ -14,7 +14,7 @@
 <div class="ltx_page_content">
 <div class="ltx_document">
 <div id="Sx1" class="ltx_section">
-<h1 class="ltx_title ltx_title_section">Astigmatism method calibration</h1>
+<h1 class="ltx_title ltx_title_section">Calibration of the imaging system (astigmatism method)</h1>
 
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">3D SMLM imaging can be performed by introducing a weak cylindrical
@@ -29,113 +29,62 @@ lens) and the relationships between the axial position and ellipticity
 of the imaged molecules.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">PSF model</h2>
+<h2 class="ltx_title ltx_title_subsection">Calibration of the imaging system</h2>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
-<p class="ltx_p">A common PSF model for astigmatic 3D imaging is a rotated, elliptical
-Gaussian function given by the formula</p>
-</div>
-<div id="Sx1.SSx1.p2" class="ltx_para">
-<table id="Sx1.E1" class="ltx_equation">
+<p class="ltx_p">Calibration is a procedure which determines the orientation angle
+<img id="Sx1.SSx1.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi12.png" width="15" height="19" alt="\phi"> of the imaged ellipsoids, and the relationship between the
+axial position <img id="Sx1.SSx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="13" height="12" alt="z"> of the molecules and their imaged widths <img id="Sx1.SSx1.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="48" height="15" alt="\sigma_{1},\sigma_{2}">.
+We modeled this relationship by a pair of third degree polynomials</p>
+<table id="Sx1.EGx1" class="ltx_equationgroup ltx_eqn_eqnarray">
 
-<tr class="ltx_equation ltx_align_baseline">
+<tr id="Sx1.E1" class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-20px" src="mi/mi8.png" width="454" height="48" alt="\mathrm{PSF}_{\mathrm{EG}}\left(x,y\mid\boldsymbol{\theta},\phi\right)=\frac{%
-\theta_{N}}{2\pi\theta_{\sigma_{1}}\theta_{\sigma_{2}}}\exp\left(-\frac{x^{%
-\prime}{}^{2}}{2\theta_{\sigma_{1}}^{2}}-\frac{y^{\prime 2}}{2\theta_{\sigma_{%
-2}}^{2}}\right)+\theta_{b}\,,"></td>
+<td class="ltx_td ltx_align_right"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi3.png" width="48" height="21" alt="\displaystyle\hat{\sigma}_{1}\left(z\right)"></td>
+<td class="ltx_td ltx_align_center"><img id="Sx1.E1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi1.png" width="18" height="11" alt="\displaystyle="></td>
+<td class="ltx_td ltx_align_left"><img id="Sx1.E1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi7.png" width="245" height="25" alt="\displaystyle a_{1}\left(z-c_{1}\right)^{2}+d_{1}\left(z-c_{1}\right)^{3}+b_{1%
+}\,,"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
-</table>
-<p class="ltx_p">where <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi22.png" width="146" height="21" alt="\mathrm{PSF}_{\mathrm{EG}}\left(x,y\mid\boldsymbol{\theta},\phi\right)">
-gives the expected photon count at the integer pixel position <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi21.png" width="45" height="21" alt="\left(x,y\right)">
-for a vector of parameters <img id="Sx1.SSx1.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi18.png" width="206" height="22" alt="\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{\sigma_{1}},\theta_{%
-\sigma_{2}},\theta_{N},\theta_{b}\right]">,
-and</p>
-<table id="Sx1.EGx1" class="ltx_equationgroup ltx_eqn_eqnarray">
-
-<tr id="Sx1.Ex1" class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_td ltx_align_right"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi13.png" width="19" height="18" alt="\displaystyle x^{\prime}"></td>
-<td class="ltx_td ltx_align_center"><img id="Sx1.Ex1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi1.png" width="18" height="11" alt="\displaystyle="></td>
-<td class="ltx_td ltx_align_left"><img id="Sx1.Ex1.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi6.png" width="235" height="22" alt="\displaystyle\left(x-\theta_{x}\right)\cos\phi-\left(y-\theta_{y}\right)\sin%
-\phi\,,"></td>
-<td class="ltx_eqn_pad"></td>
-</tr>
-<tr id="Sx1.Ex2" class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_td ltx_align_right"><img id="Sx1.Ex2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi15.png" width="18" height="21" alt="\displaystyle y^{\prime}"></td>
-<td class="ltx_td ltx_align_center"><img id="Sx1.Ex2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi1.png" width="18" height="11" alt="\displaystyle="></td>
-<td class="ltx_td ltx_align_left"><img id="Sx1.Ex2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi7.png" width="235" height="22" alt="\displaystyle\left(x-\theta_{x}\right)\sin\phi+\left(y-\theta_{y}\right)\cos%
-\phi\,."></td>
-<td class="ltx_eqn_pad"></td>
-</tr>
-</table>
-<p class="ltx_p">The entries of the vector <img id="Sx1.SSx1.p2.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="15" height="16" alt="\boldsymbol{\theta}"> are as follows: <img id="Sx1.SSx1.p2.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi30.png" width="21" height="19" alt="\theta_{x}">
-and <img id="Sx1.SSx1.p2.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi31.png" width="21" height="21" alt="\theta_{y}"> are the sub-pixel molecular coordinates, <img id="Sx1.SSx1.p2.m7" class="ltx_Math" style="vertical-align:-6px" src="mi/mi27.png" width="28" height="20" alt="\theta_{\sigma_{1}}">
-and <img id="Sx1.SSx1.p2.m8" class="ltx_Math" style="vertical-align:-6px" src="mi/mi28.png" width="28" height="20" alt="\theta_{\sigma_{2}}"> are the imaged widths of the molecule along
-two perpendicular axes rotated by the angle <img id="Sx1.SSx1.p2.m9" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="15" height="19" alt="\phi"> with respect to
-<img id="Sx1.SSx1.p2.m10" class="ltx_Math" style="vertical-align:-5px" src="mi/mi37.png" width="23" height="15" alt="xy"> coordinates, <img id="Sx1.SSx1.p2.m11" class="ltx_Math" style="vertical-align:-5px" src="mi/mi26.png" width="26" height="19" alt="\theta_{N}"> corresponds to the total number of
-photons emitted by the molecule, and <img id="Sx1.SSx1.p2.m12" class="ltx_Math" style="vertical-align:-5px" src="mi/mi29.png" width="20" height="19" alt="\theta_{b}"> is the background
-signal level.</p>
-</div>
-</div>
-<div id="Sx1.SSx2" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Calibration of the imaging system</h2>
-
-<div id="Sx1.SSx2.p1" class="ltx_para">
-<p class="ltx_p">Calibration is a procedure which determines the orientation angle
-<img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="15" height="19" alt="\phi"> of the imaged ellipsoids, and the relationship between the
-axial position <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi38.png" width="13" height="12" alt="z"> of the molecules and their imaged widths <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi25.png" width="48" height="15" alt="\sigma_{1},\sigma_{2}">.
-We modeled this relationship by a pair of third degree polynomials</p>
-<table id="Sx1.EGx2" class="ltx_equationgroup ltx_eqn_eqnarray">
-
 <tr id="Sx1.E2" class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_td ltx_align_right"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi3.png" width="48" height="21" alt="\displaystyle\hat{\sigma}_{1}\left(z\right)"></td>
+<td class="ltx_td ltx_align_right"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi5.png" width="48" height="21" alt="\displaystyle\hat{\sigma}_{2}\left(z\right)"></td>
 <td class="ltx_td ltx_align_center"><img id="Sx1.E2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi1.png" width="18" height="11" alt="\displaystyle="></td>
-<td class="ltx_td ltx_align_left"><img id="Sx1.E2.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi10.png" width="245" height="25" alt="\displaystyle a_{1}\left(z-c_{1}\right)^{2}+d_{1}\left(z-c_{1}\right)^{3}+b_{1%
-}\,,"></td>
+<td class="ltx_td ltx_align_left"><img id="Sx1.E2.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi8.png" width="245" height="25" alt="\displaystyle a_{2}\left(z-c_{2}\right)^{2}+d_{2}\left(z-c_{2}\right)^{3}+b_{2%
+}\,."></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
 </tr>
-<tr id="Sx1.E3" class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_td ltx_align_right"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi5.png" width="48" height="21" alt="\displaystyle\hat{\sigma}_{2}\left(z\right)"></td>
-<td class="ltx_td ltx_align_center"><img id="Sx1.E3.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi1.png" width="18" height="11" alt="\displaystyle="></td>
-<td class="ltx_td ltx_align_left"><img id="Sx1.E3.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi11.png" width="245" height="25" alt="\displaystyle a_{2}\left(z-c_{2}\right)^{2}+d_{2}\left(z-c_{2}\right)^{3}+b_{2%
-}\,."></td>
-<td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(3)</span></td>
-</tr>
 </table>
 </div>
-<div id="Sx1.SSx2.p2" class="ltx_para">
+<div id="Sx1.SSx1.p2" class="ltx_para">
 <p class="ltx_p">The calibration is typically performed using a Z-stack of images of
 sub-diffraction fluorescent beads. We use a sparse sample with about
 10 to 50 beads in the image and a Z-stack image sequence with an axial
-range of about 2 <img id="Sx1.SSx2.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi32.png" width="15" height="15" alt="\upmu">m and a step size of 10 nm.</p>
+range of about <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi10.png" width="41" height="19" alt="2\,\mathrm{\mu m}"> and a step size of <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi9.png" width="49" height="16" alt="10\,\mathrm{nm}">.</p>
 </div>
-<div id="Sx1.SSx2.SSSx1" class="ltx_subsubsection">
-<h3 class="ltx_title ltx_title_subsubsection">Determining the orientation angle</h3>
+</div>
+<div id="Sx1.SSx2" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">Determining the orientation angle</h2>
 
-<div id="Sx1.SSx2.SSSx1.p1" class="ltx_para">
+<div id="Sx1.SSx2.p1" class="ltx_para">
 <ol id="I1" class="ltx_enumerate">
 <li id="I1.i1" class="ltx_item" style="list-style-type:none;">
 <span class="ltx_tag ltx_tag_enumerate">1.</span> 
 <div id="I1.i1.p1" class="ltx_para">
 <p class="ltx_p">A sequence of images from a Z-stack is processed slice-by-slice using
-the same methods as during analysis (image denoising, rough localization,
-PSF fitting). Images of the beads are fit independently using the
-elliptical Gaussian PSF given by Equation (<a href="#Sx1.E1" title="(1) ‣ PSF model ‣ Astigmatism method calibration" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>) with <span class="ltx_text ltx_markedasmath"><img id="I1.i1.p1.m1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="15" height="19" alt="\phi"></span>
-as a free parameter.</p>
+the methods for raw data analysis (<a href="../../filters/ui/Filters.html" title="" class="ltx_ref">image filtering</a>,
+<a href="../../detectors/Detectors.html" title="" class="ltx_ref">approximate localization</a>,
+<a href="Fitting.html" title="" class="ltx_ref">PSF fitting</a>). Images of the beads are fit independently
+using the <a href="EllipticGaussianEstimatorUI.html" title="" class="ltx_ref">elliptical Gaussian PSF</a>
+with <span class="ltx_text ltx_markedasmath"><img id="I1.i1.p1.m1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi12.png" width="15" height="19" alt="\phi"></span> as a free parameter.</p>
 </div>
 </li>
 <li id="I1.i2" class="ltx_item" style="list-style-type:none;">
 <span class="ltx_tag ltx_tag_enumerate">2.</span> 
 <div id="I1.i2.p1" class="ltx_para">
-<p class="ltx_p">Results close to circular are discarded as the angle <img id="I1.i2.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="15" height="19" alt="\phi"> cannot
+<p class="ltx_p">Results close to circular are discarded as the angle <img id="I1.i2.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi12.png" width="15" height="19" alt="\phi"> cannot
 be determined.</p>
 </div>
 </li>
@@ -144,43 +93,44 @@ be determined.</p>
 <div id="I1.i3.p1" class="ltx_para">
 <p class="ltx_p">The final orientation angle is calculated as the circular mean of
 all remaining measurements</p>
-<table id="Sx1.E4" class="ltx_equation">
+<table id="Sx1.E3" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E4.m1" class="ltx_Math" style="vertical-align:-25px" src="mi/mi9.png" width="327" height="57" alt="\phi=\frac{1}{4}\atantwo\left(\frac{1}{n}\sum_{i=1}^{n}{\sin\varphi_{i}},\,%
+<td class="ltx_align_center"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-25px" src="mi/mi6.png" width="327" height="57" alt="\phi=\frac{1}{4}\atantwo\left(\frac{1}{n}\sum_{i=1}^{n}{\sin\varphi_{i}},\,%
 \frac{1}{n}\sum_{i=1}^{n}{\cos\varphi_{i}}\right)\,,"></td>
 <td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(4)</span></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(3)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="I1.i3.p1.m1" class="ltx_Math" style="vertical-align:-8px" src="mi/mi33.png" width="145" height="25" alt="\varphi_{i}=4\left(\phi_{i}\bmod\frac{\pi}{2}\right)"> adjusts
-the fitted angles <img id="I1.i3.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi24.png" width="21" height="19" alt="\phi_{i}">, and <img id="I1.i3.p1.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi36.png" width="15" height="12" alt="n"> is the number of measured
+<p class="ltx_p">where <img id="I1.i3.p1.m1" class="ltx_Math" style="vertical-align:-8px" src="mi/mi15.png" width="145" height="25" alt="\varphi_{i}=4\left(\phi_{i}\bmod\frac{\pi}{2}\right)"> adjusts
+the fitted angles <img id="I1.i3.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi13.png" width="21" height="19" alt="\phi_{i}">, and <img id="I1.i3.p1.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi18.png" width="15" height="12" alt="n"> is the number of measured
 beads.</p>
 </div>
 </li>
 </ol>
 </div>
 </div>
-<div id="Sx1.SSx2.SSSx2" class="ltx_subsubsection">
-<h3 class="ltx_title ltx_title_subsubsection">Ellipticity as a function of an axial position</h3>
+<div id="Sx1.SSx3" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">Ellipticity as a function of an axial position</h2>
 
-<div id="Sx1.SSx2.SSSx2.p1" class="ltx_para">
+<div id="Sx1.SSx3.p1" class="ltx_para">
 <ol id="I2" class="ltx_enumerate">
 <li id="I2.i1" class="ltx_item" style="list-style-type:none;">
 <span class="ltx_tag ltx_tag_enumerate">1.</span> 
 <div id="I2.i1.p1" class="ltx_para">
 <p class="ltx_p">Using the approximate positions of the beads in multiple Z-planes
-and the orientation angle <img id="I2.i1.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="15" height="19" alt="\phi">, both determined in the previous
-step, the images of the beads are fit again using the elliptical Gaussian
-PSF given by Equation (<a href="#Sx1.E1" title="(1) ‣ PSF model ‣ Astigmatism method calibration" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>), but with a fixed angle <img id="I2.i1.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="15" height="19" alt="\phi">.</p>
+and the orientation angle <img id="I2.i1.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi12.png" width="15" height="19" alt="\phi">, both determined in the previous
+step, the images of the beads are fit again using the <a href="EllipticGaussianEstimatorUI.html" title="" class="ltx_ref">elliptical Gaussian PSF</a>,
+but with a fixed angle <img id="I2.i1.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi12.png" width="15" height="19" alt="\phi">.
+</p>
 </div>
 </li>
 <li id="I2.i2" class="ltx_item" style="list-style-type:none;">
 <span class="ltx_tag ltx_tag_enumerate">2.</span> 
 <div id="I2.i2.p1" class="ltx_para">
-<p class="ltx_p">To estimate the coefficients <img id="I2.i2.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi34.png" width="93" height="19" alt="a_{1},b_{1},c_{1},d_{1}"> and <img id="I2.i2.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi35.png" width="93" height="19" alt="a_{2},b_{2},c_{2},d_{2}">
-in Equations (<a href="#Sx1.E2" title="(2) ‣ Calibration of the imaging system ‣ Astigmatism method calibration" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>) and (<a href="#Sx1.E3" title="(3) ‣ Calibration of the imaging system ‣ Astigmatism method calibration" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>),
+<p class="ltx_p">To estimate the coefficients <img id="I2.i2.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi16.png" width="93" height="19" alt="a_{1},b_{1},c_{1},d_{1}"> and <img id="I2.i2.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi17.png" width="93" height="19" alt="a_{2},b_{2},c_{2},d_{2}">
+in Equations (<a href="#Sx1.E1" title="(1) ‣ Calibration of the imaging system ‣ Calibration of the imaging system (astigmatism method)" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>) and (<a href="#Sx1.E2" title="(2) ‣ Calibration of the imaging system ‣ Calibration of the imaging system (astigmatism method)" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>),
 we first fit the pair of polynomials for each bead separately using
 an iterative least-squares algorithm which automatically discards
 outliers.</p>
@@ -190,7 +140,7 @@ outliers.</p>
 <span class="ltx_tag ltx_tag_enumerate">3.</span> 
 <div id="I2.i3.p1" class="ltx_para">
 <p class="ltx_p">From the fitted models, we determine a common focal plane of the beads
-as <img id="I2.i3.p1.m1" class="ltx_Math" style="vertical-align:-8px" src="mi/mi20.png" width="45" height="25" alt="\frac{c_{1}+c_{2}}{2}"> and shift the data along the <img id="I2.i3.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi38.png" width="13" height="12" alt="z">-axis
+as <img id="I2.i3.p1.m1" class="ltx_Math" style="vertical-align:-8px" src="mi/mi11.png" width="45" height="25" alt="\frac{c_{1}+c_{2}}{2}"> and shift the data along the <img id="I2.i3.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="13" height="12" alt="z">-axis
 such that all beads are positioned at the same focal plane.</p>
 </div>
 </li>
@@ -198,20 +148,56 @@ such that all beads are positioned at the same focal plane.</p>
 <span class="ltx_tag ltx_tag_enumerate">4.</span> 
 <div id="I2.i4.p1" class="ltx_para">
 <p class="ltx_p">The final coefficients are obtained by fitting the pair of polynomials
-to all shifted data points.</p>
+to all shifted data points. The “zero” axial position is given
+by the intersection of the two polynomials.</p>
 </div>
 </li>
 </ol>
 </div>
 </div>
-</div>
-<div id="Sx1.SSx3" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Fitting of model parameters</h2>
+<div id="Sx1.SSx4" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">Guidelines for the choice of parameters</h2>
 
-<div id="Sx1.SSx3.p1" class="ltx_para">
-<p class="ltx_p">Fitting of the model parameters can be done using least squares or
-maximum-likelihood methods. See <a href="Fitting.html" title="" class="ltx_ref">PSF fitting methods</a>
-for more information.</p>
+<div id="Sx1.SSx4.p1" class="ltx_para">
+<p class="ltx_p">As the signal to noise ratio is usually higher in the 3D calibration
+data with fluorescent beads, users should set the threshold, in the
+case of the wavelet filter, to 5 to 8 times the standard deviation
+of the 1st wavelet level, e.g., <span class="ltx_text ltx_font_typewriter">6*std(Wave.F1)</span>. The rest
+of the settings are the same as in 2D data analysis. Use the Preview
+button to see detections of the calibration beads with the current
+settings.</p>
+</div>
+</div>
+<div id="Sx1.SSx5" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">See also</h2>
+
+<div id="Sx1.SSx5.p1" class="ltx_para">
+<ul id="I3" class="ltx_itemize">
+<li id="I3.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I3.i1.p1" class="ltx_para">
+<p class="ltx_p"><a href="PSF.html" title="" class="ltx_ref">Point-spread function (PSF)</a></p>
+</div>
+</li>
+<li id="I3.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I3.i2.p1" class="ltx_para">
+<p class="ltx_p"><a href="EllipticGaussianEstimatorUI.html" title="" class="ltx_ref">Rotated elliptical Gaussian function PSF model (3D using astigmatism)</a></p>
+</div>
+</li>
+<li id="I3.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I3.i3.p1" class="ltx_para">
+<p class="ltx_p"><a href="Fitting.html" title="" class="ltx_ref">Fitting point-spread function models</a></p>
+</div>
+</li>
+<li id="I3.i4" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I3.i4.p1" class="ltx_para">
+<p class="ltx_p"><a href="FittingRegion.html" title="" class="ltx_ref">Definition of the fitting region</a></p>
+</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -229,7 +215,7 @@ for more information.</p>
 </span>
 <span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1126/science.1153529" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
 </span>
-<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Astigmatism method calibration" class="ltx_ref"><span class="ltx_text ltx_ref_title">Astigmatism method calibration</span></a>.
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Calibration of the imaging system (astigmatism method)" class="ltx_ref"><span class="ltx_text ltx_ref_title">Calibration of the imaging system (astigmatism method)</span></a>.
 </span>
 </li>
 </ul>
@@ -237,7 +223,7 @@ for more information.</p>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Tue May  6 17:04:31 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Mon May 19 13:45:29 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

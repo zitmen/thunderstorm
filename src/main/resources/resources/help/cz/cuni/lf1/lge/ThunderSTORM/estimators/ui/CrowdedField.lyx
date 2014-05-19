@@ -5,6 +5,7 @@
 \textclass article
 \begin_preamble
 \usepackage[unicode=true] {hyperref}
+\usepackage{optim}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -77,8 +78,8 @@ crowded field problem,
 \end_inset
 
  in which single molecules are not adequately resolved.
- The reason for this is the limitation of the PSF models to fit only a single
- molecule.
+ The reason for this is the limitation of the PSF models described above
+ to fit only a single molecule.
  To help solve this problem, ThunderSTORM uses a multiple-emitter fitting
  analysis (MFA) approach similar to the algorithm described in 
 \begin_inset CommandInset citation
@@ -111,8 +112,8 @@ where
 \begin_inset Formula $\boldsymbol{\Theta}=\left[\boldsymbol{\theta}_{1},\ldots,\boldsymbol{\theta}_{N}\right]$
 \end_inset
 
- is a vector of parameters describing position and shape of the imaged molecules
- modeled by the PSF.
+ are parameters describing position and shape of the imaged molecules modeled
+ by the PSF.
 \end_layout
 
 \begin_layout Standard
@@ -122,8 +123,7 @@ The fitting of multiple-emitter models to the raw data proceeds according
 \begin_inset Formula $\mathrm{PSF}_{1}$
 \end_inset
 
- (a single molecule model) with an initial molecular position obtained by
- one of the detectors.
+ (a single molecule model) with an initial molecular position.
  The fitted PSF is subtracted from the raw data and the position of the
  maximum intensity value in the residual image is taken as an approximate
  position of a second molecule.
@@ -150,14 +150,50 @@ key "Huang2011"
 \end_inset
 
 .
- To find the optimal number of molecules, statistical tests are required
- (see below).
+ To find the optimal number of molecules, statistical tests are required,
+ see Section
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Model-selection"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
 Users can specify the size of the fitting region, the maximum number of
- molecules allowed in one fitting region, the type of PSF, and the fitting
- method (least-squares methods or maximum likelihood estimation).
+ molecules allowed in one fitting region, the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{PSF.html}{type of PSF}
+\end_layout
+
+\end_inset
+
+, and the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{fitting method}
+\end_layout
+
+\end_inset
+
+ (least-squares methods or maximum likelihood estimation).
  Optionally, users can constrain the multiple-emitter fitting algorithm
  such that all fitted molecules have the same intensity or an intensity
  in a given range.
@@ -230,10 +266,22 @@ key "Kendall1979,Bevington2003"
 
 \end_inset
 
- arises in the case of fitting by least squares methods, when we need to
- compare significance of the fit between two models, where one model (the
- null model) is a special case of the other (the alternative model) for
- some choice of parameters.
+ arises in the case of fitting by 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{least squares methods}
+\end_layout
+
+\end_inset
+
+, when we need to compare significance of the fit between two models, where
+ one model (the null model) is a special case of the other (the alternative
+ model) for some choice of parameters.
  The F-test statistic computed from the data is given by the formula
 \begin_inset Formula 
 \begin{equation}
@@ -243,6 +291,30 @@ F_{\chi^{2}}\left(\mathcal{D}\right)=\frac{\left(\chi^{2}\left(\boldsymbol{\Thet
 \end_inset
 
 where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+the sum of squared residuals
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
 \begin_inset Formula $\chi^{2}\left(\boldsymbol{\Theta}\mid\mathcal{D}\right)$
 \end_inset
 
@@ -270,31 +342,7 @@ where
 \uwave default
 \noun default
 \color inherit
-is 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-the sum of squared residuals
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
- computed
+computed
 \family roman
 \series medium
 \shape up
@@ -334,7 +382,7 @@ parameters
 \uwave off
 \noun off
 \color none
- (see 
+ is 
 \family default
 \series default
 \shape default
@@ -346,7 +394,7 @@ parameters
 \uwave default
 \noun default
 \color inherit
-
+defined 
 \begin_inset ERT
 status open
 
@@ -354,35 +402,11 @@ status open
 
 
 \backslash
-href{Fitting.html}{fitting methods}
+href{Fitting.html}{here}
 \end_layout
 
 \end_inset
 
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-)
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
 , vectors 
 \begin_inset Formula $\boldsymbol{\Theta}_{0}$
 \end_inset
@@ -408,7 +432,20 @@ href{Fitting.html}{fitting methods}
 \begin_inset Formula $n=l^{2}$
 \end_inset
 
- is the number of data points within the fitting region 
+ is the number of data points within the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{FittingRegion.html}{fitting region}
+\end_layout
+
+\end_inset
+
+ 
 \begin_inset Formula $\mathcal{D}$
 \end_inset
 
@@ -451,8 +488,21 @@ Log-likelihood ratio test
 
 \begin_layout Standard
 To compare between the fits of two models, in the case of fitting by the
- maximum likelihood estimation method, we use a model selection criteria
- based on a log-likelihood ratio test 
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{maximum likelihood estimation method}
+\end_layout
+
+\end_inset
+
+, we use a model selection criteria based on a log-likelihood ratio test
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Kendall1979,Huang2011"
@@ -474,7 +524,7 @@ key "Kendall1979,Huang2011"
 
 \end_inset
 
-where 
+where the likelihood 
 \family roman
 \series medium
 \shape up
@@ -502,35 +552,11 @@ where
 \uwave default
 \noun default
 \color inherit
- is the likelihood of parameters 
+ of parameters 
 \begin_inset Formula $\boldsymbol{\Theta}$
 \end_inset
 
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-(see 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-
+ is defined 
 \begin_inset ERT
 status open
 
@@ -538,35 +564,11 @@ status open
 
 
 \backslash
-href{Fitting.html}{fitting methods}
+href{Fitting.html}{here}
 \end_layout
 
 \end_inset
 
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-)
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
 , 
 \begin_inset Formula $\boldsymbol{\Theta}_{0}$
 \end_inset
@@ -575,16 +577,25 @@ href{Fitting.html}{fitting methods}
 \begin_inset Formula $\boldsymbol{\Theta}_{1}$
 \end_inset
 
- are vectors of parameters of the null and alternative model, respectively,
- and 
+ are the parameters of the null and alternative model, respectively, and
+ 
 \begin_inset Formula $\mathcal{D}$
 \end_inset
 
- is a
-\begin_inset space ~
+ is a 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{FittingRegion.html}{fitting region}
+\end_layout
+
 \end_inset
 
-fitting region.
+.
 \end_layout
 
 \begin_layout Standard
@@ -627,7 +638,7 @@ key "Kendall1979"
 \begin_inset Formula $v_{0}<v_{1}$
 \end_inset
 
-) represent the number of free parameters of the null and alternative model,
+) represent the number of free parameters of the null and alternative models,
  respectively.
  The null hypothesis is rejected if the log-likelihood ratio 
 \begin_inset Formula $\Lambda\left(\mathcal{D}\right)$
@@ -645,7 +656,7 @@ key "Kendall1979"
 \end_layout
 
 \begin_layout Subsection*
-How to set the parameters
+Guidelines for the choice of parameters
 \end_layout
 
 \begin_layout Standard
@@ -666,10 +677,13 @@ Multiple emitter fitting analysis (MFA) can be used in high-density data
  of molecules within the fitting area.
  Note that the size of the fitting radius might need to be increased slightly
  to accommodate larger blobs.
- 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -677,9 +691,71 @@ status open
 
 
 \backslash
-renewcommand
+href{Estimators.html}{Sub-pixel 2D localization of molecules}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
 \backslash
-bibname{References}
+href{PSF.html}{Point-spread function (PSF)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{Fitting point-spread function models}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{FittingRegion.html}{Definition of the fitting region}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{LocalizationUncertainty.html}{Localization uncertainty}
 \end_layout
 
 \end_inset

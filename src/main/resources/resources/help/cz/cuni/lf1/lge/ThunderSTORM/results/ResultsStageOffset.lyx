@@ -85,13 +85,13 @@ status open
 
 
 \backslash
-href{../estimators/ui/EllipticGaussianEstimatorUI.html}{astigmatism}
+href{../estimators/ui/EllipticGaussianEstimatorUI.html}{astigmatism method}
 \end_layout
 
 \end_inset
 
- method can estimate only the relative axial positions of molecules with
- respect to the focal plane.
+ can estimate only the relative axial positions of molecules with respect
+ to the focal plane.
  To find the absolute 
 \begin_inset Formula $z$
 \end_inset
@@ -104,9 +104,9 @@ href{../estimators/ui/EllipticGaussianEstimatorUI.html}{astigmatism}
 
  coordinate can be determined as
 \begin_inset Formula 
-\begin{equation}
+\[
 z_{\mathrm{abs}}=z_{0}+z_{\mathrm{rel}}+z_{\mathrm{step}}\left(\left\lfloor \frac{f-1}{n_{\mathrm{im}}}\right\rfloor \bmod n_{\mathrm{pos}}\right)\,,
-\end{equation}
+\]
 
 \end_inset
 
@@ -126,7 +126,7 @@ where
 \begin_inset Formula $z_{\mathrm{step}}$
 \end_inset
 
- is the step between two positions of the z-stage, 
+ is the step between two positions of the Z-stage, 
 \begin_inset Formula $f$
 \end_inset
 
@@ -134,7 +134,7 @@ where
 \begin_inset Formula $n_{\mathrm{im}}$
 \end_inset
 
- is the number of images taken in each Z-stage position, and 
+ is the number of images taken in each z-stage position, and 
 \begin_inset Formula $n_{\mathrm{pos}}$
 \end_inset
 
@@ -143,10 +143,18 @@ where
 \begin_inset Formula $z$
 \end_inset
 
- variables are in nm.
+
+\begin_inset space ~
+\end_inset
+
+variables are in nm.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
 \begin_inset ERT
 status open
 
@@ -154,9 +162,7 @@ status open
 
 
 \backslash
-renewcommand
-\backslash
-bibname{References}
+href{Postprocessing.html}{Post-processing analysis}
 \end_layout
 
 \end_inset

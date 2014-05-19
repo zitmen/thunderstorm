@@ -5,7 +5,6 @@
 \textclass article
 \begin_preamble
 \usepackage[unicode=true] {hyperref}
-\usepackage{upgreek}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -49,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation skip
-\defskip medskip
+\paragraph_separation indent
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -229,9 +228,9 @@ Users can specify a fixed or spatially varying density of simulated molecules
 
  is then computed as
 \begin_inset Formula 
-\begin{equation}
+\[
 \overline{d}\left(x,y\right)=a^{2}M\left(x,y\right)d_{\mathrm{max}}\,,
-\end{equation}
+\]
 
 \end_inset
 
@@ -288,6 +287,42 @@ The generated molecular positions in the image sequence can be subjected
  to a lateral sample drift.
  Users need to specify the speed and direction of the drift, which is constant
  throughout the image sequence.
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{CameraSetupPlugIn.html}{Camera setup}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{PerformanceEvaluationPlugIn.html}{Performance evaluation}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

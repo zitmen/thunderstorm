@@ -6,7 +6,6 @@
 \begin_preamble
 \usepackage[unicode=true] {hyperref}
 \usepackage{optim}
-\usepackage{upgreek}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -91,109 +90,6 @@ key "Huang2008"
 \end_layout
 
 \begin_layout Subsection*
-PSF model
-\end_layout
-
-\begin_layout Standard
-A common PSF model for astigmatic 3D imaging is a rotated, elliptical Gaussian
- function given by the formula
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-\mathrm{PSF}_{\mathrm{EG}}\left(x,y\mid\boldsymbol{\theta},\phi\right)=\frac{\theta_{N}}{2\pi\theta_{\sigma_{1}}\theta_{\sigma_{2}}}\exp\left(-\frac{x'{}^{2}}{2\theta_{\sigma_{1}}^{2}}-\frac{y'^{2}}{2\theta_{\sigma_{2}}^{2}}\right)+\theta_{b}\,,\label{eq:psfeg}
-\end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $\mathrm{PSF}_{\mathrm{EG}}\left(x,y\mid\boldsymbol{\theta},\phi\right)$
-\end_inset
-
- gives the expected photon count at the integer pixel position 
-\begin_inset Formula $\left(x,y\right)$
-\end_inset
-
- for a vector of parameters 
-\begin_inset Formula $\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{\sigma_{1}},\theta_{\sigma_{2}},\theta_{N},\theta_{b}\right]$
-\end_inset
-
-, and 
-\begin_inset Formula 
-\begin{eqnarray*}
-x' & = & \left(x-\theta_{x}\right)\cos\phi-\left(y-\theta_{y}\right)\sin\phi\,,\\
-y' & = & \left(x-\theta_{x}\right)\sin\phi+\left(y-\theta_{y}\right)\cos\phi\,.
-\end{eqnarray*}
-
-\end_inset
-
-The entries of the vector 
-\begin_inset Formula $\boldsymbol{\theta}$
-\end_inset
-
- are as follows: 
-\begin_inset Formula $\theta_{x}$
-\end_inset
-
- and 
-\begin_inset Formula $\theta_{y}$
-\end_inset
-
- are the sub-pixel molecular coordinates, 
-\begin_inset Formula $\theta_{\sigma_{1}}$
-\end_inset
-
- and 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $\theta_{\sigma_{2}}$
-\end_inset
-
-
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
- are the imaged widths of the molecule along two perpendicular axes rotated
- by the angle 
-\begin_inset Formula $\phi$
-\end_inset
-
- with respect to 
-\begin_inset Formula $xy$
-\end_inset
-
- coordinates, 
-\begin_inset Formula $\theta_{N}$
-\end_inset
-
- corresponds to the total number of photons emitted by the molecule, and
- 
-\begin_inset Formula $\theta_{b}$
-\end_inset
-
- is the background signal level.
-\end_layout
-
-\begin_layout Subsection*
 Calibration of the imaging system
 \end_layout
 
@@ -229,72 +125,72 @@ The calibration is typically performed using a Z-stack of images of sub-diffract
 ion fluorescent beads.
  We use a sparse sample with about 10 to 50 beads in the image and a Z-stack
  image sequence with an axial range of about 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $2$
+\begin_inset Formula $\unit[2]{\mu m}$
 \end_inset
 
- 
-\begin_inset Formula $\upmu$
-\end_inset
-
-m
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
  and a step size of 
-\begin_inset Formula $10$
+\begin_inset Formula $\unit[10]{nm}$
 \end_inset
 
- nm.
+.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-pepa was using 
-\backslash
-upmu instead of mu
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection*
+\begin_layout Subsection*
 Determining the orientation angle
 \end_layout
 
 \begin_layout Enumerate
 A sequence of images from a Z-stack is processed slice-by-slice using the
- same methods as during analysis (image denoising, rough localization, PSF
- fitting).
- Images of the beads are fit independently using the elliptical Gaussian
- PSF given by Equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:psfeg"
+ methods for raw data analysis (
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../filters/ui/Filters.html}{image filtering}
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../detectors/Detectors.html}{approximate localization}
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{PSF fitting}
+\end_layout
+
+\end_inset
+
+).
+ Images of the beads are fit independently using the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{EllipticGaussianEstimatorUI.html}{elliptical Gaussian PSF}
+\end_layout
 
 \end_inset
 
@@ -339,7 +235,7 @@ where
  is the number of measured beads.
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsection*
 Ellipticity as a function of an axial position
 \end_layout
 
@@ -350,10 +246,16 @@ Using the approximate positions of the beads in multiple Z-planes and the
 \end_inset
 
 , both determined in the previous step, the images of the beads are fit
- again using the elliptical Gaussian PSF given by Equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:psfeg"
+ again using the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{EllipticGaussianEstimatorUI.html}{elliptical Gaussian PSF}
+\end_layout
 
 \end_inset
 
@@ -407,7 +309,33 @@ From the fitted models, we determine a common focal plane of the beads as
 \begin_layout Enumerate
 The final coefficients are obtained by fitting the pair of polynomials to
  all shifted data points.
- 
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+zero
+\begin_inset Quotes erd
+\end_inset
+
+ axial position is given by the intersection of the two polynomials.
+\end_layout
+
+\begin_layout Subsection*
+Guidelines for the choice of parameters
+\end_layout
+
+\begin_layout Standard
+As the signal to noise ratio is usually higher in the 3D calibration data
+ with fluorescent beads, users should set the threshold, in the case of
+ the wavelet filter, to 5 to 8 times the standard deviation of the 1st wavelet
+ level, e.g., 
+\family typewriter
+6*std(Wave.F1)
+\family default
+.
+ The rest of the settings are the same as in 2D data analysis.
+ Use the Preview button to see detections of the calibration beads with
+ the current settings.
 \end_layout
 
 \begin_layout Subsection*
@@ -455,7 +383,7 @@ status open
 
 
 \backslash
-href{CrowdedField.html}{Multiple-emitter fitting analysis}
+href{Fitting.html}{Fitting point-spread function models}
 \end_layout
 
 \end_inset
@@ -471,24 +399,7 @@ status open
 
 
 \backslash
-href{Fitting.html}{Least-squares and maximum likelihood estimation fitting
- methods}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{LocalizationUncertainty.html}{Localization uncertainty}
+href{FittingRegion.html}{Definition of the fitting region}
 \end_layout
 
 \end_inset

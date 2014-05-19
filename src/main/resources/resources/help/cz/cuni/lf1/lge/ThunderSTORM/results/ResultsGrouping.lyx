@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -68,8 +71,8 @@ Merging of reappearing molecules
 In some SMLM experiments, a single photoactivated molecule may appear in
  several sequential images, then disappear for a while, appear again, and
  finally bleach completely.
- If this is the case, ThunderSTORM attempts to identify such sequences of
- molecular locations and combines them into one single molecule.
+ If this is the case, ThunderSTORM identifies such sequences of molecular
+ locations and combines them into one single molecule.
  The new position, imaged size, and background of the resulting signal is
  calculated as the mean value of the original data, while the intensity
  is calculated as the sum.
@@ -80,6 +83,26 @@ In some SMLM experiments, a single photoactivated molecule may appear in
  disappear, are user-specified values.
  The merging algorithm is based on finding nearest-neighbors between active
  molecules from the previous frames and the current frame.
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Postprocessing.html}{Post-processing analysis}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body

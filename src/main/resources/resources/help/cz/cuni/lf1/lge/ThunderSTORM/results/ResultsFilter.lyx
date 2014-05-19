@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -61,73 +64,12 @@
 \begin_body
 
 \begin_layout Section*
-Removing molecules with poor localization
+Filtering according to a user-defined criteria
 \end_layout
 
 \begin_layout Standard
-ThunderSTORM can remove unwanted molecules according to user-defined criteria.
- The criteria is formulated as an expression combining mathematical and
- logical functions and operators with parameters from the table of results
- obtained from previous data analysis.
- Users can also display histograms of particular measured parameters and
- select thresholds to define the filtering criteria.
- All molecules with parameters not accepted by the criteria are removed.
-\end_layout
-
-\begin_layout Subsection*
-Filter formula syntax
-\end_layout
-
-\begin_layout Standard
-The filtering criteria can be specified using a formula built-up from a
- combination of functions, operators and variables.
- The result of the formula must be a vector of boolean values containing
- 1 for each row that should stay in the results table and 0 for the rows
- that should be deleted.
-\end_layout
-
-\begin_layout Subsubsection*
-Variables
-\end_layout
-
-\begin_layout Standard
-Variable is a vector containing all values from a specified column in the
- results table.
- All columns that are present in the results table can be used as variables.
- To use the variable in the filter formula, simply input the name of the
- column (without the units in square brackets).
-\end_layout
-
-\begin_layout Subsubsection*
-Functions
-\end_layout
-
-\begin_layout Standard
-The syntax to use the function is the name followed by the argument in parenthes
-is:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline false
-status open
-
-\begin_layout Plain Layout
-
-name(argument)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Functions can take both a vector or a scalar value (where it is meaningfull)
- as an argument.
- Expressions that evaluate to a vector or a scalar value can also be used.
- The supported functions are:
+ThunderSTORM can remove unwanted molecules according to a user-defined criteria,
+ or display molecules in a 
 \begin_inset ERT
 status open
 
@@ -135,19 +77,96 @@ status open
 
 
 \backslash
-renewcommand{
-\backslash
-arraystretch}{2}
+href{ROIselection.html}{user-specified region}
 \end_layout
 
 \end_inset
 
+.
+ The filtering criteria is formulated as an expression combining mathematical
+ and logical functions and operators with parameters from the table of results
+ obtained from previous data analysis.
+ All molecules with parameters not accepted by the criteria are removed.
+ Note that users can also display histograms of particular measured parameters
+ and select thresholds to define the filtering criteria.
+\end_layout
 
+\begin_layout Subsection*
+Examples of filter formulas
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+sigma > 15
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+frame < 1000 | frame > 2000
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+intensity > 100 & uncertainty < 20
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+(x > 5000 & x < 10000 & y > 5000 & y < 10000)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+(x-10000)^2 + (y-10000)^2 < 2000^2
+\end_layout
+
+\begin_layout Subsection*
+Formula interpreter syntax
 \end_layout
 
 \begin_layout Standard
+The filtering criteria is specified as an expression combining statistical
+ and logical functions and operators with variables from the table of localizati
+on results.
+ The result of the formula must be a vector of Boolean values containing
+ ``true'' for each row that should stay in the table and ``false'' for the
+ rows that should be deleted.
+ A brief description of the syntax and semantic rules follows.
+\end_layout
+
+\begin_layout Subsubsection*
+Variables
+\end_layout
+
+\begin_layout Standard
+Variables used in formulas can be numerical scalars or vectors, or logical
+ vectors.
+ Numerical vectors are provided by columns in the table of results.
+ To use a column as a variable, input its name (without square brackets
+ with units).
+ Any column can be used as a variable.
+\end_layout
+
+\begin_layout Subsubsection*
+Operators
+\end_layout
+
+\begin_layout Standard
+Operators take variables as operands.
+ All vector operations are performed element-wise, therefore vectors must
+ have the same size.
+ The semantics is as follows:
+\end_layout
+
+\begin_layout Standard
+\noindent
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="2">
+<lyxtabular version="3" rows="3" columns="2">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
@@ -156,19 +175,9 @@ arraystretch}{2}
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
-std
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+scalar + scalar = scalar
 \end_layout
 
 \end_inset
@@ -177,7 +186,7 @@ std
 \begin_inset Text
 
 \begin_layout Plain Layout
-standard deviation
+
 \end_layout
 
 \end_inset
@@ -188,19 +197,9 @@ standard deviation
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
-mean
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+vector + vector = vector
 \end_layout
 
 \end_inset
@@ -209,7 +208,7 @@ mean
 \begin_inset Text
 
 \begin_layout Plain Layout
-mean value
+
 \end_layout
 
 \end_inset
@@ -220,19 +219,9 @@ mean value
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
-median
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+vector + scalar = vector
 \end_layout
 
 \end_inset
@@ -241,135 +230,7 @@ median
 \begin_inset Text
 
 \begin_layout Plain Layout
-median value
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-max
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-maximum value
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-min
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-minimum value
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-sum
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-sum of all the values
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-abs
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-absoulte value
+(scalar is added to each element of the vector)
 \end_layout
 
 \end_inset
@@ -383,25 +244,21 @@ absoulte value
 \end_layout
 
 \begin_layout Subsubsection*
-Operators
+Arithmetical operators
 \end_layout
 
 \begin_layout Standard
-There are two types of operators: arithmetic and logical.
- 
+Arithmetical operators can take numerical vectors or scalars as operands.
+ The behavior changes accordingly.
+ The output is a numerical vector if at least one of the operands is a vector,
+ or a scalar if both operands are scalar.
+ The supported arithmetical operators are:
 \end_layout
 
 \begin_layout Standard
-Arithmetic operators can take numeric vectors or scalars as operands.
- The behaviour changes accordingly.
- The output of arithmetic operators is a numeric vector if at least one
- of the operands is a vector, or a scalar if both operands are scalar.
- The supported arithmetic operators are:
-\end_layout
-
-\begin_layout Standard
+\noindent
 \begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="2">
+<lyxtabular version="3" rows="6" columns="2">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
@@ -410,19 +267,9 @@ Arithmetic operators can take numeric vectors or scalars as operands.
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
-+
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+a + b
 \end_layout
 
 \end_inset
@@ -431,7 +278,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-addition, element by element for vectors
+addition
 \end_layout
 
 \end_inset
@@ -442,19 +289,9 @@ addition, element by element for vectors
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
--
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+a - b
 \end_layout
 
 \end_inset
@@ -463,7 +300,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-subtraction, element by element for vectors
+subtraction
 \end_layout
 
 \end_inset
@@ -474,19 +311,9 @@ subtraction, element by element for vectors
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
-*
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+a * b
 \end_layout
 
 \end_inset
@@ -495,7 +322,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-multiplication, element by element for vectors
+multiplication
 \end_layout
 
 \end_inset
@@ -506,19 +333,9 @@ multiplication, element by element for vectors
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
-/
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+a / b
 \end_layout
 
 \end_inset
@@ -527,7 +344,29 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-division, element by element for vectors
+division
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+a % b
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+modulo
 \end_layout
 
 \end_inset
@@ -538,19 +377,9 @@ division, element by element for vectors
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
-^
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+a ^ b
 \end_layout
 
 \end_inset
@@ -559,7 +388,11 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-exponentiation, the second argument can only be a scalar
+exponentiation (
+\family typewriter
+b
+\family default
+ must be a scalar)
 \end_layout
 
 \end_inset
@@ -572,14 +405,19 @@ exponentiation, the second argument can only be a scalar
 
 \end_layout
 
+\begin_layout Subsubsection*
+Logical operators
+\end_layout
+
 \begin_layout Standard
 Logical operators perform logical operations on vectors.
- All these operations are performed element-wise.
- The output is a vector of boolean values.
+ All operations are performed element-wise.
+ The output is a vector of Boolean values.
  The supported logical operators are:
 \end_layout
 
 \begin_layout Standard
+\noindent
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="2">
 <features tabularvalignment="middle">
@@ -590,19 +428,9 @@ Logical operators perform logical operations on vectors.
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
-&
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+a & b
 \end_layout
 
 \end_inset
@@ -611,7 +439,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-logical and
+logical AND
 \end_layout
 
 \end_inset
@@ -622,19 +450,9 @@ logical and
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
-|
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+a | b
 \end_layout
 
 \end_inset
@@ -643,39 +461,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-logical or
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-!
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-negation (unary)
+logical OR
 \end_layout
 
 \end_inset
@@ -686,19 +472,9 @@ negation (unary)
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
-<
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+a < b 
 \end_layout
 
 \end_inset
@@ -718,19 +494,9 @@ smaller than
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
 
-\begin_layout Plain Layout
-
->
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+a > b
 \end_layout
 
 \end_inset
@@ -746,27 +512,18 @@ greater than
 </cell>
 </row>
 <row>
-<cell alignment="left" valignment="top" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-inline true
-status open
 
-\begin_layout Plain Layout
-
-=
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+a = b
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="left" valignment="top" usebox="none">
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -777,22 +534,35 @@ equals
 </cell>
 </row>
 <row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+a != b
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+not equals
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
 <cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset listings
-inline true
-status open
 
-\begin_layout Plain Layout
-
-!=
-\end_layout
-
-\end_inset
-
-
+\family typewriter
+!a
 \end_layout
 
 \end_inset
@@ -801,7 +571,223 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-not equals
+negation
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Functions
+\end_layout
+
+\begin_layout Standard
+Functions can take a numerical vector or a scalar as an argument or a result
+ of a function which is a numerical vector or a scalar.
+ The supported functions are:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+var(x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+variance of 
+\family typewriter
+x
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+std(x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+standard deviation of 
+\family typewriter
+x
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+mean(x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mean value of 
+\family typewriter
+x
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+median(x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+median of 
+\family typewriter
+x
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+min(x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+minimum value in 
+\family typewriter
+x
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+max(x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+maximum value in 
+\family typewriter
+x
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+sum(x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+sum of all items in 
+\family typewriter
+x
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+abs(x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+absolute value of 
+\family typewriter
+x
 \end_layout
 
 \end_inset
@@ -815,18 +801,18 @@ not equals
 \end_layout
 
 \begin_layout Subsection*
-Examples of filter formulas
+See also
 \end_layout
 
 \begin_layout Itemize
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
+\begin_inset ERT
 status open
 
 \begin_layout Plain Layout
 
-sigma > 15
+
+\backslash
+href{Postprocessing.html}{Post-processing analysis}
 \end_layout
 
 \end_inset
@@ -835,15 +821,10 @@ sigma > 15
 \end_layout
 
 \begin_layout Itemize
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-frame < 1000 | frame > 2000
-\end_layout
+\begin_inset CommandInset href
+LatexCommand href
+name "Tutorial to create a filter expression using a histogram"
+target "https://code.google.com/p/thunder-storm/wiki/PostProcessing#Filter"
 
 \end_inset
 
@@ -851,47 +832,10 @@ frame < 1000 | frame > 2000
 \end_layout
 
 \begin_layout Itemize
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-intensity > 100 & uncertainty < 20
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-(x > 5000 & x < 10000 & y > 5000 & y < 10000)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-(x-10000)^2 + (y-10000)^2 < 2000^2
-\end_layout
+\begin_inset CommandInset href
+LatexCommand href
+name "Tutorial to create a filter expression by selecting a region of interest"
+target "https://code.google.com/p/thunder-storm/wiki/PostProcessing#Visualizing_and_exporting_molecular_localizations_from_a_region"
 
 \end_inset
 

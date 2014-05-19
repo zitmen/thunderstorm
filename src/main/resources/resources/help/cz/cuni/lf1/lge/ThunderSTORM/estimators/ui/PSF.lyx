@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation skip
-\defskip medskip
+\paragraph_separation indent
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -165,7 +165,7 @@ status open
 
 
 \backslash
-href{CrowdedField.html}{Multiple-emitter fitting analysis}
+href{Fitting.html}{Fitting point-spread function models}
 \end_layout
 
 \end_inset
@@ -181,8 +181,7 @@ status open
 
 
 \backslash
-href{Fitting.html}{Least-squares and maximum likelihood estimation fitting
- methods}
+href{FittingRegion.html}{Definition of the fitting region}
 \end_layout
 
 \end_inset
@@ -199,6 +198,22 @@ status open
 
 \backslash
 href{LocalizationUncertainty.html}{Localization uncertainty}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{CrowdedField.html}{Multiple-emitter fitting analysis}
 \end_layout
 
 \end_inset

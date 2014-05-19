@@ -3,6 +3,10 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\usepackage{optim}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -45,8 +49,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation skip
-\defskip medskip
+\paragraph_separation indent
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -83,6 +87,42 @@ key "QuickPALM-NM-2010"
 \[
 \hat{x}_{0}=\frac{\sum_{x,y\in\mathcal{D}}{x\tilde{I}\left(x_{,}y\right)}}{\sum_{x,y\in\mathcal{D}}{\tilde{I}\left(x_{,}y\right)}}\,,\quad\hat{y}_{0}=\frac{\sum_{x,y\in\mathcal{D}}{y\tilde{I}\left(x,y\right)}}{\sum_{x,y\in\mathcal{D}}{\tilde{I}\left(x,y\right)}}\,.
 \]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Estimators.html}{Sub-pixel 2D localization of molecules}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{FittingRegion.html}{Definition of the fitting region}
+\end_layout
 
 \end_inset
 

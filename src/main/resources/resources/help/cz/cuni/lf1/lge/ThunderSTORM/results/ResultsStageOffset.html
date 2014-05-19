@@ -2,7 +2,7 @@
 <html>
 <head>
 <title></title>
-<!--Generated on Tue May  6 17:05:18 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Generated on Mon May 19 13:46:57 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../LaTeXML.css" type="text/css">
@@ -19,28 +19,41 @@
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">To extend the axial field of view in 3D SMLM experiments, data can
 be acquired in multiple z-stage positions <cite class="ltx_cite">[<a href="#bib.bib13" title="Whole-cell 3D STORM reveals interactions between cellular structures with nanometer-scale resolution" class="ltx_ref">1</a>]</cite>. However,
-the <a href="../estimators/ui/EllipticGaussianEstimatorUI.html" title="" class="ltx_ref">astigmatism</a>
-method can estimate only the relative axial positions of molecules
-with respect to the focal plane. To find the absolute <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi20.png" width="13" height="12" alt="z"> coordinates,
-the correct offset must be added to the axial positions of each molecule.
-The new <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi20.png" width="13" height="12" alt="z"> coordinate can be determined as</p>
-<table id="Sx1.E1" class="ltx_equation">
+the <a href="../estimators/ui/EllipticGaussianEstimatorUI.html" title="" class="ltx_ref">astigmatism method</a>
+can estimate only the relative axial positions of molecules with respect
+to the focal plane. To find the absolute <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="13" height="12" alt="z"> coordinates, the correct
+offset must be added to the axial positions of each molecule. The
+new <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="13" height="12" alt="z"> coordinate can be determined as</p>
+<table id="Sx1.Ex1" class="ltx_equation">
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi16.png" width="356" height="46" alt="z_{\mathrm{abs}}=z_{0}+z_{\mathrm{rel}}+z_{\mathrm{step}}\left(\left\lfloor%
+<td class="ltx_align_center"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi15.png" width="356" height="46" alt="z_{\mathrm{abs}}=z_{0}+z_{\mathrm{rel}}+z_{\mathrm{step}}\left(\left\lfloor%
 \frac{f-1}{n_{\mathrm{im}}}\right\rfloor\bmod n_{\mathrm{pos}}\right)\,,"></td>
 <td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi21.png" width="20" height="14" alt="z_{0}"> is the initial z-stage offset, <img id="Sx1.p1.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="29" height="14" alt="z_{\mathrm{rel}}">
-is the estimated molecular position relative to the focal plane (<img id="Sx1.p1.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi22.png" width="61" height="18" alt="z_{\mathrm{rel}}=0">
-for 2D data), <img id="Sx1.p1.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi24.png" width="38" height="17" alt="z_{\mathrm{step}}"> is the step between two positions
-of the z-stage, <img id="Sx1.p1.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi17.png" width="15" height="19" alt="f"> is the image frame in which a given molecule
-appeared, <img id="Sx1.p1.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi18.png" width="31" height="14" alt="n_{\mathrm{im}}"> is the number of images taken in each
-Z-stage position, and <img id="Sx1.p1.m9" class="ltx_Math" style="vertical-align:-7px" src="mi/mi19.png" width="36" height="17" alt="n_{\mathrm{pos}}"> is the number of z-stage
-positions. All <img id="Sx1.p1.m10" class="ltx_Math" style="vertical-align:-2px" src="mi/mi20.png" width="13" height="12" alt="z"> variables are in nm.</p>
+<p class="ltx_p">where <img id="Sx1.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi20.png" width="20" height="14" alt="z_{0}"> is the initial z-stage offset, <img id="Sx1.p1.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi22.png" width="29" height="14" alt="z_{\mathrm{rel}}">
+is the estimated molecular position relative to the focal plane (<img id="Sx1.p1.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi21.png" width="61" height="18" alt="z_{\mathrm{rel}}=0">
+for 2D data), <img id="Sx1.p1.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi23.png" width="38" height="17" alt="z_{\mathrm{step}}"> is the step between two positions
+of the Z-stage, <img id="Sx1.p1.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi16.png" width="15" height="19" alt="f"> is the image frame in which a given molecule
+appeared, <img id="Sx1.p1.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi17.png" width="31" height="14" alt="n_{\mathrm{im}}"> is the number of images taken in each
+z-stage position, and <img id="Sx1.p1.m9" class="ltx_Math" style="vertical-align:-7px" src="mi/mi18.png" width="36" height="17" alt="n_{\mathrm{pos}}"> is the number of z-stage
+positions. All <img id="Sx1.p1.m10" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="13" height="12" alt="z"> variables are in nm.</p>
+</div>
+<div id="Sx1.SSx1" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">See also</h2>
+
+<div id="Sx1.SSx1.p1" class="ltx_para">
+<ul id="I1" class="ltx_itemize">
+<li id="I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i1.p1" class="ltx_para">
+<p class="ltx_p"><a href="Postprocessing.html" title="" class="ltx_ref">Post-processing analysis</a></p>
+</div>
+</li>
+</ul>
+</div>
 </div>
 </div>
 <div id="bib" class="ltx_bibliography">
@@ -65,7 +78,7 @@ positions. All <img id="Sx1.p1.m10" class="ltx_Math" style="vertical-align:-2px"
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Tue May  6 17:05:18 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Mon May 19 13:46:57 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

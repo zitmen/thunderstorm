@@ -1,0 +1,282 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Sub-pixel 2D localization of molecules
+\end_layout
+
+\begin_layout Standard
+Sub-pixel localization of single molecules with an accuracy below the diffractio
+n limit is the basis of SMLM methods.
+ ThunderSTORM supports the following localization methods: calculation of
+ the centroid of the local neighborhood 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "QuickPALM-NM-2010"
+
+\end_inset
+
+, the radial symmetry method 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Parthasarathy2012"
+
+\end_inset
+
+, and fitting of point-spread function models by (weighted) least-squares
+ methods or by maximum likelihood estimation 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kendall1979,Mortensen-NM-2010"
+
+\end_inset
+
+.
+ Users may also choose not to use any of the methods, thereby using the
+ approximate positions of the molecules determined in the previous step.
+ Note that the choice of method for sub-pixel localization of molecules
+ is independent of the pre-processing methods described above.
+ 
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+
+\emph on
+Input:
+\emph default
+ A raw image 
+\begin_inset Formula $I$
+\end_inset
+
+ of size 
+\begin_inset Formula $m\times n$
+\end_inset
+
+ pixels and a list of coordinates 
+\begin_inset Formula $\left\{ \left(\tilde{x}_{p},\tilde{y}_{p}\right)\right\} _{p=1}^{\tilde{P}}$
+\end_inset
+
+ with approximate molecular positions.
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+
+\emph on
+Output:
+\emph default
+ A list of coordinates 
+\begin_inset Formula $\left\{ \left(\hat{x}_{p},\hat{y}_{p}\right)\right\} _{p=1}^{\hat{P}}$
+\end_inset
+
+ with sub-pixel positions of the molecules.
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{NoEstimatorUI.html}{No estimator}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{CenterOfMassEstimatorUI.html}{Centroid of local neighborhood}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{RadialSymmetryEstimatorUI.html}{Radial symmetry}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{PSF.html}{Point-spread function (PSF)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Fitting.html}{Fitting point-spread function models}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{FittingRegion.html}{Definition of the fitting region}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{LocalizationUncertainty.html}{Localization uncertainty}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{CrowdedField.html}{Multiple-emitter fitting analysis}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

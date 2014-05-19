@@ -48,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation skip
-\defskip medskip
+\paragraph_separation indent
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -83,7 +83,7 @@ status open
 
 
 \backslash
-href{../../detectors/LocalMaximaDetector.html}{Detection of local intensity maxima}
+href{../../detectors/Detectors.html}{Finding approximate positions of molecules}
 \end_layout
 
 \end_inset
@@ -99,24 +99,7 @@ status open
 
 
 \backslash
-href{../../detectors/NonMaxSuppressionDetector.html}{Non-maximum suppression}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{../../detectors/CentroidOfConnectedComponentsDetector.html}{Centroid of
- connected components}
+href{Estimators.html}{Sub-pixel 2D localization of molecules}
 \end_layout
 
 \end_inset

@@ -5,7 +5,6 @@
 \textclass article
 \begin_preamble
 \usepackage[unicode=true] {hyperref}
-\usepackage{upgreek}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -49,8 +48,8 @@
 \end_index
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation skip
-\defskip medskip
+\paragraph_separation indent
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -66,19 +65,50 @@
 
 \begin_layout Section*
 Performance evaluation
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Performance-evaluation"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
-The performance of localization algorithms and post-processing methods can
- be evaluated by comparing the obtained molecular positions with the ground-trut
-h positions.
+The performance of localization algorithms (for 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{detectors/Detectors.html}{approximate}
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{estimators/ui/Estimators.html}{sub-pixel}
+\end_layout
+
+\end_inset
+
+ estimation of molecular positions) and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{results/Postprocessing.html}{post-processing methods}
+\end_layout
+
+\end_inset
+
+ can be evaluated by comparing the obtained molecular positions with the
+ ground-truth positions.
  ThunderSTORM provides a tool for computing statistical measures related
  to the number of correctly detected molecules (TP, true positive detections),
  to the number of erroneous detections of non-existent molecules (FP, false
@@ -87,8 +117,20 @@ h positions.
 \end_layout
 
 \begin_layout Standard
-Localized molecular positions and ground-truth coordinates can be imported/expor
-ted to/from ThunderSTORM in various data formats, thus the performance can
+Localized molecular positions and ground-truth coordinates can be 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{results/ImportExport.html}{imported/exported}
+\end_layout
+
+\end_inset
+
+ to/from ThunderSTORM in various data formats, thus the performance can
  also be evaluated for other SMLM localization software.
 \end_layout
 
@@ -257,6 +299,43 @@ RMS distance
 For all molecules identified as true positives, we also calculate the root-mean
  square distance between the ground-truth positions of the molecules and
  their localizations.
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{DataGeneratorPlugIn.html}{Generator of simulated data}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{results/ImportExport.html}{Import and export of molecular localizatoins
+ and ground truth data}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
