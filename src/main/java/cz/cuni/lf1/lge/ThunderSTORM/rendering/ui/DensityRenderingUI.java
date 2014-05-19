@@ -22,8 +22,9 @@ public class DensityRenderingUI extends AbstractRenderingUI {
     public static final String name = "Normalized Gaussian";
     //param names
     private ParameterKey.Double dx;
-    private ParameterKey.Boolean forceDx;
     private ParameterKey.Double dz;
+    private ParameterKey.Boolean forceDx;
+    private ParameterKey.Boolean forceDz;
 
     public DensityRenderingUI() {
         super();
@@ -37,8 +38,9 @@ public class DensityRenderingUI extends AbstractRenderingUI {
 
     private void initPars() {
         dx = parameters.createDoubleField("dx", DoubleValidatorFactory.positiveNonZero(), 20);
-        forceDx = parameters.createBooleanField("dxforce", null, false);
         dz = parameters.createDoubleField("dz", DoubleValidatorFactory.positiveNonZero(), 100, threeDCondition);
+        forceDx = parameters.createBooleanField("dxforce", null, false);
+        forceDz = parameters.createBooleanField("dzforce", null, false);
     }
 
     @Override
@@ -57,16 +59,25 @@ public class DensityRenderingUI extends AbstractRenderingUI {
         latUncertaintyPanel.add(forceDXCheckBox);
         panel.add(latUncertaintyPanel, GridBagHelper.rightCol());
         //dz
+        final JCheckBox forceDZCheckBox = new JCheckBox("Force", false);
+        forceDZCheckBox.setBorder(BorderFactory.createEmptyBorder());
+        parameters.registerComponent(forceDz, forceDZCheckBox);
+        JPanel axUncertaintyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         final JLabel dzLabel = new JLabel("Axial uncertainty [nm]:");
         panel.add(dzLabel, GridBagHelper.leftCol());
-        final JTextField dzTextField = new JTextField("", 20);
+        final JTextField dzTextField = new JTextField("", 10);
         parameters.registerComponent(dz, dzTextField);
-        panel.add(dzTextField, GridBagHelper.rightCol());
+        axUncertaintyPanel.add(dzTextField);
+        axUncertaintyPanel.add(Box.createHorizontalStrut(5));
+        axUncertaintyPanel.add(forceDZCheckBox);
+        panel.add(axUncertaintyPanel, GridBagHelper.rightCol());
+        //3D
         final JCheckBox threeDCheckBox = (JCheckBox) parameters.getRegisteredComponent(threeD);
         threeDCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dzLabel.setEnabled(threeDCheckBox.isSelected());
+                forceDZCheckBox.setEnabled(threeDCheckBox.isSelected());
                 dzTextField.setEnabled(threeDCheckBox.isSelected());
             }
         });
@@ -91,7 +102,9 @@ public class DensityRenderingUI extends AbstractRenderingUI {
                     .forceDefaultDX(forceDx.getValue())
                     .zRange(r.from, r.to, r.step)
                     .colorizeZ(colorizeZ.getValue())
-                    .defaultDZ(dz.getValue()).build();
+                    .defaultDZ(dz.getValue())
+                    .forceDefaultDZ(forceDz.getValue())
+                    .build();
         } else {
             return new DensityRendering.Builder()
                     .roi(left, left+sizeX, top, top+sizeY)

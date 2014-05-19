@@ -77,6 +77,10 @@ public class RenderingPlugIn implements PlugIn {
         if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_THOMPSON)) {
             dx = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_THOMPSON, MoleculeDescriptor.Units.PIXEL);
         }
+        double[] dz = null;
+        if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z)) {
+            dz = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z, MoleculeDescriptor.Units.NANOMETER);
+        }
 
         List<IRendererUI> knownRenderers = ModuleLoader.getUIModules(IRendererUI.class);
         //do not show EmptyRenderer
@@ -89,35 +93,37 @@ public class RenderingPlugIn implements PlugIn {
             }
         }
         IRendererUI selectedRendererUI;
-        int sizeX, sizeY, left, top;
+        double sizeX, sizeY, left, top;
         boolean setAsPreview = false;
 
         if(MacroParser.isRanFromMacro()) {
             MacroParser parser = new MacroParser(null, null, null, knownRenderers);
             selectedRendererUI = parser.getRendererUI();
 
-            left = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imleft", "0"));
-            top = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imtop", "0"));
-            sizeX = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imwidth", "0"));
-            sizeY = Integer.parseInt(Macro.getValue(Macro.getOptions(), "imheight", "0"));
+            left = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imleft", "0"));
+            top = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imtop", "0"));
+            sizeX = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imwidth", "0"));
+            sizeY = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imheight", "0"));
         } else {
-            int guessedLeft;
-            int guessedTop;
-            int guessedWidth;
-            int guessedHeight;
             ImagePlus im;
+            double guessedLeft, guessedTop, guessedWidth, guessedHeight;
             if(IJResultsTable.IDENTIFIER.equals(table.getTableIdentifier()) && (im = ((IJResultsTable) table).getAnalyzedImage()) != null) {
                 guessedLeft = 0;
                 guessedTop = 0;
                 guessedWidth = im.getWidth();
                 guessedHeight = im.getHeight();
             } else {
-                guessedLeft = Math.max((int) Math.floor(VectorMath.min(xpos)) - 1, 0);
-                guessedTop = Math.max((int) Math.floor(VectorMath.min(ypos)) - 1, 0);
-                guessedWidth = (int) Math.ceil(VectorMath.max(xpos)) + 1;
-                guessedHeight = (int) Math.ceil(VectorMath.max(ypos)) + 1;
+                double magnification = new EmptyRendererUI().magnification.getValue();
+                guessedLeft    = ((int)Math.max(VectorMath.min(xpos) * magnification, 0));
+                guessedTop     = ((int)Math.max(VectorMath.min(ypos) * magnification, 0));
+                guessedWidth   = (int)(VectorMath.max(xpos) * magnification) - guessedLeft + 1;
+                guessedHeight  = (int)(VectorMath.max(ypos) * magnification) - guessedTop  + 1;
+                guessedLeft   /= magnification;
+                guessedTop    /= magnification;
+                guessedWidth  /= magnification;
+                guessedHeight /= magnification;
             }
-            RenderingDialog dialog = new RenderingDialog(preview, knownRenderers, guessedLeft, guessedTop, guessedWidth - guessedLeft, guessedHeight - guessedTop);
+            RenderingDialog dialog = new RenderingDialog(preview, knownRenderers, guessedLeft, guessedTop, guessedWidth, guessedHeight);
             dialog.setVisible(true);
             if(dialog.result == RenderingDialog.DialogResult.CANCELLED) {
                 return;
@@ -137,19 +143,19 @@ public class RenderingPlugIn implements PlugIn {
 
         if(setAsPreview) {
             RenderingQueue queue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(method.getRenderedImage()), selectedRendererUI.getRepaintFrequency());
-            ((IJResultsTable) table).setPreviewRenderer(queue);
-            ((IJResultsTable) table).showPreview();
+            ((IJResultsTable)table).setPreviewRenderer(queue);
+            ((IJResultsTable)table).showPreview();
         } else {
             if(Recorder.record) {
-                Recorder.recordOption("imleft", Integer.toString(left));
-                Recorder.recordOption("imtop", Integer.toString(top));
-                Recorder.recordOption("imwidth", Integer.toString(sizeX));
-                Recorder.recordOption("imheight", Integer.toString(sizeY));
+                Recorder.recordOption("imleft", Double.toString(left));
+                Recorder.recordOption("imtop", Double.toString(top));
+                Recorder.recordOption("imwidth", Double.toString(sizeX));
+                Recorder.recordOption("imheight", Double.toString(sizeY));
                 MacroParser.recordRendererUI(selectedRendererUI);
             }
 
             method.reset();
-            method.addToImage(xpos, ypos, z, dx);
+            method.addToImage(xpos, ypos, z, dx, dz);
             new RenderingQueue.DefaultRepaintTask(method.getRenderedImage()).run();
         }
     }
@@ -169,7 +175,7 @@ class RenderingDialog extends JDialog {
     JTextField leftTextField;
     JTextField sizeXTextField;
     JTextField sizeYTextField;
-    int left, top, sizeX, sizeY;
+    double left, top, sizeX, sizeY;
     boolean enablePreview;
     int activeRendererIndex;
 
@@ -178,7 +184,7 @@ class RenderingDialog extends JDialog {
         CANCELLED, OK, PREVIEW;
     }
 
-    public RenderingDialog(boolean preview, List<IRendererUI> knownRenderers, int left, int top, int sizeX, int sizeY) {
+    public RenderingDialog(boolean preview, List<IRendererUI> knownRenderers, double left, double top, double sizeX, double sizeY) {
         super(IJ.getInstance(), "Visualization", true);
         this.activeRendererIndex = Integer.parseInt(Prefs.get("thunderstorm.rendering.index", "0"));
         this.renderingMethods = new CardsPanel<IRendererUI>(knownRenderers, activeRendererIndex);
@@ -229,10 +235,15 @@ class RenderingDialog extends JDialog {
                 IJResultsTable rt = IJResultsTable.getResultsTable();
                 double[] xpos = rt.getColumnAsDoubles(LABEL_X, PIXEL);
                 double[] ypos = rt.getColumnAsDoubles(LABEL_Y, PIXEL);
-                left = Math.max((int) Math.floor(VectorMath.min(xpos)) - 1, 0);
-                top = Math.max((int) Math.floor(VectorMath.min(ypos)) - 1, 0);
-                sizeX = (int) Math.ceil(VectorMath.max(xpos)) - left + 1;
-                sizeY = (int) Math.ceil(VectorMath.max(ypos)) - top + 1;
+                double magnification = new EmptyRendererUI().magnification.getValue();
+                left   = ((int)Math.max(VectorMath.min(xpos) * magnification, 0));
+                top    = ((int)Math.max(VectorMath.min(ypos) * magnification, 0));
+                sizeX  = (int)(VectorMath.max(xpos) * magnification) - left + 1;
+                sizeY  = (int)(VectorMath.max(ypos) * magnification) - top  + 1;
+                left  /= magnification;
+                top   /= magnification;
+                sizeX /= magnification;
+                sizeY /= magnification;
                 leftTextField.setText(left + "");
                 topTextField.setText(top + "");
                 sizeXTextField.setText(sizeX + "");
@@ -244,10 +255,10 @@ class RenderingDialog extends JDialog {
 
         sizePanel.add(sizeButtonsPanel, GridBagHelper.twoCols());
 
-        topTextField = new JTextField(Integer.toString(top), 20);
-        leftTextField = new JTextField(Integer.toString(left), 20);
-        sizeXTextField = new JTextField(Integer.toString(sizeX), 20);
-        sizeYTextField = new JTextField(Integer.toString(sizeY), 20);
+        topTextField = new JTextField(Double.toString(top), 20);
+        leftTextField = new JTextField(Double.toString(left), 20);
+        sizeXTextField = new JTextField(Double.toString(sizeX), 20);
+        sizeYTextField = new JTextField(Double.toString(sizeY), 20);
         sizePanel.add(new JLabel("Left top x [px]:"), GridBagHelper.leftCol());
         sizePanel.add(leftTextField, GridBagHelper.rightCol());
         sizePanel.add(new JLabel("Left top y [px]:"), GridBagHelper.leftCol());
@@ -324,14 +335,14 @@ class RenderingDialog extends JDialog {
     }
 
     private void validateFields() {
-        left = Integer.parseInt(leftTextField.getText());
-        top = Integer.parseInt(topTextField.getText());
-        sizeX = Integer.parseInt(sizeXTextField.getText());
-        if(sizeX < 1) {
+        left = Double.parseDouble(leftTextField.getText());
+        top = Double.parseDouble(topTextField.getText());
+        sizeX = Double.parseDouble(sizeXTextField.getText());
+        if(sizeX <= 0.0) {
             throw new IllegalArgumentException("Image width must be positive.");
         }
-        sizeY = Integer.parseInt(sizeYTextField.getText());
-        if(sizeY < 1) {
+        sizeY = Double.parseDouble(sizeYTextField.getText());
+        if(sizeY <= 0.0) {
             throw new IllegalArgumentException("Image height must be positive.");
         }
         renderingMethods.getActiveComboBoxItem().readParameters();

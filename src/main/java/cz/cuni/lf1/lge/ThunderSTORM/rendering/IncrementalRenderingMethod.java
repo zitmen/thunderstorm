@@ -16,12 +16,11 @@ public interface IncrementalRenderingMethod extends IModule {
    *
    * @param x x coordinates of localized molecules
    * @param y y coordinates of localized molecules
-   * @param z z coordinates of localized molecules. When null, 0 is used
-   * instead.
-   * @param dx localization uncertainty - for each molecule (not used in all
-   * implementations). When null default value is used instead.
+   * @param z z coordinates of localized molecules. When null, 0 is used instead.
+   * @param dx localization XY uncertainty - for each molecule (not used in all implementations). When null default value is used instead.
+   * @param dz localization Z uncertainty - for each molecule (not used in all implementations). When null default value is used instead.
    */
-  public void addToImage(double[] x, double[] y, double[] z, double[] dx);
+  public void addToImage(double[] x, double[] y, double[] z, double[] dx, double[] dz);
   
   /**
    * Draws the specified molecules into the image.

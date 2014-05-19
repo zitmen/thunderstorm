@@ -12,7 +12,7 @@ public class ScatterRenderingUI extends AbstractRenderingUI {
     public ScatterRenderingUI() {
     }
 
-    public ScatterRenderingUI(int sizeX, int sizeY) {
+    public ScatterRenderingUI(double sizeX, double sizeY) {
         super(sizeX, sizeY);
     }
 

@@ -34,7 +34,6 @@ public class CorrelationDriftEstimator {
      * @param y [px]
      * @param frame
      * @param steps
-     * @param renderingMagnification
      * @param roiWidth - [px] width of the original image or -1 for max(x)
      * @param roiHeight - [px] height of the original image or -1 for max(y)
      */
@@ -53,11 +52,11 @@ public class CorrelationDriftEstimator {
         RenderingMethod renderer = new ASHRendering.Builder().roi(0, imageWidth, 0, imageHeight).resolution(1 / magnification).shifts(2).build();
         RenderingMethod lowResRenderer = new ASHRendering.Builder().roi(0, imageWidth, 0, imageHeight).resolution(1).shifts(2).build();
 
-        FloatProcessor firstImage = (FloatProcessor) renderer.getRenderedImage(bins.xBinnedByFrame[0], bins.yBinnedByFrame[0], null, null).getProcessor().convertToFloat();
+        FloatProcessor firstImage = (FloatProcessor) renderer.getRenderedImage(bins.xBinnedByFrame[0], bins.yBinnedByFrame[0], null, null, null).getProcessor().convertToFloat();
         int paddedSize = MathProxy.nextPowerOf2(MathProxy.max(firstImage.getWidth(), firstImage.getHeight()));
         FHT firstImageFFT = createPaddedFFTImage(firstImage, paddedSize);
 
-        FloatProcessor lowResFirstImage = (FloatProcessor) lowResRenderer.getRenderedImage(bins.xBinnedByFrame[0], bins.yBinnedByFrame[0], null, null).getProcessor().convertToFloat();
+        FloatProcessor lowResFirstImage = (FloatProcessor) lowResRenderer.getRenderedImage(bins.xBinnedByFrame[0], bins.yBinnedByFrame[0], null, null, null).getProcessor().convertToFloat();
         int lowResPaddedSize = MathProxy.nextPowerOf2(MathProxy.max(lowResFirstImage.getWidth(), lowResFirstImage.getHeight()));
         FHT lowResFirstImageFFT = createPaddedFFTImage(lowResFirstImage, lowResPaddedSize);
 
@@ -76,11 +75,11 @@ public class CorrelationDriftEstimator {
             IJ.showStatus("Processing part " + i + " from " + (steps - 1) + "...");
             GUI.checkIJEscapePressed();
 
-            FloatProcessor nextImage = (FloatProcessor) renderer.getRenderedImage(bins.xBinnedByFrame[i], bins.yBinnedByFrame[i], null, null).getProcessor().convertToFloat();
+            FloatProcessor nextImage = (FloatProcessor) renderer.getRenderedImage(bins.xBinnedByFrame[i], bins.yBinnedByFrame[i], null, null, null).getProcessor().convertToFloat();
             FHT imageFFT = createPaddedFFTImage(nextImage, paddedSize);
             FHT crossCorrelationImage = computeCrossCorrelationImage(firstImageFFT, imageFFT);
 
-            FloatProcessor lowResNextImage = (FloatProcessor) lowResRenderer.getRenderedImage(bins.xBinnedByFrame[i], bins.yBinnedByFrame[i], null, null).getProcessor().convertToFloat();
+            FloatProcessor lowResNextImage = (FloatProcessor) lowResRenderer.getRenderedImage(bins.xBinnedByFrame[i], bins.yBinnedByFrame[i], null, null, null).getProcessor().convertToFloat();
             FHT lowResImageFFT = createPaddedFFTImage(lowResNextImage, lowResPaddedSize);
             FHT lowResCrossCorrelationImage = computeCrossCorrelationImage(lowResFirstImageFFT, lowResImageFFT);
 

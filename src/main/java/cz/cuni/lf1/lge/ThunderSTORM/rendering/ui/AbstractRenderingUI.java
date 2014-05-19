@@ -19,10 +19,7 @@ import javax.swing.JTextField;
 
 public abstract class AbstractRenderingUI extends IRendererUI {
 
-    int sizeX;
-    int sizeY;
-    int left;
-    int top;
+    double sizeX, sizeY, left, top;
     //parameters
     public ParameterKey.Double magnification;
     public ParameterKey.Integer repaintFrequency;
@@ -76,7 +73,7 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         }, "-500:100:500", threeDCondition);
     }
 
-    public AbstractRenderingUI(int sizeX, int sizeY) {
+    public AbstractRenderingUI(double sizeX, double sizeY) {
         this();
         this.left = 0;
         this.top = 0;
@@ -85,12 +82,12 @@ public abstract class AbstractRenderingUI extends IRendererUI {
     }
     
     @Override
-    public void setSize(int sizeX, int sizeY) {
+    public void setSize(double sizeX, double sizeY) {
         setSize(0, 0, sizeX, sizeY);
     }
     
     @Override
-    public void setSize(int left, int top, int sizeX, int sizeY) {
+    public void setSize(double left, double top, double sizeX, double sizeY) {
         this.left = left;
         this.top = top;
         this.sizeX = sizeX;
