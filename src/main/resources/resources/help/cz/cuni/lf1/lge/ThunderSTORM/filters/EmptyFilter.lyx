@@ -89,7 +89,7 @@ status open
 
 
 \backslash
-href{../../detectors/Threshold.html}{threshold}
+href{../detectors/Threshold.html}{threshold}
 \end_layout
 
 \end_inset
@@ -170,7 +170,7 @@ status open
 
 
 \backslash
-href{Filters.html}{Image filtering and feature enhancement}
+href{ui/Filters.html}{Image filtering and feature enhancement}
 \end_layout
 
 \end_inset
@@ -186,7 +186,7 @@ status open
 
 
 \backslash
-href{../../detectors/Detectors.html}{Finding approximate positions of molecules}
+href{../detectors/Detectors.html}{Finding approximate positions of molecules}
 \end_layout
 
 \end_inset
