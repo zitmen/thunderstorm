@@ -234,12 +234,8 @@ public class PolynomialCalibration implements CylindricalLensCalibration {
     }
     
     @Override
-    public double getSigma1(double z) {
-        return (b1 + a1 * sqr(z - c1) + d1 * pow(z - c1, 3));
-    }
+    public double getSigma1(double z) { return (b1 + a1 * sqr(z - c1) + d1 * pow(z - c1, 3)); }
 
     @Override
-    public double getSigma2(double z) {
-        return (b2 + a2 * sqr(z - c2) + d2 * pow(z - c2, 3));
-    }
+    public double getSigma2(double z) { return (b2 + a2 * sqr(z - c2) + d2 * pow(z - c2, 3)); }
 }

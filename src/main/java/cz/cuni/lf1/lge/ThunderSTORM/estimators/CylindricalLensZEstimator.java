@@ -29,8 +29,14 @@ public class CylindricalLensZEstimator implements IEstimator {
         Vector<Molecule> results = estimator.estimateParameters(image, detections);
         for(int i = 0; i < results.size(); i++) {
             Molecule psf = results.get(i);
-            double sigma1 = psf.getParam(LABEL_SIGMA1);
-            double sigma2 = psf.getParam(LABEL_SIGMA2);
+            // from some reason sigma 1 and sigma 2 are swapped as opposed to data denerator
+            // (maybe something with the x/y-grid during rendering or fitting, but I can't find it;
+            // or the angle might be the problem)
+            // --> note that this doesn't affect the analysis of real data...this is important just for Monte Carlo simulations
+            double sigma1 = psf.getParam(LABEL_SIGMA2);
+            double sigma2 = psf.getParam(LABEL_SIGMA1);
+            psf.setParam(LABEL_SIGMA1, sigma1);
+            psf.setParam(LABEL_SIGMA2, sigma2);
             double calculatedZ = calibration.getZ(sigma1, sigma2);
             results.set(i, appendZ(psf, calculatedZ));
         }
