@@ -2,3 +2,9 @@ nbproject/private
 /dist/
 /build/
 build.properties
+.idea/
+IJ_Prefs.txt
+ThunderSTORM.iml
+nb-configuration.xml
+nbactions.xml
+target/
