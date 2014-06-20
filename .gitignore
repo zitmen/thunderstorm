@@ -6,3 +6,6 @@ IJ_Prefs.txt
 .idea
 nb-configuration.xml
 nbactions.xml
+build/
+dist/
+nbproject/
