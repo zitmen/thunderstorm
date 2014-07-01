@@ -42,6 +42,7 @@ public class FullImageFitting implements IEstimator {
                     psf.setX(psf.getX() + x0 + 0.5);
                     psf.setY(psf.getY() + y0 + 0.5);
                     psf.setDetections(null);
+                    MultipleLocationsImageFitting.appendGoodnessOfFit(psf, fitter, subImage);
                     MultipleLocationsImageFitting.appendCalculatedUncertainty(psf);
                     results.add(psf);
                 }
@@ -50,6 +51,7 @@ public class FullImageFitting implements IEstimator {
                     if(checkIsInSubimage(m.getX(), m.getY(), image.getWidth(), image.getHeight())) {
                         m.setX(m.getX() + x0 + 0.5);
                         m.setY(m.getY() + y0 + 0.5);
+                        MultipleLocationsImageFitting.appendGoodnessOfFit(m, fitter, subImage);
                         MultipleLocationsImageFitting.appendCalculatedUncertainty(m);
                         results.add(m);
                     }

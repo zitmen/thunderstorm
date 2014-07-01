@@ -23,7 +23,7 @@ public class LSQFitter implements OneLocationFitter {
     boolean useWeighting;
     double[] fittedModelValues;
     double[] fittedParameters;
-    PSFModel psfModel;
+    public PSFModel psfModel;
     final static int MAX_ITERATIONS = 1000;
     private int maxIter;    // after `maxIter` iterations the algorithm converges
     private int bkgStdColumn;

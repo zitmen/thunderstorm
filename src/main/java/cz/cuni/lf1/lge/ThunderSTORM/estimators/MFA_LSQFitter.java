@@ -13,6 +13,7 @@ import org.apache.commons.math3.exception.NotStrictlyPositiveException;
 
 public class MFA_LSQFitter extends MFA_AbstractFitter {
 
+    public LSQFitter lastFitter = null;
     Range expectedIntensity;
     boolean weightedLSQ;
     double pValueThr;
@@ -72,8 +73,8 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
             modelBest.setFixedIntensities(sameI);
         }
         // fitting with the selected model
-        LSQFitter fitter = new LSQFitter(modelBest, weightedLSQ, Params.BACKGROUND);
-        mol = fitter.fit(subimage);
+        lastFitter = new LSQFitter(modelBest, weightedLSQ, Params.BACKGROUND);
+        mol = lastFitter.fit(subimage);
         assert (mol != null);    // this is implication of `assert(maxN >= 1)`
         if(!mol.isSingleMolecule()) {
             // copy background value to all molecules

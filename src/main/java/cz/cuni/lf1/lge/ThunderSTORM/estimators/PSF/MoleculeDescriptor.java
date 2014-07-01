@@ -287,6 +287,7 @@ public class MoleculeDescriptor implements Cloneable {
     // ===============================================================
     public static class Fitting {
 
+        public static final String LABEL_CHI2 = "chi2";
         public static final String LABEL_THOMPSON = "uncertainty";
         public static final String LABEL_UNCERTAINTY_Z = "uncertainty_z";
 
@@ -617,7 +618,7 @@ public class MoleculeDescriptor implements Cloneable {
 
     public static enum MergingOperations {
 
-        NONE, MIN, MAX, SUM, MEAN, COUNT, RECALC;
+        NONE, MIN, MAX, SUM, MEAN, COUNT, RECALC, ASSIGN_NaN;
 
         public static HashMap<String, MergingOperations> allParams = null;
 
@@ -638,6 +639,7 @@ public class MoleculeDescriptor implements Cloneable {
             allParams.put(LABEL_FRAME, MergingOperations.MIN);
             allParams.put(LABEL_DETECTIONS, MergingOperations.COUNT);
             //
+            allParams.put(Fitting.LABEL_CHI2, MergingOperations.ASSIGN_NaN);
             allParams.put(Fitting.LABEL_THOMPSON, MergingOperations.RECALC);
         }
 
@@ -663,6 +665,11 @@ public class MoleculeDescriptor implements Cloneable {
                     break;
                 case COUNT:
                     molecule.setParam(paramName, detections.size());
+                    break;
+                case ASSIGN_NaN:
+                    if(detections.size() > 1) {
+                        molecule.setParam(paramName, Double.NaN);
+                    }
                     break;
                 case RECALC:
                     if(LABEL_ID.equals(paramName)) {

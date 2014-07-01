@@ -93,6 +93,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
                             psf.setX(psf.getX() + xInt + 0.5);
                             psf.setY(psf.getY() + yInt + 0.5);
                             psf.setDetections(null);
+                            appendGoodnessOfFit(psf, fitter, subImage);
                             appendCalculatedUncertainty(psf);
                             results.add(psf);
                         }
@@ -101,6 +102,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
                             if(checkIsInSubimage(m.getX(), m.getY())) {
                                 m.setX(m.getX() + xInt + 0.5);
                                 m.setY(m.getY() + yInt + 0.5);
+                                appendGoodnessOfFit(m, fitter, subImage);
                                 appendCalculatedUncertainty(m);
                                 results.add(m);
                             }
@@ -150,6 +152,19 @@ public class MultipleLocationsImageFitting implements IEstimator {
             }
         }
         return extracted;
+    }
+
+    public static void appendGoodnessOfFit(Molecule mol, OneLocationFitter fitter, OneLocationFitter.SubImage subimage) {
+        LSQFitter lsqfit;
+        if(fitter instanceof LSQFitter) {
+            lsqfit = (LSQFitter)fitter;
+        } else if(fitter instanceof MFA_LSQFitter) {
+            lsqfit = ((MFA_LSQFitter)fitter).lastFitter;
+        } else {
+            return;
+        }
+        double chi2 = lsqfit.psfModel.getChiSquared(subimage.xgrid, subimage.ygrid, subimage.values, lsqfit.fittedParameters, lsqfit.useWeighting);
+        mol.addParam(MoleculeDescriptor.Fitting.LABEL_CHI2, MoleculeDescriptor.Units.UNITLESS, chi2);
     }
 
     public static void appendCalculatedUncertainty(Molecule mol) {
