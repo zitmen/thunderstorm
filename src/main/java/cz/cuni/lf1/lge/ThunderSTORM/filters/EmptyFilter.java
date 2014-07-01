@@ -13,9 +13,10 @@ import javax.swing.JPanel;
  * The {@code filterImage} method returns the {@code image} that it got on its input.
  */
 public final class EmptyFilter extends IFilterUI implements IFilter {
-    
-  private FloatProcessor input = null;
-  private HashMap<String, FloatProcessor> export_variables = null;
+
+  private final String name = "No filter";
+  transient private FloatProcessor input = null;
+  transient private HashMap<String, FloatProcessor> export_variables = null;
 
   @Override
   public FloatProcessor filterImage(FloatProcessor image) {
@@ -43,7 +44,7 @@ public final class EmptyFilter extends IFilterUI implements IFilter {
   
   @Override
   public String getName() {
-    return "No filter";
+    return name;
   }
 
   @Override
