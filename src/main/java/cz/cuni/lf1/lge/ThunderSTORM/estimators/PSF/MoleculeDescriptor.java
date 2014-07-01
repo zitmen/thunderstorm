@@ -334,11 +334,9 @@ public class MoleculeDescriptor implements Cloneable {
         }
 
         public static class ThompsonNotApplicableException extends Exception {
-
             public ThompsonNotApplicableException(String message) {
                 super(message);
             }
-
         }
     }
 
@@ -566,7 +564,7 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(LABEL_INTENSITY, Units.DIGITAL);
                 allUnits.put(PSFModel.Params.LABEL_OFFSET, Units.DIGITAL);
                 allUnits.put(LABEL_BACKGROUND, Units.DIGITAL);
-                allUnits.put(PSFModel.Params.LABEL_ANGLE, Units.DEGREE);
+                allUnits.put(PSFModel.Params.LABEL_ANGLE, Units.RADIAN);
                 //
                 allUnits.put(LABEL_ID, Units.UNITLESS);
                 allUnits.put(LABEL_FRAME, Units.UNITLESS);
