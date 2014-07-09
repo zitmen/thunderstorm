@@ -4,7 +4,7 @@
 
     <groupId>cz.cuni.lf1.lge</groupId>
     <artifactId>ThunderSTORM</artifactId>
-    <version>dev-2014-07-01-b1</version>
+    <version>dev-2014-07-09-b1</version>
     <packaging>jar</packaging>
 
     <name>ThunderSTORM</name>
