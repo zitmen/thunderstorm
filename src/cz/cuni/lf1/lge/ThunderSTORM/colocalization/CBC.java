@@ -10,8 +10,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.sf.javaml.core.kdtree.KDTree;
-import net.sf.javaml.core.kdtree.KeyDuplicateException;
 import net.sf.javaml.core.kdtree.KeySizeException;
+import org.apache.commons.math3.exception.NotANumberException;
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import org.apache.commons.math3.util.MathArrays;
 
@@ -36,12 +36,14 @@ public class CBC {
     public double[] squaredRadiusDomainNm;
     private double radiusStepPx;
     private int radiusCount;
+    private boolean nnCheckNotSelf;
 
-    public CBC(double[][] firstChannelXYdata, double[][] secondChannelXYdata, double radiusStep, int radiusCount) {
+    public CBC(double[][] firstChannelXYdata, double[][] secondChannelXYdata, double radiusStep, int radiusCount, boolean nnCheckNotSelf) {
         this.firstChannelXYdata = firstChannelXYdata;
         this.secondChannelXYdata = secondChannelXYdata;
         this.radiusStepPx = Units.NANOMETER.convertTo(Units.PIXEL, radiusStep);
         this.radiusCount = radiusCount;
+        this.nnCheckNotSelf = nnCheckNotSelf;
 
         fillRadiusDomain();
         buildKdTrees(secondChannelXYdata);
@@ -71,13 +73,13 @@ public class CBC {
             @Override
             public void run(int i) {
                 try {
-                    double[] counts = calcNeighborCount(mainChannelXYdata[i], mainChannelTree, squaredRadiusDomainPx);
+                    double[] counts = calcNeighborCount(mainChannelXYdata[i], mainChannelTree, squaredRadiusDomainPx, nnCheckNotSelf);
                     for(int j = 0; j < counts.length; j++) {
                         counts[j] = counts[j] / counts[lastRadiusIndex] * maxSquaredRadius / squaredRadiusDomainPx[j];
                     }
 
-                    double[] counts2 = calcNeighborCount(mainChannelXYdata[i], otherChannelTree, squaredRadiusDomainPx);
-                    nearestNeighborDistances[i] = getDistanceToNearestNeighbor(mainChannelXYdata[i], otherChannelTree);
+                    double[] counts2 = calcNeighborCount(mainChannelXYdata[i], otherChannelTree, squaredRadiusDomainPx, nnCheckNotSelf);
+                    nearestNeighborDistances[i] = getDistanceToNearestNeighbor(mainChannelXYdata[i], otherChannelTree, nnCheckNotSelf);
                     double maxCount = counts2[lastRadiusIndex];
 
                     for(int j = 0; j < counts2.length; j++) {
@@ -90,8 +92,12 @@ public class CBC {
                     }
 
                     SpearmansCorrelation correlator = new SpearmansCorrelation();
-                    double correlation = correlator.correlation(counts, counts2);
-
+                    double correlation;
+                    try {
+                        correlation = correlator.correlation(counts, counts2);
+                    } catch (NotANumberException e) {
+                        correlation = Double.NaN;
+                    }
                     double[] nearestNeighbor = otherChannelTree.nearest(mainChannelXYdata[i]);
                     double nnDistance = MathArrays.distance(nearestNeighbor, mainChannelXYdata[i]);
 
@@ -111,7 +117,7 @@ public class CBC {
         return cbcResults;
     }
 
-    private double[] calcNeighborCount(double[] queryPoint, KDTree<double[]> kdtree, double[] squaredRadiusValues) {
+    private double[] calcNeighborCount(double[] queryPoint, KDTree<double[]> kdtree, double[] squaredRadiusValues, boolean checkNotSelf) {
         assert queryPoint != null;
         assert squaredRadiusValues != null;
         assert kdtree != null;
@@ -120,6 +126,11 @@ public class CBC {
 
         double[] result = new double[squaredRadiusValues.length];
         for(KDTree.DistAndValue<double[]> neighbor : neighbors) {
+            if (checkNotSelf) {
+                if ((neighbor.value[0] == queryPoint[0]) && (neighbor.value[1] == queryPoint[1])) {
+                    continue;
+                }
+            }
             double distance = neighbor.dist;
             int bin = (int) Math.floor(distance / radiusStepPx);
             result[bin]++;
@@ -129,11 +140,17 @@ public class CBC {
         return result;
     }
     
-    private double getDistanceToNearestNeighbor(double[] queryPoint, KDTree<double[]> kdtree) {
+    private double getDistanceToNearestNeighbor(double[] queryPoint, KDTree<double[]> kdtree, boolean checkNotSelf) {
         assert queryPoint != null;
         assert kdtree != null;
 
-        double[] nn = kdtree.nearest(queryPoint);
+        List<double[]> knn = kdtree.nearest(queryPoint, 2);
+        double[] nn = knn.get(0);
+        if (checkNotSelf) {
+            if ((nn[0] == queryPoint[0]) && (nn[0] == queryPoint[0])) {
+                nn = knn.get(1);
+            }
+        }
         return MathProxy.sqrt(MathProxy.sqr(nn[0]-queryPoint[0])+MathProxy.sqr(nn[1]-queryPoint[1]));
     }
 

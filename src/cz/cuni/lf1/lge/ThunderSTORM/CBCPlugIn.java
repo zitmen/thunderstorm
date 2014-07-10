@@ -13,9 +13,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.IValue;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.ImagePlus;
@@ -59,9 +57,10 @@ public class CBCPlugIn implements PlugIn {
             GenericDialogPlus gd = new GenericDialogPlus("ThunderSTORM: Performance evaluation");
             gd.addNumericField("Radius step [nm]: ", 100, 0);
             gd.addNumericField("Step count: ", 5, 0);
-            gd.addCheckbox("Add CBC into the results table: ", true);
-            gd.addCheckbox("Add distance to the nearest neighbor into the results table: ", true);
-            gd.addCheckbox("Add count of neighbors in within a radius into the results table: ", true);
+            gd.addCheckbox("Add CBC into the results table", true);
+            gd.addCheckbox("Add distance to the nearest neighbor into the results table", true);
+            gd.addCheckbox("Add count of neighbors in within a radius into the results table", true);
+            gd.addCheckbox("If the distance to the nearest neighbor is 0, take the second nearest", true);
             gd.showDialog();
             if(!gd.wasCanceled()) {
                 double radiusStep = gd.getNextNumber();
@@ -69,14 +68,15 @@ public class CBCPlugIn implements PlugIn {
                 boolean addCBCToTable = gd.getNextBoolean();
                 boolean addNNDistToTable = gd.getNextBoolean();
                 boolean addNeighborsInDistToTable = gd.getNextBoolean();
-                runCBC(radiusStep, radiusCount, addCBCToTable, addNNDistToTable, addNeighborsInDistToTable);
+                boolean nnCheckNotSelf = gd.getNextBoolean();
+                runCBC(radiusStep, radiusCount, addCBCToTable, addNNDistToTable, addNeighborsInDistToTable, nnCheckNotSelf);
             }
         } catch(Exception e) {
             IJ.handleException(e);
         }
     }
     
-    public void runCBC(double radiusStep, int radiusCount, boolean addCBCToTable, boolean addNNDistToTable, boolean addNeighborsInDistToTable) {
+    public void runCBC(double radiusStep, int radiusCount, boolean addCBCToTable, boolean addNNDistToTable, boolean addNeighborsInDistToTable, boolean nnCheckNotSelf) {
         IJResultsTable resultsTable = IJResultsTable.getResultsTable();
         IJGroundTruthTable groundTruthTable = IJGroundTruthTable.getGroundTruthTable();
 
@@ -91,7 +91,7 @@ public class CBCPlugIn implements PlugIn {
             secondXY[i] = new double[]{m.getX(MoleculeDescriptor.Units.PIXEL), m.getY(MoleculeDescriptor.Units.PIXEL)};
         }
 
-        CBC cbc = new CBC(firstXY, secondXY, radiusStep, radiusCount);
+        CBC cbc = new CBC(firstXY, secondXY, radiusStep, radiusCount, nnCheckNotSelf);
 
         IJ.showStatus("Calculating first channel CBC.");
         double[] firstChannelCBC = cbc.calculateFirstChannelCBC();
