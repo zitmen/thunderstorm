@@ -8,6 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.EmitterModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
@@ -249,7 +250,7 @@ public class DataGeneratorPlugIn implements PlugIn {
         final ParameterTracker params = new ParameterTracker("thunderstorm.datagen");
         params.setNoGuiParametersAllowed(true);
         final ParameterKey.Integer widthParam = params.createIntField("width", IntegerValidatorFactory.positiveNonZero(), Defaults.WIDTH);
-        final ParameterKey.Integer heightParam = params.createIntField("height", IntegerValidatorFactory.positiveNonZero(), Defaults.WIDTH);
+        final ParameterKey.Integer heightParam = params.createIntField("height", IntegerValidatorFactory.positiveNonZero(), Defaults.HEIGHT);
         final ParameterKey.Integer framesParam = params.createIntField("frames", IntegerValidatorFactory.positiveNonZero(), Defaults.FRAMES);
         final ParameterKey.Double densityParam = params.createDoubleField("density", DoubleValidatorFactory.positive(), Defaults.DENSITY);
         final ParameterKey.String psfParam = params.createStringField("psf", new PsfValidator(), Defaults.PSF);
@@ -265,6 +266,14 @@ public class DataGeneratorPlugIn implements PlugIn {
         String macroOptions = Macro.getOptions();
         if(macroOptions != null) {
             params.readMacroOptions();
+            List<IPsfUI> allPSFs = ModuleLoader.getUIModules(IPsfUI.class);
+            for(IPsfUI psfUi : allPSFs) {
+                if(psfUi.getName().equalsIgnoreCase(psfParam.getValue())) {
+                    psfUi.readMacroOptions(macroOptions);
+                    psf = psfUi;
+                    break;
+                }
+            }
         } else {
             GUI.setLookAndFeel();
             DialogStub dialog = new DialogStub(params, IJ.getInstance(), "ThunderSTORM: Data generator (16bit grayscale image sequence)") {
@@ -417,13 +426,14 @@ public class DataGeneratorPlugIn implements PlugIn {
             if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
                 return false;
             }
+
+            psf = (IPsfUI) psfPanel.getActiveComboBoxItem();
         }
         width = widthParam.getValue();
         height = heightParam.getValue();
         frames = framesParam.getValue();
         density = densityParam.getValue();
         add_poisson_var = addPoissonVarParam.getValue();
-        psf = (IPsfUI) psfPanel.getActiveComboBoxItem();
         intensity_range = Range.parseFromTo(intensityRangeParam.getValue());
         drift = new Drift(Units.NANOMETER.convertTo(Units.PIXEL, driftDistParam.getValue()), driftAngleParam.getValue(), false, frames);
         densityMask = readMask(maskPathParam.getValue());
