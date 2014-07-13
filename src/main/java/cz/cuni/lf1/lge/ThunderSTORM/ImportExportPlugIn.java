@@ -112,13 +112,11 @@ public class ImportExportPlugIn implements PlugIn {
         int startingFrame = dialog.startingFrame.getValue();
         IImportExport importer = getModuleByName(dialog.fileFormat.getValue());
         table.forceHide();
+        if(resetFirst) table.reset();
         if(groundTruth) {
             callImporter(importer, table, path, startingFrame);
         } else {    // IJResultsTable
             IJResultsTable ijrt = (IJResultsTable) table;
-            if(resetFirst) {
-                ijrt.reset();
-            }
             try {
                 ijrt.setAnalyzedImage(WindowManager.getImage(dialog.rawImageStack.getValue()));
             } catch(ArrayIndexOutOfBoundsException ex) {
