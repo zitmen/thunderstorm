@@ -2,10 +2,10 @@
  * First version was taken from the package roboutils.planning
  * written by Prasanna Velagapudi <psigen@gmail.com>.
  * 
- * However there was an error in the algorithm which was fixed
- * by Martin Ovesny <zitmen@gmail.com> for the purpose of ThunderSTORM.
+ * However there was an error in the algorithm which was fixed.
  * Since the error wasn't fixed in the original package, not even two months
  * after reporting the issue, it has been moved directly into the ThunderSTORM.
+ * Then the algorithm was slightly changed for the purpose of ThunderSTORM.
  */
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
@@ -23,12 +23,12 @@ import java.util.Queue;
  */
 public class StableMatching {
 
-    public Map match(final List<Molecule> suitors, final List<Molecule> reviewers) {
+    public static Map match(final List<Molecule> suitors) {
 
         // Create a free list of suitors (and use it to store their proposals)
         Queue<MTuple> freeSuitors = new LinkedList();
         for (Molecule suitor : suitors) {
-            assert(suitor.neighbors != null) : "Suitors must always have list of prefered reviewers!";
+            assert(suitor.neighbors != null) : "Suitors must always have list of prefered reviewers (neighbors)!";
             LinkedList<Molecule> prefs = new LinkedList(suitor.neighbors);
             Collections.sort(prefs, suitorPreference(suitor));
             freeSuitors.add(new MTuple(suitor, prefs));
@@ -76,7 +76,7 @@ public class StableMatching {
         return matches;
     }
 
-    private class MTuple {
+    private static class MTuple {
         final Molecule suitor;
         final Queue<Molecule> prefs;
 
@@ -86,7 +86,7 @@ public class StableMatching {
         }
     }
 
-    public Comparator<Molecule> suitorPreference(final Molecule suitor) {
+    private static Comparator<Molecule> suitorPreference(final Molecule suitor) {
         return new Comparator<Molecule>() {
             @Override
             public int compare(Molecule a, Molecule b) {
@@ -98,7 +98,7 @@ public class StableMatching {
         };
     }
 
-    public Comparator<Molecule> reviewerPreference(final Molecule reviewer) {
+    private static Comparator<Molecule> reviewerPreference(final Molecule reviewer) {
         return new Comparator<Molecule>() {
             @Override
             public int compare(Molecule a, Molecule b) {

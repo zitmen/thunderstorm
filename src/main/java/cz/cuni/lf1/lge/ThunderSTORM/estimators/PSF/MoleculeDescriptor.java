@@ -344,8 +344,8 @@ public class MoleculeDescriptor implements Cloneable {
     public static final String LABEL_ID = "id";
     public static final String LABEL_FRAME = "frame";
     public static final String LABEL_DETECTIONS = "detections";
-    public static final String LABEL_GROUND_TRUTH_ID = "gt-id";
-    public static final String LABEL_DISTANCE_TO_GROUND_TRUTH = "gt-distance";
+    public static final String LABEL_GROUND_TRUTH_ID = "gt_id";
+    public static final String LABEL_DISTANCE_TO_GROUND_TRUTH = "gt_distance";
 
     public static enum Units {
 

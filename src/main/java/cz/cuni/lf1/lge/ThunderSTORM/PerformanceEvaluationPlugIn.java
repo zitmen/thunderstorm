@@ -12,6 +12,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.max;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeMatcher;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
@@ -20,6 +21,7 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
 import ij.IJ;
 import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
@@ -34,7 +36,7 @@ import java.util.Vector;
 import javax.swing.*;
 
 public class PerformanceEvaluationPlugIn implements PlugIn {
-    
+
     private int processingFrame;
     private int frames;
     
@@ -65,8 +67,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
                     return;
                 }
             }
-            double dist = dialog.getToleranceRadius();
-            runEvaluation(dist*dist, Units.NANOMETER);
+            runEvaluation(dialog.getEvaluationSpace().equals("xyz"), sqr(dialog.getToleranceRadius()), Units.NANOMETER);
         } catch (Exception ex) {
             IJ.handleException(ex);
         }
@@ -85,7 +86,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         }
     }
 
-    private void runEvaluation(double dist2Tol, Units distUnits) {
+    private void runEvaluation(boolean threeD, double dist2Tol, Units distUnits) {
         //
         int cores = Runtime.getRuntime().availableProcessors();
         MoleculeMatcherWorker [] matchers = new MoleculeMatcherWorker[cores];
@@ -101,7 +102,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
                 } else {
                     f_end = frames;
                 }
-                matchers[c] = new MoleculeMatcherWorker(f_start, f_end, dist2Tol, distUnits);
+                matchers[c] = new MoleculeMatcherWorker(f_start, f_end, threeD, dist2Tol, distUnits);
                 threads[c] = new Thread(matchers[c]);
                 f_start = f_end + 1;
             }
@@ -209,7 +210,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
     private double calcRMSEx(List<Pair<Molecule, Molecule>> pairs, Units units){
         double residualSumOfSquares = 0;
         for(Pair<Molecule,Molecule> pair : pairs) {
-            residualSumOfSquares += MathProxy.sqr(pair.first.getX(units) - pair.second.getX(units));
+            residualSumOfSquares += sqr(pair.first.getX(units) - pair.second.getX(units));
         }
         return sqrt(residualSumOfSquares / (double)pairs.size());
     }
@@ -217,7 +218,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
     private double calcRMSEy(List<Pair<Molecule, Molecule>> pairs, Units units){
         double residualSum = 0;
         for(Pair<Molecule,Molecule> pair : pairs) {
-            residualSum += MathProxy.sqr(pair.first.getY(units) - pair.second.getY(units));
+            residualSum += sqr(pair.first.getY(units) - pair.second.getY(units));
         }
         return sqrt(residualSum / (double)pairs.size());
     }
@@ -245,11 +246,11 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         public Vector<Pair<Molecule, Molecule>> TP; // <ground-truth, detection>
         public Vector<Molecule> FP, FN;
 
-        public MoleculeMatcherWorker(int frameStart, int frameStop, double dist2Thr, Units distUnits) {
+        public MoleculeMatcherWorker(int frameStart, int frameStop, boolean threeD, double dist2Thr, Units distUnits) {
             this.frames = new TreeSet<Integer>();
             this.detections = fillWithData(frameStart, frameStop, IJResultsTable.getResultsTable());
             this.groundTruth = fillWithData(frameStart, frameStop, IJGroundTruthTable.getGroundTruthTable());
-            this.matcher = new MoleculeMatcher(dist2Thr, distUnits);
+            this.matcher = new MoleculeMatcher(threeD, dist2Thr, distUnits);
             //
             this.TP = new Vector<Pair<Molecule, Molecule>>();
             this.FP = new Vector<Molecule>();
@@ -287,10 +288,12 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
     class PerformanceEvaluationDialog extends DialogStub {
 
         ParameterKey.Double toleranceRadius;
+        ParameterKey.String evaluationSpace;
         
         public PerformanceEvaluationDialog() {
             super(new ParameterTracker("thunderstorm.evaluation"), IJ.getInstance(), "ThunderSTORM: Performance evaluation");
             toleranceRadius = params.createDoubleField("toleranceRadius", DoubleValidatorFactory.positiveNonZero(), 50.0);
+            evaluationSpace = params.createStringField("evaluationSpace", null, "xy");
         }
 
         public ParameterTracker getParams() {
@@ -301,10 +304,25 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
             return toleranceRadius.getValue();
         }
 
+        public String getEvaluationSpace() {
+            return evaluationSpace.getValue();
+        }
+
         @Override
         protected void layoutComponents() {
             JTextField toleranceTextField = new JTextField(20);
             toleranceRadius.registerComponent(toleranceTextField);
+
+            add(new JLabel("Pair molecules with tolerance in:"), GridBagHelper.leftCol());
+            ButtonGroup btnGroup = new ButtonGroup();
+            JRadioButton rbXY = new JRadioButton("xy");
+            JRadioButton rbXYZ = new JRadioButton("xyz");
+            btnGroup.add(rbXY);
+            btnGroup.add(rbXYZ);
+            params.registerComponent(evaluationSpace, btnGroup);
+            add(rbXY, GridBagHelper.rightCol());
+            add(rbXYZ, GridBagHelper.rightCol());
+
             add(new JLabel("Tolerance radius [nm]:"), GridBagHelper.leftCol());
             add(toleranceTextField, GridBagHelper.rightCol());
             add(Box.createVerticalStrut(10), GridBagHelper.twoCols());

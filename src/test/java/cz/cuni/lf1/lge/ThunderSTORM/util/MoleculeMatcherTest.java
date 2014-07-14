@@ -47,7 +47,7 @@ public class MoleculeMatcherTest {
         List<Pair<Molecule, Molecule>> TP = new Vector<Pair<Molecule, Molecule>>();
         List<Molecule> FP = new Vector<Molecule>();
         List<Molecule> FN = new Vector<Molecule>();
-        MoleculeMatcher matcher = new MoleculeMatcher(1.0, Units.PIXEL);
+        MoleculeMatcher matcher = new MoleculeMatcher(true, 1.0, Units.PIXEL);
         matcher.matchMolecules(det, gt, TP, FP, FN);
         //
         // Validate the results:

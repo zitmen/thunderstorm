@@ -107,10 +107,10 @@ public class ImportExportPlugIn implements PlugIn {
             }
         }
 
-        path = dialog.filePath.getValue();
+        path = dialog.getFilePath();
         boolean resetFirst = !dialog.append.getValue();
         int startingFrame = dialog.startingFrame.getValue();
-        IImportExport importer = getModuleByName(dialog.fileFormat.getValue());
+        IImportExport importer = getModuleByName(dialog.getFileFormat());
         table.forceHide();
         if(resetFirst) table.reset();
         if(groundTruth) {
@@ -150,7 +150,7 @@ public class ImportExportPlugIn implements PlugIn {
                 columns.add(colNames[i]);
             }
         }
-        path = dialog.filePath.getValue();
+        path = dialog.getFilePath();
         //save protocol
         if(!groundTruth && dialog.saveProtocol.getValue()) {
             IJResultsTable ijrt = (IJResultsTable) table;
@@ -160,7 +160,7 @@ public class ImportExportPlugIn implements PlugIn {
         }
 
         //export
-        IImportExport exporter = getModuleByName(dialog.fileFormat.getValue());
+        IImportExport exporter = getModuleByName(dialog.getFileFormat());
         callExporter(exporter, table, path, columns);
     }
 
@@ -229,8 +229,10 @@ public class ImportExportPlugIn implements PlugIn {
     //---------------GUI-----------------------
     class ImportDialog extends DialogStub {
 
-        ParameterKey.String fileFormat;
-        ParameterKey.String filePath;
+        ParameterKey.String resFileFormat;
+        ParameterKey.String resFilePath;
+        ParameterKey.String gtFileFormat;
+        ParameterKey.String gtFilePath;
         ParameterKey.Integer startingFrame;
         ParameterKey.Boolean showPreview;
         ParameterKey.Boolean append;
@@ -241,8 +243,13 @@ public class ImportExportPlugIn implements PlugIn {
         public ImportDialog(Window owner, boolean groundTruthTable) {
             super(new ParameterTracker("thunderstorm.io"), owner, "Import" + (groundTruthTable ? " ground-truth" : ""));
             assert moduleNames != null && moduleNames.length > 0;
-            fileFormat = params.createStringField("fileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
-            filePath = params.createStringField("filePath", StringValidatorFactory.fileExists(), "");
+            if (groundTruthTable) {
+                gtFileFormat = params.createStringField("gtFileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
+                gtFilePath = params.createStringField("gtFilePath", StringValidatorFactory.fileExists(), "");
+            } else {
+                resFileFormat = params.createStringField("resFileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
+                resFilePath = params.createStringField("resFilePath", StringValidatorFactory.fileExists(), "");
+            }
             startingFrame = params.createIntField("startingFrame", IntegerValidatorFactory.positiveNonZero(), 1);
             append = params.createBooleanField("append", null, false);
             groundTruth = groundTruthTable;
@@ -279,8 +286,13 @@ public class ImportExportPlugIn implements PlugIn {
             filePathTextField.getDocument().addDocumentListener(createDocListener(filePathTextField, fileFormatCBox));
             fileFormatCBox.addItemListener(createItemListener(filePathTextField, fileFormatCBox));
             JButton browseButton = createBrowseButton(filePathTextField, true, new FileNameExtensionFilter(createFilterString(moduleExtensions), moduleExtensions));
-            fileFormat.registerComponent(fileFormatCBox);
-            filePath.registerComponent(filePathTextField);
+            if (groundTruth) {
+                gtFileFormat.registerComponent(fileFormatCBox);
+                gtFilePath.registerComponent(filePathTextField);
+            } else {
+                resFileFormat.registerComponent(fileFormatCBox);
+                resFilePath.registerComponent(filePathTextField);
+            }
             JPanel filePathPanel = new JPanel(new BorderLayout());
             filePathPanel.add(filePathTextField);
             filePathPanel.add(browseButton, BorderLayout.EAST);
@@ -321,21 +333,34 @@ public class ImportExportPlugIn implements PlugIn {
             add(createButtonsPanel(), GridBagHelper.twoCols());
             params.loadPrefs();
             if(path != null && !path.isEmpty()) {
-                filePath.setValue(path);
+                if (groundTruth) {
+                    gtFilePath.setValue(path);
+                } else {
+                    resFilePath.setValue(path);
+                }
             }
 
             getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             pack();
             setLocationRelativeTo(null);
             setModal(true);
+        }
 
+        public String getFilePath() {
+            return (groundTruth ? gtFilePath.getValue() : resFilePath.getValue());
+        }
+
+        public String getFileFormat() {
+            return (groundTruth ? gtFileFormat.getValue() : resFileFormat.getValue());
         }
     }
 
     class ExportDialog extends DialogStub {
 
-        ParameterKey.String fileFormat;
-        ParameterKey.String filePath;
+        ParameterKey.String gtFileFormat;
+        ParameterKey.String gtFilePath;
+        ParameterKey.String resFileFormat;
+        ParameterKey.String resFilePath;
         ParameterKey.Boolean[] exportColumns;
         ParameterKey.Boolean saveProtocol;
 
@@ -347,9 +372,13 @@ public class ImportExportPlugIn implements PlugIn {
             assert moduleNames != null && moduleNames.length > 0;
             this.columnHeaders = columnHeaders;
             this.groundTruth = groundTruth;
-
-            fileFormat = params.createStringField("fileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
-            filePath = params.createStringField("filePath", null, "");
+            if (groundTruth) {
+                gtFileFormat = params.createStringField("gtFileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
+                gtFilePath = params.createStringField("gtFilePath", null, "");
+            } else {
+                resFileFormat = params.createStringField("resFileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
+                resFilePath = params.createStringField("resFilePath", null, "");
+            }
             exportColumns = new ParameterKey.Boolean[columnHeaders.length];
             for(int i = 0; i < columnHeaders.length; i++) {
                 exportColumns[i] = params.createBooleanField(columnHeaders[i], null, i != 0);
@@ -372,8 +401,13 @@ public class ImportExportPlugIn implements PlugIn {
             filePathTextField.getDocument().addDocumentListener(createDocListener(filePathTextField, fileFormatCBox));
             fileFormatCBox.addItemListener(createItemListener(filePathTextField, fileFormatCBox));
             JButton browseButton = createBrowseButton(filePathTextField, true, new FileNameExtensionFilter(createFilterString(moduleExtensions), moduleExtensions));
-            fileFormat.registerComponent(fileFormatCBox);
-            filePath.registerComponent(filePathTextField);
+            if (groundTruth) {
+                gtFileFormat.registerComponent(fileFormatCBox);
+                gtFilePath.registerComponent(filePathTextField);
+            } else {
+                resFileFormat.registerComponent(fileFormatCBox);
+                resFilePath.registerComponent(filePathTextField);
+            }
             JPanel filePathPanel = new JPanel(new BorderLayout());
             filePathPanel.setPreferredSize(filePathTextField.getPreferredSize());
             filePathPanel.add(filePathTextField);
@@ -416,6 +450,14 @@ public class ImportExportPlugIn implements PlugIn {
             pack();
             setLocationRelativeTo(null);
             setModal(true);
+        }
+
+        public String getFilePath() {
+            return (groundTruth ? gtFilePath.getValue() : resFilePath.getValue());
+        }
+
+        public String getFileFormat() {
+            return (groundTruth ? gtFileFormat.getValue() : resFileFormat.getValue());
         }
     }
 

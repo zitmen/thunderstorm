@@ -47,19 +47,31 @@ public final class Molecule implements Comparable<Molecule> {
         this.detections = mol.detections;
     }
     
-    public void addNeighbors(List<Molecule> nbrs, double dist2, Units distUnits) {
+    public void addNeighbors(List<Molecule> nbrs, boolean threeD, double dist2, Units distUnits) {
         if(neighbors == null) {
             neighbors = new ArrayList<Molecule>();
         }
-        for(Molecule nbr : nbrs) {
-            if(getDist2(nbr, distUnits) <= dist2) {
-                neighbors.add(nbr);
+        if (threeD) {
+            for (Molecule nbr : nbrs) {
+                if (getDist2(nbr, distUnits) <= dist2) {
+                    neighbors.add(nbr);
+                }
+            }
+        } else {
+            for (Molecule nbr : nbrs) {
+                if (getDist2Lateral(nbr, distUnits) <= dist2) {
+                    neighbors.add(nbr);
+                }
             }
         }
     }
     
     public double getDist2(Molecule mol, Units distUnits) {
         return sqr(getX(distUnits) - mol.getX(distUnits)) + sqr(getY(distUnits) - mol.getY(distUnits)) + sqr(getZ(distUnits) - mol.getZ(distUnits));
+    }
+
+    public double getDist2Lateral(Molecule mol, Units distUnits) {
+        return sqr(getX(distUnits) - mol.getX(distUnits)) + sqr(getY(distUnits) - mol.getY(distUnits));
     }
     
     public double getDist(Molecule mol, Units distUnits) {
@@ -69,11 +81,7 @@ public final class Molecule implements Comparable<Molecule> {
     public double getDist2(Molecule mol) {
         return sqr(getX() - mol.getX()) + sqr(getY() - mol.getY()) + sqr(getZ() - mol.getZ());
     }
-    
-    public double getDist(Molecule mol) {
-        return sqrt(getDist2(mol));
-    }
-    
+
     /**
      * Add a parameter to the last column. Note: indexing to the array of `values`
      * is managed internally and the new value will be also to the last position

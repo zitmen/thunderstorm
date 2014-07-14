@@ -19,10 +19,12 @@ public class MoleculeMatcher {
 
     public Units distUnits;
     public double dist2Thr;
+    public boolean threeD;
 
-    public MoleculeMatcher(double dist2Thr, Units distUnits) {
+    public MoleculeMatcher(boolean threeD, double dist2Thr, Units distUnits) {
         this.dist2Thr = dist2Thr;
         this.distUnits = distUnits;
+        this.threeD = threeD;
     }
 
     /**
@@ -55,28 +57,28 @@ public class MoleculeMatcher {
         }
         //
         // Initialize
-        KDTree<Molecule> tree = new KDTree<Molecule>(3);
+        KDTree<Molecule> tree = new KDTree<Molecule>(2);
         try {
             for (Molecule mol : gt) {
                 try {
-                    tree.insert(new double[]{mol.getX(distUnits), mol.getY(distUnits), mol.getZ(distUnits)}, mol);
+                    tree.insert(new double[]{mol.getX(distUnits), mol.getY(distUnits)}, mol);
                 }  catch(KeyDuplicateException ex) {
-                    // this might theoreticaly happen if two molecules are located at the same exact spot; but it is very unlikely
+                    // this might theoretically happen if two molecules are located at the same exact spot; but it is very unlikely
                 }
             }
             double dist = sqrt(dist2Thr);
             for (Molecule mol : det) {
                 FP.add(mol);
                 mol.addNeighbors(tree.range(
-                        new double[] { mol.getX(distUnits) - dist, mol.getY(distUnits) - dist, mol.getZ(distUnits) - dist },
-                        new double[] { mol.getX(distUnits) + dist, mol.getY(distUnits) + dist, mol.getZ(distUnits) + dist }), dist2Thr, distUnits);
+                        new double[] { mol.getX(distUnits) - dist, mol.getY(distUnits) - dist },
+                        new double[] { mol.getX(distUnits) + dist, mol.getY(distUnits) + dist }), threeD, dist2Thr, distUnits);
             }
         } catch(KeySizeException ex) {
             // this will never happen since all the input is administered here
         }
         //
         // Perform the matching in the neighbourhood (given by dist2Thr) of each molecule
-        Map<Molecule, Molecule> pairs = new StableMatching().match(det, gt);
+        Map<Molecule, Molecule> pairs = StableMatching.match(det);  // `det` must store the neighbors (`gt`)!
         //
         // Set the results (TP, FP, FN)
         for (Molecule gtMol : gt) {
