@@ -13,12 +13,12 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
 import ij.IJ;
 import ij.WindowManager;
 import ij.plugin.PlugIn;
-import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import java.awt.Window;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -101,6 +101,7 @@ public class ImportExportPlugIn implements PlugIn {
         ImportDialog dialog = new ImportDialog(IJ.getInstance(), groundTruth);
         if(MacroParser.isRanFromMacro()) {
             dialog.getParams().readMacroOptions();
+            dialog.getFileParams().readMacroOptions();
         } else {
             if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
                 return;
@@ -138,6 +139,7 @@ public class ImportExportPlugIn implements PlugIn {
         ExportDialog dialog = new ExportDialog(IJ.getInstance(), groundTruth, colNames);
         if(MacroParser.isRanFromMacro()) {
             dialog.getParams().readMacroOptions();
+            dialog.getFileParams().readMacroOptions();
         } else {
             if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
                 return;
@@ -227,12 +229,61 @@ public class ImportExportPlugIn implements PlugIn {
     }
 
     //---------------GUI-----------------------
-    class ImportDialog extends DialogStub {
+    abstract class IODialog extends DialogStub {
 
-        ParameterKey.String resFileFormat;
-        ParameterKey.String resFilePath;
-        ParameterKey.String gtFileFormat;
-        ParameterKey.String gtFilePath;
+        public ParameterTracker fileParams;
+
+        public IODialog(ParameterTracker params, ParameterTracker fileParams, Window owner, String title) {
+            super(params, owner, title);
+            this.fileParams = fileParams;
+        }
+
+        @Override
+        protected JPanel createButtonsPanel() {
+            JPanel buttons = new JPanel(new GridBagLayout());
+            GridBagConstraints glueConstraints = new GridBagConstraints();
+            glueConstraints.fill = GridBagConstraints.HORIZONTAL;
+            glueConstraints.weightx = 1;
+
+            JButton okButton = createOKButton();
+            okButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        fileParams.readDialogOptions();
+                        dispose();
+                        result = JOptionPane.OK_OPTION;
+                        fileParams.recordMacroOptions();
+                        if (fileParams.isPrefsSavingEnabled()) {
+                            fileParams.savePrefs();
+                        }
+                    } catch (ValidatorException ex) {
+                        handleValidationException(ex);
+                    }
+                }
+            });
+            JButton defaultsButton = createDefaultsButton();
+            defaultsButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    fileParams.resetToDefaults(true);
+                }
+            });
+
+            buttons.add(defaultsButton);
+            buttons.add(Box.createHorizontalGlue(), glueConstraints);
+            buttons.add(okButton);
+            buttons.add(createCancelButton());
+            return buttons;
+        }
+
+        ParameterTracker getFileParams() {
+            return fileParams;
+        }
+    }
+
+    class ImportDialog extends IODialog {
+
+        ParameterKey.String fileFormat;
+        ParameterKey.String filePath;
         ParameterKey.Integer startingFrame;
         ParameterKey.Boolean showPreview;
         ParameterKey.Boolean append;
@@ -240,19 +291,14 @@ public class ImportExportPlugIn implements PlugIn {
 
         private boolean groundTruth;
 
-        public ImportDialog(Window owner, boolean groundTruthTable) {
-            super(new ParameterTracker("thunderstorm.io"), owner, "Import" + (groundTruthTable ? " ground-truth" : ""));
+        public ImportDialog(Window owner, boolean groundTruth) {
+            super(new ParameterTracker("thunderstorm.io"), new ParameterTracker("thunderstorm.io." + (groundTruth ? "gt" : "res")), owner, "Import" + (groundTruth ? " ground-truth" : ""));
             assert moduleNames != null && moduleNames.length > 0;
-            if (groundTruthTable) {
-                gtFileFormat = params.createStringField("gtFileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
-                gtFilePath = params.createStringField("gtFilePath", StringValidatorFactory.fileExists(), "");
-            } else {
-                resFileFormat = params.createStringField("resFileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
-                resFilePath = params.createStringField("resFilePath", StringValidatorFactory.fileExists(), "");
-            }
+            fileFormat = fileParams.createStringField("fileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
+            filePath = fileParams.createStringField("filePath", StringValidatorFactory.fileExists(), "");
             startingFrame = params.createIntField("startingFrame", IntegerValidatorFactory.positiveNonZero(), 1);
             append = params.createBooleanField("append", null, false);
-            groundTruth = groundTruthTable;
+            this.groundTruth = groundTruth;
             if(!groundTruth) {
                 showPreview = params.createBooleanField("livePreview", null, true);
                 rawImageStack = params.createStringField("rawImageStack", StringValidatorFactory.openImages(true), "");
@@ -286,13 +332,8 @@ public class ImportExportPlugIn implements PlugIn {
             filePathTextField.getDocument().addDocumentListener(createDocListener(filePathTextField, fileFormatCBox));
             fileFormatCBox.addItemListener(createItemListener(filePathTextField, fileFormatCBox));
             JButton browseButton = createBrowseButton(filePathTextField, true, new FileNameExtensionFilter(createFilterString(moduleExtensions), moduleExtensions));
-            if (groundTruth) {
-                gtFileFormat.registerComponent(fileFormatCBox);
-                gtFilePath.registerComponent(filePathTextField);
-            } else {
-                resFileFormat.registerComponent(fileFormatCBox);
-                resFilePath.registerComponent(filePathTextField);
-            }
+            fileFormat.registerComponent(fileFormatCBox);
+            filePath.registerComponent(filePathTextField);
             JPanel filePathPanel = new JPanel(new BorderLayout());
             filePathPanel.add(filePathTextField);
             filePathPanel.add(browseButton, BorderLayout.EAST);
@@ -332,12 +373,9 @@ public class ImportExportPlugIn implements PlugIn {
             add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
             add(createButtonsPanel(), GridBagHelper.twoCols());
             params.loadPrefs();
+            fileParams.loadPrefs();
             if(path != null && !path.isEmpty()) {
-                if (groundTruth) {
-                    gtFilePath.setValue(path);
-                } else {
-                    resFilePath.setValue(path);
-                }
+                filePath.setValue(path);
             }
 
             getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -347,20 +385,18 @@ public class ImportExportPlugIn implements PlugIn {
         }
 
         public String getFilePath() {
-            return (groundTruth ? gtFilePath.getValue() : resFilePath.getValue());
+            return filePath.getValue();
         }
 
         public String getFileFormat() {
-            return (groundTruth ? gtFileFormat.getValue() : resFileFormat.getValue());
+            return fileFormat.getValue();
         }
     }
 
-    class ExportDialog extends DialogStub {
+    class ExportDialog extends IODialog {
 
-        ParameterKey.String gtFileFormat;
-        ParameterKey.String gtFilePath;
-        ParameterKey.String resFileFormat;
-        ParameterKey.String resFilePath;
+        ParameterKey.String fileFormat;
+        ParameterKey.String filePath;
         ParameterKey.Boolean[] exportColumns;
         ParameterKey.Boolean saveProtocol;
 
@@ -368,17 +404,12 @@ public class ImportExportPlugIn implements PlugIn {
         private String[] columnHeaders;
 
         public ExportDialog(Window owner, boolean groundTruth, String[] columnHeaders) {
-            super(new ParameterTracker("thunderstorm.io"), owner, "Export" + (groundTruth ? " ground-truth" : ""));
+            super(new ParameterTracker("thunderstorm.io"), new ParameterTracker("thunderstorm.io." + (groundTruth ? "gt" : "res")), owner, "Export" + (groundTruth ? " ground-truth" : ""));
             assert moduleNames != null && moduleNames.length > 0;
             this.columnHeaders = columnHeaders;
             this.groundTruth = groundTruth;
-            if (groundTruth) {
-                gtFileFormat = params.createStringField("gtFileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
-                gtFilePath = params.createStringField("gtFilePath", null, "");
-            } else {
-                resFileFormat = params.createStringField("resFileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
-                resFilePath = params.createStringField("resFilePath", null, "");
-            }
+            fileFormat = fileParams.createStringField("fileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
+            filePath = fileParams.createStringField("filePath", StringValidatorFactory.fileExists(), "");
             exportColumns = new ParameterKey.Boolean[columnHeaders.length];
             for(int i = 0; i < columnHeaders.length; i++) {
                 exportColumns[i] = params.createBooleanField(columnHeaders[i], null, i != 0);
@@ -401,13 +432,8 @@ public class ImportExportPlugIn implements PlugIn {
             filePathTextField.getDocument().addDocumentListener(createDocListener(filePathTextField, fileFormatCBox));
             fileFormatCBox.addItemListener(createItemListener(filePathTextField, fileFormatCBox));
             JButton browseButton = createBrowseButton(filePathTextField, true, new FileNameExtensionFilter(createFilterString(moduleExtensions), moduleExtensions));
-            if (groundTruth) {
-                gtFileFormat.registerComponent(fileFormatCBox);
-                gtFilePath.registerComponent(filePathTextField);
-            } else {
-                resFileFormat.registerComponent(fileFormatCBox);
-                resFilePath.registerComponent(filePathTextField);
-            }
+            fileFormat.registerComponent(fileFormatCBox);
+            filePath.registerComponent(filePathTextField);
             JPanel filePathPanel = new JPanel(new BorderLayout());
             filePathPanel.setPreferredSize(filePathTextField.getPreferredSize());
             filePathPanel.add(filePathTextField);
@@ -445,6 +471,7 @@ public class ImportExportPlugIn implements PlugIn {
             add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
             add(createButtonsPanel(), GridBagHelper.twoCols());
             params.loadPrefs();
+            fileParams.loadPrefs();
 
             getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             pack();
@@ -453,11 +480,11 @@ public class ImportExportPlugIn implements PlugIn {
         }
 
         public String getFilePath() {
-            return (groundTruth ? gtFilePath.getValue() : resFilePath.getValue());
+            return filePath.getValue();
         }
 
         public String getFileFormat() {
-            return (groundTruth ? gtFileFormat.getValue() : resFileFormat.getValue());
+            return fileFormat.getValue();
         }
     }
 

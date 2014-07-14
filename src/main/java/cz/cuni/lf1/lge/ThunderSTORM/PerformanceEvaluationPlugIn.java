@@ -22,6 +22,7 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
+import cz.vutbr.web.css.TermNumeric;
 import ij.IJ;
 import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
@@ -321,6 +322,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
             btnGroup.add(rbXYZ);
             params.registerComponent(evaluationSpace, btnGroup);
             add(rbXY, GridBagHelper.rightCol());
+            add(Box.createHorizontalGlue(), GridBagHelper.leftCol());
             add(rbXYZ, GridBagHelper.rightCol());
 
             add(new JLabel("Tolerance radius [nm]:"), GridBagHelper.leftCol());
