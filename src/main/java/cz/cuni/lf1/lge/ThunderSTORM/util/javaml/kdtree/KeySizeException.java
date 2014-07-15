@@ -36,7 +36,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree;
   * @since JDK1.2 
   */
 
-public class KeySizeException extends Exception {
+public class KeySizeException extends RuntimeException {
 
     protected KeySizeException() {
 	super("Key size mismatch");

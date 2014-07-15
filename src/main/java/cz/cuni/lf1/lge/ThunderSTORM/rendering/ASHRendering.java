@@ -28,11 +28,11 @@ public class ASHRendering extends AbstractRendering implements IncrementalRender
         protected int zShifts = 1;
 
         /**
-        * Number of shifts in one dimension. When one shift is set, the result is
-        * the same as of HistogramRendering.
-        *
-        * @param shifts number of shifts, must be > 0
-        */
+         * Number of shifts in one dimension. When one shift is set, the result is
+         * the same as of HistogramRendering.
+         *
+         * @param shifts number of shifts, must be > 0
+         */
         public Builder shifts(int shifts) {
             if (shifts <= 0) {
                 throw new IllegalArgumentException("\"shifts\" argument must be positive integer. Passed value: " + shifts);
@@ -56,20 +56,19 @@ public class ASHRendering extends AbstractRendering implements IncrementalRender
         }
     }
 
-    /**
-    *
-    * @param x
-    * @param y
-    * @param z
-    * @param dx
-    * @param dz ignore
-    */
     @Override
     protected void drawPoint(double x, double y, double z, double dx, double dz) {
         if (isInBounds(x, y)) {
             int u = (int) ((x - xmin) / resolution);
             int v = (int) ((y - ymin) / resolution);
-            int w = threeDimensions ? ((int) ((z - zFrom) / zStep)) : 0;
+            int w = 0;
+            if (threeDimensions) {
+                if (z == zTo) {
+                    w = zSlices - 1;
+                } else {
+                    w = ((int) ((z - zFrom) / zStep));
+                }
+            }
             for (int k = -zShifts + 1; k < zShifts; k++) {
                 if (w + k < zSlices && w + k >= 0) {
                     ImageProcessor img = slices[w + k];

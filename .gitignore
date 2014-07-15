@@ -9,3 +9,4 @@ nbactions.xml
 build/
 dist/
 nbproject/
+build.properties

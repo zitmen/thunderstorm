@@ -3,10 +3,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import java.util.Arrays;
 
-/**
- *
- * @author Josef Borkovec <josef.borkovec[at]lf1.cuni.cz>
- */
 public class VectorMath {
 
     public static Double[] relEq(Double[] vec, Double val) {
@@ -70,6 +66,21 @@ public class VectorMath {
             sum += arr[i];
         }
         return sum;
+    }
+
+    public static void cumulativeSum(double[] arr, boolean reverseDirection) {
+        double sum = 0;
+        if(!reverseDirection) {
+            for(int i = 0; i < arr.length; i++) {
+                sum += arr[i];
+                arr[i] = sum;
+            }
+        } else {
+            for(int i = arr.length - 1; i >= 0; i--) {
+                sum += arr[i];
+                arr[i] = sum;
+            }
+        }
     }
 
     public static Double sum(Number[] arr) {
@@ -564,6 +575,18 @@ public class VectorMath {
             res[i] = arr1[i] - arr2[i];
         }
         return res;
+    }
+    
+    public static double[] addScalar(double[] arr, double scalar){
+        double[] ret = arr.clone();
+        return addScalarInPlace(ret, scalar);
+    }
+    
+    public static double[] addScalarInPlace(double[] arr, double scalar){
+        for(int i = 0; i < arr.length; i++) {
+            arr[i] = arr[i] + scalar;
+        }
+        return arr;
     }
 
 }

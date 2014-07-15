@@ -274,4 +274,50 @@ public class KDTree <T> {
     public String toString() {
 	return m_root.toString(0);
     }
+    
+    /**
+     * Ball query in a kdtree. Returns all points that are closer(based on euclidean distance) than maxDistance to the queryPoint.
+     * @param queryPoint
+     * @param maxDistance
+     * @return 
+     * @throws KeySizeException 
+     */
+    public List<DistAndValue<T>> ballQuery(double[] queryPoint, double maxDistance) throws KeySizeException {
+        if(queryPoint.length != m_K){
+            throw new KeySizeException();
+        }
+        
+        double [] lower = new double[queryPoint.length];
+        double [] upper = new double[queryPoint.length];
+        for(int i = 0; i< queryPoint.length; i++){
+            lower[i] = queryPoint[i]-maxDistance;
+            upper[i] = queryPoint[i]+maxDistance;
+        }
+        
+        HPoint wrappedQueryPoint = new HPoint(queryPoint);
+        double squaredMaxDistance = maxDistance*maxDistance;
+        
+	    Vector<KDNode<T>> v = new Vector<KDNode<T>>();
+        KDNode.<T>rsearch(new HPoint(lower), new HPoint(upper),
+                m_root, 0, m_K, v);
+        ArrayList<DistAndValue<T>> retVal = new ArrayList<DistAndValue<T>>();
+        for(int i = 0; i < v.size(); ++i) {
+            KDNode<T> n = v.elementAt(i);
+            double sqrdist = HPoint.sqrdist(n.k, wrappedQueryPoint);
+            if(sqrdist < squaredMaxDistance){
+                retVal.add(new DistAndValue<T>(Math.sqrt(sqrdist), n.v));
+            }
+        }
+        return retVal;
+    }
+    
+    static public class DistAndValue<T>{
+        public double dist;
+        public T value;
+
+        public DistAndValue(double dist, T value) {
+            this.dist = dist;
+            this.value = value;
+        }
+    }
 }

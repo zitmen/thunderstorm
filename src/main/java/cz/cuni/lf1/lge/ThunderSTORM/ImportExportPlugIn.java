@@ -27,16 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -143,6 +134,23 @@ public class ImportExportPlugIn implements PlugIn {
         } else {
             if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
                 return;
+            }
+        }
+
+        // eliminate the need to list all columns when running from macro
+        // - if nothing is mentioned, assume user wants to export everything
+        if (MacroParser.isRanFromMacro()) {
+            boolean all = true;
+            for (int i = 0; i < dialog.exportColumns.length; i++) {
+                if (dialog.exportColumns[i].getValue()) {
+                    all = false;
+                    break;
+                }
+            }
+            if (all) {
+                for (int i = 0; i < dialog.exportColumns.length; i++) {
+                    dialog.exportColumns[i].setValue(true);
+                }
             }
         }
 
@@ -409,7 +417,7 @@ public class ImportExportPlugIn implements PlugIn {
             this.columnHeaders = columnHeaders;
             this.groundTruth = groundTruth;
             fileFormat = fileParams.createStringField("fileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
-            filePath = fileParams.createStringField("filePath", StringValidatorFactory.fileExists(), "");
+            filePath = fileParams.createStringField("filePath", null, "");
             exportColumns = new ParameterKey.Boolean[columnHeaders.length];
             for(int i = 0; i < columnHeaders.length; i++) {
                 exportColumns[i] = params.createBooleanField(columnHeaders[i], null, i != 0);
@@ -425,6 +433,13 @@ public class ImportExportPlugIn implements PlugIn {
 
         @Override
         protected void layoutComponents() {
+            JPanel pane = new JPanel();
+            pane.setLayout(new GridBagLayout());
+            GridBagConstraints componentConstraints = new GridBagConstraints();
+            componentConstraints.gridx = 0;
+            componentConstraints.fill = GridBagConstraints.BOTH;
+            componentConstraints.weightx = 1;
+
             JPanel filePanel = new JPanel(new GridBagLayout());
             filePanel.setBorder(new TitledBorder("Output File"));
             JComboBox<String> fileFormatCBox = new JComboBox<String>(moduleNames);
@@ -442,7 +457,7 @@ public class ImportExportPlugIn implements PlugIn {
             filePanel.add(fileFormatCBox, GridBagHelper.rightCol());
             filePanel.add(new JLabel("File path:"), GridBagHelper.leftCol());
             filePanel.add(filePathPanel, GridBagHelper.rightCol());
-            add(filePanel, GridBagHelper.twoCols());
+            pane.add(filePanel, componentConstraints);
 
             if(!groundTruth) {
                 JPanel protocolPanel = new JPanel(new GridBagLayout());
@@ -453,7 +468,7 @@ public class ImportExportPlugIn implements PlugIn {
                 saveProtocol.registerComponent(saveProtocolCheckBox);
                 protocolPanel.add(new JLabel("Save measurement protocol:"), GridBagHelper.leftCol());
                 protocolPanel.add(saveProtocolCheckBox, GridBagHelper.rightCol());
-                add(protocolPanel, GridBagHelper.twoCols());
+                pane.add(protocolPanel, componentConstraints);
             }
 
             JPanel columnsPanel = new JPanel(new GridBagLayout());
@@ -466,17 +481,34 @@ public class ImportExportPlugIn implements PlugIn {
                 exportColumns[i].registerComponent(colCheckBox);
                 columnsPanel.add(colCheckBox, GridBagHelper.rightCol());
             }
-            add(columnsPanel, GridBagHelper.twoCols());
+            pane.add(columnsPanel, componentConstraints);
 
-            add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
-            add(createButtonsPanel(), GridBagHelper.twoCols());
+            pane.add(Box.createVerticalStrut(10), componentConstraints);
+            pane.add(createButtonsPanel(), componentConstraints);
+            pane.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+            JScrollPane scrollPane = new JScrollPane(pane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            add(scrollPane);
+
             params.loadPrefs();
             fileParams.loadPrefs();
 
-            getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            pack();
+            int maxScreenHeight = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height;
+            if(getHeight() > maxScreenHeight) {
+                setSize(getWidth(), maxScreenHeight);
+            }
+        }
+
+        @Override
+        public int showAndGetResult() {
             setLocationRelativeTo(null);
             setModal(true);
+            setResizable(true);
+            layoutComponents();
+            pack();
+            setVisible(true);
+            return result;
         }
 
         public String getFilePath() {
