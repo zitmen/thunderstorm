@@ -68,13 +68,18 @@ public class CBCPlugIn implements PlugIn {
             Molecule m = channel1Table.getRow(i);
             firstXY[i] = new double[]{m.getX(MoleculeDescriptor.Units.PIXEL), m.getY(MoleculeDescriptor.Units.PIXEL)};
         }
-        double[][] secondXY = new double[channel2Table.getRowCount()][];
-        for(int i = 0; i < secondXY.length; i++) {
-            Molecule m = channel2Table.getRow(i);
-            secondXY[i] = new double[]{m.getX(MoleculeDescriptor.Units.PIXEL), m.getY(MoleculeDescriptor.Units.PIXEL)};
-        }
 
-        CBC cbc = new CBC(firstXY, secondXY, radiusStep, stepCount);
+        CBC cbc;
+        if (channel1Table != channel2Table) {
+            double[][] secondXY = new double[channel2Table.getRowCount()][];
+            for (int i = 0; i < secondXY.length; i++) {
+                Molecule m = channel2Table.getRow(i);
+                secondXY[i] = new double[]{m.getX(MoleculeDescriptor.Units.PIXEL), m.getY(MoleculeDescriptor.Units.PIXEL)};
+            }
+            cbc = new CBC(firstXY, secondXY, radiusStep, stepCount);
+        } else {
+            cbc = new CBC(firstXY, firstXY, radiusStep, stepCount);
+        }
 
         IJ.showStatus("Calculating first channel CBC.");
         double[] firstChannelCBC = cbc.calculateFirstChannelCBC();
@@ -102,25 +107,28 @@ public class CBCPlugIn implements PlugIn {
         ImagePlus imp = renderer.getRenderedImage(x1, y1, firstChannelCBC, null, null);
         imp.show();
 
-        IJ.showStatus("Calculating second channel CBC.");
-        double[] secondChannelCBC = cbc.calculateSecondChannelCBC();
-        if(addCBCToTable) addColumnToModel(channel2Table.getModel(), secondChannelCBC, "cbc", Units.UNITLESS);
-        if(addNNDistToTable) addColumnToModel(channel2Table.getModel(), cbc.secondChannelNearestNeighborDistances, "nn_dist", Units.PIXEL);
-        if(addNeighborsInDistToTable) {
-            for(int i = 0; i < cbc.squaredRadiusDomainNm.length; i++) {
-                addColumnToModel(channel2Table.getModel(), cbc.secondChannelNeighborsInDistance[i], "neighbors_in_dist_"+((int)((i+1)*radiusStep)), Units.UNITLESS);
+        if (channel1Table != channel2Table) {
+            IJ.showStatus("Calculating second channel CBC.");
+            double[] secondChannelCBC = cbc.calculateSecondChannelCBC();
+            if (addCBCToTable) addColumnToModel(channel2Table.getModel(), secondChannelCBC, "cbc", Units.UNITLESS);
+            if (addNNDistToTable)
+                addColumnToModel(channel2Table.getModel(), cbc.secondChannelNearestNeighborDistances, "nn_dist", Units.PIXEL);
+            if (addNeighborsInDistToTable) {
+                for (int i = 0; i < cbc.squaredRadiusDomainNm.length; i++) {
+                    addColumnToModel(channel2Table.getModel(), cbc.secondChannelNeighborsInDistance[i], "neighbors_in_dist_" + ((int) ((i + 1) * radiusStep)), Units.UNITLESS);
+                }
             }
+
+            RenderingMethod renderer2 = new ASHRendering.Builder()
+                    .shifts(2)
+                    .zShifts(1).colorizeZ(true).zRange(-1, 1, 0.1)
+                    .roi(0, maxRoiX, 0, maxRoiY)
+                    .resolution(0.2)
+                    .build();
+
+            ImagePlus imp2 = renderer2.getRenderedImage(x2, y2, secondChannelCBC, null, null);
+            imp2.show();
         }
-
-        RenderingMethod renderer2 = new ASHRendering.Builder()
-                .shifts(2)
-                .zShifts(1).colorizeZ(true).zRange(-1, 1, 0.1)
-                .roi(0, maxRoiX, 0, maxRoiY)
-                .resolution(0.2)
-                .build();
-
-        ImagePlus imp2 = renderer2.getRenderedImage(x2, y2, secondChannelCBC, null, null);
-        imp2.show();
         IJ.showStatus("Done.");
     }
 

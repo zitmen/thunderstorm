@@ -59,6 +59,10 @@ public class CBC {
         return calc(secondChannelXYdata, secondChannelTree, firstChannelTree, secondChannelNeighborsInDistance, secondChannelNearestNeighborDistances);
     }
 
+    /**
+     * If channel1 == channel2 (both res-tables or both gt-tables), avoid self-counting, i.e., distance to nearest neighbor must not be 0!
+     * On the other hand if comparing res-table with gt-table then self-counting is allowed even if the data in the tables are the same.
+     * */
     private double[] calc(final double[][] mainChannelXYdata, final KDTree<double[]> mainChannelTree, final KDTree<double[]> otherChannelTree, final double [][] neighborsInDistance, final double [] nearestNeighborDistances) {
 
         final int lastRadiusIndex = squaredRadiusDomainPx.length - 1;
@@ -66,18 +70,18 @@ public class CBC {
 
         final double[] cbcResults = new double[mainChannelXYdata.length];
         final AtomicInteger count = new AtomicInteger(0);
-        
+        IJ.showProgress(0);
         Loop.withIndex(0, mainChannelXYdata.length, new Loop.BodyWithIndex() {
             @Override
             public void run(int i) {
                 try {
-                    double[] counts = calcNeighborCount(mainChannelXYdata[i], mainChannelTree, squaredRadiusDomainPx);
+                    double[] counts = calcNeighborCount(mainChannelXYdata[i], mainChannelTree, squaredRadiusDomainPx, (firstChannelXYdata == secondChannelXYdata));
                     for(int j = 0; j < counts.length; j++) {
                         counts[j] = counts[j] / counts[lastRadiusIndex] * maxSquaredRadius / squaredRadiusDomainPx[j];
                     }
 
-                    double[] counts2 = calcNeighborCount(mainChannelXYdata[i], otherChannelTree, squaredRadiusDomainPx);
-                    nearestNeighborDistances[i] = getDistanceToNearestNeighbor(mainChannelXYdata[i], otherChannelTree);
+                    double[] counts2 = calcNeighborCount(mainChannelXYdata[i], otherChannelTree, squaredRadiusDomainPx, (firstChannelXYdata == secondChannelXYdata));
+                    nearestNeighborDistances[i] = getDistanceToNearestNeighbor(mainChannelXYdata[i], otherChannelTree, (firstChannelXYdata == secondChannelXYdata));
                     double maxCount = counts2[lastRadiusIndex];
 
                     for(int j = 0; j < counts2.length; j++) {
@@ -102,8 +106,7 @@ public class CBC {
                     double result = correlation * MathProxy.exp(-nnDistance / MathProxy.sqrt(maxSquaredRadius));
                     cbcResults[i] = result;
                     if(i % 1024 == 0) {
-                        int done = count.addAndGet(1024);
-                        IJ.showProgress(done, mainChannelXYdata.length);
+                        IJ.showProgress((double)count.addAndGet(1024) / (double)(mainChannelXYdata.length));
                     }
                 } catch(KeySizeException ex) {
                     throw new RuntimeException(ex);
@@ -115,7 +118,7 @@ public class CBC {
         return cbcResults;
     }
 
-    private double[] calcNeighborCount(double[] queryPoint, KDTree<double[]> kdtree, double[] squaredRadiusValues) {
+    private double[] calcNeighborCount(double[] queryPoint, KDTree<double[]> kdtree, double[] squaredRadiusValues, boolean checkNotSelf) {
         assert queryPoint != null;
         assert squaredRadiusValues != null;
         assert kdtree != null;
@@ -124,7 +127,7 @@ public class CBC {
 
         double[] result = new double[squaredRadiusValues.length];
         for(KDTree.DistAndValue<double[]> neighbor : neighbors) {
-            if ((neighbor.value[0] == queryPoint[0]) && (neighbor.value[1] == queryPoint[1])) {
+            if (checkNotSelf && ((neighbor.value[0] == queryPoint[0]) && (neighbor.value[1] == queryPoint[1]))) {
                 continue;
             }
             double distance = neighbor.dist;
@@ -136,13 +139,13 @@ public class CBC {
         return result;
     }
     
-    private double getDistanceToNearestNeighbor(double[] queryPoint, KDTree<double[]> kdtree) {
+    private double getDistanceToNearestNeighbor(double[] queryPoint, KDTree<double[]> kdtree, boolean checkNotSelf) {
         assert queryPoint != null;
         assert kdtree != null;
 
         List<double[]> knn = kdtree.nearest(queryPoint, 2);
         double[] nn = knn.get(0);
-        if ((nn[0] == queryPoint[0]) && (nn[0] == queryPoint[0])) {
+        if (checkNotSelf && ((nn[0] == queryPoint[0]) && (nn[0] == queryPoint[0]))) {
             nn = knn.get(1);
         }
         return MathProxy.sqrt(MathProxy.sqr(nn[0]-queryPoint[0])+MathProxy.sqr(nn[1]-queryPoint[1]));
