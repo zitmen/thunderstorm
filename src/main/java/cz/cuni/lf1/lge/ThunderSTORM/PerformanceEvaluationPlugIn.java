@@ -81,7 +81,9 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
             MoleculeDescriptor descriptor = rt.getDescriptor();
             int lastIndex = rt.getRow(0).values.size();
             descriptor.addParam(MoleculeDescriptor.LABEL_GROUND_TRUTH_ID, lastIndex, Units.UNITLESS);
-            descriptor.addParam(MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH, lastIndex+1, units);
+            descriptor.addParam(MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH_XY, lastIndex+1, units);
+            descriptor.addParam(MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH_Z, lastIndex+2, units);
+            descriptor.addParam(MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ, lastIndex+3, units);
         } catch(Exception ex) {
             //
         }

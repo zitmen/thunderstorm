@@ -345,7 +345,9 @@ public class MoleculeDescriptor implements Cloneable {
     public static final String LABEL_FRAME = "frame";
     public static final String LABEL_DETECTIONS = "detections";
     public static final String LABEL_GROUND_TRUTH_ID = "gt_id";
-    public static final String LABEL_DISTANCE_TO_GROUND_TRUTH = "gt_distance";
+    public static final String LABEL_DISTANCE_TO_GROUND_TRUTH_XY = "gt_dist_xy";
+    public static final String LABEL_DISTANCE_TO_GROUND_TRUTH_Z = "gt_dist_z";
+    public static final String LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ = "gt_dist_xyz";
 
     public static enum Units {
 
@@ -571,7 +573,9 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(LABEL_FRAME, Units.UNITLESS);
                 allUnits.put(LABEL_DETECTIONS, Units.UNITLESS);
                 allUnits.put(LABEL_GROUND_TRUTH_ID, Units.UNITLESS);
-                allUnits.put(LABEL_DISTANCE_TO_GROUND_TRUTH, Units.NANOMETER);
+                allUnits.put(LABEL_DISTANCE_TO_GROUND_TRUTH_XY, Units.NANOMETER);
+                allUnits.put(LABEL_DISTANCE_TO_GROUND_TRUTH_Z, Units.NANOMETER);
+                allUnits.put(LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ, Units.NANOMETER);
                 //
                 allUnits.put(Fitting.LABEL_THOMPSON, Units.NANOMETER);
             }

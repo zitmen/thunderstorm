@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.abs;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import ij.IJ;
@@ -77,6 +78,10 @@ public final class Molecule implements Comparable<Molecule> {
     public double getDist(Molecule mol, Units distUnits) {
         return sqrt(getDist2(mol, distUnits));
     }
+    public double getDistLateral(Molecule mol, Units distUnits) {
+        return sqrt(getDist2Lateral(mol, distUnits));
+    }
+    public double getDistAxial(Molecule mol, Units distUnits) { return abs(getZ(distUnits) - mol.getZ(distUnits)); }
     
     public double getDist2(Molecule mol) {
         return sqr(getX() - mol.getX()) + sqr(getY() - mol.getY()) + sqr(getZ() - mol.getZ());

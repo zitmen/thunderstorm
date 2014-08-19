@@ -3,7 +3,9 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule.DetectionStatus.FALSE_NEGATIVE;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule.DetectionStatus.FALSE_POSITIVE;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule.DetectionStatus.TRUE_POSITIVE;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH_XY;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH_Z;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_GROUND_TRUTH_ID;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_ID;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
@@ -46,7 +48,9 @@ public class MoleculeMatcher {
                 if(d.neighbors != null) d.neighbors.clear();
                 d.setStatus(Molecule.DetectionStatus.UNSPECIFIED);
                 d.setParam(LABEL_GROUND_TRUTH_ID, Units.UNITLESS, 0);
-                d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH, distUnits, Double.POSITIVE_INFINITY);
+                d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XY, distUnits, Double.POSITIVE_INFINITY);
+                d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH_Z, distUnits, Double.POSITIVE_INFINITY);
+                d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ, distUnits, Double.POSITIVE_INFINITY);
             }
         }
         for(Molecule g : gt) {
@@ -89,7 +93,9 @@ public class MoleculeMatcher {
                 FP.remove(detMol);
                 TP.add(new Pair<Molecule, Molecule>(gtMol, detMol));
                 detMol.addParam(LABEL_GROUND_TRUTH_ID, Units.UNITLESS, gtMol.getParam(LABEL_ID));
-                detMol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH, distUnits, gtMol.getDist(detMol, distUnits));
+                detMol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XY, distUnits, gtMol.getDistLateral(detMol, distUnits));
+                detMol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH_Z, distUnits, gtMol.getDistAxial(detMol, distUnits));
+                detMol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ, distUnits, gtMol.getDist(detMol, distUnits));
             } else {
                 FN.add(gtMol);
                 gtMol.setStatus(FALSE_NEGATIVE);
@@ -98,7 +104,9 @@ public class MoleculeMatcher {
         for(Molecule detMol : FP) {
             detMol.setStatus(FALSE_POSITIVE);
             detMol.addParam(LABEL_GROUND_TRUTH_ID, Units.UNITLESS, 0);
-            detMol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH, distUnits, Double.POSITIVE_INFINITY);
+            detMol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XY, distUnits, Double.POSITIVE_INFINITY);
+            detMol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH_Z, distUnits, Double.POSITIVE_INFINITY);
+            detMol.addParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ, distUnits, Double.POSITIVE_INFINITY);
         }
     }
 
