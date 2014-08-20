@@ -16,6 +16,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree.KeyDuplicateException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree.KeySizeException;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 public class MoleculeMatcher {
 
@@ -38,26 +39,22 @@ public class MoleculeMatcher {
      * @param FN [out] List of false-negative items from ground-truth (the container must be allocated by caller).
      */
     public void matchMolecules(List<Molecule> det, List<Molecule> gt, List<Pair<Molecule, Molecule>> TP, List<Molecule> FP, List<Molecule> FN) {
-        if(det == null || gt == null || TP == null || FP == null || FN == null) {
-            return;
-        }
+        // Check for empty variables
+        if (gt == null) gt = new Vector<Molecule>();
+        if (det == null) det = new Vector<Molecule>();
         //
         // Clean the data
-        for(Molecule d : det) {
-            if(d.getStatus() != Molecule.DetectionStatus.UNSPECIFIED) {
-                if(d.neighbors != null) d.neighbors.clear();
-                d.setStatus(Molecule.DetectionStatus.UNSPECIFIED);
-                d.setParam(LABEL_GROUND_TRUTH_ID, Units.UNITLESS, 0);
-                d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XY, distUnits, Double.POSITIVE_INFINITY);
-                d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH_Z, distUnits, Double.POSITIVE_INFINITY);
-                d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ, distUnits, Double.POSITIVE_INFINITY);
-            }
+        for (Molecule d : det) {
+            if (d.neighbors != null) d.neighbors.clear();
+            d.setStatus(Molecule.DetectionStatus.UNSPECIFIED);
+            d.setParam(LABEL_GROUND_TRUTH_ID, Units.UNITLESS, 0);
+            d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XY, distUnits, Double.POSITIVE_INFINITY);
+            d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH_Z, distUnits, Double.POSITIVE_INFINITY);
+            d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ, distUnits, Double.POSITIVE_INFINITY);
         }
-        for(Molecule g : gt) {
-            if(g.getStatus() != Molecule.DetectionStatus.UNSPECIFIED) {
-                if(g.neighbors != null) g.neighbors.clear();
-                g.setStatus(Molecule.DetectionStatus.UNSPECIFIED);
-            }
+        for (Molecule g : gt) {
+            if (g.neighbors != null) g.neighbors.clear();
+            g.setStatus(Molecule.DetectionStatus.UNSPECIFIED);
         }
         //
         // Initialize
