@@ -217,7 +217,9 @@ public class MoleculeDescriptor implements Cloneable {
 
     // While `index` refers to `Molecule.values`, ...
     public int getParamIndex(String param) {
-        return paramNames.get(param).index;
+        IndexAndColumn ic = paramNames.get(param);
+        if (ic == null) return getParamsCount();
+        return ic.index;
     }
 
     // the `column` refers to everything else in `MoleculeDescriptor`.

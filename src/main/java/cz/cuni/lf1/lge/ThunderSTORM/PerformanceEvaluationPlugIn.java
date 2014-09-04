@@ -10,10 +10,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.max;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeMatcher;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
@@ -21,20 +17,16 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
-import cz.vutbr.web.css.TermNumeric;
 import ij.IJ;
 import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
 
-import java.awt.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Vector;
 import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 
 public class PerformanceEvaluationPlugIn implements PlugIn {
 
