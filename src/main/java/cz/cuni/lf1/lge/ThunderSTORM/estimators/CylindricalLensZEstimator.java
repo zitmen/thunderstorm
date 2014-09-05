@@ -14,33 +14,14 @@ import java.util.Vector;
 
 public class CylindricalLensZEstimator implements IEstimator {
 
-    CylindricalLensCalibration calibration;
     IEstimator estimator;
 
-    public CylindricalLensZEstimator(CylindricalLensCalibration calibration, IEstimator estimator) {
-        this.calibration = calibration;
+    public CylindricalLensZEstimator(IEstimator estimator) {
         this.estimator = estimator;
     }
 
     @Override
     public Vector<Molecule> estimateParameters(FloatProcessor image, Vector<Point> detections) throws StoppedByUserException {
-        Vector<Molecule> results = estimator.estimateParameters(image, detections);
-        if (!(calibration instanceof DaostormCalibration)) {    // DaostormCalibration calculates Z directly during the fitting
-            for (int i = 0; i < results.size(); i++) {
-                Molecule psf = results.get(i);
-                double sigma1 = psf.getParam(LABEL_SIGMA1);
-                double sigma2 = psf.getParam(LABEL_SIGMA2);
-                psf.setParam(LABEL_SIGMA1, sigma1);
-                psf.setParam(LABEL_SIGMA2, sigma2);
-                double calculatedZ = calibration.getZ(sigma1, sigma2);
-                results.set(i, appendZ(psf, calculatedZ));
-            }
-        }
-        return results;
-    }
-
-    private static Molecule appendZ(Molecule mol, double zValue) {
-        mol.insertParamAt(2, LABEL_Z, Units.NANOMETER, zValue);   // [0]=>x,[1]=>y,[2]=>z
-        return mol;
+        return estimator.estimateParameters(image, detections);
     }
 }

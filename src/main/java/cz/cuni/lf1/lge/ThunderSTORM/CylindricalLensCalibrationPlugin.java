@@ -2,17 +2,14 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.CalibrationDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.*;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.PolynomialCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.CalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.CalibrationProcess;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.NoMoleculesFittedException;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_FRAME;
@@ -51,6 +48,7 @@ import javax.swing.WindowConstants;
 public class CylindricalLensCalibrationPlugin implements PlugIn {
 
     double angle;
+    DefocusFunction defocusModel;
     IFilterUI selectedFilterUI;
     IDetectorUI selectedDetectorUI;
     CalibrationEstimatorUI calibrationEstimatorUI;
@@ -97,11 +95,12 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             savePath = dialog.getSavePath();
             stageStep = dialog.getStageStep();
             zRangeLimit = dialog.getZRangeLimit();
+            defocusModel = dialog.getActiveDefocusModel();
 
             roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
 
             //perform the calibration
-            final CalibrationProcess process = new CalibrationProcess(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, stageStep, zRangeLimit, imp, roi);
+            final CalibrationProcess process = new CalibrationProcess(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, imp, roi);
 
             process.estimateAngle();
             IJ.log("angle = " + process.getAngle());
@@ -122,7 +121,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
                     process.getAllFrames(), process.getAllSigma1s(), process.getAllSigma2s());
 
             try {
-                saveToFile(savePath, process.getCalibration());
+                saveToFile(savePath, process.getCalibration(defocusModel));
             } catch(IOException ex) {
                 showAnotherLocationDialog(ex, process);
             }
@@ -154,7 +153,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
                 File f = jfc.getSelectedFile();
                 if(f != null) {
                     try {
-                        saveToFile(f.getAbsolutePath(), process.getCalibration());
+                        saveToFile(f.getAbsolutePath(), process.getCalibration(defocusModel));
                     } catch(IOException ex) {
                         showAnotherLocationDialog(ex, process);
                     }
@@ -173,7 +172,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         dialog.setVisible(true);
     }
 
-    private void saveToFile(String path, PolynomialCalibration calibration) throws IOException {
+    private void saveToFile(String path, CylindricalLensCalibration calibration) throws IOException {
         FileWriter fw = null;
         try {
             File file = new File(path);

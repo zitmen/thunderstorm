@@ -30,14 +30,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.stat.ranking.NaturalRanking;
 
-/**
- *
- */
 public class CalibrationProcess {
 
     IFilterUI selectedFilterUI;
     IDetectorUI selectedDetectorUI;
     CalibrationEstimatorUI calibrationEstimatorUI;
+    DefocusFunction defocusModel;
     double stageStep;
     double zRange; //in frames
     ImagePlus imp;
@@ -54,10 +52,11 @@ public class CalibrationProcess {
     private double[] allSigma1s;
     private double[] allSigma2s;
 
-    public CalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, CalibrationEstimatorUI calibrationEstimatorUI, double stageStep, double zRangeLimit, ImagePlus imp, Roi roi) {
+    public CalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, CalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit, ImagePlus imp, Roi roi) {
         this.selectedFilterUI = selectedFilterUI;
         this.selectedDetectorUI = selectedDetectorUI;
         this.calibrationEstimatorUI = calibrationEstimatorUI;
+        this.defocusModel = defocusModel;
         this.stageStep = stageStep;
         this.imp = imp;
         this.roi = roi;
@@ -162,8 +161,8 @@ public class CalibrationProcess {
                 DefocusFunction polynomS1;
                 DefocusFunction polynomS2;
                 try {
-                    polynomS1 = polynomialFitter.fitParams(framesArray, sigma1AsArray, 750);
-                    polynomS2 = polynomialFitter.fitParams(framesArray, sigma2AsArray, 750);
+                    polynomS1 = polynomialFitter.fitParams(defocusModel, framesArray, sigma1AsArray, 750);
+                    polynomS2 = polynomialFitter.fitParams(defocusModel, framesArray, sigma2AsArray, 750);
                 } catch(TooManyEvaluationsException e) {
                     //discard not converged
                     //IJ.log(e.toString());
@@ -205,8 +204,8 @@ public class CalibrationProcess {
         allFrames = flattenListOfArrays(framesArrays);
         allSigma1s = flattenListOfArrays(sigma1Arrays);
         allSigma2s = flattenListOfArrays(sigma2Arrays);
-        polynomS1Final = polynomialFitter.fitParams(allFrames, allSigma1s, 2000);
-        polynomS2Final = polynomialFitter.fitParams(allFrames, allSigma2s, 2000);
+        polynomS1Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma1s, 2000);
+        polynomS2Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma2s, 2000);
 
         polynomS1Final = polynomS1Final.convertToNm(stageStep);
         polynomS2Final = polynomS2Final.convertToNm(stageStep);
@@ -231,6 +230,7 @@ public class CalibrationProcess {
 
     protected PSFSeparator fitFixedAngle() {
         calibrationEstimatorUI.setAngle(angle);
+        calibrationEstimatorUI.setDefocusModel(defocusModel);
         calibrationEstimatorUI.resetThreadLocal(); //angle changed so we need to discard the old threadlocal implementations
         //fit stack again with fixed angle
         final PSFSeparator separator = new PSFSeparator(calibrationEstimatorUI.getFitradius());
@@ -303,8 +303,8 @@ public class CalibrationProcess {
         return finalMean;
     }
 
-    public PolynomialCalibration getCalibration() {
-        return new PolynomialCalibration(angle, polynomS1Final, polynomS2Final);
+    public CylindricalLensCalibration getCalibration(DefocusFunction defocusModel) {
+        return defocusModel.getCalibration(angle, polynomS1Final, polynomS2Final);
     }
 
     /**

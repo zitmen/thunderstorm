@@ -6,13 +6,9 @@ import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 import org.apache.commons.math3.fitting.CurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.optim.SimplePointChecker;
 
-/**
- *
- */
 public class IterativeFitting {
 
     private double inlierFraction = 0.9;
@@ -21,8 +17,7 @@ public class IterativeFitting {
     public static void shiftInZ(double[] quadratic, double shift) {
         quadratic[0] -= shift;
     }
-    
-    
+
     private double[] fit(double[] x, double[] y, ParametricUnivariateFunction function, double[] initialParams, int maxIter) {
         int numberOfInliers = (int) (inlierFraction * x.length);
         CurveFitter<ParametricUnivariateFunction> fitter = new CurveFitter<ParametricUnivariateFunction>(new LevenbergMarquardtOptimizer(new SimplePointChecker(10e-10, 10e-10, maxIter)));
@@ -58,7 +53,7 @@ public class IterativeFitting {
         return parameters;
     }
 
-    public DefocusFunction fitParams(double[] x, double[] y, int maxIter) {
+    public DefocusFunction fitParams(DefocusFunction defocusModel, double[] x, double[] y, int maxIter) {
         double min = y[0];
         int minIndex = 0;
         for(int i = 0; i < x.length; i++) {
@@ -67,7 +62,7 @@ public class IterativeFitting {
                 minIndex = i;
             }
         }
-        return new DefocusFunction(fit(x, y, new DefocusFunction.FittingFunction(), new double[]{x[minIndex], 0.0001, sqrt(min), 0}, maxIter));
+        return defocusModel.getNewInstance(fit(x, y, defocusModel.getFittingFunction(), new double[]{1, x[minIndex], 1e-2, min, 0}, maxIter), false);
     }
 
     private void computeResiduals(double[] parameters, ParametricUnivariateFunction function, double[] x, double[] y, double[] residualArray) {

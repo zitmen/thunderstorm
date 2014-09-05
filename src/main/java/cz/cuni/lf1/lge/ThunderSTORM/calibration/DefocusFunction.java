@@ -1,29 +1,35 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
-import java.util.Locale;
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 
-/**
- * A polynomial function y = A*(X-C)^2 + B + D*(X-C)^3
- */
-public class DefocusFunction {
+abstract public class DefocusFunction {
 
-    private double a;
-    private double b;
-    private double c;
-    private double d;
-    private boolean scaledToNm = false;
+    public double a;
+    public double b;
+    public double c;
+    public double d;
+    public double w0;
+    public boolean scaledToNm;
 
     public DefocusFunction() {
+        this(0, 0, 0, 0, 0, false);
     }
 
-    public DefocusFunction(double[] params) {
-        assert params.length == 4;
-        c = params[0];
-        a = MathProxy.sqr(params[1]);
-        b = MathProxy.sqr(params[2]);
-        d = params[3];
+    public DefocusFunction(double w0, double a, double b, double c, double d, boolean scaledToNm) {
+        this.w0 = w0;
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        this.d = d;
+        this.scaledToNm = scaledToNm;
+    }
+
+    public double getW0() {
+        return w0;
+    }
+
+    public void setW0(double w0) {
+        this.w0 = w0;
     }
 
     public double getA() {
@@ -57,36 +63,19 @@ public class DefocusFunction {
     public void setD(double d) {
         this.d = d;
     }
-    
+
     public DefocusFunction convertToNm(double stageStep) {
         assert !scaledToNm;
-        DefocusFunction ret = new DefocusFunction();
-        ret.c = c * stageStep;
-        ret.a = a / (stageStep * stageStep);
-        ret.b = b;
-        ret.d = d / (stageStep * stageStep * stageStep);
-        ret.scaledToNm = true;
-        return ret;
+        return getNewInstance(w0, a / (stageStep * stageStep), b, c * stageStep, d / (stageStep * stageStep * stageStep), true);
     }
 
     public DefocusFunction convertToFrames(double stageStep) {
         assert scaledToNm;
-        DefocusFunction ret = new DefocusFunction();
-        ret.c = c / stageStep;
-        ret.a = a * (stageStep * stageStep);
-        ret.b = b;
-        ret.d = d * (stageStep * stageStep * stageStep);
-        ret.scaledToNm = false;
-        return ret;
-    }
-
-    public static double value(double z, double a, double b, double c, double d) {
-        double xsubx0 = z - c;
-        return MathProxy.sqr(xsubx0) * a + MathProxy.sqr(xsubx0) * xsubx0 * d + b;
+        return getNewInstance(w0, a * (stageStep * stageStep), b, c / stageStep, d * (stageStep * stageStep * stageStep), false);
     }
 
     public double value(double z) {
-        return value(z, a, b, c, d);
+        return value(z, w0, a, b, c, d);
     }
 
     public void shiftInZ(double shiftAmmount) {
@@ -94,30 +83,12 @@ public class DefocusFunction {
     }
 
     public double[] toParArray() {
-        return new double[]{c, a, b, d};
+        return new double[]{w0, c, a, b, d};
     }
 
-    @Override
-    public String toString() {
-        return String.format(Locale.ENGLISH, "%e*(z%+g)^2 %+e*(z%+g)^3 %+g", a, -c, d, -c, b);
-    }
-
-    public static class FittingFunction implements ParametricUnivariateFunction {
-
-        @Override
-        public double value(double x, double... parameters) {
-            return DefocusFunction.value(x, MathProxy.sqr(parameters[1]), MathProxy.sqr(parameters[2]), parameters[0], parameters[3]);
-        }
-
-        @Override
-        public double[] gradient(double x, double... parameters) {
-            double xsubx0 = x - parameters[0];
-            double[] gradients = new double[4];
-            gradients[0] = (-3 * parameters[3] * xsubx0 - 2 * MathProxy.sqr(parameters[1])) * xsubx0;
-            gradients[1] = MathProxy.sqr(xsubx0) * 2 * parameters[1];
-            gradients[2] = 2 * parameters[2];
-            gradients[3] = xsubx0 * MathProxy.sqr(xsubx0);
-            return gradients;
-        }
-    }
+    public abstract double value(double z, double w0, double a, double b, double c, double d);
+    public abstract ParametricUnivariateFunction getFittingFunction();
+    public abstract DefocusFunction getNewInstance(double w0, double a, double b, double c, double d, boolean scaledToNm);
+    public abstract DefocusFunction getNewInstance(double[] params, boolean scaledToNm);
+    public abstract CylindricalLensCalibration getCalibration(double angle, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final);
 }

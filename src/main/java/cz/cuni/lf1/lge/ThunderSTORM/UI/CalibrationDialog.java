@@ -1,6 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ModuleLoader;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunctionPoly;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunctionSqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
@@ -12,6 +15,7 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Macro;
@@ -30,17 +34,12 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class CalibrationDialog extends DialogStub implements ActionListener {
 
+    ParameterKey.String defocusModel;
     ParameterKey.Double stageStep;
     ParameterKey.Double zRangeLimit;
     ParameterKey.String calibrationFilePath;
@@ -52,13 +51,14 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
     private List<IDetectorUI> detectors;
     private List<IEstimatorUI> estimators;
     private ImagePlus imp;
-    ExecutorService previewThredRunner = Executors.newSingleThreadExecutor();
+    ExecutorService previewThreadRunner = Executors.newSingleThreadExecutor();
     Future<?> previewFuture = null;
 
     public CalibrationDialog(ImagePlus imp, List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators) {
         super(new ParameterTracker("thunderstorm.calibration"), IJ.getInstance(), "Calibration options");
         params.getComponentHandlers().addForStringParameters(CardsPanel.class, new CardsPanelMacroUIHandler());
 
+        defocusModel = params.createStringField("defocus", StringValidatorFactory.isMember(new String[] {"Huang 2008", "ThunderSTORM"}), "Huang 2008");
         stageStep = params.createDoubleField("stage", DoubleValidatorFactory.positiveNonZero(), 10);
         zRangeLimit = params.createDoubleField("zRange", DoubleValidatorFactory.positiveNonZero(), 400);
         calibrationFilePath = params.createStringField("saveto", null, "");
@@ -111,6 +111,10 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
 
         JPanel aditionalOptions = new JPanel(new GridBagLayout());
         aditionalOptions.setBorder(BorderFactory.createTitledBorder("Additional options"));
+        aditionalOptions.add(new JLabel("Defocus model:"), GridBagHelper.leftCol());
+        JComboBox defocusModelComboBox = new JComboBox(new String[] {"Huang08", "ThunderSTORM"});
+        defocusModel.registerComponent(defocusModelComboBox);
+        aditionalOptions.add(defocusModelComboBox, GridBagHelper.rightCol());
         aditionalOptions.add(new JLabel("Z stage step [nm]:"), GridBagHelper.leftCol());
         JTextField stageStepTextField = new JTextField("", 20);
         stageStep.registerComponent(stageStepTextField);
@@ -154,6 +158,10 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
         pack();
     }
 
+    public DefocusFunction getActiveDefocusModel() {
+        return defocusModel.getValue().equals("ThunderSTORM") ? new DefocusFunctionPoly() : new DefocusFunctionSqrt();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
@@ -176,7 +184,7 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
                     previewFuture.cancel(true);
                 }
                 //do the preview task
-                previewFuture = previewThredRunner.submit(new Runnable() {
+                previewFuture = previewThreadRunner.submit(new Runnable() {
 
                     @Override
                     public void run() {
@@ -292,8 +300,8 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
     @Override
     public void dispose() {
         super.dispose();
-        if(previewThredRunner != null) {
-            previewThredRunner.shutdownNow();
+        if(previewThreadRunner != null) {
+            previewThreadRunner.shutdownNow();
         }
     }
 }
