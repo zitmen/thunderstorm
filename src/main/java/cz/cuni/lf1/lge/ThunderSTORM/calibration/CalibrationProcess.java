@@ -37,7 +37,7 @@ public class CalibrationProcess {
     CalibrationEstimatorUI calibrationEstimatorUI;
     DefocusFunction defocusModel;
     double stageStep;
-    double zRange; //in frames
+    double zRange;
     ImagePlus imp;
     Roi roi;
     //results
@@ -60,14 +60,13 @@ public class CalibrationProcess {
         this.stageStep = stageStep;
         this.imp = imp;
         this.roi = roi;
-        this.zRange = zRangeLimit / stageStep; //convert from nm to frames
+        this.zRange = zRangeLimit;
     }
 
     /**
      * Estimates the rotation angle of the cylindrical lens. If the lens is
      * aligned with camera or the angle is known, you can use setAngle(double)
      * instead.
-     *
      */
     public void estimateAngle() {
         final List<Double> angles = Collections.synchronizedList(new ArrayList());
@@ -150,10 +149,10 @@ public class CalibrationProcess {
                     continue;
                 }
                 double z0guess = guessZ0(p);
-                p.discardFitsByFrameRange(z0guess - zRange, z0guess + zRange);
+                p.discardFitsByFrameRange(z0guess - zRange/stageStep, z0guess + zRange/stageStep);
 
                 //retrieve values again after filtering out fits not in range
-                double[] framesArray = p.getFramesAsArray();
+                double[] framesArray = p.getFramesAsArrayOfZ(z0guess, stageStep);
                 double[] sigma1AsArray = p.getSigma1AsArray();
                 double[] sigma2AsArray = p.getSigma2AsArray();
 
@@ -173,7 +172,7 @@ public class CalibrationProcess {
                 }
 
                 if(!isInZRange(polynomS1.getC()) || !isInZRange(polynomS2.getC())) {//realy bad fit?
-                    continue;
+                    //continue;
                 }
                 //find the center point between the minima of the two polynomials and shift the origin
                 double intersection = (polynomS1.getC() + polynomS2.getC()) / 2;
@@ -206,9 +205,6 @@ public class CalibrationProcess {
         allSigma2s = flattenListOfArrays(sigma2Arrays);
         polynomS1Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma1s, 2000);
         polynomS2Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma2s, 2000);
-
-        polynomS1Final = polynomS1Final.convertToNm(stageStep);
-        polynomS2Final = polynomS2Final.convertToNm(stageStep);
 
         IJ.showProgress(1);
     }
@@ -262,7 +258,7 @@ public class CalibrationProcess {
     }
 
     private boolean isInZRange(double z) {
-        return z > 0 && z <= imp.getStackSize();
+        return z >= -zRange && z <= +zRange;
     }
 
     private boolean hasEnoughData(double[] framesArray, double intersection) {

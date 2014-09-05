@@ -112,7 +112,7 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
         JPanel aditionalOptions = new JPanel(new GridBagLayout());
         aditionalOptions.setBorder(BorderFactory.createTitledBorder("Additional options"));
         aditionalOptions.add(new JLabel("Defocus model:"), GridBagHelper.leftCol());
-        JComboBox defocusModelComboBox = new JComboBox(new String[] {"Huang08", "ThunderSTORM"});
+        JComboBox defocusModelComboBox = new JComboBox(new String[] {"Huang 2008", "ThunderSTORM"});
         defocusModel.registerComponent(defocusModelComboBox);
         aditionalOptions.add(defocusModelComboBox, GridBagHelper.rightCol());
         aditionalOptions.add(new JLabel("Z stage step [nm]:"), GridBagHelper.leftCol());

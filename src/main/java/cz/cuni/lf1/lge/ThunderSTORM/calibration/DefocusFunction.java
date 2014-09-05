@@ -64,16 +64,6 @@ abstract public class DefocusFunction {
         this.d = d;
     }
 
-    public DefocusFunction convertToNm(double stageStep) {
-        assert !scaledToNm;
-        return getNewInstance(w0, a / (stageStep * stageStep), b, c * stageStep, d / (stageStep * stageStep * stageStep), true);
-    }
-
-    public DefocusFunction convertToFrames(double stageStep) {
-        assert scaledToNm;
-        return getNewInstance(w0, a * (stageStep * stageStep), b, c / stageStep, d * (stageStep * stageStep * stageStep), false);
-    }
-
     public double value(double z) {
         return value(z, w0, a, b, c, d);
     }

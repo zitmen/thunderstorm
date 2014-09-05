@@ -117,7 +117,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             }
             drawOverlay(imp, process.getAllFits(), process.getUsedPositions());
             drawSigmaPlots(process.getAllPolynomsS1(), process.getAllPolynomsS2(),
-                    process.getPolynomS1Final().convertToFrames(stageStep), process.getPolynomS2Final().convertToFrames(stageStep),
+                    process.getPolynomS1Final(), process.getPolynomS2Final(),
                     process.getAllFrames(), process.getAllSigma1s(), process.getAllSigma2s());
 
             try {
@@ -193,13 +193,12 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             DefocusFunction sigma1param, DefocusFunction sigma2param,
             double[] allFrames, double[] allSigma1s, double[] allSigma2s) {
 
-        Plot plot = new Plot("Sigma", "z[slices]", "sigma", (float[]) null, (float[]) null);
+        Plot plot = new Plot("Sigma", "z [nm]", "sigma [px]", (float[]) null, (float[]) null);
         plot.setSize(1024, 768);
         //range
-        int range = imp.getStackSize() / 2;
-        plot.setLimits(-range, +range, 0, 10);
-        double[] xVals = new double[range * 2 + 1];
-        for(int val = -range, i = 0; val <= range; val++, i++) {
+        plot.setLimits(-2*zRangeLimit, +2*zRangeLimit, 0, stageStep);
+        double[] xVals = new double[(int)(2*zRangeLimit/stageStep) * 2 + 1];
+        for(int val = -2*(int)zRangeLimit, i = 0; val <= +2*(int)zRangeLimit; val += stageStep, i++) {
             xVals[i] = val;
         }
         plot.draw();

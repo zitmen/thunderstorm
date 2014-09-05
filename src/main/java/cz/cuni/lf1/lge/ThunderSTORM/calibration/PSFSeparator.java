@@ -118,6 +118,16 @@ public class PSFSeparator {
             return array;
         }
 
+        public double[] getFramesAsArrayOfZ(double z0, double stageStep) {
+            double[] array = new double[fits.size()];
+            int i = 0;
+            for(Molecule psf : fits) {
+                array[i] = (psf.getParam(LABEL_FRAME) - z0) * stageStep;
+                i++;
+            }
+            return array;
+        }
+
         public double[] getIntensityAsArray() {
             double[] array = new double[fits.size()];
             int i = 0;

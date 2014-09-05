@@ -13,17 +13,17 @@ public class DefocusFunctionPoly extends DefocusFunction {
     }
 
     public DefocusFunctionPoly(double w0, double a, double b, double c, double d, boolean scaledToNm) {
-        super(w0, a, b, c, d, scaledToNm);
+        super(w0, a, b, c, /*d*/0, scaledToNm);
     }
 
     public DefocusFunctionPoly(double[] params, boolean scaledToNm) {
-        super(params[0], params[2], params[3], params[1], params[4], scaledToNm);
+        super(params[0], params[2], params[3], params[1], /*params[4]*/0, scaledToNm);
     }
 
     @Override
     public double value(double z, double w0, double a, double b, double c, double d) {
         double xsubx0 = z - c;
-        return MathProxy.sqr(xsubx0)*a + MathProxy.pow(xsubx0,3)*d + b;
+        return MathProxy.sqr(xsubx0)*a + /*MathProxy.pow(xsubx0,3)*d + */b;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class DefocusFunctionPoly extends DefocusFunction {
         return new ParametricUnivariateFunction() {
             @Override
             public double value(double x, double... parameters) {
-                return DefocusFunctionPoly.this.value(x, 1.0, parameters[2], parameters[3], parameters[1], parameters[4]);
+                return DefocusFunctionPoly.this.value(x, 1.0, parameters[2], parameters[3], parameters[1], /*parameters[4]*/0);
             }
 
             @Override
@@ -40,10 +40,10 @@ public class DefocusFunctionPoly extends DefocusFunction {
                 double[] gradients = new double[5];
                 // Partial derivatives of: a*(z - c)^2 + b + d*(z - c)^3
                 gradients[0] = 0.0;
-                gradients[1] = -2*parameters[2]*xsubx0 - 3*parameters[4]*MathProxy.sqr(xsubx0);
+                gradients[1] = -2*parameters[2]*xsubx0/* - 3*parameters[4]*MathProxy.sqr(xsubx0)*/;
                 gradients[2] = MathProxy.sqr(xsubx0);
                 gradients[3] = 1;
-                gradients[4] = MathProxy.pow(xsubx0, 3);
+                gradients[4] = 0/*MathProxy.pow(xsubx0, 3)*/;
                 return gradients;
             }
         };
