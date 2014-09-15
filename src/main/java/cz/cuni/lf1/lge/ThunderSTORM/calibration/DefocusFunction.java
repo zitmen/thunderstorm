@@ -81,4 +81,5 @@ abstract public class DefocusFunction {
     public abstract DefocusFunction getNewInstance(double w0, double a, double b, double c, double d, boolean scaledToNm);
     public abstract DefocusFunction getNewInstance(double[] params, boolean scaledToNm);
     public abstract CylindricalLensCalibration getCalibration(double angle, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final);
+    public abstract double[] getInitialParams(double xmin, double ymin);
 }

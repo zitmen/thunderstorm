@@ -1,11 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import java.util.Locale;
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 
 /**
- * A polynomial function y = a*(z-c)^2 + b + d*(z-c)^3
+ * A polynomial function y = a*(z-c)^2 + b;// + d*(z-c)^3
  */
 public class DefocusFunctionPoly extends DefocusFunction {
 
@@ -23,7 +23,7 @@ public class DefocusFunctionPoly extends DefocusFunction {
     @Override
     public double value(double z, double w0, double a, double b, double c, double d) {
         double xsubx0 = z - c;
-        return MathProxy.sqr(xsubx0)*a + /*MathProxy.pow(xsubx0,3)*d + */b;
+        return sqr(xsubx0)*a + /*MathProxy.pow(xsubx0,3)*d + */b;
     }
 
     @Override
@@ -38,10 +38,10 @@ public class DefocusFunctionPoly extends DefocusFunction {
             public double[] gradient(double x, double... parameters) {
                 double xsubx0 = x - parameters[1];
                 double[] gradients = new double[5];
-                // Partial derivatives of: a*(z - c)^2 + b + d*(z - c)^3
+                // Partial derivatives of: a*(z - c)^2 + b;// + d*(z - c)^3
                 gradients[0] = 0.0;
                 gradients[1] = -2*parameters[2]*xsubx0/* - 3*parameters[4]*MathProxy.sqr(xsubx0)*/;
-                gradients[2] = MathProxy.sqr(xsubx0);
+                gradients[2] = sqr(xsubx0);
                 gradients[3] = 1;
                 gradients[4] = 0/*MathProxy.pow(xsubx0, 3)*/;
                 return gradients;
@@ -62,6 +62,11 @@ public class DefocusFunctionPoly extends DefocusFunction {
     @Override
     public CylindricalLensCalibration getCalibration(double angle, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final) {
         return new PolynomialCalibration(angle, polynomS1Final, polynomS2Final);
+    }
+
+    @Override
+    public double[] getInitialParams(double xmin, double ymin) {
+        return new double[]{1, xmin, 1e-2, ymin, 0};
     }
 
     @Override

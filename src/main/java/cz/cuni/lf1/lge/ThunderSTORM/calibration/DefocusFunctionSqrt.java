@@ -39,15 +39,20 @@ public class DefocusFunctionSqrt extends DefocusFunction {
                 double xsubx0 = x - parameters[1];
                 double[] gradients = new double[5];
                 // Partial derivatives of: w0*sqrt(1 + ((z-c)/d)^2 + a*((z-c)/d)^3 + b*((z-c)/d)^4)
-                double dd = MathProxy.sqrt(1 + MathProxy.sqr(xsubx0/d) + a*MathProxy.pow(xsubx0/d,3) + b*MathProxy.pow(xsubx0/d,4));
+                double dd = MathProxy.sqrt(1 + MathProxy.sqr(xsubx0/parameters[4]) + parameters[2]*MathProxy.pow(xsubx0/parameters[4],3) + parameters[3]*MathProxy.pow(xsubx0/parameters[4],4));
                 gradients[0] = dd;
-                gradients[1] = 0.5*w0*(-2*xsubx0/MathProxy.sqr(d) - 3*parameters[2]*MathProxy.sqr(xsubx0)/MathProxy.pow(d,3) - 4*parameters[3]*MathProxy.pow(xsubx0,3)/MathProxy.pow(d,4))/dd;
-                gradients[2] = 0.5*w0*MathProxy.pow(xsubx0,3)/MathProxy.pow(d,3)/dd;
-                gradients[3] = 0.5*w0*MathProxy.pow(xsubx0,4)/MathProxy.pow(d,4)/dd;
-                gradients[4] = 0.5*w0*(-2*MathProxy.sqr(xsubx0)/MathProxy.pow(d,3) - 3*parameters[2]*MathProxy.pow(xsubx0, 3)/MathProxy.pow(d,4) - 4*parameters[3]*MathProxy.pow(xsubx0,4)/MathProxy.pow(d,5))/dd;
+                gradients[1] = 0.5*parameters[0]*(-2*xsubx0/MathProxy.sqr(parameters[4]) - 3*parameters[2]*MathProxy.sqr(xsubx0)/MathProxy.pow(parameters[4],3) - 4*parameters[3]*MathProxy.pow(xsubx0,3)/MathProxy.pow(parameters[4],4))/dd;
+                gradients[2] = 0.5*parameters[0]*MathProxy.pow(xsubx0,3)/MathProxy.pow(parameters[4],3)/dd;
+                gradients[3] = 0.5*parameters[0]*MathProxy.pow(xsubx0,4)/MathProxy.pow(parameters[4],4)/dd;
+                gradients[4] = 0.5*parameters[0]*(-2*MathProxy.sqr(xsubx0)/MathProxy.pow(parameters[4],3) - 3*parameters[2]*MathProxy.pow(xsubx0,3)/MathProxy.pow(parameters[4],4) - 4*parameters[3]*MathProxy.pow(xsubx0,4)/MathProxy.pow(parameters[4],5))/dd;
                 return gradients;
             }
         };
+    }
+
+    @Override
+    public double[] getInitialParams(double xmin, double ymin) {
+        return new double[]{1, xmin, 1e-2, ymin, 400};
     }
 
     @Override

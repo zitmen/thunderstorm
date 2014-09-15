@@ -62,7 +62,7 @@ public class IterativeFitting {
                 minIndex = i;
             }
         }
-        return defocusModel.getNewInstance(fit(x, y, defocusModel.getFittingFunction(), new double[]{1, x[minIndex], 1e-2, min, 0}, maxIter), false);
+        return defocusModel.getNewInstance(fit(x, y, defocusModel.getFittingFunction(), defocusModel.getInitialParams(x[minIndex], min), maxIter), false);
     }
 
     private void computeResiduals(double[] parameters, ParametricUnivariateFunction function, double[] x, double[] y, double[] residualArray) {
