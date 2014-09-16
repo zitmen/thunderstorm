@@ -149,6 +149,7 @@ public class EllipticGaussianPSF extends PSFModel {
         Arrays.fill(steps, 0.001);  // cannot be zero!
         steps[Params.X] = 1;
         steps[Params.Y] = 1;
+        steps[Params.Z] = 100;
         steps[Params.INTENSITY] = 3000;
         steps[Params.SIGMA1] = 0.1;
         steps[Params.SIGMA2] = 0.1;
@@ -162,6 +163,7 @@ public class EllipticGaussianPSF extends PSFModel {
         Arrays.fill(guess, 0);
         guess[Params.X] = subImage.detectorX;
         guess[Params.Y] = subImage.detectorY;
+        guess[Params.Z] = 0;
         guess[Params.INTENSITY] = (subImage.getMax() - subImage.getMin()) * 2 * PI * defaultSigma * defaultSigma;
         if (calibration != null) {
             guess[Params.SIGMA1] = calibration.evalDefocus(guess[Params.Z], w01, a1, b1, c1, d1);
@@ -176,7 +178,7 @@ public class EllipticGaussianPSF extends PSFModel {
     
     @Override 
     public Molecule newInstanceFromParams(double[] params, MoleculeDescriptor.Units subImageUnits) {
-        Molecule mol = new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA1, Params.SIGMA2, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND }, params, true));
+        Molecule mol = new Molecule(new Params(new int[] { Params.X, Params.Y, Params.Z, Params.SIGMA1, Params.SIGMA2, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND }, params, true));
         MoleculeDescriptor descriptor = mol.descriptor;
         descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_INTENSITY));
         descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_OFFSET));
