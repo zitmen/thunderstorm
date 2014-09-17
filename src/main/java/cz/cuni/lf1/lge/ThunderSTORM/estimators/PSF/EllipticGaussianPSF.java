@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.CylindricalLensCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
+import ij.IJ;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 import static java.lang.Math.abs;
@@ -86,10 +87,13 @@ public class EllipticGaussianPSF extends PSFModel {
             //derivations by wolfram alpha:
             //d(b^2 + ((J*J)/(2*PI*(s1*s1)*(s2*s2))) * e^( -( (((x0-x)*cos(f)-(y0-y)*sin(f))^2)/(2*s1*s1*s1*s1) + ((((x0-x)*sin(f)+(y0-y)*cos(f))^2)/(2*s2*s2*s2*s2)))))/dJ
             public double[][] value(double[] point) throws IllegalArgumentException {
-                // There must be some problem in the analytic Jacobian, because the results in `z` are way off...!
-                double[][] retVal = EllipticGaussianPSF.super.getJacobianFunction(xgrid, ygrid).value(point);
+                // WLSQ results from numeric Jacobian are better than the analytic solution...is there some mistake in
+                // any of the formulae? or is it just given by nature of the data? speed of processing is comparable for
+                // both of them...
+                /**/
+                double[][] retVal2 = EllipticGaussianPSF.super.getJacobianFunction(xgrid, ygrid).value(point);
                 for (int i = 0; i < xgrid.length; i++) {
-                    for (int j = 0; j < retVal[i].length; j++) {
+                    for (int j = 0; j < retVal2[i].length; j++) {
                         if (j == Params.X) continue;
                         if (j == Params.Y) continue;
                         if (j == Params.INTENSITY) continue;
@@ -100,9 +104,11 @@ public class EllipticGaussianPSF extends PSFModel {
                             if (j == Params.SIGMA1) continue;
                             if (j == Params.SIGMA2) continue;
                         }
-                        retVal[i][j] = 0.0;
+                        retVal2[i][j] = 0.0;
                     }
                 }
+                return retVal2;
+                /**/
                 /*
                 double[] transformedPoint = transformParameters(point);
                 double sigma1Squared = transformedPoint[Params.SIGMA1] * transformedPoint[Params.SIGMA1];
@@ -118,21 +124,21 @@ public class EllipticGaussianPSF extends PSFModel {
                     double expVal = exp(-0.5 * (sqr(first) / sigma1Squared + sqr(second) / sigma2Squared));
                     double oneDivPISS2 = 1 / (PI * transformedPoint[Params.SIGMA1] * transformedPoint[Params.SIGMA2]);
                     // diff(psf, x0)
-                    double pom = (cosfiXd - cosfi * sinfiYd) / sigma1Squared + (sinfiXd + sinfi * cosfiYd) / sigma2Squared;
-                    retVal[i][Params.X] = oneDivPISS2 * 0.5 * transformedPoint[Params.INTENSITY] * pom * expVal;
+                    double pom1 = first * cosfi / sigma1Squared + second * sinfi / sigma2Squared;
+                    retVal[i][Params.X] = oneDivPISS2 * 0.5 * transformedPoint[Params.INTENSITY] * pom1 * expVal;
                     // diff(psf, y0)
-                    double pom2 = (cosfi * sinfiXd + cosfiYd) / sigma2Squared - (sinfi * cosfiXd - sinfiYd) / sigma1Squared;
+                    double pom2 = first * sinfi / sigma1Squared + second * cosfi / sigma2Squared;
                     retVal[i][Params.Y] = oneDivPISS2 * 0.5 * transformedPoint[Params.INTENSITY] * pom2 * expVal;
                     // diff(psf, I)
                     retVal[i][Params.INTENSITY] = point[Params.INTENSITY] * expVal * oneDivPISS2;
                     if (calibration != null) {
                         // diff(psf, z0)
-                        double pom4 = calibration.dwx(transformedPoint[PSFModel.Params.Z]);
-                        double pom5 = calibration.dwy(transformedPoint[PSFModel.Params.Z]);
-                        double pom3 = sqr(first) * pom4 + sqr(second) * pom5;
-                        retVal[i][Params.Z] = oneDivPISS2 * 0.5 * transformedPoint[PSFModel.Params.INTENSITY] * expVal * pom3
-                                            - oneDivPISS2 * 0.5 * transformedPoint[PSFModel.Params.INTENSITY] * expVal * pom4
-                                            - oneDivPISS2 * 0.5 * transformedPoint[PSFModel.Params.INTENSITY] * expVal * pom5;
+                        double pom4 = calibration.dwx(transformedPoint[PSFModel.Params.Z]) / transformedPoint[Params.SIGMA1];
+                        double pom5 = calibration.dwy(transformedPoint[PSFModel.Params.Z]) / transformedPoint[Params.SIGMA2];
+                        double pom3 = sqr(first) / sigma1Squared * pom4 + sqr(second)/sigma2Squared * pom5;
+                        retVal[i][Params.Z] = oneDivPISS2 * 0.5 * transformedPoint[Params.INTENSITY] * expVal * pom3
+                                            - oneDivPISS2 * 0.5 * transformedPoint[Params.INTENSITY] * expVal * pom4
+                                            - oneDivPISS2 * 0.5 * transformedPoint[Params.INTENSITY] * expVal * pom5;
                     } else {
                         // diff(psf, sigma1)
                         retVal[i][Params.SIGMA1] = transformedPoint[Params.INTENSITY] * expVal * oneDivPISS2 / point[Params.SIGMA1] * (-1 + sqr(first) / sigma1Squared);
@@ -143,9 +149,9 @@ public class EllipticGaussianPSF extends PSFModel {
                     retVal[i][Params.OFFSET] = 2 * point[Params.OFFSET];
                 }
                 */
-//          IJ.log("numeric jacobian: " + Arrays.deepToString(EllipticGaussianPSF.super.getJacobianFunction(xgrid, ygrid).value(point)));
-//          IJ.log("analytic jacobian: " + Arrays.deepToString(retVal));
-                return retVal;
+          //IJ.log("numeric jacobian: " + Arrays.deepToString(retVal2));
+          //IJ.log("analytic jacobian: " + Arrays.deepToString(retVal));
+                //return retVal;
             }
         };
     }
