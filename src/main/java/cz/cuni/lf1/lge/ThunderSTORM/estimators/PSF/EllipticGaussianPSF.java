@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.CylindricalLensCalibration;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.PolynomialCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
@@ -16,7 +15,6 @@ public class EllipticGaussianPSF extends PSFModel {
     CylindricalLensCalibration calibration = null;
     double defaultSigma = 1.6;
     double fi, sinfi, cosfi;
-    double w01, w02, a1, a2, b1, b2, c1, c2, d1, d2;
 
     public EllipticGaussianPSF(double defaultSigma, double angle) {
         this.defaultSigma = defaultSigma;
@@ -27,17 +25,7 @@ public class EllipticGaussianPSF extends PSFModel {
 
     public EllipticGaussianPSF(CylindricalLensCalibration calibration) {
         this.calibration = calibration;
-        this.fi = Math.toRadians(calibration.getAngle());
-        this.w01 = calibration.getW01();
-        this.a1 = calibration.getA1();
-        this.b1 = calibration.getB1();
-        this.c1 = calibration.getC1();
-        this.d1 = calibration.getD1();
-        this.w02 = calibration.getW02();
-        this.a2 = calibration.getA2();
-        this.b2 = calibration.getB2();
-        this.c2 = calibration.getC2();
-        this.d2 = calibration.getD2();
+        this.fi = calibration.getAngle();
         this.sinfi = Math.sin(fi);
         this.cosfi = Math.cos(fi);
     }
@@ -48,8 +36,8 @@ public class EllipticGaussianPSF extends PSFModel {
         double dy = ((x - params[Params.X]) * sinfi + (y - params[Params.Y]) * cosfi);
 
         if (calibration != null) {
-            params[Params.SIGMA1] = calibration.evalDefocus(params[Params.Z], w01, a1, b1, c1, d1);
-            params[Params.SIGMA2] = calibration.evalDefocus(params[Params.Z], w02, a2, b2, c2, d2);
+            params[Params.SIGMA1] = calibration.getSigma1(params[Params.Z]);
+            params[Params.SIGMA2] = calibration.getSigma2(params[Params.Z]);
         }
 
         return params[Params.INTENSITY] / (2 * PI * params[Params.SIGMA1] * params[Params.SIGMA2]) * exp(-0.5 * (sqr(dx / params[Params.SIGMA1]) + sqr(dy / params[Params.SIGMA2]))) + params[Params.OFFSET];
@@ -62,8 +50,8 @@ public class EllipticGaussianPSF extends PSFModel {
         transformed[Params.Y] = parameters[Params.Y];
         transformed[Params.Z] = parameters[Params.Z];
         if (calibration != null) {
-            transformed[Params.SIGMA1] = calibration.evalDefocus(parameters[Params.Z], w01, a1, b1, c1, d1);
-            transformed[Params.SIGMA2] = calibration.evalDefocus(parameters[Params.Z], w02, a2, b2, c2, d2);
+            transformed[Params.SIGMA1] = calibration.getSigma1(parameters[Params.Z]);
+            transformed[Params.SIGMA2] = calibration.getSigma2(parameters[Params.Z]);
         } else {
             transformed[Params.SIGMA1] = parameters[Params.SIGMA1] * parameters[Params.SIGMA1];
             transformed[Params.SIGMA2] = parameters[Params.SIGMA2] * parameters[Params.SIGMA2];
@@ -80,8 +68,8 @@ public class EllipticGaussianPSF extends PSFModel {
         transformed[Params.Y] = parameters[Params.Y];
         transformed[Params.Z] = parameters[Params.Z];
         if (calibration != null) {
-            transformed[Params.SIGMA1] = calibration.evalDefocus(parameters[Params.Z], w01, a1, b1, c1, d1);
-            transformed[Params.SIGMA2] = calibration.evalDefocus(parameters[Params.Z], w02, a2, b2, c2, d2);
+            transformed[Params.SIGMA1] = calibration.getSigma1(parameters[Params.Z]);
+            transformed[Params.SIGMA2] = calibration.getSigma2(parameters[Params.Z]);
         } else {
             transformed[Params.SIGMA1] = sqrt(abs(parameters[Params.SIGMA1]));
             transformed[Params.SIGMA2] = sqrt(abs(parameters[Params.SIGMA2]));
@@ -98,6 +86,24 @@ public class EllipticGaussianPSF extends PSFModel {
             //derivations by wolfram alpha:
             //d(b^2 + ((J*J)/(2*PI*(s1*s1)*(s2*s2))) * e^( -( (((x0-x)*cos(f)-(y0-y)*sin(f))^2)/(2*s1*s1*s1*s1) + ((((x0-x)*sin(f)+(y0-y)*cos(f))^2)/(2*s2*s2*s2*s2)))))/dJ
             public double[][] value(double[] point) throws IllegalArgumentException {
+                // There must be some problem in the analytic Jacobian, because the results in `z` are way off...!
+                double[][] retVal = EllipticGaussianPSF.super.getJacobianFunction(xgrid, ygrid).value(point);
+                for (int i = 0; i < xgrid.length; i++) {
+                    for (int j = 0; j < retVal[i].length; j++) {
+                        if (j == Params.X) continue;
+                        if (j == Params.Y) continue;
+                        if (j == Params.INTENSITY) continue;
+                        if (j == Params.OFFSET) continue;
+                        if (calibration != null) {
+                            if (j == Params.Z) continue;
+                        } else {
+                            if (j == Params.SIGMA1) continue;
+                            if (j == Params.SIGMA2) continue;
+                        }
+                        retVal[i][j] = 0.0;
+                    }
+                }
+                /*
                 double[] transformedPoint = transformParameters(point);
                 double sigma1Squared = transformedPoint[Params.SIGMA1] * transformedPoint[Params.SIGMA1];
                 double sigma2Squared = transformedPoint[Params.SIGMA2] * transformedPoint[Params.SIGMA2];
@@ -136,6 +142,7 @@ public class EllipticGaussianPSF extends PSFModel {
                     // diff(psf, off)
                     retVal[i][Params.OFFSET] = 2 * point[Params.OFFSET];
                 }
+                */
 //          IJ.log("numeric jacobian: " + Arrays.deepToString(EllipticGaussianPSF.super.getJacobianFunction(xgrid, ygrid).value(point)));
 //          IJ.log("analytic jacobian: " + Arrays.deepToString(retVal));
                 return retVal;
@@ -166,8 +173,8 @@ public class EllipticGaussianPSF extends PSFModel {
         guess[Params.Z] = 0;
         guess[Params.INTENSITY] = (subImage.getMax() - subImage.getMin()) * 2 * PI * defaultSigma * defaultSigma;
         if (calibration != null) {
-            guess[Params.SIGMA1] = calibration.evalDefocus(guess[Params.Z], w01, a1, b1, c1, d1);
-            guess[Params.SIGMA2] = calibration.evalDefocus(guess[Params.Z], w02, a2, b2, c2, d2);
+            guess[Params.SIGMA1] = calibration.getSigma1(guess[Params.Z]);
+            guess[Params.SIGMA2] = calibration.getSigma2(guess[Params.Z]);
         } else {
             guess[Params.SIGMA1] = defaultSigma;
             guess[Params.SIGMA2] = defaultSigma;
@@ -188,6 +195,6 @@ public class EllipticGaussianPSF extends PSFModel {
 
     @Override
     public double getDoF() {
-        return 6;
+        return 5;
     }
 }

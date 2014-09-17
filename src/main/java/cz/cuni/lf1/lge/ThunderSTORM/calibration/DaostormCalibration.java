@@ -41,7 +41,7 @@ public class DaostormCalibration extends CylindricalLensCalibration {
     private double dw(double z, double w0, double a, double b, double c, double d) {
         double zsubz0 = z - c;
         return (w0 * (2*zsubz0/sqr(d) + 3*a*sqr(zsubz0)/pow(d,3) + 4*b*pow(zsubz0,3)/pow(d,4))) /
-                (4*sqrt(1 + sqr(zsubz0)/sqr(d) + a*pow(zsubz0,3)/pow(d,3) + b*pow(zsubz0,4)/pow(d,4)));//2* nebo 4* ?
+                (2*sqrt(1 + sqr(zsubz0)/sqr(d) + a*pow(zsubz0,3)/pow(d,3) + b*pow(zsubz0,4)/pow(d,4)));
     }
 
     @Override
