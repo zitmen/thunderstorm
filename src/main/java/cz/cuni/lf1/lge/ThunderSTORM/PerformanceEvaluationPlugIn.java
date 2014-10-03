@@ -179,43 +179,43 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
     }
 
     private double calcRMSExyz(List<Pair<Molecule, Molecule>> pairs, Units units) {
-        double rmse = 0.0;
+        double err_sum = 0.0;
         for(Pair<Molecule,Molecule> pair : pairs) {
-            rmse += pair.first.dist2xyz(pair.second, units);
+            err_sum += sqrt(pair.first.dist2xyz(pair.second, units));
         }
-        return sqrt(rmse / (double)pairs.size());
+        return (err_sum / (double)pairs.size());
     }
     
     private double calcRMSExy(List<Pair<Molecule, Molecule>> pairs, Units units) {
-        double rmse = 0.0;
+        double err_sum = 0;
         for(Pair<Molecule,Molecule> pair : pairs) {
-            rmse += pair.first.dist2xy(pair.second, units);
+            err_sum += sqrt(pair.first.dist2xy(pair.second, units));
         }
-        return sqrt(rmse / (double)pairs.size());
+        return (err_sum / (double)pairs.size());
     }
     
     private double calcRMSEz(List<Pair<Molecule, Molecule>> pairs, Units units) {
-        double rmse = 0.0;
+        double err_sum = 0;
         for(Pair<Molecule,Molecule> pair : pairs) {
-            rmse += pair.first.dist2z(pair.second, units);
+            err_sum += sqrt(pair.first.dist2z(pair.second, units));
         }
-        return sqrt(rmse / (double)pairs.size());
+        return (err_sum / (double)pairs.size());
     }
     
     private double calcRMSEx(List<Pair<Molecule, Molecule>> pairs, Units units){
-        double residualSumOfSquares = 0;
+        double err_sum = 0;
         for(Pair<Molecule,Molecule> pair : pairs) {
-            residualSumOfSquares += sqr(pair.first.getX(units) - pair.second.getX(units));
+            err_sum += abs(pair.first.getX(units) - pair.second.getX(units));
         }
-        return sqrt(residualSumOfSquares / (double)pairs.size());
+        return (err_sum / (double)pairs.size());
     }
     
     private double calcRMSEy(List<Pair<Molecule, Molecule>> pairs, Units units){
-        double residualSum = 0;
+        double err_sum = 0;
         for(Pair<Molecule,Molecule> pair : pairs) {
-            residualSum += sqr(pair.first.getY(units) - pair.second.getY(units));
+            err_sum += abs(pair.first.getY(units) - pair.second.getY(units));
         }
-        return sqrt(residualSum / (double)pairs.size());
+        return (err_sum / (double)pairs.size());
     }
     
     private synchronized void processingNewFrame(String message) {
