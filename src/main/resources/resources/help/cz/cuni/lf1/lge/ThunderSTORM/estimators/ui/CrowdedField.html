@@ -2,7 +2,7 @@
 <html>
 <head>
 <title></title>
-<!--Generated on Fri Sep  5 12:55:21 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Generated on Wed Oct 22 15:21:34 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
@@ -17,13 +17,12 @@
 <h1 class="ltx_title ltx_title_section">The Crowded-field problem</h1>
 
 <div id="Sx1.p1" class="ltx_para">
-<p class="ltx_p">High spatial densities of activated molecules can result in a ‘‘crowded
-field problem,’’ in which single molecules are not adequately resolved.
+<p class="ltx_p">High spatial densities of activated molecules can result in a “crowded
+field problem,” in which single molecules are not adequately resolved.
 The reason for this is the limitation of the PSF models described
 above to fit only a single molecule. To help solve this problem, ThunderSTORM
 uses a multiple-emitter fitting analysis (MFA) approach similar to
-the algorithm described in <cite class="ltx_cite">[<a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite>.
-</p>
+the algorithm described in <cite class="ltx_cite">[<a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite>.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
 <h2 class="ltx_title ltx_title_subsection">Multiple-emitter fitting analysis</h2>
@@ -35,35 +34,34 @@ by a model</p>
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-25px" src="mi/mi23.png" width="295" height="58" alt="\mathrm{PSF}_{N}\left(x,y\mid\boldsymbol{\Theta}\right)=\sum_{i=1}^{N}\mathrm{%
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-25px" src="mi/mi14.png" width="295" height="58" alt="\mathrm{PSF}_{N}\left(x,y\mid\boldsymbol{\Theta}\right)=\sum_{i=1}^{N}\mathrm{%
 PSF}\left(x,y\mid\boldsymbol{\theta}_{i}\right)\,,"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.SSx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi27.png" width="20" height="16" alt="N"> is a number of molecules allowed in the fitting region,
-and <img id="Sx1.SSx1.p1.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi29.png" width="134" height="21" alt="\boldsymbol{\Theta}=\left[\boldsymbol{\theta}_{1},\ldots,\boldsymbol{\theta}_{%
+<p class="ltx_p">where <img id="Sx1.SSx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi18.png" width="20" height="16" alt="N"> is a number of molecules allowed in the fitting region,
+and <img id="Sx1.SSx1.p1.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi20.png" width="134" height="21" alt="\boldsymbol{\Theta}=\left[\boldsymbol{\theta}_{1},\ldots,\boldsymbol{\theta}_{%
 N}\right]">
 are parameters describing position and shape of the imaged molecules
 modeled by the PSF.</p>
 </div>
 <div id="Sx1.SSx1.p2" class="ltx_para">
 <p class="ltx_p">The fitting of multiple-emitter models to the raw data proceeds according
-to the following algorithm. First, the algorithm fits <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi38.png" width="45" height="18" alt="\mathrm{PSF}_{1}">
+to the following algorithm. First, the algorithm fits <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi29.png" width="45" height="18" alt="\mathrm{PSF}_{1}">
 (a single molecule model) with an initial molecular position. The
 fitted PSF is subtracted from the raw data and the position of the
 maximum intensity value in the residual image is taken as an approximate
 position of a second molecule. The fitting is now repeated on the
-raw data with <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi39.png" width="45" height="18" alt="\mathrm{PSF}_{2}"> (a model containing two molecules)
+raw data with <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi30.png" width="45" height="18" alt="\mathrm{PSF}_{2}"> (a model containing two molecules)
 and with the initial positions estimated in the previous steps. The
 result of the fit is subtracted from the raw data to find an approximate
 position of a third molecule in the residual image. This routine is
 repeated until the maximum number of molecules allowed in the fitting
 region is reached. Note that initial positions of the molecules are
 further adjusted, during the multiple-emitter fitting analysis, by
-a ‘‘Push&amp;Pull" process <cite class="ltx_cite">[<a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite>. To find
-the optimal number of molecules, statistical tests are required, see
-Section <a href="#Sx1.SSx2" title="Model selection ‣ The Crowded-field problem" class="ltx_ref"><span class="ltx_text ltx_ref_title">Model selection</span></a>.</p>
+a “Push&amp;Pull” process <cite class="ltx_cite">[<a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite>. To find the optimal
+number of molecules, statistical tests are required, see Section <a href="#Sx1.SSx2" title="Model selection ‣ The Crowded-field problem" class="ltx_ref"><span class="ltx_text ltx_ref_title">Model selection</span></a>.</p>
 </div>
 <div id="Sx1.SSx1.p3" class="ltx_para">
 <p class="ltx_p">Users can specify the size of the fitting region, the maximum number
@@ -72,8 +70,7 @@ and the <a href="Fitting.html" title="" class="ltx_ref">fitting method</a> (leas
 or maximum likelihood estimation). Optionally, users can constrain
 the multiple-emitter fitting algorithm such that all fitted molecules
 have the same intensity or an intensity in a given range. The background
-signal level (offset) is constrained to the same intensity for all
-fitted molecules.</p>
+offset is constrained to the same intensity for all fitted molecules.</p>
 </div>
 </div>
 <div id="Sx1.SSx2" class="ltx_subsection">
@@ -81,21 +78,22 @@ fitted molecules.</p>
 
 <div id="Sx1.SSx2.p1" class="ltx_para">
 <p class="ltx_p">Because a model with more parameters will always be able to fit the
-data at least as well as a model with fewer parameters <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite>,
+data at least as well as a model with fewer parameters <cite class="ltx_cite">[<a href="#bib.bib19" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite>,
 statistical tests are required to determine whether the more complex
 model provides a significantly better fit of the underlying data.
 Statistical tests are usually based on pair-wise model comparison.
-Here a fit by <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi38.png" width="45" height="18" alt="\mathrm{PSF}_{1}"> is compared with a fit by <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi39.png" width="45" height="18" alt="\mathrm{PSF}_{2}">,
-the better of the two is compared with a fit by <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi40.png" width="45" height="18" alt="\mathrm{PSF}_{3}">,
-etc. Pair-wise comparisons are based on an F-test <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite>
-or on a log-likelihood ratio test <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite> as
-described below.</p>
+Here a fit by <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi29.png" width="45" height="18" alt="\mathrm{PSF}_{1}"> is compared with a fit by <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi30.png" width="45" height="18" alt="\mathrm{PSF}_{2}">,
+the better of the two is compared with a fit by <img id="Sx1.SSx2.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi31.png" width="45" height="18" alt="\mathrm{PSF}_{3}">,
+etc. Pair-wise comparisons are based on an F-test <cite class="ltx_cite">[<a href="#bib.bib19" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite>
+or on a log-likelihood ratio test <cite class="ltx_cite">[<a href="#bib.bib19" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite> as
+described below.
+</p>
 </div>
 <div id="Sx1.SSx2.SSSx1" class="ltx_subsubsection">
 <h3 class="ltx_title ltx_title_subsubsection">F-test</h3>
 
 <div id="Sx1.SSx2.SSSx1.p1" class="ltx_para">
-<p class="ltx_p">An F-test <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite> arises in the case of
+<p class="ltx_p">An F-test <cite class="ltx_cite">[<a href="#bib.bib19" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>]</cite> arises in the case of
 fitting by <a href="Fitting.html" title="" class="ltx_ref">least squares methods</a>, when we need
 to compare significance of the fit between two models, where one model
 (the null model) is a special case of the other (the alternative model)
@@ -105,7 +103,7 @@ the data is given by the formula</p>
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi21.png" width="394" height="48" alt="F_{\chi^{2}}\left(\mathcal{D}\right)=\frac{\left(\chi^{2}\left(\boldsymbol{%
+<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi12.png" width="394" height="48" alt="F_{\chi^{2}}\left(\mathcal{D}\right)=\frac{\left(\chi^{2}\left(\boldsymbol{%
 \Theta}_{0}\mid\mathcal{D}\right)-\chi^{2}\left(\boldsymbol{\Theta}_{1}\mid%
 \mathcal{D}\right)\right)/\left(v_{1}-v_{0}\right)}{\chi^{2}\left(\boldsymbol{%
 \Theta}_{1}\mid\mathcal{D}\right)/\left(n-v_{1}\right)}\,,"></td>
@@ -113,23 +111,23 @@ the data is given by the formula</p>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where the sum of squared residuals <img id="Sx1.SSx2.SSSx1.p1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi34.png" width="84" height="23" alt="\chi^{2}\left(\boldsymbol{\Theta}\mid\mathcal{D}\right)">
-computed for a model with parameters <img id="Sx1.SSx2.SSSx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi30.png" width="20" height="16" alt="\boldsymbol{\Theta}"> is defined
-<a href="Fitting.html" title="" class="ltx_ref">here</a>, vectors <img id="Sx1.SSx2.SSSx1.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi31.png" width="28" height="19" alt="\boldsymbol{\Theta}_{0}"> and
-<img id="Sx1.SSx2.SSSx1.p1.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi32.png" width="28" height="19" alt="\boldsymbol{\Theta}_{1}"> are parameters of the null and alternative
-model, respectively, <img id="Sx1.SSx2.SSSx1.p1.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi44.png" width="21" height="14" alt="v_{0}"> and <img id="Sx1.SSx2.SSSx1.p1.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi46.png" width="21" height="14" alt="v_{1}"> (where <img id="Sx1.SSx2.SSSx1.p1.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi43.png" width="60" height="16" alt="v_{0}&lt;v_{1}">)
+<p class="ltx_p">where the sum of squared residuals <img id="Sx1.SSx2.SSSx1.p1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi25.png" width="84" height="23" alt="\chi^{2}\left(\boldsymbol{\Theta}\mid\mathcal{D}\right)">
+computed for a model with parameters <img id="Sx1.SSx2.SSSx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi21.png" width="20" height="16" alt="\boldsymbol{\Theta}"> is defined
+<a href="Fitting.html" title="" class="ltx_ref">here</a>, vectors <img id="Sx1.SSx2.SSSx1.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi22.png" width="28" height="19" alt="\boldsymbol{\Theta}_{0}"> and
+<img id="Sx1.SSx2.SSSx1.p1.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="28" height="19" alt="\boldsymbol{\Theta}_{1}"> are parameters of the null and alternative
+model, respectively, <img id="Sx1.SSx2.SSSx1.p1.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi35.png" width="21" height="14" alt="v_{0}"> and <img id="Sx1.SSx2.SSSx1.p1.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi37.png" width="21" height="14" alt="v_{1}"> (where <img id="Sx1.SSx2.SSSx1.p1.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi34.png" width="60" height="16" alt="v_{0}&lt;v_{1}">)
 represent the number of free parameters of the null and alternative
-model, respectively, and <img id="Sx1.SSx2.SSSx1.p1.m8" class="ltx_Math" style="vertical-align:-2px" src="mi/mi41.png" width="52" height="18" alt="n=l^{2}"> is the number of data points within
-the <a href="FittingRegion.html" title="" class="ltx_ref">fitting region</a> <img id="Sx1.SSx2.SSSx1.p1.m9" class="ltx_Math" style="vertical-align:-2px" src="mi/mi37.png" width="18" height="16" alt="\mathcal{D}">.</p>
+model, respectively, and <img id="Sx1.SSx2.SSSx1.p1.m8" class="ltx_Math" style="vertical-align:-2px" src="mi/mi32.png" width="52" height="18" alt="n=l^{2}"> is the number of data points within
+the <a href="FittingRegion.html" title="" class="ltx_ref">fitting region</a> <img id="Sx1.SSx2.SSSx1.p1.m9" class="ltx_Math" style="vertical-align:-2px" src="mi/mi28.png" width="18" height="16" alt="\mathcal{D}">.</p>
 </div>
 <div id="Sx1.SSx2.SSSx1.p2" class="ltx_para">
 <p class="ltx_p">Assuming the null hypothesis that the alternative model does not provide
 a significantly better fit than the null model, the F-test statistics
 computed in Equation (<a href="#Sx1.E2" title="(2) ‣ F-test ‣ Model selection ‣ The Crowded-field problem" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>) has an F-distribution with
-<img id="Sx1.SSx2.SSSx1.p2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi36.png" width="128" height="21" alt="\left(v_{1}-v_{0},n-v_{1}\right)"> degrees of freedom. The null hypothesis
-is rejected if <img id="Sx1.SSx2.SSSx1.p2.m2" class="ltx_Math" style="vertical-align:-8px" src="mi/mi24.png" width="63" height="23" alt="F_{\chi^{2}}\left(\mathcal{D}\right)"> computed from
-the data is greater than the critical value of the <img id="Sx1.SSx2.SSSx1.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi25.png" width="93" height="21" alt="F_{v_{1}-v_{0},n-v_{1}}">
-distribution for a user-specified <img id="Sx1.SSx2.SSSx1.p2.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi42.png" width="13" height="15" alt="p">-value.</p>
+<img id="Sx1.SSx2.SSSx1.p2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi27.png" width="128" height="21" alt="\left(v_{1}-v_{0},n-v_{1}\right)"> degrees of freedom. The null hypothesis
+is rejected if <img id="Sx1.SSx2.SSSx1.p2.m2" class="ltx_Math" style="vertical-align:-8px" src="mi/mi15.png" width="63" height="23" alt="F_{\chi^{2}}\left(\mathcal{D}\right)"> computed from
+the data is greater than the critical value of the <img id="Sx1.SSx2.SSSx1.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi16.png" width="93" height="21" alt="F_{v_{1}-v_{0},n-v_{1}}">
+distribution for a user-specified <img id="Sx1.SSx2.SSSx1.p2.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi33.png" width="13" height="15" alt="p">-value.</p>
 </div>
 </div>
 <div id="Sx1.SSx2.SSSx2" class="ltx_subsubsection">
@@ -139,7 +137,7 @@ distribution for a user-specified <img id="Sx1.SSx2.SSSx1.p2.m4" class="ltx_Math
 <p class="ltx_p">To compare between the fits of two models, in the case of fitting
 by the <a href="Fitting.html" title="" class="ltx_ref">maximum likelihood estimation method</a>,
 we use a model selection criteria based on a log-likelihood ratio
-test <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite><em class="ltx_emph">.</em> Assuming that one model
+test <cite class="ltx_cite">[<a href="#bib.bib19" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>, <a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">2</a>]</cite><em class="ltx_emph">.</em> Assuming that one model
 (the null model) is a special case of the other (the alternative model)
 for some choice of parameters, the log-likelihood ratio is given by
 the formula</p>
@@ -147,31 +145,31 @@ the formula</p>
 
 <tr class="ltx_equation ltx_align_baseline">
 <td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi22.png" width="228" height="46" alt="\Lambda\left(\mathcal{D}\right)=-2\ln\left[\frac{L\left(\boldsymbol{\Theta}_{0%
+<td class="ltx_align_center"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi13.png" width="228" height="46" alt="\Lambda\left(\mathcal{D}\right)=-2\ln\left[\frac{L\left(\boldsymbol{\Theta}_{0%
 }\mid\mathcal{D}\right)}{L\left(\boldsymbol{\Theta}_{1}\mid\mathcal{D}\right)}%
 \right]\,,"></td>
 <td class="ltx_eqn_pad"></td>
 <td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(3)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where the likelihood <img id="Sx1.SSx2.SSSx2.p1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi26.png" width="77" height="21" alt="L\left(\boldsymbol{\Theta}\mid\mathcal{D}\right)">
-of parameters <img id="Sx1.SSx2.SSSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi30.png" width="20" height="16" alt="\boldsymbol{\Theta}"> is defined <a href="Fitting.html" title="" class="ltx_ref">here</a>,
-<img id="Sx1.SSx2.SSSx2.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi31.png" width="28" height="19" alt="\boldsymbol{\Theta}_{0}"> and <img id="Sx1.SSx2.SSSx2.p1.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi32.png" width="28" height="19" alt="\boldsymbol{\Theta}_{1}"> are the
-parameters of the null and alternative model, respectively, and <img id="Sx1.SSx2.SSSx2.p1.m5" class="ltx_Math" style="vertical-align:-2px" src="mi/mi37.png" width="18" height="16" alt="\mathcal{D}">
+<p class="ltx_p">where the likelihood <img id="Sx1.SSx2.SSSx2.p1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi17.png" width="77" height="21" alt="L\left(\boldsymbol{\Theta}\mid\mathcal{D}\right)">
+of parameters <img id="Sx1.SSx2.SSSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi21.png" width="20" height="16" alt="\boldsymbol{\Theta}"> is defined <a href="Fitting.html" title="" class="ltx_ref">here</a>,
+<img id="Sx1.SSx2.SSSx2.p1.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi22.png" width="28" height="19" alt="\boldsymbol{\Theta}_{0}"> and <img id="Sx1.SSx2.SSSx2.p1.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi23.png" width="28" height="19" alt="\boldsymbol{\Theta}_{1}"> are the
+parameters of the null and alternative model, respectively, and <img id="Sx1.SSx2.SSSx2.p1.m5" class="ltx_Math" style="vertical-align:-2px" src="mi/mi28.png" width="18" height="16" alt="\mathcal{D}">
 is a <a href="FittingRegion.html" title="" class="ltx_ref">fitting region</a>.</p>
 </div>
 <div id="Sx1.SSx2.SSSx2.p2" class="ltx_para">
 <p class="ltx_p">The probability distribution of the log-likelihood ratio computed
 in Equation (<a href="#Sx1.E3" title="(3) ‣ Log-likelihood ratio test ‣ Model selection ‣ The Crowded-field problem" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>), assuming the null hypothesis that
 the alternative model does not provide a significantly better fit
-than the null model, can be approximated by the <img id="Sx1.SSx2.SSSx2.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi33.png" width="23" height="22" alt="\chi^{2}"> distribution
-with <img id="Sx1.SSx2.SSSx2.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi45.png" width="58" height="16" alt="v_{1}-v_{0}"> degrees of freedom. This approximation is usually
-valid even for small sample sizes <cite class="ltx_cite">[<a href="#bib.bib18" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>]</cite>. Here <img id="Sx1.SSx2.SSSx2.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi44.png" width="21" height="14" alt="v_{0}">
-and <img id="Sx1.SSx2.SSSx2.p2.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi46.png" width="21" height="14" alt="v_{1}"> (where <img id="Sx1.SSx2.SSSx2.p2.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi43.png" width="60" height="16" alt="v_{0}&lt;v_{1}">) represent the number of free parameters
+than the null model, can be approximated by the <img id="Sx1.SSx2.SSSx2.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi24.png" width="23" height="22" alt="\chi^{2}"> distribution
+with <img id="Sx1.SSx2.SSSx2.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi36.png" width="58" height="16" alt="v_{1}-v_{0}"> degrees of freedom. This approximation is usually
+valid even for small sample sizes <cite class="ltx_cite">[<a href="#bib.bib19" title="The Advanced Theory of Statistics" class="ltx_ref">3</a>]</cite>. Here <img id="Sx1.SSx2.SSSx2.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi35.png" width="21" height="14" alt="v_{0}">
+and <img id="Sx1.SSx2.SSSx2.p2.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi37.png" width="21" height="14" alt="v_{1}"> (where <img id="Sx1.SSx2.SSSx2.p2.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi34.png" width="60" height="16" alt="v_{0}&lt;v_{1}">) represent the number of free parameters
 of the null and alternative models, respectively. The null hypothesis
-is rejected if the log-likelihood ratio <img id="Sx1.SSx2.SSSx2.p2.m6" class="ltx_Math" style="vertical-align:-6px" src="mi/mi28.png" width="47" height="21" alt="\Lambda\left(\mathcal{D}\right)">
-computed from the data is greater than the critical value of the <img id="Sx1.SSx2.SSSx2.p2.m7" class="ltx_Math" style="vertical-align:-8px" src="mi/mi35.png" width="55" height="24" alt="\chi_{v_{1}-v_{0}}^{2}">
-distribution for some <img id="Sx1.SSx2.SSSx2.p2.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi42.png" width="13" height="15" alt="p">-value specified by the users.</p>
+is rejected if the log-likelihood ratio <img id="Sx1.SSx2.SSSx2.p2.m6" class="ltx_Math" style="vertical-align:-6px" src="mi/mi19.png" width="47" height="21" alt="\Lambda\left(\mathcal{D}\right)">
+computed from the data is greater than the critical value of the <img id="Sx1.SSx2.SSSx2.p2.m7" class="ltx_Math" style="vertical-align:-8px" src="mi/mi26.png" width="55" height="24" alt="\chi_{v_{1}-v_{0}}^{2}">
+distribution for some <img id="Sx1.SSx2.SSSx2.p2.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi33.png" width="13" height="15" alt="p">-value specified by the users.</p>
 </div>
 </div>
 </div>
@@ -268,7 +266,7 @@ radius might need to be increased slightly to accommodate larger blobs.</p>
 <a href="#Sx1.p1" title="The Crowded-field problem" class="ltx_ref"><span class="ltx_text ltx_ref_title">The Crowded-field problem</span></a>.
 </span>
 </li>
-<li id="bib.bib18" class="ltx_bibitem ltx_bib_book">
+<li id="bib.bib19" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. Kendall and A. Stuart</span><span class="ltx_text ltx_bib_year">(1979)</span>
 </span>
@@ -287,7 +285,7 @@ radius might need to be increased slightly to accommodate larger blobs.</p>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Fri Sep  5 12:55:21 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Wed Oct 22 15:21:34 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>
