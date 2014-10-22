@@ -71,9 +71,9 @@ Post-processing analysis
 ThunderSTORM provides a variety of post-processing methods and tools which
  can be applied to the results obtained from previously processed SMLM data.
  The software includes methods for correcting the data by removing molecules
- with, e.g., poor localization accuracy, for merging molecules present in
- subsequent images, and for position correction of molecules caused by lateral
- drift of the sample and/or by axial stage scanning.
+ with, e.g., poor localization accuracy or small local density, for merging
+ molecules present in subsequent images, and for position correction of
+ molecules caused by lateral drift of the sample and/or by axial stage scanning.
  Users can also define the order in which the different post-processing
  steps are applied.
  Localization results can be imported/exported to/from ThunderSTORM in a
@@ -126,6 +126,22 @@ status open
 
 \backslash
 href{ResultsFilter.html}{Filtering according to user-defined criteria}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{LocalDensityFilter.html}{Local density filter}
 \end_layout
 
 \end_inset

@@ -93,9 +93,9 @@ key "Huang2008"
 A common PSF model for astigmatic 3D imaging is a rotated, elliptical Gaussian
  function given by the formula
 \begin_inset Formula 
-\begin{equation}
-\mathrm{PSF}_{\mathrm{EG}}\left(x,y\mid\boldsymbol{\theta},\phi\right)=\frac{\theta_{N}}{2\pi\theta_{\sigma_{1}}\theta_{\sigma_{2}}}\exp\left(-\frac{x'{}^{2}}{2\theta_{\sigma_{1}}^{2}}-\frac{y'^{2}}{2\theta_{\sigma_{2}}^{2}}\right)+\theta_{b}\,,\label{eq:psfeg}
-\end{equation}
+\[
+\mathrm{PSF}_{\mathrm{EG}}\left(x,y\mid\boldsymbol{\theta},\phi\right)=\frac{\theta_{N}}{2\pi\sigma_{1}\left(\theta_{z}\right)\sigma_{2}\left(\theta_{z}\right)}\exp\left(-\frac{x'{}^{2}}{2\left(\sigma_{1}\left(\theta_{z}\right)\right)^{2}}-\frac{y'^{2}}{2\left(\sigma_{2}\left(\theta_{z}\right)\right)^{2}}\right)+\theta_{b}\,,
+\]
 
 \end_inset
 
@@ -108,7 +108,7 @@ where
 \end_inset
 
  for the parameters 
-\begin_inset Formula $\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{\sigma_{1}},\theta_{\sigma_{2}},\theta_{N},\theta_{b}\right]$
+\begin_inset Formula $\boldsymbol{\theta}=\left[\theta_{x},\theta_{y},\theta_{z},\theta_{N},\theta_{b}\right]$
 \end_inset
 
 , and
@@ -125,15 +125,11 @@ The entries of the vector
 \end_inset
 
  are as follows: 
-\begin_inset Formula $\theta_{x}$
-\end_inset
-
- and 
-\begin_inset Formula $\theta_{y}$
+\begin_inset Formula $\theta_{x},\theta_{y},\theta_{z}$
 \end_inset
 
  are the sub-pixel molecular coordinates, 
-\begin_inset Formula $\theta_{\sigma_{1}}$
+\begin_inset Formula $\sigma_{1}\left(\theta_{z}\right)$
 \end_inset
 
  and 
@@ -149,7 +145,7 @@ The entries of the vector
 \noun off
 \color none
 
-\begin_inset Formula $\theta_{\sigma_{2}}$
+\begin_inset Formula $\sigma_{2}\left(\theta_{z}\right)$
 \end_inset
 
 
@@ -182,28 +178,40 @@ The entries of the vector
 \begin_inset Formula $\theta_{b}$
 \end_inset
 
- is the background signal level.
-\end_layout
-
-\begin_layout Subsection*
-Estimating axial position
-\end_layout
-
-\begin_layout Standard
-The estimate of the axial position 
-\begin_inset Formula $\hat{z}$
+ is the background offset.
+ The imaged widths 
+\begin_inset Formula $\sigma_{1}\left(\theta_{z}\right)$
 \end_inset
 
- of a molecule is determined by minimizing the distance between the fitted
- values 
-\begin_inset Formula $\hat{\theta}_{\sigma_{1}},\hat{\theta}_{\sigma_{2}}$
+ and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\sigma_{2}\left(\theta_{z}\right)$
 \end_inset
 
- and the calibration curves 
-\begin_inset Formula $\hat{\sigma}_{1}\left(z\right),\hat{\sigma}_{2}\left(z\right)$
-\end_inset
 
-, obtained during the 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ are modeled by a pair of 
 \begin_inset ERT
 status open
 
@@ -211,45 +219,32 @@ status open
 
 
 \backslash
-href{CalibrationEstimatorUI.html}{calibration}
+href{../../calibration/DefocusModels.html}{defocusing curves}
 \end_layout
-
-\end_inset
-
- process, thus by
-\begin_inset Formula 
-\begin{equation}
-\hat{z}=\argmin_{z}\left(\left(\hat{\theta}_{\sigma_{1}}^{1/2}-\hat{\sigma}_{1}^{1/2}\left(z\right)\right)^{2}+\left(\hat{\theta}_{\sigma_{2}}^{1/2}-\hat{\sigma}_{2}^{1/2}\left(z\right)\right)^{2}\right)\,.
-\end{equation}
-
-\end_inset
-
-Using the square root of the widths 
-\begin_inset Formula $\sigma$
-\end_inset
-
- slightly improves the localization accuracy 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Huang2008"
 
 \end_inset
 
 .
- The minimization is performed by the conjugate gradient method as implemented
- in the Apache Commons Math library 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "MathApache"
-
-\end_inset
-
- which is initialized from randomized starting points to help avoid local
- minima.
 \end_layout
 
 \begin_layout Subsection*
 See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../calibration/DefocusModels.html}{Defocusing models}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize

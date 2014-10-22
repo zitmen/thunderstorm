@@ -90,9 +90,9 @@ key "Parthasarathy2012"
 \begin_layout Standard
 The calculation starts by determining the intensity co-gradient
 \begin_inset Formula 
-\begin{equation}
+\[
 \nabla\tilde{I}_{x,y}=\left[\frac{\partial\tilde{I}\left(x,y\right)}{\partial u},\frac{\partial\tilde{I}\left(x,y\right)}{\partial v}\right]^{\top}
-\end{equation}
+\]
 
 \end_inset
 
@@ -156,9 +156,9 @@ The computed co-gradient
 
  coordinate system, given by
 \begin_inset Formula 
-\begin{equation}
+\[
 \mathit{s_{x,y}}=\left(\frac{\partial I\left(x,y\right)}{\partial u}+\frac{\partial I\left(x,y\right)}{\partial v}\right)\left(\frac{\partial I\left(x,y\right)}{\partial u}-\frac{\partial I\left(x,y\right)}{\partial v}\right)^{-1}\,.
-\end{equation}
+\]
 
 \end_inset
 
@@ -203,10 +203,10 @@ key "Parthasarathy2012"
 .
  The analytical solution is given by the following equations
 \begin_inset Formula 
-\begin{eqnarray}
+\begin{eqnarray*}
 \hat{x}_{0} & = & a^{-1}\biggl[\Bigl(\sum_{j\in\mathcal{D}}{s_{j}w_{j}b_{j}}\Bigr)\Bigl(\sum_{j\in\mathcal{D}}{w_{j}}\Bigr)-\Bigl(\sum_{j\in\mathcal{D}}{w_{j}b_{j}}\Bigr)\Bigl(\sum_{j\in\mathcal{D}}{s_{j}w_{j}}\Bigr)\biggr]\,,\\
 \hat{y}_{0} & = & a^{-1}\biggl[\Bigl(\sum_{j\in\mathcal{D}}{s_{j}w_{j}b_{j}}\Bigr)\Bigl(\sum_{j\in\mathcal{D}}{s_{j}w_{j}}\Bigr)-\Bigl(\sum_{j\in\mathcal{D}}{w_{j}b_{j}}\Bigr)\Bigl(\sum_{j\in\mathcal{D}}{s_{j}^{2}w_{j}}\Bigr)\biggr]\,,
-\end{eqnarray}
+\end{eqnarray*}
 
 \end_inset
 
@@ -272,14 +272,20 @@ key "Parthasarathy2012"
 \begin_inset Formula $3\times3$
 \end_inset
 
- averaging filter, see Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Averaging-filter"
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../filters/ui/BoxFilterUI.html}{averaging filter}
+\end_layout
 
 \end_inset
 
-, in order to reduce noise and improve the accuracy of the results.
+ in order to reduce noise and improve the accuracy of the results.
 \end_layout
 
 \begin_layout Subsection*

@@ -197,8 +197,8 @@ href{Fitting.html}{fitting method}
  Optionally, users can constrain the multiple-emitter fitting algorithm
  such that all fitted molecules have the same intensity or an intensity
  in a given range.
- The background signal level (offset) is constrained to the same intensity
- for all fitted molecules.
+ The background offset is constrained to the same intensity for all fitted
+ molecules.
 \end_layout
 
 \begin_layout Subsection*

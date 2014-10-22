@@ -153,7 +153,7 @@ The entries of the vector
 \begin_inset Formula $\theta_{b}$
 \end_inset
 
- corresponds to the background signal level.
+ corresponds to the background offset.
 \end_layout
 
 \begin_layout Subsection*

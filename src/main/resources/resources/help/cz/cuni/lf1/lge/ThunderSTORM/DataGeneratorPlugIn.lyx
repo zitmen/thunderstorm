@@ -65,13 +65,6 @@
 
 \begin_layout Section*
 Generator of simulated data
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Image-formation-model"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -201,13 +194,6 @@ href{CameraSetupPlugIn.html}{camera setup}
 
 \begin_layout Subsection*
 Fixed or spatially varying density of molecules
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Fixed-and-varying-spatial-density"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard

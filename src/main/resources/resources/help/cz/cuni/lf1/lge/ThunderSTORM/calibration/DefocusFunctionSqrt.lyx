@@ -1,0 +1,183 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Huang's defocusing model
+\end_layout
+
+\begin_layout Standard
+An alternative model of the defocusing curves is described by Huang et al.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Huang2008"
+
+\end_inset
+
+.
+ The relationship between the axial position of a molecule and its imaged
+ widths along two perpendicular axes is given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\sigma_{1}\left(z\right) & = & \sigma_{0}\sqrt{1+\left(\frac{z-c_{1}}{d_{1}}\right)+a_{1}\left(\frac{z-c_{1}}{d_{1}}\right)^{2}+b_{1}\left(\frac{z-c_{1}}{d_{1}}\right)^{4}}\,,\\
+\sigma_{2}\left(z\right) & = & \sigma_{0}\sqrt{1+\left(\frac{z-c_{2}}{d_{2}}\right)+a_{2}\left(\frac{z-c_{2}}{d_{2}}\right)^{2}+b_{2}\left(\frac{z-c_{2}}{d_{2}}\right)^{4}}\,.
+\end{eqnarray*}
+
+\end_inset
+
+Here 
+\begin_inset Formula $a_{1},b_{1},c_{1},d_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $a_{2},b_{2},c_{2},d_{2}$
+\end_inset
+
+ are unknown parameters of the model which can be determined by the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../estimator/ui/CalibrationEstimatorUI.html}{calibration process}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{DefocusModels.html}{Defocusing models}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../estimator/ui/EllipticGaussianEstimatorUI.html}{Rotated elliptical Gaussian
+ function PSF model (3D using astigmatism)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../estimator/ui/CalibrationEstimatorUI.html}{Calibration of the imaging
+ system}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references,D:/Pepa/Java/thunderstorm-imagej-plugin/src/resources/help/references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

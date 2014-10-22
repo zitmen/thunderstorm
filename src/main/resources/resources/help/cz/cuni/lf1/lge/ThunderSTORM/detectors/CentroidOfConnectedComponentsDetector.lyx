@@ -111,9 +111,9 @@ key "Izeddin2012"
  The position of each molecule is determined by computing the centroid of
  the relevant segmented object using
 \begin_inset Formula 
-\begin{equation}
+\[
 \tilde{x}_{p}=\frac{1}{c_{p}}\sum_{i=1}^{c_{p}}{x_{i,p}}\,,\quad\tilde{y}_{p}=\frac{1}{c_{p}}\sum_{i=1}^{c_{p}}{y_{i,p}}\,.
-\end{equation}
+\]
 
 \end_inset
 

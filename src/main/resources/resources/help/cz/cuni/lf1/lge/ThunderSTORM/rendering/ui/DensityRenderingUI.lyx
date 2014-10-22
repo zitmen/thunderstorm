@@ -69,7 +69,7 @@ Gaussian rendering
 \end_layout
 
 \begin_layout Standard
-This method draws a normalized symmetric 2D Gaussian function integrated
+This method draws a normalized symmetric 2D or 3D Gaussian function integrated
  over the voxel volume for every localized molecule, with a standard deviation
  equal to the computed, or user-specified localization uncertainty.
  The visualized molecules are added sequentially to the final super-resolution
@@ -81,9 +81,9 @@ This method draws a normalized symmetric 2D Gaussian function integrated
 
  is computed as
 \begin_inset Formula 
-\begin{equation}
+\[
 v\left(x,y,z\mid\boldsymbol{\theta}_{p}\right)=E_{x}E_{y}E_{z}\,,
-\end{equation}
+\]
 
 \end_inset
 
@@ -110,11 +110,11 @@ where
 
  is the axial localization uncertainty,
 \begin_inset Formula 
-\begin{eqnarray}
+\begin{eqnarray*}
 E_{x} & = & \frac{1}{2}\erf\left(\frac{x-\hat{x}+\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy}}\right)-\frac{1}{2}\erf\left(\frac{x-\hat{x}-\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy}}\right)\,,\\
 E_{y} & = & \frac{1}{2}\erf\left(\frac{y-\hat{y}+\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy}}\right)-\frac{1}{2}\erf\left(\frac{y-\hat{y}-\frac{1}{2}}{\sqrt{2}\hat{\sigma}_{xy}}\right)\,,\\
 E_{z} & = & \frac{1}{2}\erf\left(\frac{z-\hat{z}+\frac{\Delta_{z}}{2}}{\sqrt{2}\hat{\sigma}_{z}}\right)-\frac{1}{2}\erf\left(\frac{z-\hat{z}-\frac{\Delta_{z}}{2}}{\sqrt{2}\hat{\sigma}_{z}}\right)\,,
-\end{eqnarray}
+\end{eqnarray*}
 
 \end_inset
 

@@ -1,0 +1,304 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Coordinate based co-localization
+\end_layout
+
+\begin_layout Standard
+Co-localization is used to measure spatial overlap between two (or more)
+ different fluorescent labels, each having a separate emission wavelength.
+ Traditional co-localization analysis of conventional, dual-color fluorescence
+ microscopy images suffers from a limited spatial resolution and chromatic
+ errors 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Ronneberger-2008-CR"
+
+\end_inset
+
+.
+ Coordinate based co-localization (CBC) of dual-color super-resolution images
+ provides much better approach as it allows to determine co-localization
+ on a molecular level, it overcomes the dynamic range of a camera, and it
+ is not sensitive to cross talks 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Malkusch-2012-HCB"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Calculation of the CBC value around a given molecule 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+, according to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Malkusch-2012-HCB"
+
+\end_inset
+
+, starts by determining two distributions of distances
+\begin_inset Formula 
+\begin{eqnarray*}
+D_{A_{i},A}\left(r\right) & = & \frac{N_{A_{i},A}\left(r\right)}{N_{A_{i},A}\left(R_{\mathrm{max}}\right)}\frac{R_{\mathrm{max}}^{2}}{r^{2}}\,,\\
+D_{A_{i},B}\left(r\right) & = & \frac{N_{A_{i},B}\left(r\right)}{N_{A_{i},B}\left(R_{\mathrm{max}}\right)}\frac{R_{\mathrm{max}}^{2}}{r^{2}}\,.
+\end{eqnarray*}
+
+\end_inset
+
+Here 
+\begin_inset Formula $N_{A_{i},A}\left(r\right)$
+\end_inset
+
+, resp.
+ 
+\begin_inset Formula $N_{A_{i},B}\left(r\right)$
+\end_inset
+
+, is the number of localized molecules in channel 
+\begin_inset Formula $A$
+\end_inset
+
+, resp.
+ 
+\begin_inset Formula $B$
+\end_inset
+
+, within the distance 
+\begin_inset Formula $r=0,\ldots,R_{\mathrm{max}}$
+\end_inset
+
+ around 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+.
+ These distributions are corrected for the area given by 
+\begin_inset Formula $r$
+\end_inset
+
+ and normalized by the number of localizations within the largest observed
+ distance 
+\begin_inset Formula $R_{\mathrm{max}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Having these two distributions of distances, Sperman's rank correlation
+ coefficient 
+\begin_inset Formula $S_{A_{i}}=\left\langle D_{A_{i},A}\,,\, D_{A_{i},B}\right\rangle $
+\end_inset
+
+ is calculated.
+ The co-localization value is determined for every single molecule according
+ to
+\begin_inset Formula 
+\[
+C_{A_{i}}=S_{A_{i}}\exp\left(-\frac{E_{A_{i},B}}{R_{\mathrm{max}}}\right)\,,
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $E_{A_{i},B}$
+\end_inset
+
+ is a distance from localization 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+ to the nearest neighbor localization in channel 
+\begin_inset Formula $B$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In ThunderSTORM, the input data for channels 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+ are provided as a table of results and a ground-truth table, respectively.
+ Computed values with the co-localization coefficient 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $C_{A_{i}}$
+\end_inset
+
+,
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ with the distance to the nearest neighbor 
+\begin_inset Formula $E_{A_{i},B}$
+\end_inset
+
+, and with the number of neighbors 
+\begin_inset Formula $N_{A_{i},B}\left(r\right)$
+\end_inset
+
+ within the radius 
+\begin_inset Formula $r=0,\ldots,R_{\mathrm{max}}$
+\end_inset
+
+, are displayed in the table of results as new columns.
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../results/Postprocessing.html}{Post-processing methods}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{ImportExport.html}{Import and export of localization data}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../rendering/ui/Rendering.html}{Visualization methods}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

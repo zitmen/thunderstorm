@@ -74,9 +74,9 @@ A common approximation of the real PSF is a symmetric two-dimensional Gaussian
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{equation}
+\[
 \mathrm{PSF_{G}}\left(x,y\mid\boldsymbol{\theta}\right)=\frac{\theta_{N}}{2\pi\theta_{\sigma}^{2}}\exp{\left(-\frac{\left(x-\theta_{x}\right)^{2}+\left(y-\theta_{y}\right)^{2}}{2\theta_{\sigma}^{2}}\right)}+\theta_{b}\,,
-\end{equation}
+\]
 
 \end_inset
 
@@ -142,7 +142,7 @@ where
 \begin_inset Formula $\theta_{b}$
 \end_inset
 
- corresponds to the background signal level.
+ corresponds to the background offset.
 \end_layout
 
 \begin_layout Subsection*

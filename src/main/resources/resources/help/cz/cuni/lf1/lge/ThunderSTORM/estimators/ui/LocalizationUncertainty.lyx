@@ -149,7 +149,7 @@ reference "eq:thompson_ccd"
 \end_inset
 
 , where we use 
-\begin_inset Formula $\sigma^{2}=\hat{\theta}_{\sigma_{1}}\hat{\theta}_{\sigma_{2}}$
+\begin_inset Formula $\sigma^{2}=\sigma_{1}\left(\theta_{z}\right)\sigma_{2}\left(\theta_{z}\right)$
 \end_inset
 
 .
@@ -185,6 +185,22 @@ status open
 
 \backslash
 href{Fitting.html}{Fitting point-spread function models}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../calibration/DefocusModels.html}{Defocusing models}
 \end_layout
 
 \end_inset

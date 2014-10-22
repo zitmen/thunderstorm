@@ -73,16 +73,31 @@ In some SMLM experiments, a single photoactivated molecule may appear in
  finally bleach completely.
  If this is the case, ThunderSTORM identifies such sequences of molecular
  locations and combines them into one single molecule.
- The new position, imaged size, and background of the resulting signal is
- calculated as the mean value of the original data, while the intensity
+ The new position, imaged size, and the background offset of the resulting
+ signal is calculated as the mean value of the original data, while the
+ intensity and the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../estimators/ui/LocalizationUncertainty.html}{background signal level}
+\end_layout
+
+\end_inset
+
  is calculated as the sum.
  The localization uncertainty of the merged molecule is calculated from
  the new values.
  The distance within which molecules are merged together in the subsequent
  frames, as well as the allowed number of frames in which the molecule can
  disappear, are user-specified values.
+ Users can also specify a maximum number of consecutive frames such that
+ a repeating event is still considered a single molecule.
  The merging algorithm is based on finding nearest-neighbors between active
- molecules from the previous frames and the current frame.
+ molecules from the previous frame and the current frame.
 \end_layout
 
 \begin_layout Subsection*

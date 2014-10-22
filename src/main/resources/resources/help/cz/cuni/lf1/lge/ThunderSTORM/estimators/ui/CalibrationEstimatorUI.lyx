@@ -83,46 +83,26 @@ key "Huang2008"
  When a molecule is in focus, its image appears round.
  If the molecule is slightly above or below the focal plane, its image appears
  ellipsoidal.
- Calibration of the imaging system is needed to determine the orientation
- of the imaged ellipsoid (the camera chip might not be aligned with cylindrical
- lens) and the relationships between the axial position and ellipticity
- of the imaged molecules.
-\end_layout
-
-\begin_layout Subsection*
-Calibration of the imaging system
 \end_layout
 
 \begin_layout Standard
-Calibration is a procedure which determines the orientation angle 
+Calibration of the imaging system is a procedure which determines the orientatio
+n angle 
 \begin_inset Formula $\phi$
 \end_inset
 
- of the imaged ellipsoids, and the relationship between the axial position
- 
+ of the imaged ellipsoids (the camera chip might not be aligned with cylindrical
+ lens), and the relationship between the axial position 
 \begin_inset Formula $z$
 \end_inset
 
  of the molecules and their imaged widths 
-\begin_inset Formula $\sigma_{1},\sigma_{2}$
+\begin_inset Formula $\sigma_{1}\left(z\right),\sigma_{2}\left(z\right)$
 \end_inset
 
 .
- We modeled this relationship by a pair of third degree polynomials
-\begin_inset Formula 
-\begin{eqnarray}
-\hat{\sigma}_{1}\left(z\right) & = & a_{1}\left(z-c_{1}\right)^{2}+d_{1}\left(z-c_{1}\right)^{3}+b_{1}\,,\label{eq:astigmatism_poly1}\\
-\hat{\sigma}_{2}\left(z\right) & = & a_{2}\left(z-c_{2}\right)^{2}+d_{2}\left(z-c_{2}\right)^{3}+b_{2}\,.\label{eq:astigmatism_poly2}
-\end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The calibration is typically performed using a Z-stack of images of sub-diffract
-ion fluorescent beads.
+ The calibration is typically performed using a Z-stack of images of sub-diffrac
+tion fluorescent beads.
  We use a sparse sample with about 10 to 50 beads in the image and a Z-stack
  image sequence with an axial range of about 
 \begin_inset Formula $\unit[2]{\mu m}$
@@ -214,9 +194,9 @@ Results close to circular are discarded as the angle
 The final orientation angle is calculated as the circular mean of all remaining
  measurements
 \begin_inset Formula 
-\begin{equation}
+\[
 \phi=\frac{1}{4}\atantwo\left(\frac{1}{n}\sum_{i=1}^{n}{\sin\varphi_{i}},\,\frac{1}{n}\sum_{i=1}^{n}{\cos\varphi_{i}}\right)\,,
-\end{equation}
+\]
 
 \end_inset
 
@@ -267,30 +247,21 @@ href{EllipticGaussianEstimatorUI.html}{elliptical Gaussian PSF}
 \end_layout
 
 \begin_layout Enumerate
-To estimate the coefficients 
-\begin_inset Formula $a_{1},b_{1},c_{1},d_{1}$
-\end_inset
+To estimate the coefficients for the 
+\begin_inset ERT
+status open
 
- and 
-\begin_inset Formula $a_{2},b_{2},c_{2},d_{2}$
-\end_inset
+\begin_layout Plain Layout
 
- in Equations 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:astigmatism_poly1"
+
+\backslash
+href{../../calibration/DefocusModels.html}{defocusing model}
+\end_layout
 
 \end_inset
 
- and 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:astigmatism_poly2"
-
-\end_inset
-
-, we first fit the pair of polynomials for each bead separately using an
- iterative least-squares algorithm which automatically discards outliers.
+, we first fit the pair of defocusing curves for each bead separately using
+ an iterative least-squares algorithm which automatically discards outliers.
 \end_layout
 
 \begin_layout Enumerate
@@ -307,8 +278,8 @@ From the fitted models, we determine a common focal plane of the beads as
 \end_layout
 
 \begin_layout Enumerate
-The final coefficients are obtained by fitting the pair of polynomials to
- all shifted data points.
+The final coefficients are obtained by fitting the pair of defocusing curves
+ to all shifted data points.
  The 
 \begin_inset Quotes eld
 \end_inset
@@ -350,22 +321,6 @@ status open
 
 
 \backslash
-href{PSF.html}{Point-spread function (PSF)}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
 href{EllipticGaussianEstimatorUI.html}{Rotated elliptical Gaussian function
  PSF model (3D using astigmatism)}
 \end_layout
@@ -383,23 +338,7 @@ status open
 
 
 \backslash
-href{Fitting.html}{Fitting point-spread function models}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{FittingRegion.html}{Definition of the fitting region}
+href{../../calibration/DefocusModels.html}{Defocusing models}
 \end_layout
 
 \end_inset
