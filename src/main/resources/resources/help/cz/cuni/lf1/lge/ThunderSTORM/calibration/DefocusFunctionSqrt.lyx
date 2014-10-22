@@ -98,20 +98,8 @@ Here
 \begin_inset Formula $a_{2},b_{2},c_{2},d_{2}$
 \end_inset
 
- are unknown parameters of the model which can be determined by the 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{../estimator/ui/CalibrationEstimatorUI.html}{calibration process}
-\end_layout
-
-\end_inset
-
-.
+ are unknown parameters of the model which can be determined by the calibration
+ process.
 \end_layout
 
 \begin_layout Subsection*
@@ -142,8 +130,8 @@ status open
 
 
 \backslash
-href{../estimator/ui/EllipticGaussianEstimatorUI.html}{Rotated elliptical Gaussian
- function PSF model (3D using astigmatism)}
+href{../estimators/ui/EllipticGaussianEstimatorUI.html}{Rotated elliptical
+ Gaussian function PSF model (3D using astigmatism)}
 \end_layout
 
 \end_inset
@@ -159,7 +147,7 @@ status open
 
 
 \backslash
-href{../estimator/ui/CalibrationEstimatorUI.html}{Calibration of the imaging
+href{../estimators/ui/CalibrationEstimatorUI.html}{Calibration of the imaging
  system}
 \end_layout
 
@@ -171,7 +159,7 @@ href{../estimator/ui/CalibrationEstimatorUI.html}{Calibration of the imaging
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "references,D:/Pepa/Java/thunderstorm-imagej-plugin/src/resources/help/references"
+bibfiles "references"
 options "plain"
 
 \end_inset

@@ -253,6 +253,22 @@ status open
 
 
 \backslash
+href{../colocalization/CBC.html}{Coordinate based co-localization}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
 href{../rendering/ui/Rendering.html}{Visualization methods}
 \end_layout
 

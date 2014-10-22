@@ -72,10 +72,10 @@ The default model used in ThunderSTORM describes the relationship between
  the axial position of a molecule and its imaged widths along two perpendicular
  axes by a pair of second degree polynomials
 \begin_inset Formula 
-\begin{eqnarray}
-\sigma_{1}\left(z\right) & = & a_{1}\left(z-c_{1}\right)^{2}+b_{1}\,,\label{eq:astigmatism_poly1}\\
-\sigma_{2}\left(z\right) & = & a_{2}\left(z-c_{2}\right)^{2}+b_{2}\,.\label{eq:astigmatism_poly2}
-\end{eqnarray}
+\begin{eqnarray*}
+\sigma_{1}\left(z\right) & = & a_{1}\left(z-c_{1}\right)^{2}+b_{1}\,,\\
+\sigma_{2}\left(z\right) & = & a_{2}\left(z-c_{2}\right)^{2}+b_{2}\,.
+\end{eqnarray*}
 
 \end_inset
 
@@ -87,20 +87,8 @@ Here
 \begin_inset Formula $a_{2},b_{2},c_{2}$
 \end_inset
 
- are unknown parameters of the model which can be determined by the 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{../estimator/ui/CalibrationEstimatorUI.html}{calibration process}
-\end_layout
-
-\end_inset
-
-.
+ are unknown parameters of the model which can be determined by the calibration
+ process.
 \end_layout
 
 \begin_layout Subsection*
@@ -131,8 +119,8 @@ status open
 
 
 \backslash
-href{../estimator/ui/EllipticGaussianEstimatorUI.html}{Rotated elliptical Gaussian
- function PSF model (3D using astigmatism)}
+href{../estimators/ui/EllipticGaussianEstimatorUI.html}{Rotated elliptical
+ Gaussian function PSF model (3D using astigmatism)}
 \end_layout
 
 \end_inset
@@ -148,7 +136,7 @@ status open
 
 
 \backslash
-href{../estimator/ui/CalibrationEstimatorUI.html}{Calibration of the imaging
+href{../estimators/ui/CalibrationEstimatorUI.html}{Calibration of the imaging
  system}
 \end_layout
 

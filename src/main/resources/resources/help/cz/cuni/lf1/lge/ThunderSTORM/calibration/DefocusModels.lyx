@@ -70,33 +70,12 @@ Defocusing models
 \begin_layout Standard
 ThunderSTORM provides two models to describe the relationship between the
  axial position of a molecule and its imaged size.
- The first model is represented by a pair of 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{DefocusFunctionPoly.html}{second degree polynomials}
-\end_layout
-
+ The first model is represented by a pair of second degree polynomials,
+ the second model is introduced by Huang et
+\begin_inset space ~
 \end_inset
 
-, the second model is introduced by 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{DefocusFunctionSqrt.html}{Huang}
-\end_layout
-
-\end_inset
-
- et al.
+al.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -151,8 +130,8 @@ status open
 
 
 \backslash
-href{../estimator/ui/EllipticGaussianEstimatorUI.html}{Rotated elliptical Gaussian
- function PSF model (3D using astigmatism)}
+href{../estimators/ui/EllipticGaussianEstimatorUI.html}{Rotated elliptical
+ Gaussian function PSF model (3D using astigmatism)}
 \end_layout
 
 \end_inset
@@ -168,7 +147,7 @@ status open
 
 
 \backslash
-href{../estimator/ui/CalibrationEstimatorUI.html}{Calibration of the imaging
+href{../estimators/ui/CalibrationEstimatorUI.html}{Calibration of the imaging
  system}
 \end_layout
 

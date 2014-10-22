@@ -349,7 +349,7 @@ href{../../calibration/DefocusModels.html}{Defocusing models}
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "references,D:/Pepa/Java/thunderstorm-imagej-plugin/src/resources/help/references"
+bibfiles "references"
 options "plain"
 
 \end_inset
