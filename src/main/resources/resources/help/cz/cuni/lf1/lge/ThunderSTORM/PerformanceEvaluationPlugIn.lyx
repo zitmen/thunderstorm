@@ -125,7 +125,7 @@ status open
 
 
 \backslash
-href{results/ImportExport.html}{imported/exported}
+href{ImportExportPlugIn.html}{imported/exported}
 \end_layout
 
 \end_inset
@@ -329,7 +329,7 @@ status open
 
 
 \backslash
-href{results/ImportExport.html}{Import and export of molecular localizatoins
+href{ImportExportPlugIn.html}{Import and export of molecular localizatoins
  and ground truth data}
 \end_layout
 
