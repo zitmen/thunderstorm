@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.colocalization.CBC;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
@@ -214,7 +215,16 @@ public class CBCPlugIn implements PlugIn {
             add(addNNCountCheckBox, GridBagHelper.twoCols());
 
             add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
-            add(createButtonsPanel(), GridBagHelper.twoCols());
+            //buttons
+            JPanel buttons = new JPanel(new GridBagLayout());
+            buttons.add(createDefaultsButton());
+            buttons.add(Box.createHorizontalGlue(), new GridBagHelper.Builder()
+                    .fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
+            buttons.add(Help.createHelpButton(CBCPlugIn.class));
+            buttons.add(createOKButton());
+            buttons.add(createCancelButton());
+            add(buttons, GridBagHelper.twoCols());
+
             params.loadPrefs();
 
             getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));

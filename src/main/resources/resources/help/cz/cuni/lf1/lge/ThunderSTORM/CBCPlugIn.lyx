@@ -249,7 +249,7 @@ status open
 
 
 \backslash
-href{../results/Postprocessing.html}{Post-processing methods}
+href{results/Postprocessing.html}{Post-processing methods}
 \end_layout
 
 \end_inset
@@ -265,23 +265,7 @@ status open
 
 
 \backslash
-href{../results/ImportExport.html}{Import and export of localization data}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-href{../rendering/ui/Rendering.html}{Visualization methods}
+href{results/ImportExport.html}{Import and export of localization data}
 \end_layout
 
 \end_inset
