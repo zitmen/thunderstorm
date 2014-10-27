@@ -180,7 +180,6 @@ class RenderingDialog extends JDialog {
     int activeRendererIndex;
 
     enum DialogResult {
-
         CANCELLED, OK, PREVIEW;
     }
 
@@ -189,10 +188,10 @@ class RenderingDialog extends JDialog {
         this.activeRendererIndex = Integer.parseInt(Prefs.get("thunderstorm.rendering.index", "0"));
         this.renderingMethods = new CardsPanel<IRendererUI>(knownRenderers, activeRendererIndex);
         this.enablePreview = preview;
-        this.top = top;
-        this.left = left;
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
+        this.sizeX = Prefs.get("thunderstorm.rendering.imwidth", sizeX);
+        this.sizeY = Prefs.get("thunderstorm.rendering.imheight", sizeY);
+        this.left = Prefs.get("thunderstorm.rendering.imleft", left);
+        this.top = Prefs.get("thunderstorm.rendering.imtop", top);
         layoutComponents();
     }
 
@@ -277,6 +276,10 @@ class RenderingDialog extends JDialog {
                     validateFields();
                     result = DialogResult.OK;
                     Prefs.set("thunderstorm.rendering.index", activeRendererIndex = renderingMethods.getActiveComboBoxItemIndex());
+                    Prefs.set("thunderstorm.rendering.imwidth", sizeX);
+                    Prefs.set("thunderstorm.rendering.imheight", sizeY);
+                    Prefs.set("thunderstorm.rendering.imleft", left);
+                    Prefs.set("thunderstorm.rendering.imtop", top);
                     dispose();
                 } catch(Exception ex) {
                     IJ.showMessage(ex.toString());
@@ -312,6 +315,10 @@ class RenderingDialog extends JDialog {
                         validateFields();
                         result = DialogResult.PREVIEW;
                         Prefs.set("thunderstorm.rendering.index", activeRendererIndex = renderingMethods.getActiveComboBoxItemIndex());
+                        Prefs.set("thunderstorm.rendering.imwidth", sizeX);
+                        Prefs.set("thunderstorm.rendering.imheight", sizeY);
+                        Prefs.set("thunderstorm.rendering.imleft", left);
+                        Prefs.set("thunderstorm.rendering.imtop", top);
                         dispose();
                     } catch(Exception ex) {
                         IJ.showMessage(ex.toString());
