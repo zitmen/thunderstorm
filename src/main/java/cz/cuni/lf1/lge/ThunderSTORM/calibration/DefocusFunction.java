@@ -1,8 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
+import cz.cuni.lf1.lge.ThunderSTORM.IModule;
+import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 
-abstract public class DefocusFunction {
+abstract public class DefocusFunction extends IModuleUI<DefocusFunction> implements IModule {
 
     public double a;
     public double b;

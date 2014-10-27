@@ -2,6 +2,9 @@ package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
 import java.util.Locale;
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
+
+import javax.swing.*;
+
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 
 /**
@@ -10,6 +13,21 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 public class DefocusFunctionPoly extends DefocusFunction {
 
     public DefocusFunctionPoly() {
+    }
+
+    @Override
+    public String getName() {
+        return "ThunderSTORM";
+    }
+
+    @Override
+    public JPanel getOptionsPanel() {
+        return null;
+    }
+
+    @Override
+    public DefocusFunction getImplementation() {
+        return this;
     }
 
     public DefocusFunctionPoly(double w0, double a, double b, double c, double d, boolean scaledToNm) {

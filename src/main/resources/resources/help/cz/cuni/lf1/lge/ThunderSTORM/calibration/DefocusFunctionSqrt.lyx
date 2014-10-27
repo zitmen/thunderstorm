@@ -84,18 +84,18 @@ key "Huang2008"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-\sigma_{1}\left(z\right) & = & \sigma_{0}\sqrt{1+\left(\frac{z-c_{1}}{d_{1}}\right)+a_{1}\left(\frac{z-c_{1}}{d_{1}}\right)^{2}+b_{1}\left(\frac{z-c_{1}}{d_{1}}\right)^{4}}\,,\\
-\sigma_{2}\left(z\right) & = & \sigma_{0}\sqrt{1+\left(\frac{z-c_{2}}{d_{2}}\right)+a_{2}\left(\frac{z-c_{2}}{d_{2}}\right)^{2}+b_{2}\left(\frac{z-c_{2}}{d_{2}}\right)^{4}}\,.
+\sigma_{1}\left(z\right) & = & \frac{w_{01}}{2}\,\sqrt{1+\left(\frac{z-c_{1}}{d_{1}}\right)+a_{1}\left(\frac{z-c_{1}}{d_{1}}\right)^{2}+b_{1}\left(\frac{z-c_{1}}{d_{1}}\right)^{4}}\,,\\
+\sigma_{2}\left(z\right) & = & \frac{w_{02}}{2}\,\sqrt{1+\left(\frac{z-c_{2}}{d_{2}}\right)+a_{2}\left(\frac{z-c_{2}}{d_{2}}\right)^{2}+b_{2}\left(\frac{z-c_{2}}{d_{2}}\right)^{4}}\,.
 \end{eqnarray*}
 
 \end_inset
 
 Here 
-\begin_inset Formula $a_{1},b_{1},c_{1},d_{1}$
+\begin_inset Formula $w_{01},a_{1},b_{1},c_{1},d_{1}$
 \end_inset
 
  and 
-\begin_inset Formula $a_{2},b_{2},c_{2},d_{2}$
+\begin_inset Formula $w_{02},a_{2},b_{2},c_{2},d_{2}$
 \end_inset
 
  are unknown parameters of the model which can be determined by the calibration

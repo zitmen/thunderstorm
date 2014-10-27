@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.results.PostProcessingModule;
 import ij.IJ;
 import java.net.URL;

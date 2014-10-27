@@ -77,6 +77,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             List<IFilterUI> filters = ModuleLoader.getUIModules(IFilterUI.class);
             List<IDetectorUI> detectors = ModuleLoader.getUIModules(IDetectorUI.class);
             List<IEstimatorUI> estimators = Arrays.asList(new IEstimatorUI[]{calibrationEstimatorUI}); // only one estimator can be used
+            List<DefocusFunction> defocusFunctions = ModuleLoader.getUIModules(DefocusFunction.class);
             Thresholder.loadFilters(filters);
 
             // get user options
@@ -86,7 +87,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
                 IJ.handleException(e);
             }
             CalibrationDialog dialog;
-            dialog = new CalibrationDialog(imp, filters, detectors, estimators);
+            dialog = new CalibrationDialog(imp, filters, detectors, estimators, defocusFunctions);
             if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
                 return;
             }
@@ -95,7 +96,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             savePath = dialog.getSavePath();
             stageStep = dialog.getStageStep();
             zRangeLimit = dialog.getZRangeLimit();
-            defocusModel = dialog.getActiveDefocusModel();
+            defocusModel = dialog.getActiveDefocusFunction();
 
             roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
 

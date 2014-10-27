@@ -4,12 +4,29 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import java.util.Locale;
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 
+import javax.swing.*;
+
 /**
  * A squared polynomial function y = w0*sqrt(1 + ((z-c)/d)^2 + a*((z-c)/d)^3 + b*((z-c)/d)^4)
  */
 public class DefocusFunctionSqrt extends DefocusFunction {
 
     public DefocusFunctionSqrt() {
+    }
+
+    @Override
+    public String getName() {
+        return "Huang '08";
+    }
+
+    @Override
+    public JPanel getOptionsPanel() {
+        return null;
+    }
+
+    @Override
+    public DefocusFunction getImplementation() {
+        return this;
     }
 
     public DefocusFunctionSqrt(double w0, double a, double b, double c, double d, boolean scaledToNm) {

@@ -39,36 +39,38 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class CalibrationDialog extends DialogStub implements ActionListener {
 
-    ParameterKey.String defocusModel;
     ParameterKey.Double stageStep;
     ParameterKey.Double zRangeLimit;
     ParameterKey.String calibrationFilePath;
     ParameterKey.String filterName;
     ParameterKey.String detectorName;
     ParameterKey.String estimatorName;
+    ParameterKey.String defocusName;
 
     private List<IFilterUI> filters;
     private List<IDetectorUI> detectors;
     private List<IEstimatorUI> estimators;
+    private List<DefocusFunction> defocusing;
     private ImagePlus imp;
     ExecutorService previewThreadRunner = Executors.newSingleThreadExecutor();
     Future<?> previewFuture = null;
 
-    public CalibrationDialog(ImagePlus imp, List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators) {
+    public CalibrationDialog(ImagePlus imp, List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators, List<DefocusFunction> defocusing) {
         super(new ParameterTracker("thunderstorm.calibration"), IJ.getInstance(), "Calibration options");
         params.getComponentHandlers().addForStringParameters(CardsPanel.class, new CardsPanelMacroUIHandler());
 
-        defocusModel = params.createStringField("defocus", StringValidatorFactory.isMember(new String[] {"Huang 2008", "ThunderSTORM"}), "Huang 2008");
         stageStep = params.createDoubleField("stage", DoubleValidatorFactory.positiveNonZero(), 10);
         zRangeLimit = params.createDoubleField("zRange", DoubleValidatorFactory.positiveNonZero(), 400);
         calibrationFilePath = params.createStringField("saveto", null, "");
         filterName = params.createStringField("filter", null, filters.get(0).getName());
         detectorName = params.createStringField("detector", null, detectors.get(0).getName());
         estimatorName = params.createStringField("estimator", null, estimators.get(0).getName());
+        defocusName = params.createStringField("defocusing", null, defocusing.get(0).getName());
 
         this.filters = filters;
         this.detectors = detectors;
         this.estimators = estimators;
+        this.defocusing = defocusing;
         this.imp = imp;
     }
 
@@ -108,13 +110,14 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
         p = estimatorCards.getPanel("Method:");
         p.setBorder(BorderFactory.createTitledBorder("Sub-pixel localization of molecules"));
         pane.add(p, componentConstraints);
+        CardsPanel<DefocusFunction> defocusCards = new CardsPanel<DefocusFunction>(defocusing, 0);
+        defocusName.registerComponent(defocusCards);
+        p = defocusCards.getPanel("Defocus model:");
+        p.setBorder(BorderFactory.createTitledBorder("3D defocusing curve"));
+        pane.add(p, componentConstraints);
 
         JPanel aditionalOptions = new JPanel(new GridBagLayout());
         aditionalOptions.setBorder(BorderFactory.createTitledBorder("Additional options"));
-        aditionalOptions.add(new JLabel("Defocus model:"), GridBagHelper.leftCol());
-        JComboBox defocusModelComboBox = new JComboBox(new String[] {"Huang 2008", "ThunderSTORM"});
-        defocusModel.registerComponent(defocusModelComboBox);
-        aditionalOptions.add(defocusModelComboBox, GridBagHelper.rightCol());
         aditionalOptions.add(new JLabel("Z stage step [nm]:"), GridBagHelper.leftCol());
         JTextField stageStepTextField = new JTextField("", 20);
         stageStep.registerComponent(stageStepTextField);
@@ -158,10 +161,6 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
         pack();
     }
 
-    public DefocusFunction getActiveDefocusModel() {
-        return defocusModel.getValue().equals("ThunderSTORM") ? new DefocusFunctionPoly() : new DefocusFunctionSqrt();
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
@@ -173,9 +172,11 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
                 getActiveFilterUI().readParameters();
                 getActiveDetectorUI().readParameters();
                 getActiveEstimatorUI().readParameters();
+                getActiveDefocusFunction().readParameters();
                 getActiveFilterUI().resetThreadLocal();
                 getActiveDetectorUI().resetThreadLocal();
                 getActiveEstimatorUI().resetThreadLocal();
+                getActiveDefocusFunction().resetThreadLocal();
 
                 params.savePrefs();
 
@@ -234,11 +235,13 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
                 getActiveFilterUI().readParameters();
                 getActiveDetectorUI().readParameters();
                 getActiveEstimatorUI().readParameters();
+                getActiveDefocusFunction().readParameters();
                 params.savePrefs();
                 if(Recorder.record) {
                     getActiveFilterUI().recordOptions();
                     getActiveDetectorUI().recordOptions();
                     getActiveEstimatorUI().recordOptions();
+                    getActiveDefocusFunction().recordOptions();
                     params.recordMacroOptions();
                 }
                 result = JOptionPane.OK_OPTION;
@@ -262,6 +265,7 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
             getActiveFilterUI().readMacroOptions(options);
             getActiveDetectorUI().readMacroOptions(options);
             getActiveEstimatorUI().readMacroOptions(options);
+            getActiveDefocusFunction().readMacroOptions(options);
 
             return JOptionPane.OK_OPTION;
         } else {
@@ -281,9 +285,9 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
         return ModuleLoader.moduleByName(detectors, detectorName.getValue());
     }
 
-    public IEstimatorUI getActiveEstimatorUI() {
-        return ModuleLoader.moduleByName(estimators, estimatorName.getValue());
-    }
+    public IEstimatorUI getActiveEstimatorUI() { return ModuleLoader.moduleByName(estimators, estimatorName.getValue()); }
+
+    public DefocusFunction getActiveDefocusFunction() { return ModuleLoader.moduleByName(defocusing, defocusName.getValue()); }
 
     public String getSavePath() {
         return calibrationFilePath.getValue();
