@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.colocalization;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
@@ -24,64 +23,63 @@ import org.apache.commons.math3.util.MathArrays;
  */
 public class CBC {
 
-    private double[][] firstChannelXYdata;
-    private double[][] secondChannelXYdata;
+    private double[][] firstChannelCoords;
+    private double[][] secondChannelCoords;
     public double[] firstChannelNearestNeighborDistances;
     public double[] secondChannelNearestNeighborDistances;
     public double[][] firstChannelNeighborsInDistance;
     public double[][] secondChannelNeighborsInDistance;
     private KDTree<double[]> firstChannelTree;
     private KDTree<double[]> secondChannelTree;
-    public double[] squaredRadiusDomainPx;
-    public double[] squaredRadiusDomainNm;
-    private double radiusStepPx;
+    public double[] squaredRadiusDomain;
+    private double radiusStep;
     private int stepCount;
 
-    public CBC(double[][] firstChannelXYdata, double[][] secondChannelXYdata, double radiusStep, int stepCount) {
-        this.firstChannelXYdata = firstChannelXYdata;
-        this.secondChannelXYdata = secondChannelXYdata;
-        this.radiusStepPx = Units.NANOMETER.convertTo(Units.PIXEL, radiusStep);
+    public CBC(double[][] firstChannelCoords, double[][] secondChannelCoords, double radiusStep, int stepCount) {
+        this.firstChannelCoords = firstChannelCoords;
+        this.secondChannelCoords = secondChannelCoords;
+        this.radiusStep = radiusStep;
         this.stepCount = stepCount;
 
         fillRadiusDomain();
-        buildKdTrees(secondChannelXYdata);
+        buildKdTrees(secondChannelCoords);
     }
 
     public double[] calculateFirstChannelCBC() {
-        firstChannelNeighborsInDistance = new double[squaredRadiusDomainPx.length][firstChannelXYdata.length];
-        firstChannelNearestNeighborDistances = new double[firstChannelXYdata.length];
-        return calc(firstChannelXYdata, firstChannelTree, secondChannelTree, firstChannelNeighborsInDistance, firstChannelNearestNeighborDistances);
+        firstChannelNeighborsInDistance = new double[squaredRadiusDomain.length][firstChannelCoords.length];
+        firstChannelNearestNeighborDistances = new double[firstChannelCoords.length];
+        return calc(firstChannelCoords, firstChannelTree, secondChannelTree, firstChannelNeighborsInDistance, firstChannelNearestNeighborDistances);
     }
 
     public double[] calculateSecondChannelCBC() {
-        secondChannelNeighborsInDistance = new double[squaredRadiusDomainPx.length][secondChannelXYdata.length];
-        secondChannelNearestNeighborDistances = new double[secondChannelXYdata.length];
-        return calc(secondChannelXYdata, secondChannelTree, firstChannelTree, secondChannelNeighborsInDistance, secondChannelNearestNeighborDistances);
+        secondChannelNeighborsInDistance = new double[squaredRadiusDomain.length][secondChannelCoords.length];
+        secondChannelNearestNeighborDistances = new double[secondChannelCoords.length];
+        return calc(secondChannelCoords, secondChannelTree, firstChannelTree, secondChannelNeighborsInDistance, secondChannelNearestNeighborDistances);
     }
 
     /**
      * If channel1 == channel2 (both res-tables or both gt-tables), avoid self-counting, i.e., distance to nearest neighbor must not be 0!
      * On the other hand if comparing res-table with gt-table then self-counting is allowed even if the data in the tables are the same.
      * */
-    private double[] calc(final double[][] mainChannelXYdata, final KDTree<double[]> mainChannelTree, final KDTree<double[]> otherChannelTree, final double [][] neighborsInDistance, final double [] nearestNeighborDistances) {
+    private double[] calc(final double[][] mainChannelCoords, final KDTree<double[]> mainChannelTree, final KDTree<double[]> otherChannelTree, final double [][] neighborsInDistance, final double [] nearestNeighborDistances) {
 
-        final int lastRadiusIndex = squaredRadiusDomainPx.length - 1;
-        final double maxSquaredRadius = squaredRadiusDomainPx[lastRadiusIndex];
+        final int lastRadiusIndex = squaredRadiusDomain.length - 1;
+        final double maxSquaredRadius = squaredRadiusDomain[lastRadiusIndex];
 
-        final double[] cbcResults = new double[mainChannelXYdata.length];
+        final double[] cbcResults = new double[mainChannelCoords.length];
         final AtomicInteger count = new AtomicInteger(0);
         IJ.showProgress(0);
-        Loop.withIndex(0, mainChannelXYdata.length, new Loop.BodyWithIndex() {
+        Loop.withIndex(0, mainChannelCoords.length, new Loop.BodyWithIndex() {
             @Override
             public void run(int i) {
                 try {
-                    double[] counts = calcNeighborCount(mainChannelXYdata[i], mainChannelTree, squaredRadiusDomainPx, (firstChannelXYdata == secondChannelXYdata));
+                    double[] counts = calcNeighborCount(mainChannelCoords[i], mainChannelTree, squaredRadiusDomain, (firstChannelCoords == secondChannelCoords));
                     for(int j = 0; j < counts.length; j++) {
-                        counts[j] = counts[j] / counts[lastRadiusIndex] * maxSquaredRadius / squaredRadiusDomainPx[j];
+                        counts[j] = counts[j] / counts[lastRadiusIndex] * maxSquaredRadius / squaredRadiusDomain[j];
                     }
 
-                    double[] counts2 = calcNeighborCount(mainChannelXYdata[i], otherChannelTree, squaredRadiusDomainPx, (firstChannelXYdata == secondChannelXYdata));
-                    nearestNeighborDistances[i] = getDistanceToNearestNeighbor(mainChannelXYdata[i], otherChannelTree, (firstChannelXYdata == secondChannelXYdata));
+                    double[] counts2 = calcNeighborCount(mainChannelCoords[i], otherChannelTree, squaredRadiusDomain, (firstChannelCoords == secondChannelCoords));
+                    nearestNeighborDistances[i] = getDistanceToNearestNeighbor(mainChannelCoords[i], otherChannelTree, (firstChannelCoords == secondChannelCoords));
                     double maxCount = counts2[lastRadiusIndex];
 
                     for(int j = 0; j < counts2.length; j++) {
@@ -89,7 +87,7 @@ public class CBC {
                         if(maxCount == 0) {
                             counts2[j] = 0;
                         } else {
-                            counts2[j] = counts2[j] / maxCount * maxSquaredRadius / squaredRadiusDomainPx[j];
+                            counts2[j] = counts2[j] / maxCount * maxSquaredRadius / squaredRadiusDomain[j];
                         }
                     }
 
@@ -100,13 +98,13 @@ public class CBC {
                     } catch (NotANumberException e) {
                         correlation = Double.NaN;
                     }
-                    double[] nearestNeighbor = otherChannelTree.nearest(mainChannelXYdata[i]);
-                    double nnDistance = MathArrays.distance(nearestNeighbor, mainChannelXYdata[i]);
+                    double[] nearestNeighbor = otherChannelTree.nearest(mainChannelCoords[i]);
+                    double nnDistance = MathArrays.distance(nearestNeighbor, mainChannelCoords[i]);
 
                     double result = correlation * MathProxy.exp(-nnDistance / MathProxy.sqrt(maxSquaredRadius));
                     cbcResults[i] = result;
                     if(i % 1024 == 0) {
-                        IJ.showProgress((double)count.addAndGet(1024) / (double)(mainChannelXYdata.length));
+                        IJ.showProgress((double)count.addAndGet(1024) / (double)(mainChannelCoords.length));
                     }
                 } catch(KeySizeException ex) {
                     throw new RuntimeException(ex);
@@ -127,16 +125,28 @@ public class CBC {
 
         double[] result = new double[squaredRadiusValues.length];
         for(KDTree.DistAndValue<double[]> neighbor : neighbors) {
-            if (checkNotSelf && ((neighbor.value[0] == queryPoint[0]) && (neighbor.value[1] == queryPoint[1]))) {
+            if (checkNotSelf && eqCoords(neighbor.value, queryPoint)) {
                 continue;
             }
             double distance = neighbor.dist;
-            int bin = (int) Math.floor(distance / radiusStepPx);
+            int bin = (int) Math.floor(distance / radiusStep);
             result[bin]++;
         }
 
         VectorMath.cumulativeSum(result, false);
         return result;
+    }
+
+    private boolean eqCoords(double[] a, double[] b) {
+        if (a.length != b.length) {
+            return false;
+        }
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] != b[i]) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private double getDistanceToNearestNeighbor(double[] queryPoint, KDTree<double[]> kdtree, boolean checkNotSelf) {
@@ -145,29 +155,28 @@ public class CBC {
 
         List<double[]> knn = kdtree.nearest(queryPoint, 2);
         double[] nn = knn.get(0);
-        if (checkNotSelf && ((nn[0] == queryPoint[0]) && (nn[0] == queryPoint[0]))) {
+        if (checkNotSelf && eqCoords(nn, queryPoint)) {
             nn = knn.get(1);
         }
-        return MathProxy.sqrt(MathProxy.sqr(nn[0]-queryPoint[0])+MathProxy.sqr(nn[1]-queryPoint[1]));
+        return MathProxy.euclidDist(nn, queryPoint);
     }
 
     private void fillRadiusDomain() {
-        squaredRadiusDomainPx = new double[stepCount];
-        squaredRadiusDomainNm = new double[stepCount];
+        squaredRadiusDomain = new double[stepCount];
         for(int i = 0; i < stepCount; i++) {
-            squaredRadiusDomainPx[i] = MathProxy.sqr((i + 1) * radiusStepPx);
+            squaredRadiusDomain[i] = MathProxy.sqr((i + 1) * radiusStep);
         }
     }
 
-    private void buildKdTrees(double[][] secondChannelXYdata) throws RuntimeException {
+    private void buildKdTrees(double[][] secondChannelCoords) throws RuntimeException {
         //build one tree in separate thread, use Loop's executor so we do not create additional threads
         Future<?> future = Loop.getExecutor().submit(new Runnable() {
             @Override
             public void run() {
-                firstChannelTree = buildTree(CBC.this.firstChannelXYdata);
+                firstChannelTree = buildTree(CBC.this.firstChannelCoords);
             }
         });
-        secondChannelTree = buildTree(secondChannelXYdata);
+        secondChannelTree = buildTree(secondChannelCoords);
         try {
             future.get();
         } catch(InterruptedException ex) {
@@ -177,10 +186,10 @@ public class CBC {
         }
     }
 
-    private KDTree<double[]> buildTree(double[][] xy) {
-        assert xy != null;
-        KDTree<double[]> kdtree = new KDTree<double[]>(2);
-        for(double[] dataPoint : xy) {
+    private KDTree<double[]> buildTree(double[][] coords) {
+        assert coords != null;
+        KDTree<double[]> kdtree = new KDTree<double[]>(coords[0].length);
+        for(double[] dataPoint : coords) {
 
             assert dataPoint != null;
             kdtree.insert(dataPoint, dataPoint);

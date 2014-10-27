@@ -20,7 +20,7 @@ import java.awt.event.KeyEvent;
 
 public class LocalDensityFilter extends PostProcessingModule {
 
-    private String[] dim = {"2D", "3D"};
+    final String[] dim = {"2D", "3D"};
 
     private JTextField distanceTextField;
     private JTextField neighborsTextField;
@@ -122,7 +122,7 @@ public class LocalDensityFilter extends PostProcessingModule {
                     }
                     IJ.showStatus("Local density filtering...");
                     boolean filter[] = new boolean[coords.length];
-                    KDTree<double[]> tree = new KDTree<double[]>(is3D() ? 3 : 2);
+                    KDTree<double[]> tree = new KDTree<double[]>(coords[0].length);
                     for(double[] dataPoint : coords) {
                         tree.insert(dataPoint, dataPoint);
                     }

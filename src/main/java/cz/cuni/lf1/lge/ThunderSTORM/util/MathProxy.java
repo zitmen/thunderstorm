@@ -211,4 +211,26 @@ public class MathProxy {
         }
         return powof2;
     }
+
+    public static double euclidDist2(double[] a, double[] b) {
+        double dist2 = 0.0;
+        int i = 0, im = min(a.length, b.length);
+        for ( ; i < im; i++) {
+            dist2 += sqr(a[i] - b[i]);
+        }
+        if (a.length > b.length) {
+            for ( ; i < a.length; i++) {
+                dist2 += sqr(a[i]);
+            }
+        } else if (b.length > a.length) {
+            for ( ; i < b.length; i++) {
+                dist2 += sqr(b[i]);
+            }
+        }
+        return dist2;
+    }
+
+    public static double euclidDist(double[] a, double[] b) {
+        return sqrt(euclidDist2(a, b));
+    }
 }

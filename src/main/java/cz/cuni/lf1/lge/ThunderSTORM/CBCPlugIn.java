@@ -53,7 +53,7 @@ public class CBCPlugIn implements PlugIn {
                     return;
                 }
             }
-            runCBC(dialog.getChannel1Table(), dialog.getChannel2Table(), dialog.radiusStep.getValue(),
+            runCBC(dialog.getChannel1Table(), dialog.getChannel2Table(), dialog.is3D(), dialog.radiusStep.getValue(),
                    dialog.stepCount.getValue(), dialog.addCBC.getValue(), dialog.addNNDist.getValue(), dialog.addNNCount.getValue());
 
         } catch(Exception ex) {
@@ -61,33 +61,47 @@ public class CBCPlugIn implements PlugIn {
         }
     }
     
-    public void runCBC(GenericTable channel1Table, GenericTable channel2Table, double radiusStep, int stepCount, boolean addCBCToTable, boolean addNNDistToTable, boolean addNeighborsInDistToTable) {
+    public void runCBC(GenericTable channel1Table, GenericTable channel2Table, boolean is3D, double radiusStep, int stepCount, boolean addCBCToTable, boolean addNNDistToTable, boolean addNeighborsInDistToTable) {
         if (channel1Table == null || channel2Table == null) return;
 
-        double[][] firstXY = new double[channel1Table.getRowCount()][];
-        for(int i = 0; i < firstXY.length; i++) {
-            Molecule m = channel1Table.getRow(i);
-            firstXY[i] = new double[]{m.getX(MoleculeDescriptor.Units.PIXEL), m.getY(MoleculeDescriptor.Units.PIXEL)};
+        double[][] firstCoords = new double[channel1Table.getRowCount()][];
+        if (is3D) {
+            for (int i = 0; i < firstCoords.length; i++) {
+                Molecule m = channel1Table.getRow(i);
+                firstCoords[i] = new double[]{m.getX(Units.NANOMETER), m.getY(Units.NANOMETER), m.getZ(Units.NANOMETER)};
+            }
+        } else {
+            for (int i = 0; i < firstCoords.length; i++) {
+                Molecule m = channel1Table.getRow(i);
+                firstCoords[i] = new double[]{m.getX(Units.NANOMETER), m.getY(Units.NANOMETER)};
+            }
         }
 
         CBC cbc;
         if (channel1Table != channel2Table) {
-            double[][] secondXY = new double[channel2Table.getRowCount()][];
-            for (int i = 0; i < secondXY.length; i++) {
-                Molecule m = channel2Table.getRow(i);
-                secondXY[i] = new double[]{m.getX(MoleculeDescriptor.Units.PIXEL), m.getY(MoleculeDescriptor.Units.PIXEL)};
+            double[][] secondCoords = new double[channel2Table.getRowCount()][];
+            if (is3D) {
+                for (int i = 0; i < secondCoords.length; i++) {
+                    Molecule m = channel2Table.getRow(i);
+                    secondCoords[i] = new double[]{m.getX(Units.NANOMETER), m.getY(Units.NANOMETER), m.getZ(Units.NANOMETER)};
+                }
+            } else {
+                for (int i = 0; i < secondCoords.length; i++) {
+                    Molecule m = channel2Table.getRow(i);
+                    secondCoords[i] = new double[]{m.getX(Units.NANOMETER), m.getY(Units.NANOMETER)};
+                }
             }
-            cbc = new CBC(firstXY, secondXY, radiusStep, stepCount);
+            cbc = new CBC(firstCoords, secondCoords, radiusStep, stepCount);
         } else {
-            cbc = new CBC(firstXY, firstXY, radiusStep, stepCount);
+            cbc = new CBC(firstCoords, firstCoords, radiusStep, stepCount);
         }
 
         IJ.showStatus("Calculating first channel CBC.");
         double[] firstChannelCBC = cbc.calculateFirstChannelCBC();
         if(addCBCToTable) addColumnToModel(channel1Table.getModel(), firstChannelCBC, "cbc", Units.UNITLESS);
-        if(addNNDistToTable) addColumnToModel(channel1Table.getModel(), cbc.firstChannelNearestNeighborDistances, "nn_dist", Units.PIXEL);
+        if(addNNDistToTable) addColumnToModel(channel1Table.getModel(), cbc.firstChannelNearestNeighborDistances, "nn_dist", Units.NANOMETER);
         if(addNeighborsInDistToTable) {
-            for(int i = 0; i < cbc.squaredRadiusDomainNm.length; i++) {
+            for(int i = 0; i < cbc.squaredRadiusDomain.length; i++) {
                 addColumnToModel(channel1Table.getModel(), cbc.firstChannelNeighborsInDistance[i], "neighbors_in_dist_"+((int)((i+1)*radiusStep)), Units.UNITLESS);
             }
         }
@@ -113,9 +127,9 @@ public class CBCPlugIn implements PlugIn {
             double[] secondChannelCBC = cbc.calculateSecondChannelCBC();
             if (addCBCToTable) addColumnToModel(channel2Table.getModel(), secondChannelCBC, "cbc", Units.UNITLESS);
             if (addNNDistToTable)
-                addColumnToModel(channel2Table.getModel(), cbc.secondChannelNearestNeighborDistances, "nn_dist", Units.PIXEL);
+                addColumnToModel(channel2Table.getModel(), cbc.secondChannelNearestNeighborDistances, "nn_dist", Units.NANOMETER);
             if (addNeighborsInDistToTable) {
-                for (int i = 0; i < cbc.squaredRadiusDomainNm.length; i++) {
+                for (int i = 0; i < cbc.squaredRadiusDomain.length; i++) {
                     addColumnToModel(channel2Table.getModel(), cbc.secondChannelNeighborsInDistance[i], "neighbors_in_dist_" + ((int) ((i + 1) * radiusStep)), Units.UNITLESS);
                 }
             }
@@ -159,6 +173,7 @@ public class CBCPlugIn implements PlugIn {
     class CBCDialog extends DialogStub {
 
         ParameterKey.Integer radiusStep;
+        ParameterKey.String dimensions;
         ParameterKey.Integer stepCount;
         ParameterKey.String channel1;
         ParameterKey.String channel2;
@@ -166,11 +181,13 @@ public class CBCPlugIn implements PlugIn {
         ParameterKey.Boolean addNNDist;
         ParameterKey.Boolean addNNCount;
 
+        final String[] dim = {"2D", "3D"};
         final String[] tables = new String[] {"Results table", "Ground-truth table"};
 
         public CBCDialog(Window owner) {
             super(new ParameterTracker("thunderstorm.cbc"), owner, "Coordinate-Based Colocalization");
             radiusStep = params.createIntField("radiusStep", IntegerValidatorFactory.positiveNonZero(), 50);
+            dimensions = params.createStringField("dimensions", StringValidatorFactory.isMember(dim), dim[0]);
             stepCount = params.createIntField("stepCount", IntegerValidatorFactory.rangeInclusive(2, 10000), 10);
             channel1 = params.createStringField("channel1", StringValidatorFactory.isMember(tables), tables[0]);
             channel2 = params.createStringField("channel2", StringValidatorFactory.isMember(tables), tables[1]);
@@ -187,6 +204,11 @@ public class CBCPlugIn implements PlugIn {
         protected void layoutComponents() {
             JTextField radiusStepTextField = new JTextField(20);
             JTextField stepCountTextField = new JTextField(20);
+            ButtonGroup dimBtnGroup = new ButtonGroup();
+            JRadioButton twoDimRadioButton = new JRadioButton(dim[0]);
+            JRadioButton threeDimRadioButton = new JRadioButton(dim[1]);
+            dimBtnGroup.add(twoDimRadioButton);
+            dimBtnGroup.add(threeDimRadioButton);
             JComboBox<String> channel1ComboBox = new JComboBox<String>(tables);
             JComboBox<String> channel2ComboBox = new JComboBox<String>(tables);
             JCheckBox addCBCCheckBox = new JCheckBox("Add CBC into the results table");
@@ -194,6 +216,7 @@ public class CBCPlugIn implements PlugIn {
             JCheckBox addNNCountCheckBox = new JCheckBox("Add count of neighbors within the radius into the results table");
 
             radiusStep.registerComponent(radiusStepTextField);
+            dimensions.registerComponent(dimBtnGroup);
             stepCount.registerComponent(stepCountTextField);
             channel1.registerComponent(channel1ComboBox);
             channel2.registerComponent(channel2ComboBox);
@@ -201,8 +224,15 @@ public class CBCPlugIn implements PlugIn {
             addNNDist.registerComponent(addNNDistCheckBox);
             addNNCount.registerComponent(addNNCountCheckBox);
 
+            JPanel dimPanel = new JPanel(new GridBagLayout());
+            dimPanel.add(twoDimRadioButton, new GridBagHelper.Builder().gridxy(0, 0).weightx(0.2).anchor(GridBagConstraints.WEST).build());
+            dimPanel.add(threeDimRadioButton, new GridBagHelper.Builder().gridxy(1, 0).weightx(0.2).anchor(GridBagConstraints.WEST).build());
+            dimPanel.add(Box.createHorizontalGlue(), new GridBagHelper.Builder().gridxy(2, 0).weightx(0.6).anchor(GridBagConstraints.WEST).build());
+
             add(new JLabel("Radius step [nm]:"), GridBagHelper.leftCol());
             add(radiusStepTextField, GridBagHelper.rightCol());
+            add(new JLabel("Dimensions:"), GridBagHelper.leftCol());
+            add(dimPanel, GridBagHelper.rightCol());
             add(new JLabel("Step count:"), GridBagHelper.leftCol());
             add(stepCountTextField, GridBagHelper.rightCol());
             add(new JLabel("Channel 1:"), GridBagHelper.leftCol());
@@ -215,6 +245,7 @@ public class CBCPlugIn implements PlugIn {
             add(addNNCountCheckBox, GridBagHelper.twoCols());
 
             add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
+
             //buttons
             JPanel buttons = new JPanel(new GridBagLayout());
             buttons.add(createDefaultsButton());
@@ -233,6 +264,10 @@ public class CBCPlugIn implements PlugIn {
             setModal(true);
         }
 
+        boolean is3D() {
+            return dimensions.getValue().equals(dim[1]);
+        }
+
         public GenericTable getChannel1Table() throws Exception {
             return getChannelTable(channel1);
         }
@@ -242,7 +277,7 @@ public class CBCPlugIn implements PlugIn {
         }
 
         protected GenericTable getChannelTable(ParameterKey.String channel) throws Exception {
-            GenericTable table = null;
+            GenericTable table;
             if (channel.getValue().equals(tables[0])) { // results table
                 table = IJResultsTable.getResultsTable();
                 if (table == null) {
@@ -261,6 +296,12 @@ public class CBCPlugIn implements PlugIn {
                 }
             } else {
                 throw new Exception("Unknown channel!");
+            }
+            if (!table.columnExists("x") || !table.columnExists("y")) {
+                throw new Exception("Columns `x` and `y` must be present in the table!");
+            }
+            if (is3D() && !table.columnExists("z")) {
+                throw new Exception("Column `z` must be present in the table! Use 2D filter instead.");
             }
             return table;
         }
