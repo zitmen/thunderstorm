@@ -19,26 +19,25 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 
 public class ResultsGrouping extends PostProcessingModule {
 
     private JTextField distanceTextField;
     private JTextField offFramesTextField;
+    private JTextField framesPerMoleculeTextField;
     private JButton applyButton;
 
     private final ParameterKey.Double distParam;
     private final ParameterKey.Integer offFramesParam;
+    private final ParameterKey.Integer framesPerMolecule;
     private final ParameterKey.Double zCoordWeightParam; //hidden param
 
     public ResultsGrouping() {
         params.setNoGuiParametersAllowed(true);
         distParam = params.createDoubleField("dist", DoubleValidatorFactory.positive(), 20);
         offFramesParam = params.createIntField("offFrames", IntegerValidatorFactory.positive(), 1);
+        framesPerMolecule = params.createIntField("framesPerMolecule", IntegerValidatorFactory.positive(), 0);
         zCoordWeightParam = params.createDoubleField("zCoordWeight", DoubleValidatorFactory.positive(), 0.1);
     }
 
@@ -57,25 +56,32 @@ public class ResultsGrouping extends PostProcessingModule {
         JPanel grouping = new JPanel(new GridBagLayout());
         InputListener listener = new InputListener();
 
-        distanceTextField = new JTextField(15);
+        distanceTextField = new JTextField(5);
         distanceTextField.addKeyListener(listener);
         distParam.registerComponent(distanceTextField);
-        JLabel groupThrLabel = new JLabel("Maximum distance [units of x,y]:");
+        JLabel groupThrLabel = new JLabel("Maximum distance [units of x,y]: ");
 
-        offFramesTextField = new JTextField(15);
+        offFramesTextField = new JTextField(5);
         offFramesTextField.addKeyListener(listener);
         offFramesParam.registerComponent(offFramesTextField);
-        JLabel offFramesLabel = new JLabel("Maximum off frames:");
+        JLabel offFramesLabel = new JLabel("Maximum off frames: ");
+
+        framesPerMoleculeTextField = new JTextField(5);
+        framesPerMoleculeTextField.addKeyListener(listener);
+        framesPerMolecule.registerComponent(framesPerMoleculeTextField);
+        JLabel framesPerMoleculeLabel = new JLabel("Max. frames per molecule (0 = unlimited): ");
 
         applyButton = new JButton("Merge");
         applyButton.addActionListener(listener);
 
-        grouping.add(groupThrLabel, new GridBagHelper.Builder().gridxy(0, 0).weightx(0.5).anchor(GridBagConstraints.EAST).build());
-        grouping.add(distanceTextField, new GridBagHelper.Builder().gridxy(1, 0).weightx(0.5).anchor(GridBagConstraints.WEST).build());
-        grouping.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(2, 0).anchor(GridBagConstraints.EAST).build());
+        grouping.add(groupThrLabel, new GridBagHelper.Builder().gridxy(0, 0).weightx(0.2).anchor(GridBagConstraints.EAST).build());
+        grouping.add(distanceTextField, new GridBagHelper.Builder().gridxy(1, 0).weightx(0.3).anchor(GridBagConstraints.WEST).build());
+        grouping.add(framesPerMoleculeLabel, new GridBagHelper.Builder().gridxy(2, 0).weightx(0.2).anchor(GridBagConstraints.EAST).build());
+        grouping.add(framesPerMoleculeTextField, new GridBagHelper.Builder().gridxy(3, 0).weightx(0.3).anchor(GridBagConstraints.WEST).build());
+        grouping.add(Help.createHelpButton(getClass()), new GridBagHelper.Builder().gridxy(4, 0).anchor(GridBagConstraints.EAST).build());
         grouping.add(offFramesLabel, new GridBagHelper.Builder().gridxy(0, 1).weightx(0.5).anchor(GridBagConstraints.EAST).build());
         grouping.add(offFramesTextField, new GridBagHelper.Builder().gridxy(1, 1).weightx(0.5).anchor(GridBagConstraints.WEST).build());
-        grouping.add(applyButton, new GridBagHelper.Builder().gridxy(2, 1).build());
+        grouping.add(applyButton, new GridBagHelper.Builder().gridxy(4, 1).build());
         params.updateComponents();
         return grouping;
     }
@@ -84,6 +90,7 @@ public class ResultsGrouping extends PostProcessingModule {
     protected void runImpl() {
         final double dist = distParam.getValue();
         final int offFrames = offFramesParam.getValue();
+        final int framesPerMol = framesPerMolecule.getValue();
         final double zWeight = zCoordWeightParam.getValue();
         if(!applyButton.isEnabled() || (dist == 0)) {
             return;
@@ -95,7 +102,7 @@ public class ResultsGrouping extends PostProcessingModule {
         new SwingWorker<List<Molecule>, Object>() {
             @Override
             protected List<Molecule> doInBackground() {
-                return getMergedMolecules(model, dist, offFrames, zWeight);
+                return getMergedMolecules(model, dist, offFrames, framesPerMol, zWeight);
             }
 
             @Override
@@ -138,7 +145,7 @@ public class ResultsGrouping extends PostProcessingModule {
         }
     }
 
-    public static List<Molecule> getMergedMolecules(GenericTableModel model, double dist, int offFrames, double zWeight) {
+    public static List<Molecule> getMergedMolecules(GenericTableModel model, double dist, int offFrames, int framesPerMol, double zWeight) {
         if(!model.columnExists(PSFModel.Params.LABEL_X) || !model.columnExists(PSFModel.Params.LABEL_Y)) {
             throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y, model.getColumnNames()));
         }
@@ -147,11 +154,7 @@ public class ResultsGrouping extends PostProcessingModule {
         for(int i = 0, im = model.getRowCount(); i < im; i++) {
             frames.InsertMolecule(model.getRow(i));
         }
-        frames.matchMolecules(sqr(dist),
-                new FrameSequence.Fixed(offFrames),
-                new FrameSequence.LastDetection(),
-                zWeight,
-                null);
+        frames.mergeMolecules(sqr(dist), offFrames, new FrameSequence.LastDetection(), framesPerMol, zWeight, null);
         //
         // Set new IDs for the new "macro" molecules
         for(Molecule mol : frames.getAllMolecules()) {

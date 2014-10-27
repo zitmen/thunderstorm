@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree.KDTree;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
@@ -94,10 +95,10 @@ public class LocalDensityFilter extends PostProcessingModule {
         }
         try {
             final IJResultsTable table = IJResultsTable.getResultsTable();
-            if (!table.columnExists("x") || !table.columnExists("y")) {
+            if (!table.columnExists(PSFModel.Params.LABEL_X) || !table.columnExists(PSFModel.Params.LABEL_Y)) {
                 throw new Exception("Columns `x` and `y` must be present in the table!");
             }
-            if (is3D() && !table.columnExists("z")) {
+            if (is3D() && !table.columnExists(PSFModel.Params.LABEL_Z)) {
                 throw new Exception("Column `z` must be present in the table! Use 2D filter instead.");
             }
             //

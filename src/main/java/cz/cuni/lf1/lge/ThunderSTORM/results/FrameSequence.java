@@ -54,6 +54,75 @@ public class FrameSequence {
 
     /**
      * The method matches molecules at the same positions lasting for more than
+     * just 1 frame. Maximum number of off frames between two detections to be still
+     * considered as one molecule can be specifed (offFramesThr). Also maximum number
+     * of frames per one molecule can be specified (framesPerMolecule).
+     *
+     * The method works in 3D - calculating weighted squared euclidean distance.
+     * The weight of z in the distance is specified in zCoordWeight parameter. X
+     * and Y weights are not adjustable. Note: this method makes changes into
+     * `detections`!
+     *
+     * TODO: refactor - methods match/merge molecules are very similar
+     */
+    public void mergeMolecules(double dist2_thr, int off_thr, ActiveMoleculePositionStrategy positionStrategy,
+               int framesPerMolecule, double zCoordWeight, ProgressTracker progressTracker) {
+        molecules.clear();
+        List<Molecule> activeMolecules = new ArrayList<Molecule>();
+        int framesProcessed = 0;
+        for(int frame : frames) {
+            List<Molecule> fr2mol = detections.get(frame);
+            KDTree<Molecule> tree = new KDTree<Molecule>(3);
+            try {
+                // eliminate the inactive molecules
+                List<Molecule> deactivate = new ArrayList<Molecule>();
+                for (Molecule mol : activeMolecules) {
+                    if ((framesPerMolecule > 0) && ((frame - getFirstAddedChildMolecule(mol).getParam(MoleculeDescriptor.LABEL_FRAME)) >= framesPerMolecule)) {
+                        deactivate.add(mol); // the molecule was active too many frames so no more detections can be added
+                    } else if (((frame - 1) - getLastAddedChildMolecule(mol).getParam(MoleculeDescriptor.LABEL_FRAME)) > off_thr) {
+                        deactivate.add(mol); // the molecule was inactive too long so no more detections can be added
+                    }
+                }
+                for (Molecule mol : deactivate) {
+                    activeMolecules.remove(mol);
+                }
+                // build tree from active molecules
+                for(Molecule mol : activeMolecules) {
+                    try {
+                        Molecule selectedMol = positionStrategy.getActiveMoleculePosition(mol);
+                        //key in the tree is the coords of the molecule from last frame, but the object stored is the parent molecule
+                        tree.insert(new double[]{selectedMol.getX(), selectedMol.getY(), zCoordWeight * selectedMol.getZ()}, mol);
+                    } catch(KeyDuplicateException ex) {
+                        IJ.handleException(ex); // almost never happens...if it does, something is wrong with fitting/detection
+                    }
+                }
+                boolean emptyTree = activeMolecules.isEmpty();
+                Molecule nn_mol;
+                for(Molecule mol : fr2mol) {
+                    if(!emptyTree) {
+                        nn_mol = tree.nearest(new double[]{mol.getX(), mol.getY(), zCoordWeight * mol.getZ()});
+                        Molecule selectedMol = positionStrategy.getActiveMoleculePosition(nn_mol);
+                        if (squareDistWeightedZ(mol, selectedMol, zCoordWeight) < dist2_thr) {  // in radius?
+                            nn_mol.addDetection(mol.getDetections().get(0));
+                            nn_mol.updateParameters();
+                            continue;   // merge and do not add as a separate molecule!
+                        }
+                    }
+                    activeMolecules.add(mol);
+                    molecules.add(mol);
+                }
+                if(progressTracker != null){
+                    progressTracker.progress((double)framesProcessed++/frames.size());
+                }
+                GUI.checkIJEscapePressed();
+            } catch(KeySizeException ex) {
+                IJ.handleException(ex);
+            }
+        }
+    }
+
+    /**
+     * The method matches molecules at the same positions lasting for more than
      * just 1 frame. Maximum number of frames between two detections to be still
      * considered as one molecule can be specifed(offFramesThr).
      *
@@ -61,12 +130,14 @@ public class FrameSequence {
      * The weight of z in the distance is specified in zCoordWeight parameter. X
      * and Y weights are not adjustable. Note: this method makes changes into
      * `detections`!
+     *
+     * TODO: refactor - methods match/merge molecules are very similar
      */
     public void matchMolecules(double dist2_thr,
-            OffFramesThresholdStrategy off_thr,
-            ActiveMoleculePositionStrategy positionStrategy,
-            double zCoordWeight,
-            ProgressTracker progressTracker) {
+                               OffFramesThresholdStrategy off_thr,
+                               ActiveMoleculePositionStrategy positionStrategy,
+                               double zCoordWeight,
+                               ProgressTracker progressTracker) {
         molecules.clear();
         List<Molecule> activeMolecules = new ArrayList<Molecule>();
         List<Molecule> activeMoleculesTemp = new ArrayList<Molecule>();
@@ -111,7 +182,7 @@ public class FrameSequence {
                 List<Molecule> pom = activeMolecules;
                 activeMolecules = activeMoleculesTemp;
                 activeMoleculesTemp = pom;
-                
+
                 if(progressTracker != null){
                     progressTracker.progress((double)framesProcessed++/frames.size());
                 }
@@ -131,6 +202,18 @@ public class FrameSequence {
             return parent;
         } else {
             return parent.getDetections().get(parent.getDetectionsCount() - 1);
+        }
+    }
+
+    /**
+     * return the molecule that was first added to the input molecule or the
+     * input molecule if it is a single molecule
+     */
+    private static Molecule getFirstAddedChildMolecule(Molecule parent) {
+        if(parent.isSingleMolecule()) {
+            return parent;
+        } else {
+            return parent.getDetections().get(0);
         }
     }
 

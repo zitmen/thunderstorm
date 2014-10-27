@@ -297,10 +297,10 @@ public class CBCPlugIn implements PlugIn {
             } else {
                 throw new Exception("Unknown channel!");
             }
-            if (!table.columnExists("x") || !table.columnExists("y")) {
+            if (!table.columnExists(PSFModel.Params.LABEL_X) || !table.columnExists(PSFModel.Params.LABEL_Y)) {
                 throw new Exception("Columns `x` and `y` must be present in the table!");
             }
-            if (is3D() && !table.columnExists("z")) {
+            if (is3D() && !table.columnExists(PSFModel.Params.LABEL_Z)) {
                 throw new Exception("Column `z` must be present in the table! Use 2D filter instead.");
             }
             return table;
