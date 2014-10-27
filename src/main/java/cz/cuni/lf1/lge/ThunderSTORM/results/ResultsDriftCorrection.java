@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.CalibrationProcess;
 import cz.cuni.lf1.lge.ThunderSTORM.drift.CorrelationDriftEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.drift.CrossCorrelationDriftResults;
 import cz.cuni.lf1.lge.ThunderSTORM.drift.DriftResults;
@@ -16,23 +17,17 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import ij.ImagePlus;
 import ij.gui.Plot;
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
+import java.io.*;
 import java.util.concurrent.ExecutionException;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
+import javax.swing.*;
+
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
@@ -43,19 +38,10 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFact
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
 import ij.IJ;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.JRadioButton;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.java.balloontip.BalloonTip;
 import net.java.balloontip.styles.RoundedBalloonStyle;
@@ -348,7 +334,11 @@ public class ResultsDriftCorrection extends PostProcessingModule {
                 }
 
                 if(saveParam.getValue()) {
-                    saveResultsToFile(results, pathParam.getValue());
+                    try {
+                        saveResultsToFile(results, pathParam.getValue());
+                    } catch (IOException ex) {
+                        showAnotherLocationDialog(ex, results);
+                    }
                 }
                 return results;
             }
@@ -427,6 +417,49 @@ public class ResultsDriftCorrection extends PostProcessingModule {
                 writer.close();
             }
         }
+    }
+
+    private void showAnotherLocationDialog(IOException ex, final DriftResults results) {
+        final JDialog dialog = new JDialog(IJ.getInstance(), "Error");
+        dialog.getContentPane().setLayout(new BorderLayout(0, 10));
+        dialog.getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        dialog.add(new JLabel("Could not save drift results. " + ex.getMessage(), SwingConstants.CENTER));
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        JButton ok = new JButton("OK");
+        dialog.getRootPane().setDefaultButton(ok);
+        ok.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+        JButton newLocation = new JButton("Save to other path");
+        newLocation.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser jfc = new JFileChooser(IJ.getDirectory("image"));
+                jfc.showSaveDialog(null);
+                File f = jfc.getSelectedFile();
+                if(f != null) {
+                    try {
+                        pathParam.setValue(f.getAbsolutePath());
+                        saveResultsToFile(results, pathParam.getValue());
+                    } catch(IOException ex) {
+                        showAnotherLocationDialog(ex, results);
+                    }
+                }
+                dialog.dispose();
+            }
+        });
+        buttonsPane.add(newLocation);
+        buttonsPane.add(ok);
+        dialog.getContentPane().add(buttonsPane, BorderLayout.SOUTH);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.getRootPane().setDefaultButton(ok);
+        dialog.pack();
+        ok.requestFocusInWindow();
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
     }
 
     public static void showDriftPlot(DriftResults driftCorrection) {
