@@ -97,7 +97,7 @@ public class LocalDensityFilter extends PostProcessingModule {
             if (!table.columnExists("x") || !table.columnExists("y")) {
                 throw new Exception("Columns `x` and `y` must be present in the table!");
             }
-            if (!table.columnExists("z")) {
+            if (is3D() && !table.columnExists("z")) {
                 throw new Exception("Column `z` must be present in the table! Use 2D filter instead.");
             }
             //
@@ -147,14 +147,14 @@ public class LocalDensityFilter extends PostProcessingModule {
                         table.setStatus(filtered + " out of " + nRows + " " + item + " " + be + " filtered out");
                         table.showPreview();
                     } catch(Exception ex) {
-                        IJ.handleException(ex);
+                        IJ.error(ex.getMessage());
                     } finally {
                         applyButton.setEnabled(true);
                     }
                 }
             }.execute();
         } catch (Exception ex) {
-            IJ.handleException(ex);
+            IJ.error(ex.getMessage());
         } finally {
             applyButton.setEnabled(true);
         }

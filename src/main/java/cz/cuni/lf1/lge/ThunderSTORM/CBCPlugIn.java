@@ -56,8 +56,8 @@ public class CBCPlugIn implements PlugIn {
             runCBC(dialog.getChannel1Table(), dialog.getChannel2Table(), dialog.radiusStep.getValue(),
                    dialog.stepCount.getValue(), dialog.addCBC.getValue(), dialog.addNNDist.getValue(), dialog.addNNCount.getValue());
 
-        } catch(Exception e) {
-            IJ.handleException(e);
+        } catch(Exception ex) {
+            IJ.error(ex.getMessage());
         }
     }
     
@@ -233,34 +233,34 @@ public class CBCPlugIn implements PlugIn {
             setModal(true);
         }
 
-        public GenericTable getChannel1Table() {
+        public GenericTable getChannel1Table() throws Exception {
             return getChannelTable(channel1);
         }
 
-        public GenericTable getChannel2Table() {
+        public GenericTable getChannel2Table() throws Exception {
             return getChannelTable(channel2);
         }
 
-        protected GenericTable getChannelTable(ParameterKey.String channel) {
+        protected GenericTable getChannelTable(ParameterKey.String channel) throws Exception {
             GenericTable table = null;
             if (channel.getValue().equals(tables[0])) { // results table
                 table = IJResultsTable.getResultsTable();
                 if (table == null) {
-                    IJ.error("Requires results table to be opened!");
+                    throw new Exception("Requires results table to be opened!");
                 }
                 if (table.getRowCount() <= 0) {
-                    IJ.error("Results table cannot be empty!");
+                    throw new Exception("Results table cannot be empty!");
                 }
             } else if (channel.getValue().equals(tables[1])) { // ground-truth table
                 table = IJGroundTruthTable.getGroundTruthTable();
                 if (table == null) {
-                    IJ.error("Requires ground-truth table to be opened!");
+                    throw new Exception("Requires ground-truth table to be opened!");
                 }
                 if (table.getRowCount() <= 0) {
-                    IJ.error("Ground-truth table cannot be empty!");
+                    throw new Exception("Ground-truth table cannot be empty!");
                 }
             } else {
-                IJ.error("Unknown channel!");
+                throw new Exception("Unknown channel!");
             }
             return table;
         }
