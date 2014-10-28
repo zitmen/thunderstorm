@@ -89,20 +89,29 @@ public class UpdaterPlugIn implements PlugIn {
             IJ.showStatus("Downloading Thunder_STORM.jar ...");
             URL url = new URL(address);
             URLConnection uc = url.openConnection();
-            int len = uc.getContentLength();
-            IJ.showStatus("Downloading Thunder_STORM.jar (" + IJ.d2s((double) len / 1048576, 1) + "MB)");
             InputStream in = uc.getInputStream();
+            int n = 0, len = 1024*1024;    // 1 MiB
             data = new byte[len];
-            int n = 0;
-            while (n < len) {
-                IJ.showProgress((double)n / (double)len);
+            while (true) {
+                IJ.showStatus("Downloading Thunder_STORM.jar (" + IJ.d2s((double) n / 1024 / 1024, 1) + "MB)");
                 int count = in.read(data, n, len - n);
                 if (count < 0) {
-                    throw new EOFException();
+                    break;
                 }
                 n += count;
+                if ((len - n) <= 0) {
+                    byte[] tmp = data;
+                    len *= 2;
+                    data = new byte[len];
+                    System.arraycopy(tmp, 0, data, 0, tmp.length);
+                }
             }
             in.close();
+            //
+            byte[] tmp = data;
+            data = new byte[n];
+            System.arraycopy(tmp, 0, data, 0, n);
+            //
             IJ.showStatus("Done.");
             IJ.showProgress(1.0);
         } catch (IOException e) {
