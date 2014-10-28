@@ -279,6 +279,7 @@ public class ImportExportPlugIn implements PlugIn {
 
             buttons.add(defaultsButton);
             buttons.add(Box.createHorizontalGlue(), glueConstraints);
+            buttons.add(Help.createHelpButton(ImportExportPlugIn.class));
             buttons.add(okButton);
             buttons.add(createCancelButton());
             return buttons;
@@ -380,15 +381,7 @@ public class ImportExportPlugIn implements PlugIn {
             }
 
             add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
-            //buttons
-            JPanel buttons = new JPanel(new GridBagLayout());
-            buttons.add(createDefaultsButton());
-            buttons.add(Box.createHorizontalGlue(), new GridBagHelper.Builder()
-                    .fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
-            buttons.add(Help.createHelpButton(ImportExportPlugIn.class));
-            buttons.add(createOKButton());
-            buttons.add(createCancelButton());
-            add(buttons, GridBagHelper.twoCols());
+            add(createButtonsPanel(), GridBagHelper.twoCols());
 
             params.loadPrefs();
             fileParams.loadPrefs();
@@ -494,16 +487,7 @@ public class ImportExportPlugIn implements PlugIn {
             pane.add(columnsPanel, componentConstraints);
 
             pane.add(Box.createVerticalStrut(10), componentConstraints);
-           //buttons
-            JPanel buttons = new JPanel(new GridBagLayout());
-            buttons.add(createDefaultsButton());
-            buttons.add(Box.createHorizontalGlue(), new GridBagHelper.Builder()
-                    .fill(GridBagConstraints.HORIZONTAL).weightx(1).build());
-            buttons.add(Help.createHelpButton(ImportExportPlugIn.class));
-            buttons.add(createOKButton());
-            buttons.add(createCancelButton());
-            pane.add(buttons, componentConstraints);
-
+            pane.add(createButtonsPanel(), componentConstraints);
             pane.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
             JScrollPane scrollPane = new JScrollPane(pane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
