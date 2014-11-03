@@ -78,6 +78,8 @@ abstract public class DefocusFunction extends IModuleUI<DefocusFunction> impleme
         return new double[]{w0, c, a, b, d};
     }
 
+    public abstract double[] transformParams(double [] params);
+    public abstract double[] transformParamsInverse(double [] params);
     public abstract double value(double z, double w0, double a, double b, double c, double d);
     public abstract ParametricUnivariateFunction getFittingFunction();
     public abstract DefocusFunction getNewInstance(double w0, double a, double b, double c, double d, boolean scaledToNm);
