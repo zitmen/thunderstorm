@@ -27,8 +27,11 @@ public abstract class CylindricalLensCalibration {
     }
 
     public abstract double evalDefocus(double z, double w0, double a, double b, double c, double d);
+    public abstract double evalDefocus2(double z, double w0, double a, double b, double c, double d);
     public abstract double dwx(double z);
     public abstract double dwy(double z);
+    public abstract double dwx2(double z);
+    public abstract double dwy2(double z);
 
     public double getSigma1(double z) {
         return evalDefocus(z, w01, a1, b1, c1, d1);
@@ -36,6 +39,14 @@ public abstract class CylindricalLensCalibration {
 
     public double getSigma2(double z) {
         return evalDefocus(z, w02, a2, b2, c2, d2);
+    }
+
+    public double getSigma1Squared(double z) {
+        return evalDefocus2(z, w01, a1, b1, c1, d1);
+    }
+
+    public double getSigma2Squared(double z) {
+        return evalDefocus2(z, w02, a2, b2, c2, d2);
     }
 
     public double getAngle() {

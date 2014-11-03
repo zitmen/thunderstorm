@@ -32,6 +32,8 @@ public class PolynomialCalibration extends CylindricalLensCalibration {
         s2Par = sigma2Params;
     }
 
+    // ---------------- SIGMA -------------- //
+
     @Override
     public double evalDefocus(double z, double w0, double a, double b, double c, double d) {
         return b + a*sqr(z - c) + d*pow(z - c,3);
@@ -50,5 +52,27 @@ public class PolynomialCalibration extends CylindricalLensCalibration {
     @Override
     public double dwy(double z) {
         return dw(z, w02, a2, b2, c2, d2);
+    }
+
+    // ---------------- SIGMA^2 -------------- //
+
+    @Override
+    public double evalDefocus2(double z, double w0, double a, double b, double c, double d) {
+        return sqr(evalDefocus(z, w0, a, b, c, d));
+    }
+
+    private double dw2(double z, double w0, double a, double b, double c, double d) {
+        double zc1 = z - c, zc2 = zc1 * zc1, zc3 = zc2 * zc1;
+        return ((4*a*zc1 + 6*d*zc2) * (a*zc2 + b + d*zc3));
+    }
+
+    @Override
+    public double dwx2(double z) {
+        return dw2(z, w01, a1, b1, c1, d1);
+    }
+
+    @Override
+    public double dwy2(double z) {
+        return dw2(z, w02, a2, b2, c2, d2);
     }
 }
