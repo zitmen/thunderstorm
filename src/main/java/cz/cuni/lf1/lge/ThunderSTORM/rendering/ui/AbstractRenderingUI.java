@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
@@ -20,6 +21,8 @@ import javax.swing.JTextField;
 public abstract class AbstractRenderingUI extends IRendererUI {
 
     double sizeX, sizeY, left, top;
+    JTextField zRangeTextField;
+    JCheckBox threeDCheckBox;
     //parameters
     public ParameterKey.Double magnification;
     public ParameterKey.Integer repaintFrequency;
@@ -95,6 +98,32 @@ public abstract class AbstractRenderingUI extends IRendererUI {
     }
 
     @Override
+    public void setZRange(double from, double to) {
+        if (!threeDCheckBox.isEnabled()) return;
+        Range r = Range.parseFromStepTo(zRangeTextField.getText());
+        r.from = roundDownTo(from, r.step);
+        r.to = roundUpTo(to, r.step);
+        zRangeTextField.setText(r.toStrFromStepTo());
+    }
+
+    protected double roundUpTo(double val, double mod) {
+        return (val + mod - modulo(val, mod));
+    }
+
+    protected double roundDownTo(double val, double mod) {
+        if (val > 0) {
+            return (val - modulo(val, mod));
+        } else {
+            return (val - mod - modulo(val, mod));
+        }
+    }
+
+    protected double modulo(double val, double mod) {
+        double r = (int)(val / mod);
+        return (val - r*mod);
+    }
+
+    @Override
     public int getRepaintFrequency() {
         return repaintFrequency.getValue();
     }
@@ -120,9 +149,9 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         }
 
         final JLabel zRangeLabel = new JLabel("Z range (from:step:to) [nm]:");
-        final JTextField zRangeTextField = new JTextField("", 20);
+        zRangeTextField = new JTextField("", 20);
         parameters.registerComponent(zRange, zRangeTextField);
-        final JCheckBox threeDCheckBox = new JCheckBox("", true);
+        threeDCheckBox = new JCheckBox("", true);
         parameters.registerComponent(threeD, threeDCheckBox);
         final JLabel colorizeZLabel = new JLabel("Colorize z-stack:");
         final JCheckBox colorizeZCheckBox = new JCheckBox("", true);

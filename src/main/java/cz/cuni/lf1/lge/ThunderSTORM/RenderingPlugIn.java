@@ -10,6 +10,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.AbstractRenderingUI;
@@ -234,6 +235,7 @@ class RenderingDialog extends JDialog {
                 IJResultsTable rt = IJResultsTable.getResultsTable();
                 double[] xpos = rt.getColumnAsDoubles(LABEL_X, PIXEL);
                 double[] ypos = rt.getColumnAsDoubles(LABEL_Y, PIXEL);
+                double[] zpos = rt.getColumnAsDoubles(LABEL_Z, NANOMETER);
                 double magnification = new EmptyRendererUI().magnification.getValue();
                 left   = ((int)Math.max(VectorMath.min(xpos) * magnification, 0));
                 top    = ((int)Math.max(VectorMath.min(ypos) * magnification, 0));
@@ -247,6 +249,7 @@ class RenderingDialog extends JDialog {
                 topTextField.setText(top + "");
                 sizeXTextField.setText(sizeX + "");
                 sizeYTextField.setText(sizeY + "");
+                renderingMethods.getActiveComboBoxItem().setZRange(VectorMath.min(zpos), VectorMath.max(zpos));
             }
         });
         sizeButtonsPanel.add(sizeAnalyzedImageButton);
