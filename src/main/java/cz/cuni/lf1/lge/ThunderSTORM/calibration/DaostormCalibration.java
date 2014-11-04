@@ -36,7 +36,7 @@ public class DaostormCalibration extends CylindricalLensCalibration {
 
     @Override
     public double evalDefocus(double z, double w0, double a, double b, double c, double d) {
-        return (0.5 * w0 * sqrt(1 + sqr((z - c)/d) + a*pow((z - c)/d,3) + b*pow((z - c)/d,4)));
+        return (w0/2.0 * sqrt(1 + sqr((z - c)/d) + a*pow((z - c)/d,3) + b*pow((z - c)/d,4)));
     }
 
     private double dw(double z, double w0, double a, double b, double c, double d) {
@@ -60,13 +60,13 @@ public class DaostormCalibration extends CylindricalLensCalibration {
     @Override
     public double evalDefocus2(double z, double w0, double a, double b, double c, double d) {
         double zcd1 = (z - c) / d, zcd2 = zcd1 * zcd1, zcd3 = zcd2 * zcd1, zcd4 = zcd3 * zcd1;
-        return (0.25 * sqr(w0) * (1 + zcd2 + a*zcd3 + b*zcd4));
+        return (sqr(w0/2.0) * (1 + zcd2 + a*zcd3 + b*zcd4));
     }
 
     private double dw2(double z, double w0, double a, double b, double c, double d) {
         double zc1 = z - c, zc2 = zc1 * zc1, zc3 = zc2 * zc1;
         double d2 = d * d, d3 = d2 * d, d4 = d3 * d;
-        return (0.25 * sqr(w0) * (2*zc1/d2 + 3*a*zc2/d3 + 4*b*zc3/d4));
+        return (sqr(w0/2.0) * (2*zc1/d2 + 3*a*zc2/d3 + 4*b*zc3/d4));
     }
 
     @Override

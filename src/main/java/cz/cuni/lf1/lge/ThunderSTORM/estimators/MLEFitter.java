@@ -50,7 +50,7 @@ public class MLEFitter implements OneLocationFitter {
         fittedParameters[Params.BACKGROUND] = VectorMath.stddev(VectorMath.sub(fittedModelValues, subimage.values,
                 psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
 
-        Molecule mol = psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters), subimage.units);
+        Molecule mol = psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters), subimage.units, true);
 
         if(mol.isSingleMolecule()) {
             convertMoleculeToDigitalUnits(mol);

@@ -114,7 +114,7 @@ public class SymmetricGaussianPSF extends PSFModel {
     }
 
     @Override
-    public Molecule newInstanceFromParams(double[] params, Units subImageUnits) {
+    public Molecule newInstanceFromParams(double[] params, Units subImageUnits, boolean afterFitting) {
         Molecule mol = new Molecule(new Params(new int[] { Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND }, params, true));
         MoleculeDescriptor descriptor = mol.descriptor;
         descriptor.setColumnUnits(subImageUnits, descriptor.getParamColumn(Params.LABEL_INTENSITY));

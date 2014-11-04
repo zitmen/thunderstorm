@@ -36,7 +36,7 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
     public SymmetricGaussianEstimatorUI() {
         crowdedField = new CrowdedFieldEstimatorUI();
         FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
-        METHOD = parameters.createStringField("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), LSQ);
+        METHOD = parameters.createStringField("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), WLSQ);
         SIGMA = parameters.createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
         FULL_IMAGE_FITTING = parameters.createBooleanField("full_image_fitting", null, false);
     }

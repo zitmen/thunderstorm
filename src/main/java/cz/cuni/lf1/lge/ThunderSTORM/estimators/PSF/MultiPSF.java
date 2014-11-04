@@ -205,13 +205,13 @@ public class MultiPSF extends PSFModel {
     }
 
     @Override
-    public Molecule newInstanceFromParams(double[] params, Units subImageUnits) {    // returns one `macro-molecule`
+    public Molecule newInstanceFromParams(double[] params, Units subImageUnits, boolean afterFitting) {    // returns one `macro-molecule`
         double [] tmp = Arrays.copyOfRange(params, 0, Params.PARAMS_LENGTH);
-        Molecule macroMol = psf.newInstanceFromParams(tmp, subImageUnits);  // init...if there is more than one molecule, the values of macro-molecule are ignored anyway
+        Molecule macroMol = psf.newInstanceFromParams(tmp, subImageUnits, afterFitting);  // init...if there is more than one molecule, the values of macro-molecule are ignored anyway
         macroMol.addDetection(macroMol);  // i = 0
         for(int i = 1; i < nmol; i++) {
             tmp = Arrays.copyOfRange(params, i*Params.PARAMS_LENGTH, (i+1)*Params.PARAMS_LENGTH);
-            macroMol.addDetection(psf.newInstanceFromParams(tmp, subImageUnits));
+            macroMol.addDetection(psf.newInstanceFromParams(tmp, subImageUnits, afterFitting));
         }
         return macroMol;
     }

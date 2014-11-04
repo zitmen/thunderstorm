@@ -190,7 +190,7 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
     }
 
     @Override
-    public Molecule newInstanceFromParams(double[] params, MoleculeDescriptor.Units subImageUnits) {
+    public Molecule newInstanceFromParams(double[] params, MoleculeDescriptor.Units subImageUnits, boolean afterFitting) {
         params[Params.SIGMA] = abs(params[Params.SIGMA]);
         Molecule mol = new Molecule(new Params(new int[]{Params.X, Params.Y, Params.SIGMA, Params.INTENSITY, Params.OFFSET, Params.BACKGROUND}, params, true));
         MoleculeDescriptor descriptor = mol.descriptor;

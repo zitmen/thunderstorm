@@ -90,7 +90,7 @@ public class DataGenerator {
                     params[PSFModel.Params.INTENSITY] = getNextUniform(intensity_photons.from, intensity_photons.to);
                     params[PSFModel.Params.ANGLE] = psf.getAngle();
                     PSFModel model = psf.getImplementation();
-                    Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
+                    Molecule mol = model.newInstanceFromParams(params, Units.PHOTON, false);
                     if(psf.is3D()) {
                         mol.addParam(PSFModel.Params.LABEL_Z, Units.NANOMETER, z);
                     }
@@ -120,7 +120,7 @@ public class DataGenerator {
         params[PSFModel.Params.INTENSITY] = getNextUniform(intensity_photons.from, intensity_photons.to);
         params[PSFModel.Params.ANGLE] = psf.getAngle();
         PSFModel model = psf.getImplementation();
-        Molecule mol = model.newInstanceFromParams(params, Units.PHOTON);
+        Molecule mol = model.newInstanceFromParams(params, Units.PHOTON, false);
         if(psf.is3D()) {
             mol.addParam(PSFModel.Params.LABEL_Z, Units.NANOMETER, z);
         }

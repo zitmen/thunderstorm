@@ -284,5 +284,6 @@ public abstract class PSFModel implements IModule {
      */
     public abstract double[] getInitialSimplex();
     public abstract double[] getInitialParams(OneLocationFitter.SubImage subImage);
-    public abstract Molecule newInstanceFromParams(double[] params, MoleculeDescriptor.Units subImageUnits);
+    public abstract Molecule newInstanceFromParams(double[] params, MoleculeDescriptor.Units subImageUnits, boolean afterFitting);
+    // --> afterFitting: there might be some normalizations before/after fitting; this method is also used in rendering, where such normalization isn't needed
 }

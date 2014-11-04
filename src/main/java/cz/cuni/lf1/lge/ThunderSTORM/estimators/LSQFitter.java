@@ -70,7 +70,7 @@ public class LSQFitter implements OneLocationFitter {
         if(bkgStdColumn >= 0){
             fittedParameters[bkgStdColumn] = VectorMath.stddev(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
         }
-        return psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters), subimage.units);
+        return psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters), subimage.units, true);
     }
 
     private void computeWeights(SubImage subimage) {
