@@ -14,6 +14,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
+import cz.cuni.lf1.lge.ThunderSTORM.util.WorkerThread;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import ij.IJ;
 import java.awt.Color;
@@ -88,32 +89,32 @@ public class DuplicatesFilter extends PostProcessingModule {
 
             DuplicatesFilter.this.saveStateForUndo();
             final int all = model.getRowCount();
-            new SwingWorker() {
-
+            new WorkerThread<Void>() {
                 @Override
-                protected Object doInBackground() throws Exception {
+                public Void doJob() {
                     applyToModel(model, dist);
                     return null;
                 }
 
                 @Override
-                protected void done() {
-                    try {
-                        get();  // throws an exception if doInBackground hasn't finished
-                        int filtered = all - model.getRowCount();
-                        DuplicatesFilter.this.addOperationToHistory(new DefaultOperation());
-                        String be = ((filtered > 1) ? "were" : "was");
-                        String item = ((all > 1) ? "items" : "item");
-                        table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
-                        table.showPreview();
-                    } catch(ExecutionException ex) {
-                        distTextField.setBackground(new Color(255, 200, 200));
-                        GUI.showBalloonTip(distTextField, ex.getCause().getMessage());
-                    } catch(Exception ex) {
-                        IJ.handleException(ex);
-                    } finally {
-                        applyButton.setEnabled(true);
-                    }
+                public void finishJob(Void nothing) {
+                    int filtered = all - model.getRowCount();
+                    DuplicatesFilter.this.addOperationToHistory(new DefaultOperation());
+                    String be = ((filtered > 1) ? "were" : "was");
+                    String item = ((all > 1) ? "items" : "item");
+                    table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
+                    table.showPreview();
+                }
+
+                @Override
+                public void exCatch(Throwable ex) {
+                    distTextField.setBackground(new Color(255, 200, 200));
+                    GUI.showBalloonTip(distTextField, ex.getCause().getMessage());
+                }
+
+                @Override
+                public void exFinally() {
+                    applyButton.setEnabled(true);
                 }
             }.execute();
         } catch(Exception ex) {

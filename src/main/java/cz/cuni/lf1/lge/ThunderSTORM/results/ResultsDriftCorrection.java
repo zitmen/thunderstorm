@@ -15,6 +15,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.WorkerThread;
 import ij.ImagePlus;
 import ij.gui.Plot;
 
@@ -306,9 +307,9 @@ public class ResultsDriftCorrection extends PostProcessingModule {
             applyButton.setEnabled(true);
             throw ex;
         }
-        new SwingWorker<DriftResults, Void>() {
+        new WorkerThread<DriftResults>() {
             @Override
-            protected DriftResults doInBackground() throws IOException {
+            public DriftResults doJob() {
                 DriftResults results = null;
                 String action = actionParam.getValue();
                 if(action.equals(actions[0])) {
@@ -328,7 +329,11 @@ public class ResultsDriftCorrection extends PostProcessingModule {
                             onTimeRatioParam.getValue(),
                             smoothingBandwidthParam.getValue());
                 } else if(action.equals(actions[2])) {
-                    return loadResultsFromFile(pathParam.getValue());
+                    try {
+                        return loadResultsFromFile(pathParam.getValue());
+                    } catch (IOException ex) {
+                        handleException(ex);
+                    }
                 } else {
                     throw new RuntimeException("unknown action");
                 }
@@ -344,26 +349,27 @@ public class ResultsDriftCorrection extends PostProcessingModule {
             }
 
             @Override
-            protected void done() {
-                try {
-                    DriftResults driftCorrection = get();
-                    //show plots
-                    showDriftPlot(driftCorrection);
-                    if((driftCorrection instanceof CrossCorrelationDriftResults) && showCorrelationImagesParam.getValue()) {
-                        showCorrelations((CrossCorrelationDriftResults) driftCorrection);
-                    }
-                    //update results table
-                    applyToResultsTable(driftCorrection);
-                    addOperationToHistory(new DefaultOperation());
-                    table.setStatus("Drift correction applied.");
-                    table.showPreview();
-                } catch(ExecutionException ex) {
-                    handleException(ex.getCause());
-                } catch(Exception ex) {
-                    handleException(ex);
-                } finally {
-                    applyButton.setEnabled(true);
+            public void finishJob(DriftResults driftCorrection) {
+                //show plots
+                showDriftPlot(driftCorrection);
+                if((driftCorrection instanceof CrossCorrelationDriftResults) && showCorrelationImagesParam.getValue()) {
+                    showCorrelations((CrossCorrelationDriftResults) driftCorrection);
                 }
+                //update results table
+                applyToResultsTable(driftCorrection);
+                addOperationToHistory(new DefaultOperation());
+                table.setStatus("Drift correction applied.");
+                table.showPreview();
+            }
+
+            @Override
+            public void exCatch(Throwable ex) {
+                handleException(ex);
+            }
+
+            @Override
+            public void exFinally() {
+                applyButton.setEnabled(true);
             }
         }.execute();
 

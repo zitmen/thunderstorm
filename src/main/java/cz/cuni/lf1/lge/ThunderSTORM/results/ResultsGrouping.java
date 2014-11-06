@@ -7,12 +7,14 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
+
+import cz.cuni.lf1.lge.ThunderSTORM.util.WorkerThread;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import ij.IJ;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -99,33 +101,35 @@ public class ResultsGrouping extends PostProcessingModule {
         saveStateForUndo();
 
         final int merged = model.getRowCount();
-        new SwingWorker<List<Molecule>, Object>() {
+        new WorkerThread<List<Molecule>>() {
             @Override
-            protected List<Molecule> doInBackground() {
+            protected List<Molecule> doJob() {
                 return getMergedMolecules(model, dist, offFrames, framesPerMol, zWeight);
             }
 
             @Override
-            protected void done() {
-                try {
-                    List<Molecule> mergedMolecules = get();
-                    model.reset();
-                    for(Molecule mol : mergedMolecules) {
-                        model.addRow(mol);
-                    }
-
-                    int into = model.getRowCount();
-                    addOperationToHistory(new DefaultOperation());
-
-                    table.setStatus(Integer.toString(merged) + " molecules were merged into " + Integer.toString(into) + " molecules");
-                    table.showPreview();
-                } catch(InterruptedException ex) {
-                } catch(ExecutionException ex) {
-                    IJ.handleException(ex);
-                    GUI.showBalloonTip(distanceTextField, ex.getCause().toString());
-                } finally {
-                    applyButton.setEnabled(true);
+            protected void finishJob(List<Molecule> mergedMolecules) {
+                model.reset();
+                for(Molecule mol : mergedMolecules) {
+                    model.addRow(mol);
                 }
+
+                int into = model.getRowCount();
+                addOperationToHistory(new DefaultOperation());
+
+                table.setStatus(Integer.toString(merged) + " molecules were merged into " + Integer.toString(into) + " molecules");
+                table.showPreview();
+            }
+
+            @Override
+            public void exCatch(Throwable ex) {
+                IJ.handleException(ex);
+                GUI.showBalloonTip(distanceTextField, ex.getCause().toString());
+            }
+
+            @Override
+            public void exFinally() {
+                applyButton.setEnabled(true);
             }
         }.execute();
     }

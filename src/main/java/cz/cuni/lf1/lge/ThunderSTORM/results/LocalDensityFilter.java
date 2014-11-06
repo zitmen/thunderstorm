@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.WorkerThread;
 import cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree.KDTree;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
@@ -105,10 +106,9 @@ public class LocalDensityFilter extends PostProcessingModule {
             applyButton.setEnabled(false);
             saveStateForUndo();
             final int nRows = model.getRowCount();
-            new SwingWorker() {
-
+            new WorkerThread<Void>() {
                 @Override
-                protected Object doInBackground() throws Exception {
+                public Void doJob() {
                     double[][] coords = new double[table.getRowCount()][];
                     if (is3D()) {
                         for(int i = 0; i < coords.length; i++) {
@@ -138,20 +138,23 @@ public class LocalDensityFilter extends PostProcessingModule {
                 }
 
                 @Override
-                protected void done() {
-                    try {
-                        get();  // throws an exception if doInBackground hasn't finished succesfully
-                        int filtered = nRows - model.getRowCount();
-                        addOperationToHistory(new DefaultOperation());
-                        String be = ((filtered > 1) ? "were" : "was");
-                        String item = ((nRows > 1) ? "items" : "item");
-                        table.setStatus(filtered + " out of " + nRows + " " + item + " " + be + " filtered out");
-                        table.showPreview();
-                    } catch(Exception ex) {
-                        IJ.error(ex.getMessage());
-                    } finally {
-                        applyButton.setEnabled(true);
-                    }
+                public void finishJob(Void nothing) {
+                    int filtered = nRows - model.getRowCount();
+                    addOperationToHistory(new DefaultOperation());
+                    String be = ((filtered > 1) ? "were" : "was");
+                    String item = ((nRows > 1) ? "items" : "item");
+                    table.setStatus(filtered + " out of " + nRows + " " + item + " " + be + " filtered out");
+                    table.showPreview();
+                }
+
+                @Override
+                public void exCatch(Throwable ex) {
+                    IJ.error(ex.getMessage());
+                }
+
+                @Override
+                public void exFinally() {
+                    applyButton.setEnabled(true);
                 }
             }.execute();
         } catch (Exception ex) {

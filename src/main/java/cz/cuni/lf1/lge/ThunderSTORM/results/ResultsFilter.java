@@ -11,6 +11,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.WorkerThread;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import ij.IJ;
 import ij.ImagePlus;
@@ -97,32 +98,32 @@ public class ResultsFilter extends PostProcessingModule {
             applyButton.setEnabled(false);
             saveStateForUndo();
             final int all = model.getRowCount();
-            new SwingWorker() {
-
+            new WorkerThread<Void>() {
                 @Override
-                protected Object doInBackground() throws Exception {
+                public Void doJob() {
                     applyToModel(model, filterText);
                     return null;
                 }
 
                 @Override
-                protected void done() {
-                    try {
-                        get();  // throws an exception if doInBackground hasn't finished succesfully
-                        int filtered = all - model.getRowCount();
-                        addOperationToHistory(new DefaultOperation());
-                        String be = ((filtered > 1) ? "were" : "was");
-                        String item = ((all > 1) ? "items" : "item");
-                        table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
-                        table.showPreview();
-                    } catch(ExecutionException ex) {
-                        filterTextField.setBackground(new Color(255, 200, 200));
-                        GUI.showBalloonTip(filterTextField, ex.getCause().getMessage());
-                    } catch(Exception ex) {
-                        IJ.handleException(ex);
-                    } finally {
-                        applyButton.setEnabled(true);
-                    }
+                public void finishJob(Void nothing) {
+                    int filtered = all - model.getRowCount();
+                    addOperationToHistory(new DefaultOperation());
+                    String be = ((filtered > 1) ? "were" : "was");
+                    String item = ((all > 1) ? "items" : "item");
+                    table.setStatus(filtered + " out of " + all + " " + item + " " + be + " filtered out");
+                    table.showPreview();
+                }
+
+                @Override
+                public void exCatch(Throwable ex) {
+                    filterTextField.setBackground(new Color(255, 200, 200));
+                    GUI.showBalloonTip(filterTextField, ex.getCause().getMessage());
+                }
+
+                @Override
+                public void exFinally() {
+                    applyButton.setEnabled(true);
                 }
             }.execute();
         } catch(Exception ex) {
