@@ -36,6 +36,7 @@ public abstract class WorkerThread<T> {
     public void execute() {
         if (MacroParser.isRanFromMacro()) { // blocking call
             finishJob(doJob());
+            exFinally();
         } else {    // run in background
             new SwingWorker<T, Void>() {
                 @Override
