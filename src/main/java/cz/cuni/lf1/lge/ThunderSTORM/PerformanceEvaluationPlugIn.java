@@ -60,7 +60,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
                     return;
                 }
             }
-            runEvaluation(dialog.getEvaluationSpace().equals("xyz"), sqr(dialog.getToleranceRadius()), Units.NANOMETER);
+            runEvaluation(dialog.getFrameByFrame(), dialog.getEvaluationSpace().equals("xyz"), sqr(dialog.getToleranceRadius()), Units.NANOMETER);
         } catch (Exception ex) {
             IJ.handleException(ex);
         }
@@ -81,46 +81,50 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         }
     }
 
-    private void runEvaluation(boolean threeD, double dist2Tol, Units distUnits) {
+    private void runEvaluation(boolean frameByFrame, boolean threeD, double dist2Tol, Units distUnits) {
         //
-        int cores = Runtime.getRuntime().availableProcessors();
+        int cores = frameByFrame ? Runtime.getRuntime().availableProcessors() : 1;
         MoleculeMatcherWorker [] matchers = new MoleculeMatcherWorker[cores];
         Thread [] threads = new Thread[cores];
         processingFrame = 1;
-        frames = getFrameCount();
         prepareResultsTable(distUnits);
         try {
+            frames = frameByFrame ? getFrameCount() : 1;
             // prepare the workers and allocate resources for all the threads
-            for(int c = 0, f_start = 0, f_end, f_inc = frames / cores; c < cores; c++) {
-                if((c+1) < cores) {
+            for (int c = 0, f_start = 0, f_end, f_inc = frames / cores; c < cores; c++) {
+                if ((c + 1) < cores) {
                     f_end = f_start + f_inc;
                 } else {
                     f_end = frames;
                 }
-                matchers[c] = new MoleculeMatcherWorker(f_start, f_end, threeD, dist2Tol, distUnits);
+                if (frameByFrame) {
+                    matchers[c] = new MoleculeMatcherWorker(f_start, f_end, threeD, dist2Tol, distUnits);
+                } else {
+                    matchers[c] = new MoleculeMatcherWorker(-1, -1, threeD, dist2Tol, distUnits);
+                }
                 threads[c] = new Thread(matchers[c]);
                 f_start = f_end + 1;
             }
             // start all the workers
-            for(int c = 0; c < cores; c++) {
+            for (int c = 0; c < cores; c++) {
                 threads[c].start();
             }
             // wait for all the workers to finish
             int wait = 1000 / cores;    // max 1s
             boolean finished = false;
-            while(!finished) {
+            while (!finished) {
                 finished = true;
-                for(int c = 0; c < cores; c++) {
+                for (int c = 0; c < cores; c++) {
                     threads[c].join(wait);
                     finished &= !threads[c].isAlive();   // all threads must not be alive to finish!
                 }
-                if(IJ.escapePressed()) {    // abort?
+                if (IJ.escapePressed()) {    // abort?
                     // stop the workers
-                    for(int ci = 0; ci < cores; ci++) {
+                    for (int ci = 0; ci < cores; ci++) {
                         threads[ci].interrupt();
                     }
                     // wait so the message below is not overwritten by any of the threads
-                    for(int ci = 0; ci < cores; ci++) {
+                    for (int ci = 0; ci < cores; ci++) {
                         threads[ci].join();
                     }
                     // show info and exit the plugin
@@ -129,11 +133,16 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
                     return;
                 }
             }
-        } catch(InterruptedException ex) {
+        } catch (IndexOutOfBoundsException ex) {
+            IJ.showMessage("Column `frame` does not exist! Either fill the column, or don't use frame-by-frame evaluation.");
+            return;
+        } catch (InterruptedException ex) {
             //
+        } finally {
+            IJ.showProgress(1.0);
+            IJ.showStatus("");
         }
         //
-        IJ.showProgress(1.0);
         IJ.showStatus("Gathering results...");
         //
         Vector<Pair<Molecule,Molecule>> TP = new Vector<Pair<Molecule,Molecule>>();
@@ -267,7 +276,10 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
             Map<Integer, List<Molecule>> framesMolList = new HashMap<Integer, List<Molecule>>();
             for(int i = 0, im = table.getRowCount(); i < im; i++) {
                 Molecule mol = table.getRow(i);
-                int frame = (int)mol.getParam(MoleculeDescriptor.LABEL_FRAME);
+                int frame = -1;
+                if (frameStart >= 0 && frameStop >= 0) {
+                    frame = (int) mol.getParam(MoleculeDescriptor.LABEL_FRAME);
+                }
                 if((frame < frameStart) || (frame > frameStop)) continue;
                 if(!framesMolList.containsKey(frame)) {
                     framesMolList.put(frame, new Vector<Molecule>());
@@ -284,11 +296,13 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
 
         ParameterKey.Double toleranceRadius;
         ParameterKey.String evaluationSpace;
+        ParameterKey.Boolean frameByFrame;
         
         public PerformanceEvaluationDialog() {
             super(new ParameterTracker("thunderstorm.evaluation"), IJ.getInstance(), "ThunderSTORM: Performance evaluation");
             toleranceRadius = params.createDoubleField("toleranceRadius", DoubleValidatorFactory.positiveNonZero(), 50.0);
             evaluationSpace = params.createStringField("evaluationSpace", null, "xy");
+            frameByFrame = params.createBooleanField("framebyFrame", null, true);
         }
 
         public ParameterTracker getParams() {
@@ -301,6 +315,10 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
 
         public String getEvaluationSpace() {
             return evaluationSpace.getValue();
+        }
+
+        public boolean getFrameByFrame() {
+            return frameByFrame.getValue();
         }
 
         @Override
@@ -322,6 +340,11 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
             add(new JLabel("Tolerance radius [nm]:"), GridBagHelper.leftCol());
             add(toleranceTextField, GridBagHelper.rightCol());
             add(Box.createVerticalStrut(10), GridBagHelper.twoCols());
+
+            JCheckBox frameByFrameCheckbox = new JCheckBox("frame-by-frame evaluation");
+            params.registerComponent(frameByFrame, frameByFrameCheckbox);
+            add(Box.createHorizontalGlue(), GridBagHelper.leftCol());
+            add(frameByFrameCheckbox, GridBagHelper.rightCol());
 
             JPanel buttons = new JPanel(new GridBagLayout());
             buttons.add(createDefaultsButton());
