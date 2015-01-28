@@ -580,6 +580,7 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ, Units.NANOMETER);
                 //
                 allUnits.put(Fitting.LABEL_THOMPSON, Units.NANOMETER);
+                allUnits.put(Fitting.LABEL_UNCERTAINTY_Z, Units.NANOMETER);
             }
             if(allUnits.containsKey(paramName)) {
                 return allUnits.get(paramName);
@@ -647,6 +648,7 @@ public class MoleculeDescriptor implements Cloneable {
             //
             allParams.put(Fitting.LABEL_CHI2, MergingOperations.ASSIGN_NaN);
             allParams.put(Fitting.LABEL_THOMPSON, MergingOperations.RECALC);
+            allParams.put(Fitting.LABEL_UNCERTAINTY_Z, MergingOperations.MEAN); // should be RECALC, but there is still no estabilished way to calculate z-uncertainty
         }
 
         // molecule <-- target
@@ -656,42 +658,44 @@ public class MoleculeDescriptor implements Cloneable {
             if(allParams == null) {
                 init();
             }
-            switch(allParams.get(paramName)) {
-                case MIN:
-                    molecule.setParam(paramName, VectorMath.min(Molecule.extractParamToArray(detections, paramName)));
-                    break;
-                case MAX:
-                    molecule.setParam(paramName, VectorMath.max(Molecule.extractParamToArray(detections, paramName)));
-                    break;
-                case SUM:
-                    molecule.setParam(paramName, VectorMath.sum(Molecule.extractParamToArray(detections, paramName)));
-                    break;
-                case MEAN:
-                    molecule.setParam(paramName, VectorMath.mean(Molecule.extractParamToArray(detections, paramName)));
-                    break;
-                case COUNT:
-                    molecule.setParam(paramName, detections.size());
-                    break;
-                case ASSIGN_NaN:
-                    if(detections.size() > 1) {
-                        molecule.setParam(paramName, Double.NaN);
-                    }
-                    break;
-                case RECALC:
-                    if(LABEL_ID.equals(paramName)) {
-                        molecule.setParam(paramName, IJResultsTable.getResultsTable().getNewId());
-                    } else if(Fitting.LABEL_THOMPSON.equals(paramName)) {
-                        if(CameraSetupPlugIn.isIsEmGain()) {
-                            molecule.setParam(paramName, Units.NANOMETER, Fitting.emccdThompson(molecule));
-                        } else {
-                            molecule.setParam(paramName, Units.NANOMETER, Fitting.ccdThompson(molecule));
+            if (allParams.containsKey(paramName)) {
+                switch (allParams.get(paramName)) {
+                    case MIN:
+                        molecule.setParam(paramName, VectorMath.min(Molecule.extractParamToArray(detections, paramName)));
+                        break;
+                    case MAX:
+                        molecule.setParam(paramName, VectorMath.max(Molecule.extractParamToArray(detections, paramName)));
+                        break;
+                    case SUM:
+                        molecule.setParam(paramName, VectorMath.sum(Molecule.extractParamToArray(detections, paramName)));
+                        break;
+                    case MEAN:
+                        molecule.setParam(paramName, VectorMath.mean(Molecule.extractParamToArray(detections, paramName)));
+                        break;
+                    case COUNT:
+                        molecule.setParam(paramName, detections.size());
+                        break;
+                    case ASSIGN_NaN:
+                        if (detections.size() > 1) {
+                            molecule.setParam(paramName, Double.NaN);
                         }
-                    } else {
-                        throw new IllegalArgumentException("Parameter `" + paramName + "` can't be recalculated.");
-                    }
-                    break;
-                default: // NONE
-                    break;
+                        break;
+                    case RECALC:
+                        if (LABEL_ID.equals(paramName)) {
+                            molecule.setParam(paramName, IJResultsTable.getResultsTable().getNewId());
+                        } else if (Fitting.LABEL_THOMPSON.equals(paramName)) {
+                            if (CameraSetupPlugIn.isIsEmGain()) {
+                                molecule.setParam(paramName, Units.NANOMETER, Fitting.emccdThompson(molecule));
+                            } else {
+                                molecule.setParam(paramName, Units.NANOMETER, Fitting.ccdThompson(molecule));
+                            }
+                        } else {
+                            throw new IllegalArgumentException("Parameter `" + paramName + "` can't be recalculated.");
+                        }
+                        break;
+                    default: // NONE
+                        break;
+                }
             }
         }
     }
