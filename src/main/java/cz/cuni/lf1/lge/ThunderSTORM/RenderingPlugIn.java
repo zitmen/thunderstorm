@@ -26,8 +26,8 @@ import ij.Macro;
 import ij.Prefs;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.Recorder;
-import java.awt.FlowLayout;
-import java.awt.GridBagLayout;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
@@ -40,6 +40,30 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 public class RenderingPlugIn implements PlugIn {
+
+    private enum AutoSize {
+        MANUAL("manual"),
+        RESULTS("results"),
+        IMAGE("image");
+
+        private String value;
+        private AutoSize(String val) {
+            this.value = val;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+    };
+
+    public static Rectangle resizeByResults(double [] xpos, double [] ypos, double magnification) {
+        int left  = ((int)Math.max(VectorMath.min(xpos) * magnification, 0));
+        int top   = ((int)Math.max(VectorMath.min(ypos) * magnification, 0));
+        int sizeX = (int)(VectorMath.max(xpos) * magnification) - left + 1;
+        int sizeY = (int)(VectorMath.max(ypos) * magnification) - top  + 1;
+        int mag   = (int)magnification;
+        return new Rectangle(left/mag, top/mag, sizeX/mag, sizeY/mag);
+    }
 
     @Override
     public void run(String string) {
@@ -96,17 +120,31 @@ public class RenderingPlugIn implements PlugIn {
         IRendererUI selectedRendererUI;
         double sizeX, sizeY, left, top;
         boolean setAsPreview = false;
+        ImagePlus im;
 
         if(MacroParser.isRanFromMacro()) {
             MacroParser parser = new MacroParser(null, null, null, knownRenderers);
             selectedRendererUI = parser.getRendererUI();
 
-            left = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imleft", "0"));
-            top = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imtop", "0"));
-            sizeX = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imwidth", "0"));
-            sizeY = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imheight", "0"));
+            String autosize = Macro.getValue(Macro.getOptions(), "autosize", AutoSize.MANUAL.getValue());
+            if (autosize.equals(AutoSize.IMAGE.getValue()) && (IJResultsTable.IDENTIFIER.equals(table.getTableIdentifier()) && (im = ((IJResultsTable) table).getAnalyzedImage()) != null)) {
+                left = 0;
+                top = 0;
+                sizeX = im.getWidth();
+                sizeY = im.getHeight();
+            } else if (autosize.equals(AutoSize.RESULTS.getValue())) {
+                Rectangle rect = resizeByResults(xpos, ypos, new EmptyRendererUI().magnification.getValue());
+                left   = rect.getX();
+                top    = rect.getY();
+                sizeX  = rect.getWidth();
+                sizeY  = rect.getHeight();
+            } else {    // MANUAL
+                left = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imleft", "0"));
+                top = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imtop", "0"));
+                sizeX = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imwidth", "0"));
+                sizeY = Double.parseDouble(Macro.getValue(Macro.getOptions(), "imheight", "0"));
+            }
         } else {
-            ImagePlus im;
             double guessedLeft, guessedTop, guessedWidth, guessedHeight;
             if(IJResultsTable.IDENTIFIER.equals(table.getTableIdentifier()) && (im = ((IJResultsTable) table).getAnalyzedImage()) != null) {
                 guessedLeft = 0;
@@ -114,15 +152,11 @@ public class RenderingPlugIn implements PlugIn {
                 guessedWidth = im.getWidth();
                 guessedHeight = im.getHeight();
             } else {
-                double magnification = new EmptyRendererUI().magnification.getValue();
-                guessedLeft    = ((int)Math.max(VectorMath.min(xpos) * magnification, 0));
-                guessedTop     = ((int)Math.max(VectorMath.min(ypos) * magnification, 0));
-                guessedWidth   = (int)(VectorMath.max(xpos) * magnification) - guessedLeft + 1;
-                guessedHeight  = (int)(VectorMath.max(ypos) * magnification) - guessedTop  + 1;
-                guessedLeft   /= magnification;
-                guessedTop    /= magnification;
-                guessedWidth  /= magnification;
-                guessedHeight /= magnification;
+                Rectangle rect = resizeByResults(xpos, ypos, new EmptyRendererUI().magnification.getValue());
+                guessedLeft   = rect.getX();
+                guessedTop    = rect.getY();
+                guessedWidth  = rect.getWidth();
+                guessedHeight = rect.getHeight();
             }
             RenderingDialog dialog = new RenderingDialog(preview, knownRenderers, guessedLeft, guessedTop, guessedWidth, guessedHeight);
             dialog.setVisible(true);
@@ -233,18 +267,14 @@ class RenderingDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 IJResultsTable rt = IJResultsTable.getResultsTable();
-                double[] xpos = rt.getColumnAsDoubles(LABEL_X, PIXEL);
-                double[] ypos = rt.getColumnAsDoubles(LABEL_Y, PIXEL);
                 double[] zpos = rt.getColumnAsDoubles(LABEL_Z, NANOMETER);
-                double magnification = new EmptyRendererUI().magnification.getValue();
-                left   = ((int)Math.max(VectorMath.min(xpos) * magnification, 0));
-                top    = ((int)Math.max(VectorMath.min(ypos) * magnification, 0));
-                sizeX  = (int)(VectorMath.max(xpos) * magnification) - left + 1;
-                sizeY  = (int)(VectorMath.max(ypos) * magnification) - top  + 1;
-                left  /= magnification;
-                top   /= magnification;
-                sizeX /= magnification;
-                sizeY /= magnification;
+                Rectangle rect = RenderingPlugIn.resizeByResults(rt.getColumnAsDoubles(LABEL_X, PIXEL),
+                                                                 rt.getColumnAsDoubles(LABEL_Y, PIXEL),
+                                                                 new EmptyRendererUI().magnification.getValue());
+                left   = rect.getX();
+                top    = rect.getY();
+                sizeX  = rect.getWidth();
+                sizeY  = rect.getHeight();
                 leftTextField.setText(left + "");
                 topTextField.setText(top + "");
                 sizeXTextField.setText(sizeX + "");
