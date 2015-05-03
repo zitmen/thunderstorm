@@ -27,12 +27,12 @@ ThunderSTORM is an open-source, interactive, and modular plug-in for [ImageJ](ht
   * **Import/export:** Input image sequences and the final super-resolution images can be opened or saved in any format supported by ImageJ or by any of its plug-ins. Localization results from previously processed datasets and ground-truth positions of the molecules can be imported or exported for further analysis in the following formats: CSV, XLS, XML, YAML, JSON, Google protocol buffer, and Tagged Spot File format.
   * **Simulation engine:** Tools for creation of realistic simulated data and for quantitative performance evaluation of localization algorithms using Monte-Carlo simulations.
   * **Parallel processing:** Processing of the input data is handled in parallel.
-  * **Support for batch processing:** ThunderSTORM takes full advantage of ImageJ's Macro Language which makes batch processing possible (see the [BatchProcessing example]).
-  * **Extendable:** The functionality of ThunderSTORM can be easily extended to [Developers add more features]. ThunderSTORM is also fully interoperable with other ImageJ plugins, thus the functionality can be indirectly extend by adding new plugins into ImageJ.
+  * **Support for batch processing:** ThunderSTORM takes full advantage of ImageJ's Macro Language which makes batch processing possible (see the [example](BatchProcessing)).
+  * **Extendable:** The functionality of ThunderSTORM can be easily extended to [add more features](Developers). ThunderSTORM is also fully interoperable with other ImageJ plugins, thus the functionality can be indirectly extend by adding new plugins into ImageJ.
 
 
 ## Getting started
-Install [ImageJ](http://imagej.nih.gov/ij/index.html) and download the latest version of [ThunderSTORM](https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/builds/stable/latest.html). For installation, copy the downloaded file into ImageJ's plugin subdirectory and run ImageJ. See the [Installation Installation guide] for more information. To get started using ThunderSTORM, see the [Tutorials Tutorials]. Example data are provided [here](https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/data/12%20+%20cyl%20lens.zip).
+Install [ImageJ](http://imagej.nih.gov/ij/index.html) and download the latest version of [ThunderSTORM](https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/builds/stable/latest.html). For installation, copy the downloaded file into ImageJ's plugin subdirectory and run ImageJ. See the [Installation guide](Installation) for more information. To get started using ThunderSTORM, see the [Tutorials](Tutorials). Example data are provided [here](https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/data/12%20+%20cyl%20lens.zip).
 
 
 ## How to cite ThunderSTORM
