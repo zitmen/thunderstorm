@@ -7,13 +7,13 @@
   * The project has moved here, because [Google announced](http://google-opensource.blogspot.cz/2015/03/farewell-to-google-code.html) that Google Code service will be turned down this year.
   * Due to recent changes on Google Drive, previous versions of ThunderSTORM (<1.3) cannot be updated automatically using the build-in updater. This has been fixed but you might need to install the [latest stable version](https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/builds/stable/latest.html) manually.
 
-## About ThunderSTORM
-ThunderSTORM is an open-source, interactive, and modular plug-in for [ImageJ](http://rsb.info.nih.gov/ij/) designed for automated processing, analysis, and visualization of data acquired by single molecule localization microscopy methods such as PALM and STORM. Our philosophy in developing ThunderSTORM has been to offer an extensive collection of processing and post-processing methods so that users can easily adapt the process of analysis to their data.
-
-## ThunderSTORM 1.3 released! (2014-11-08)
+### ThunderSTORM 1.3 released! (2014-11-08)
 <a href="https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/builds/stable/latest.html">
 <img src="https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/wiki/thunderstorm-logo-download.png" />
 </a>
+
+## About ThunderSTORM
+ThunderSTORM is an open-source, interactive, and modular plug-in for [ImageJ](http://rsb.info.nih.gov/ij/) designed for automated processing, analysis, and visualization of data acquired by single molecule localization microscopy methods such as PALM and STORM. Our philosophy in developing ThunderSTORM has been to offer an extensive collection of processing and post-processing methods so that users can easily adapt the process of analysis to their data.
 
 ## Features
   * **Easy to use:** The default settings are designed to produce good results on many datasets. At the same time experienced users have a lot of freedom to configure the process of data analysis according to their needs.
