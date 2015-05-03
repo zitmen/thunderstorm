@@ -36,4 +36,5 @@ Install [ImageJ](http://imagej.nih.gov/ij/index.html) and download the latest ve
 
 
 ## How to cite ThunderSTORM
-If you use ThunderSTORM to process your data, please, cite our [paper](http://dx.doi.org/10.1093/bioinformatics/btu202): M. Ovesný, P. Křížek, J. Borkovec, Z. Švindrych, G. M. Hagen. _ThunderSTORM: a comprehensive ImageJ plugin for PALM and STORM data analysis and super-resolution imaging._ Bioinformatics 30(16):2389-2390, 2014.
+If you use ThunderSTORM to process your data, please, cite our [paper](http://dx.doi.org/10.1093/bioinformatics/btu202):
+  * M. Ovesný, P. Křížek, J. Borkovec, Z. Švindrych, G. M. Hagen. _ThunderSTORM: a comprehensive ImageJ plugin for PALM and STORM data analysis and super-resolution imaging._ Bioinformatics 30(16):2389-2390, 2014.
