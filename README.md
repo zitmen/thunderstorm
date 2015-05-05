@@ -1,4 +1,4 @@
-**Links:**
+## Links
   * [Cover page](http://zitmen.github.io/thunderstorm/)
   * [Documentation wiki](https://github.com/zitmen/thunderstorm/wiki)
   * [Discussion group](http://groups.google.com/group/thunderstorm-users)
