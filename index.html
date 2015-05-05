@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Thunderstorm by zitmen</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Thunderstorm</h1>
+          <h2>ThunderSTORM: a comprehensive ImageJ plugin for SMLM data analysis and super-resolution imaging</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/zitmen/thunderstorm/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/zitmen/thunderstorm/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/zitmen/thunderstorm" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h2>
+<a id="links" class="anchor" href="#links" aria-hidden="true"><span class="octicon octicon-link"></span></a>Links</h2>
+
+<ul>
+<li><a href="https://github.com/zitmen/thunderstorm/wiki">Documentation wiki</a></li>
+<li><a href="http://groups.google.com/group/thunderstorm-users">Discussion group</a></li>
+<li><a href="https://github.com/zitmen/thunderstorm/issues">Issues</a></li>
+</ul>
+
+<h2>
+<a id="news" class="anchor" href="#news" aria-hidden="true"><span class="octicon octicon-link"></span></a>News</h2>
+
+<ul>
+<li>The project has moved here, because <a href="http://google-opensource.blogspot.cz/2015/03/farewell-to-google-code.html">Google announced</a> that Google Code service will be turned down this year.</li>
+<li>Due to recent changes on Google Drive, previous versions of ThunderSTORM (&lt;1.3) cannot be updated automatically using the build-in updater. This has been fixed but you might need to install the <a href="https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/builds/stable/latest.html">latest stable version</a> manually.</li>
+</ul>
+
+<h3>
+<a id="thunderstorm-13-released-2014-11-08" class="anchor" href="#thunderstorm-13-released-2014-11-08" aria-hidden="true"><span class="octicon octicon-link"></span></a>ThunderSTORM 1.3 released! (2014-11-08)</h3>
+
+<p><a href="https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/builds/stable/latest.html">
+<img src="https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/wiki/thunderstorm-logo-download.png">
+</a></p>
+
+<h2>
+<a id="about-thunderstorm" class="anchor" href="#about-thunderstorm" aria-hidden="true"><span class="octicon octicon-link"></span></a>About ThunderSTORM</h2>
+
+<p>ThunderSTORM is an open-source, interactive, and modular plug-in for <a href="http://rsb.info.nih.gov/ij/">ImageJ</a> designed for automated processing, analysis, and visualization of data acquired by single molecule localization microscopy methods such as PALM and STORM. Our philosophy in developing ThunderSTORM has been to offer an extensive collection of processing and post-processing methods so that users can easily adapt the process of analysis to their data.</p>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>
+<strong>Easy to use:</strong> The default settings are designed to produce good results on many datasets. At the same time experienced users have a lot of freedom to configure the process of data analysis according to their needs.</li>
+<li>
+<strong>Platform-independent:</strong> ThunderSTORM is written in Java and has been tested on Windows, Linux, and MacOS.</li>
+<li>
+<strong>Data processing:</strong> Extensive collection of methods for approximate and sub-diffraction molecular localization. The threshold for detection of molecules can be specified using a mathematical expression.</li>
+<li>
+<strong>3D super-resolution imaging:</strong>  Astigmatism approach with integrated calibration tool.</li>
+<li>
+<strong>Multiple-emitter fitting analysis:</strong> Both 2D and 3D imaging using statistical model selection methods to determine the optimum number of molecules to fit.</li>
+<li>
+<strong>Post-processing methods:</strong> Filtering molecules with poor localization or other user-defined criteria, local density based filtering, merging molecules reappearing in subsequent frames, removing duplicated molecules obtained in multiple emitter analysis, correction of molecular coordinates for lateral drift of the sample, support for multiple Z-stage data acquisition, coordinate based co-localization, exporting and visualizing localized molecules in user-defined region of interest, and possibility to undo the last change or to restore the original values.</li>
+<li>
+<strong>Live preview:</strong> Instant live preview as the user modifies the post-processing criteria.</li>
+<li>
+<strong>Visualization methods:</strong> 2D or slice-by-slice 3D visualization using scatter plot, histogram (with jittering option), average shifted histogram, Gaussian rendering.</li>
+<li>
+<strong>Import/export:</strong> Input image sequences and the final super-resolution images can be opened or saved in any format supported by ImageJ or by any of its plug-ins. Localization results from previously processed datasets and ground-truth positions of the molecules can be imported or exported for further analysis in the following formats: CSV, XLS, XML, YAML, JSON, Google protocol buffer, and Tagged Spot File format.</li>
+<li>
+<strong>Simulation engine:</strong> Tools for creation of realistic simulated data and for quantitative performance evaluation of localization algorithms using Monte-Carlo simulations.</li>
+<li>
+<strong>Parallel processing:</strong> Processing of the input data is handled in parallel.</li>
+<li>
+<strong>Support for batch processing:</strong> ThunderSTORM takes full advantage of ImageJ's Macro Language which makes batch processing possible (see the <a href="BatchProcessing">example</a>).</li>
+<li>
+<strong>Extendable:</strong> The functionality of ThunderSTORM can be easily extended to <a href="Developers">add more features</a>. ThunderSTORM is also fully interoperable with other ImageJ plugins, thus the functionality can be indirectly extend by adding new plugins into ImageJ.</li>
+</ul>
+
+<h2>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting started</h2>
+
+<p>Install <a href="http://imagej.nih.gov/ij/index.html">ImageJ</a> and download the latest version of <a href="https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/builds/stable/latest.html">ThunderSTORM</a>. For installation, copy the downloaded file into ImageJ's plugin subdirectory and run ImageJ. See the <a href="Installation">Installation guide</a> for more information. To get started using ThunderSTORM, see the <a href="Tutorials">Tutorials</a>. Example data are provided <a href="https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/data/12%20+%20cyl%20lens.zip">here</a>.</p>
+
+<h2>
+<a id="how-to-cite-thunderstorm" class="anchor" href="#how-to-cite-thunderstorm" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to cite ThunderSTORM</h2>
+
+<p>If you use ThunderSTORM to process your data, please, cite our <a href="http://dx.doi.org/10.1093/bioinformatics/btu202">paper</a>:</p>
+
+<ul>
+<li>M. Ovesný, P. Křížek, J. Borkovec, Z. Švindrych, G. M. Hagen. <em>ThunderSTORM: a comprehensive ImageJ plugin for PALM and STORM data analysis and super-resolution imaging.</em> Bioinformatics 30(16):2389-2390, 2014.</li>
+</ul>
+        </section>
+
+        <footer>
+          Thunderstorm is maintained by <a href="https://github.com/zitmen">zitmen</a><br>
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
