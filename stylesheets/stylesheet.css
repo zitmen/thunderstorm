@@ -90,7 +90,7 @@ header h2 {
 }
 
 .inner {
-  width: 620px;
+  width: 665px;
   margin: 0 auto;
 }
 
@@ -152,6 +152,12 @@ a.button span {
   padding-left: 50px;
 }
 
+#discuss span {
+  background: transparent url(../images/discuss-icon.png) 12px 50% no-repeat;
+}
+#download-stable span {
+  background: transparent url(../images/thunderstorm-icon.png) 12px 50% no-repeat;
+}
 #download-zip span {
   background: transparent url(../images/zip-icon.png) 12px 50% no-repeat;
 }
@@ -297,7 +303,8 @@ blockquote {
 ul li {
   list-style-position: inside;
   list-style: disc;
-  padding-left: 20px;
+  margin-left: 20px;
+  padding-left: 10px;
 }
 
 ol li {
