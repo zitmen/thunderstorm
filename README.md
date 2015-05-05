@@ -15,6 +15,10 @@
 ## About ThunderSTORM
 ThunderSTORM is an open-source, interactive, and modular plug-in for [ImageJ](http://rsb.info.nih.gov/ij/) designed for automated processing, analysis, and visualization of data acquired by single molecule localization microscopy methods such as PALM and STORM. Our philosophy in developing ThunderSTORM has been to offer an extensive collection of processing and post-processing methods so that users can easily adapt the process of analysis to their data.
 
+## Getting started
+Install [ImageJ](http://imagej.nih.gov/ij/index.html) and download the latest version of [ThunderSTORM](https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/builds/stable/latest.html). For installation, copy the downloaded file into ImageJ's plugin subdirectory and run ImageJ. See the [Installation guide](Installation) for more information. To get started using ThunderSTORM, see the [Tutorials](Tutorials). Example data are provided [here](https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/data/12%20+%20cyl%20lens.zip).
+
+
 ## Features
   * **Easy to use:** The default settings are designed to produce good results on many datasets. At the same time experienced users have a lot of freedom to configure the process of data analysis according to their needs.
   * **Platform-independent:** ThunderSTORM is written in Java and has been tested on Windows, Linux, and MacOS.
@@ -29,10 +33,6 @@ ThunderSTORM is an open-source, interactive, and modular plug-in for [ImageJ](ht
   * **Parallel processing:** Processing of the input data is handled in parallel.
   * **Support for batch processing:** ThunderSTORM takes full advantage of ImageJ's Macro Language which makes batch processing possible (see the [example](BatchProcessing)).
   * **Extendable:** The functionality of ThunderSTORM can be easily extended to [add more features](Developers). ThunderSTORM is also fully interoperable with other ImageJ plugins, thus the functionality can be indirectly extend by adding new plugins into ImageJ.
-
-
-## Getting started
-Install [ImageJ](http://imagej.nih.gov/ij/index.html) and download the latest version of [ThunderSTORM](https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/builds/stable/latest.html). For installation, copy the downloaded file into ImageJ's plugin subdirectory and run ImageJ. See the [Installation guide](Installation) for more information. To get started using ThunderSTORM, see the [Tutorials](Tutorials). Example data are provided [here](https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/data/12%20+%20cyl%20lens.zip).
 
 
 ## How to cite ThunderSTORM
