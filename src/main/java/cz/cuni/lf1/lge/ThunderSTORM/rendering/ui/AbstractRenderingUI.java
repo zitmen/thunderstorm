@@ -2,7 +2,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
@@ -10,13 +9,11 @@ import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFacto
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.Validator;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public abstract class AbstractRenderingUI extends IRendererUI {
 
@@ -106,6 +103,11 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         zRangeTextField.setText(r.toStrFromStepTo());
     }
 
+    @Override
+    public void set3D(boolean checked) {
+        threeDCheckBox.setSelected(checked);
+    }
+
     protected double roundUpTo(double val, double mod) {
         return (val + mod - modulo(val, mod));
     }
@@ -156,9 +158,9 @@ public abstract class AbstractRenderingUI extends IRendererUI {
         final JLabel colorizeZLabel = new JLabel("Colorize z-stack:");
         final JCheckBox colorizeZCheckBox = new JCheckBox("", true);
         parameters.registerComponent(colorizeZ, colorizeZCheckBox);
-        threeDCheckBox.addActionListener(new ActionListener() {
+        threeDCheckBox.addItemListener(new ItemListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void itemStateChanged(ItemEvent e) {
                 colorizeZLabel.setEnabled(threeDCheckBox.isSelected());
                 colorizeZCheckBox.setEnabled(threeDCheckBox.isSelected());
                 zRangeLabel.setEnabled(threeDCheckBox.isSelected());

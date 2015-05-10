@@ -8,6 +8,7 @@ public abstract class IRendererUI extends IModuleUI<IncrementalRenderingMethod> 
     public abstract void setSize(double sizeX, double sizeY);
     public abstract void setSize(double left, double top, double sizeX, double sizeY);
     public abstract void setZRange(double from, double to);
+    public abstract void set3D(boolean checked);
 
     public abstract int getRepaintFrequency();
 

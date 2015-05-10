@@ -267,7 +267,6 @@ class RenderingDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 IJResultsTable rt = IJResultsTable.getResultsTable();
-                double[] zpos = rt.getColumnAsDoubles(LABEL_Z, NANOMETER);
                 Rectangle rect = RenderingPlugIn.resizeByResults(rt.getColumnAsDoubles(LABEL_X, PIXEL),
                                                                  rt.getColumnAsDoubles(LABEL_Y, PIXEL),
                                                                  new EmptyRendererUI().magnification.getValue());
@@ -279,7 +278,14 @@ class RenderingDialog extends JDialog {
                 topTextField.setText(top + "");
                 sizeXTextField.setText(sizeX + "");
                 sizeYTextField.setText(sizeY + "");
-                renderingMethods.getActiveComboBoxItem().setZRange(VectorMath.min(zpos), VectorMath.max(zpos));
+
+                if (rt.columnExists(LABEL_Z)) {
+                    renderingMethods.getActiveComboBoxItem().set3D(true);
+                    double[] zpos = rt.getColumnAsDoubles(LABEL_Z, NANOMETER);
+                    renderingMethods.getActiveComboBoxItem().setZRange(VectorMath.min(zpos), VectorMath.max(zpos));
+                } else {
+                    renderingMethods.getActiveComboBoxItem().set3D(false);
+                }
             }
         });
         sizeButtonsPanel.add(sizeAnalyzedImageButton);
