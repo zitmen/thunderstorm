@@ -12,6 +12,8 @@ import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.measure.Calibration;
+import ij.plugin.LUT_Editor;
+import ij.plugin.LutLoader;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
@@ -36,7 +38,8 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     protected double zFrom, zTo, zStep;
     protected int zSlices;
     protected boolean threeDimensions;
-    protected boolean colorizeZ;
+    protected boolean colorize;
+    protected LUT colorizationLut;
     protected ImageProcessor[] slices;
     protected ImagePlus image;
     private ImageStack stack;
@@ -57,7 +60,8 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         private double zFrom = Double.NEGATIVE_INFINITY, zTo = Double.POSITIVE_INFINITY, zStep = Double.POSITIVE_INFINITY;
         private int zSlices = 1;
         private boolean threeDimensions = false;
-        private boolean colorizeZ = false;
+        private boolean colorize = false;
+        private LUT colorizationLut = null;
 
         /**
          * Sets the desired resolution of the final image. In localization units
@@ -157,8 +161,13 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             return (BuilderType) this;
         }
 
-        public BuilderType colorizeZ(boolean colorize) {
-            this.colorizeZ = colorize;
+        public BuilderType colorize(boolean colorize) {
+            this.colorize = colorize;
+            return (BuilderType) this;
+        }
+
+        public BuilderType colorizationLUT(LUT lut) {
+            this.colorizationLut = lut;
             return (BuilderType) this;
         }
 
@@ -223,7 +232,8 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         this.zStep = builder.zStep;
         this.zTo = builder.zTo;
         this.threeDimensions = builder.threeDimensions;
-        this.colorizeZ = builder.colorizeZ;
+        this.colorize = builder.colorize;
+        this.colorizationLut = builder.colorizationLut;
         slices = new ImageProcessor[zSlices];
         stack = new ImageStack(imSizeX, imSizeY);
         for(int i = 0; i < zSlices; i++) {
@@ -240,7 +250,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         }
         calibration.setUnit("um");
         image.setCalibration(calibration);
-        if(colorizeZ) {
+        if(colorize) {
             image.setDimensions(zSlices, 1, 1);
             CompositeImage image2 = new CompositeImage(image);
             image = image2;
@@ -313,26 +323,34 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         if(image.isComposite()) {
             CompositeImage image2 = (CompositeImage) image;
             LUT[] channeLuts = new LUT[zSlices];
-            for(int i = 0; i < channeLuts.length; i++) {
-                //Colormap for slices: (has constant grayscale intensity, unlike jet and similar)
-                //r:      /
-                //     __/
-                //g:    /\
-                //     /  \
-                //b:   \
-                //      \__
-                float norm = (float) i / zSlices;
-                float r, g, b;
-                if(norm < 0.5) {
-                    b = 1 - 2 * norm;
-                    g = 2 * norm;
-                    r = 0;
-                } else {
-                    b = 0;
-                    g = -2 * norm + 2;
-                    r = 2 * norm - 1;
+            if (colorizationLut == null) {  // fallback if no LUTs are installed
+                for (int i = 0; i < channeLuts.length; i++) {
+                    //Colormap for slices: (has constant grayscale intensity, unlike jet and similar)
+                    //r:      /
+                    //     __/
+                    //g:    /\
+                    //     /  \
+                    //b:   \
+                    //      \__
+                    float norm = (float) i / zSlices;
+                    float r, g, b;
+                    if (norm < 0.5) {
+                        b = 1 - 2 * norm;
+                        g = 2 * norm;
+                        r = 0;
+                    } else {
+                        b = 0;
+                        g = -2 * norm + 2;
+                        r = 2 * norm - 1;
+                    }
+                    channeLuts[i] = LUT.createLutFromColor(new Color(r, g, b));
                 }
-                channeLuts[i] = LUT.createLutFromColor(new Color(r, g, b));
+            } else {
+                int[] rgb = new int[4];
+                for (int i = 0; i < channeLuts.length; i++) {
+                    colorizationLut.getComponents((int)(((float) i / zSlices) * 255f), rgb, 0);
+                    channeLuts[i] = LUT.createLutFromColor(new Color(rgb[0], rgb[1], rgb[2]));
+                }
             }
             image2.setLuts(channeLuts);
         }

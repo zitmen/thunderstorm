@@ -132,7 +132,8 @@ public class HistogramRenderingUI extends AbstractRenderingUI {
                     .forceDefaultDX(forceDx.getValue())
                     .defaultDZ(dz.getValue())
                     .forceDefaultDZ(forceDz.getValue())
-                    .colorizeZ(colorizeZ.getValue())
+                    .colorize(colorize.getValue())
+                    .colorizationLUT(lutPicker.getLut(colorizationLut.getValue()))
                     .zRange(zRange.from, zRange.to, zRange.step)
                     .build();
         } else {

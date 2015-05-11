@@ -101,7 +101,8 @@ public class DensityRenderingUI extends AbstractRenderingUI {
                     .defaultDX(dx.getValue() / CameraSetupPlugIn.getPixelSize())
                     .forceDefaultDX(forceDx.getValue())
                     .zRange(r.from, r.to, r.step)
-                    .colorizeZ(colorizeZ.getValue())
+                    .colorize(colorize.getValue())
+                    .colorizationLUT(lutPicker.getLut(colorizationLut.getValue()))
                     .defaultDZ(dz.getValue())
                     .forceDefaultDZ(forceDz.getValue())
                     .build();

@@ -35,7 +35,8 @@ public class ScatterRenderingUI extends AbstractRenderingUI {
             return new ScatterRendering.Builder()
                     .roi(left, left+sizeX, top, top+sizeY)
                     .resolution(1 / magnification.getValue())
-                    .colorizeZ(colorizeZ.getValue())
+                    .colorize(colorize.getValue())
+                    .colorizationLUT(lutPicker.getLut(colorizationLut.getValue()))
                     .zRange(zrange.from, zrange.to, zrange.step)
                     .build();
         } else {

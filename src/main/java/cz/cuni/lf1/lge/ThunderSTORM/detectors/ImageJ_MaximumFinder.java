@@ -561,7 +561,7 @@ class ImageJ_MaximumFinder implements ExtendedPlugInFilter, DialogListener {
                 }
                 if (imp!=null) {
                 	Roi points = new PointRoi(xpoints, ypoints, npoints);
-                	((PointRoi)points).setHideLabels(true);
+                	((PointRoi)points).setShowLabels(false);
                 	imp.setRoi(points);
                 }
                 points = new Polygon(xpoints, ypoints, npoints);

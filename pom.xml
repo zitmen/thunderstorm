@@ -4,7 +4,7 @@
 
     <groupId>cz.cuni.lf1.lge</groupId>
     <artifactId>ThunderSTORM</artifactId>
-    <version>dev-2015-05-10-b1</version>
+    <version>dev-2015-05-11-b1</version>
     <packaging>jar</packaging>
 
     <name>ThunderSTORM</name>
@@ -15,7 +15,7 @@
         <skipTests>true</skipTests>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>    
         <imagej.path>c:\Program Files\ImageJ</imagej.path>
-        <imagej1.version>1.45</imagej1.version>
+        <imagej1.version>1.49s</imagej1.version>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
         <lyx.path>/cygdrive/c/Program Files (x86)/Lyx 2.0/bin/LyX.exe</lyx.path>
@@ -53,8 +53,8 @@
     -->
 
     <issueManagement>
-        <system>GoogleCode</system>
-        <url>https://code.google.com/p/thunder-storm/issues/</url>
+        <system>GitHub</system>
+        <url>https://github.com/zitmen/thunderstorm/issues</url>
     </issueManagement>
     
     <licenses>
@@ -85,9 +85,9 @@
     </developers>
         
     <scm>
-        <developerConnection>scm:git:https://code.google.com/p/thunder-storm/</developerConnection>
+        <developerConnection>scm:git:https://github.com/zitmen/thunderstorm.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://code.google.com/p/thunder-storm/source/checkout</url>
+        <url>https://github.com/zitmen/thunderstorm/</url>
     </scm>
     
     <build>
@@ -193,8 +193,8 @@
   
     <dependencies>
         <dependency>
-            <groupId>gov.nih.imagej</groupId>
-            <artifactId>imagej</artifactId>
+            <groupId>net.imagej</groupId>
+            <artifactId>ij</artifactId>
             <version>${imagej1.version}</version>
             <scope>provided</scope>
         </dependency>

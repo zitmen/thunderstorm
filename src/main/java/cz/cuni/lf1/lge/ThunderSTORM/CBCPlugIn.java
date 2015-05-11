@@ -115,7 +115,7 @@ public class CBCPlugIn implements PlugIn {
 
         RenderingMethod renderer = new ASHRendering.Builder()
                 .shifts(2)
-                .zShifts(1).colorizeZ(true).zRange(-1, 1, 0.1)
+                .zShifts(1).colorize(true).zRange(-1, 1, 0.1)
                 .roi(0, maxRoiX, 0, maxRoiY)
                 .resolution(0.2)
                 .build();
@@ -136,7 +136,7 @@ public class CBCPlugIn implements PlugIn {
 
             RenderingMethod renderer2 = new ASHRendering.Builder()
                     .shifts(2)
-                    .zShifts(1).colorizeZ(true).zRange(-1, 1, 0.1)
+                    .zShifts(1).colorize(true).zRange(-1, 1, 0.1)
                     .roi(0, maxRoiX, 0, maxRoiY)
                     .resolution(0.2)
                     .build();
