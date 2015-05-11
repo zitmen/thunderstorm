@@ -7,8 +7,11 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.ThompsonNotApplicableException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import ij.IJ;
 import ij.process.FloatProcessor;
 import java.util.Vector;
+
+import org.apache.commons.math3.exception.ConvergenceException;
 import org.apache.commons.math3.exception.MaxCountExceededException;
 
 public class MultipleLocationsImageFitting implements IEstimator {
@@ -109,8 +112,15 @@ public class MultipleLocationsImageFitting implements IEstimator {
                         }
                         psf.setDetections(null);
                     }
-                } catch(MaxCountExceededException ex) {
-                    //IJ.log(ex.getMessage());
+                } catch (MaxCountExceededException ex) {
+                    // maximum number of iterations has been exceeded (it is set very high, so it usually means trouble)
+                    //IJ.log("Warning: the fitter couldn't converge! The molecule candidate has been thrown away.");
+                } catch (ConvergenceException ex) {
+                    // exception: "org.apache.commons.math3.exception.ConvergenceException: illegal state:
+                    //             unable to perform Q.R decomposition on the 49x11 jacobian matrix"
+                    // -> probably NaN or Inf value in one of the estimated parameter
+                    //    or during the evaluation of PSF model or ots derivative
+                    //IJ.log("Warning: the fitter couldn't converge! The molecule candidate has been thrown away.");
                 }
             }
         }
