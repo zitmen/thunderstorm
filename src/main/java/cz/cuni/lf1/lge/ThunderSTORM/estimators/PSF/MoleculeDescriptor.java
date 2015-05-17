@@ -333,7 +333,7 @@ public class MoleculeDescriptor implements Cloneable {
             MeasurementProtocol protocol = IJResultsTable.getResultsTable().getMeasurementProtocol();
             if (protocol.analysisEstimator instanceof EllipticGaussianEstimatorUI) {    // 3D? elliptic Gauss (astigmatism)
                 fittingMethod = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).getMethod();
-                DaostormCalibration cal = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).calibration.getDaoCalibration();
+                DaostormCalibration cal = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).getDaoCalibration();
                 double l2 = abs(cal.getC1() * cal.getC2());
                 double d2 = abs(cal.getD1() * cal.getD2());
                 tau = 2.0 * PI * bkgStd*bkgStd * (psfSigma2*(1.0 + l2/d2) + pixelSize*pixelSize/12.0) / (psfPhotons * pixelSize*pixelSize);
@@ -384,7 +384,7 @@ public class MoleculeDescriptor implements Cloneable {
                     ? molecule.getParam(LABEL_Z_REL, Units.NANOMETER)
                     : molecule.getParam(LABEL_Z, Units.NANOMETER);
 
-            DaostormCalibration cal = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).calibration.getDaoCalibration();
+            DaostormCalibration cal = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).getDaoCalibration();
             double l2 = abs(cal.getC1() * cal.getC2());
             double d2 = abs(cal.getD1() * cal.getD2());
             double tau = 2.0 * PI * bkgStd*bkgStd * (psfSigma1*psfSigma2*(1.0 + l2/d2) + pixelSize*pixelSize/12.0) / (psfPhotons * pixelSize*pixelSize);

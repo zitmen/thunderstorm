@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.CylindricalLensCalibration;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DaostormCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.*;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
@@ -24,9 +25,19 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
     public CylindricalLensCalibration calibration;
     protected transient ParameterKey.String CALIBRATION_PATH;
 
+    private transient DaostormCalibration daoCalibration;   // internal variable for calculation of uncertainty
+
     public EllipticGaussianEstimatorUI() {
         this.name = "PSF: Elliptical Gaussian (3D astigmatism)";
         CALIBRATION_PATH = parameters.createStringField("calibrationpath", StringValidatorFactory.fileExists(), "");
+        daoCalibration = null;
+    }
+
+    public DaostormCalibration getDaoCalibration() {
+        if (daoCalibration == null) {
+            daoCalibration = calibration.getDaoCalibration();
+        }
+        return daoCalibration;
     }
 
     @Override

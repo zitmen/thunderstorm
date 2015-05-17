@@ -5,15 +5,20 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
-import org.apache.commons.math3.optim.InitialGuess;
-import org.apache.commons.math3.optim.MaxEval;
-import org.apache.commons.math3.optim.PointValuePair;
-import org.apache.commons.math3.optim.SimplePointChecker;
+import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
+import org.apache.commons.math3.fitting.CurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoint;
+import org.apache.commons.math3.optim.*;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.nonlinear.scalar.MultiStartMultivariateOptimizer;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunctionGradient;
 import org.apache.commons.math3.optim.nonlinear.scalar.gradient.NonLinearConjugateGradientOptimizer;
+import org.apache.commons.math3.optim.nonlinear.vector.ModelFunction;
+import org.apache.commons.math3.optim.nonlinear.vector.ModelFunctionJacobian;
+import org.apache.commons.math3.optim.nonlinear.vector.Target;
+import org.apache.commons.math3.optim.nonlinear.vector.Weight;
+import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
 import org.apache.commons.math3.random.RandomVectorGenerator;
 
 // sigma(z) = a*(z-c)^2 + b + d*(z-c)^3
@@ -92,7 +97,25 @@ public class PolynomialCalibration extends CylindricalLensCalibration {
 
     @Override
     public DaostormCalibration getDaoCalibration() {
-        // TODO: re-fit the model!
-        return null;
+        ParametricUnivariateFunction sqrtFn = new DefocusFunctionSqrt().getFittingFunction();
+        ParametricUnivariateFunction polyFn = new DefocusFunctionPoly().getFittingFunction();
+
+        CurveFitter<ParametricUnivariateFunction> fitter1 = new CurveFitter<ParametricUnivariateFunction>(new LevenbergMarquardtOptimizer(new SimplePointChecker(10e-10, 10e-10)));
+        CurveFitter<ParametricUnivariateFunction> fitter2 = new CurveFitter<ParametricUnivariateFunction>(new LevenbergMarquardtOptimizer(new SimplePointChecker(10e-10, 10e-10)));
+
+        double [] polyParams1 = new double[] {w01, c1, a1, b1, d1};
+        double [] polyParams2 = new double[] {w02, c2, a2, b2, d2};
+
+        double zRange = ceil(2*(abs(c1)+abs(c2)));    // -zRange:+zRange
+        for(double z = -zRange; z <= zRange; z += 5.0) {
+            fitter1.addObservedPoint(z, polyFn.value(z, polyParams1));
+            fitter2.addObservedPoint(z, polyFn.value(z, polyParams2));
+        }
+
+        double [] parSigma1 = fitter1.fit(1000, sqrtFn, new double[] {2.0, c1, 0.0, 0.0, zRange/2.0});
+        double [] parSigma2 = fitter2.fit(1000, sqrtFn, new double[] {2.0, c2, 0.0, 0.0, zRange/2.0});
+
+        return new DaostormCalibration(angle, parSigma1[0], parSigma1[2], parSigma1[3], parSigma1[1], parSigma1[4],
+                                              parSigma2[0], parSigma2[2], parSigma2[3], parSigma2[1], parSigma2[4]);
     }
 }
