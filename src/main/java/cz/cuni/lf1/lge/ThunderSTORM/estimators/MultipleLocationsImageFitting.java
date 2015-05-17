@@ -1,18 +1,20 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.ThompsonNotApplicableException;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.UncertaintyNotApplicableException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.process.FloatProcessor;
-import java.util.Vector;
-
 import org.apache.commons.math3.exception.ConvergenceException;
 import org.apache.commons.math3.exception.MaxCountExceededException;
+
+import java.util.Vector;
+
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.uncertaintyXY;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.uncertaintyZ;
 
 public class MultipleLocationsImageFitting implements IEstimator {
 
@@ -114,13 +116,15 @@ public class MultipleLocationsImageFitting implements IEstimator {
                     }
                 } catch (MaxCountExceededException ex) {
                     // maximum number of iterations has been exceeded (it is set very high, so it usually means trouble)
-                    //IJ.log("Warning: the fitter couldn't converge! The molecule candidate has been thrown away.");
+                    IJ.log("Warning: the fitter couldn't converge (max. count of iterations was exceeded)! The molecule candidate has been thrown away.");
                 } catch (ConvergenceException ex) {
                     // exception: "org.apache.commons.math3.exception.ConvergenceException: illegal state:
                     //             unable to perform Q.R decomposition on the 49x11 jacobian matrix"
                     // -> probably NaN or Inf value in one of the estimated parameter
                     //    or during the evaluation of PSF model or ots derivative
-                    //IJ.log("Warning: the fitter couldn't converge! The molecule candidate has been thrown away.");
+                    // -> another possible reason is that camera offset is set too high, which in combination with WLSQ
+                    //    fitting may lead to division by zero, since intensities are used for weighting!
+                    IJ.log("Warning: the fitter couldn't converge (probably NaN or Inf occurred in calculations; if you use WLSQ fitting, check if camera offset isn't too high correctly; if not try MLE or LSQ fitting)! The molecule candidate has been thrown away.");
                 }
             }
         }
@@ -179,15 +183,9 @@ public class MultipleLocationsImageFitting implements IEstimator {
 
     public static void appendCalculatedUncertainty(Molecule mol) {
         try {
-            String paramName = MoleculeDescriptor.Fitting.LABEL_THOMPSON;
-            double paramValue;
-            if(CameraSetupPlugIn.isIsEmGain()) {
-                paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
-            } else {
-                paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
-            }
-            mol.addParam(paramName, MoleculeDescriptor.Units.NANOMETER, paramValue);
-        } catch(ThompsonNotApplicableException e) {
+            mol.addParam(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY, MoleculeDescriptor.Units.NANOMETER, uncertaintyXY(mol));
+            mol.addParam(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z, MoleculeDescriptor.Units.NANOMETER, uncertaintyZ(mol));
+        } catch(UncertaintyNotApplicableException e) {
             // ignore...PSF does not fit all the required parameters
         }
     }

@@ -45,8 +45,8 @@ public class ProtoImportExport implements IImportExport {
             if(mol.hasBackground()) fields.add(PSFModel.Params.LABEL_BACKGROUND);
             if(mol.hasDetections()) fields.add(MoleculeDescriptor.LABEL_DETECTIONS);
             if(mol.hasOffset()) fields.add(PSFModel.Params.LABEL_OFFSET);
-            if(mol.hasThompsonCcd()) fields.add(MoleculeDescriptor.Fitting.LABEL_THOMPSON);
-            if(mol.hasThompsonEmccd()) fields.add(MoleculeDescriptor.Fitting.LABEL_THOMPSON);
+            if(mol.hasThompsonCcd()) fields.add(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY);
+            if(mol.hasThompsonEmccd()) fields.add(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY);
             if(!table.columnNamesEqual(fields.toArray(new String[0]))) {
                 throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + MoleculeDescriptor.LABEL_ID + "')!");
             }
@@ -125,8 +125,8 @@ public class ProtoImportExport implements IImportExport {
                     units.setDetections(unit);
                 } else if(PSFModel.Params.LABEL_OFFSET.equals(name)) {
                     units.setOffset(unit);
-                } else if(MoleculeDescriptor.Fitting.LABEL_THOMPSON.equals(name)) {
-                    if(CameraSetupPlugIn.isIsEmGain()) {
+                } else if(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY.equals(name)) {
+                    if(CameraSetupPlugIn.getIsEmGain()) {
                         units.setThompsonEmccd(unit);
                     } else {
                         units.setThompsonCcd(unit);
@@ -168,8 +168,8 @@ public class ProtoImportExport implements IImportExport {
                     mol.setDetections((int)value);
                 } else if(PSFModel.Params.LABEL_OFFSET.equals(name)) {
                     mol.setOffset(value);
-                } else if(MoleculeDescriptor.Fitting.LABEL_THOMPSON.equals(name)) {
-                    if(CameraSetupPlugIn.isIsEmGain()) {
+                } else if(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY.equals(name)) {
+                    if(CameraSetupPlugIn.getIsEmGain()) {
                         mol.setThompsonEmccd(value);
                     } else {
                         mol.setThompsonCcd(value);
@@ -212,8 +212,8 @@ public class ProtoImportExport implements IImportExport {
             if(u.hasBackground()) table.setColumnUnits(PSFModel.Params.LABEL_BACKGROUND, Units.fromString(u.getBackground()));
             if(u.hasDetections()) table.setColumnUnits(MoleculeDescriptor.LABEL_DETECTIONS, Units.fromString(u.getDetections()));
             if(u.hasOffset()) table.setColumnUnits(PSFModel.Params.LABEL_OFFSET, Units.fromString(u.getOffset()));
-            if(u.hasThompsonCcd()) table.setColumnUnits(MoleculeDescriptor.Fitting.LABEL_THOMPSON, Units.fromString(u.getThompsonCcd()));
-            if(u.hasThompsonEmccd()) table.setColumnUnits(MoleculeDescriptor.Fitting.LABEL_THOMPSON, Units.fromString(u.getThompsonEmccd()));
+            if(u.hasThompsonCcd()) table.setColumnUnits(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY, Units.fromString(u.getThompsonCcd()));
+            if(u.hasThompsonEmccd()) table.setColumnUnits(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY, Units.fromString(u.getThompsonEmccd()));
         }
     }
 

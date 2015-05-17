@@ -19,10 +19,19 @@ import org.apache.commons.math3.random.RandomVectorGenerator;
 // sigma(z) = a*(z-c)^2 + b + d*(z-c)^3
 public class PolynomialCalibration extends CylindricalLensCalibration {
 
-    final String name = "Polynomial calibration";
-    DefocusFunction s1Par, s2Par;
+    public static final String name = DefocusFunctionPoly.name;
+    transient DefocusFunction s1Par, s2Par;
 
     public PolynomialCalibration() {
+        super();
+        s1Par = null;
+        s2Par = null;
+    }
+
+    public PolynomialCalibration(double angle, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
+        super(angle, w01, a1, b1, c1, d1, w02, a2, b2, c2, d2);
+        s1Par = null;
+        s2Par = null;
     }
 
     public PolynomialCalibration(double angle, DefocusFunction sigma1Params, DefocusFunction sigma2Params) {
@@ -30,6 +39,11 @@ public class PolynomialCalibration extends CylindricalLensCalibration {
                      sigma2Params.getW0(), sigma2Params.getA(), sigma2Params.getB(), sigma2Params.getC(), sigma2Params.getD());
         s1Par = sigma1Params;
         s2Par = sigma2Params;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     // ---------------- SIGMA -------------- //
@@ -74,5 +88,11 @@ public class PolynomialCalibration extends CylindricalLensCalibration {
     @Override
     public double dwy2(double z) {
         return dw2(z, w02, a2, b2, c2, d2);
+    }
+
+    @Override
+    public DaostormCalibration getDaoCalibration() {
+        // TODO: re-fit the model!
+        return null;
     }
 }

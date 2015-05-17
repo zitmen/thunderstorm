@@ -10,6 +10,12 @@ public abstract class CylindricalLensCalibration {
     public double d1, d2;
 
     public CylindricalLensCalibration() {
+        angle = 0.0;
+        w01 = w02 = 0.0;
+        a1 = a2 = 0.0;
+        b1 = b2 = 0.0;
+        c1 = c2 = 0.0;
+        d1 = d2 = 0.0;
     }
 
     public CylindricalLensCalibration(double angle, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
@@ -26,6 +32,7 @@ public abstract class CylindricalLensCalibration {
         this.d2 = d2;
     }
 
+    public abstract String getName();
     public abstract double evalDefocus(double z, double w0, double a, double b, double c, double d);
     public abstract double evalDefocus2(double z, double w0, double a, double b, double c, double d);
     public abstract double dwx(double z);
@@ -136,4 +143,8 @@ public abstract class CylindricalLensCalibration {
     public void setW02(double w02) {
         this.w02 = w02;
     }
+
+    // Daostorm calibration model contains D (depth of field) information,
+    // which is necessary for calculation of uncertainty of an estimator
+    public abstract DaostormCalibration getDaoCalibration();
 }

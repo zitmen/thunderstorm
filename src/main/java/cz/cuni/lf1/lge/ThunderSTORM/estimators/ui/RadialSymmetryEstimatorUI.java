@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 public class RadialSymmetryEstimatorUI extends IEstimatorUI {
 
     private final String name = "Radial symmetry";
+    private int fittingRadius;
     private transient ParameterKey.Integer FITRAD;
 
     public RadialSymmetryEstimatorUI() {
@@ -40,6 +41,6 @@ public class RadialSymmetryEstimatorUI extends IEstimatorUI {
 
     @Override
     public IEstimator getImplementation() {
-        return new MultipleLocationsImageFitting(FITRAD.getValue(), new RadialSymmetryFitter());
+        return new MultipleLocationsImageFitting(fittingRadius = FITRAD.getValue(), new RadialSymmetryFitter());
     }
 }

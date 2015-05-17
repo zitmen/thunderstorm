@@ -118,9 +118,11 @@ public abstract class PostProcessingModule {
     
     class DefaultOperation extends OperationsHistoryPanel.Operation {
 
+        String name;
         String options;
 
         public DefaultOperation() {
+            this.name = getName();
             //dummy record the param options
             boolean oldRecording = Recorder.record;
             Recorder.record = true;

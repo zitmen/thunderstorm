@@ -132,7 +132,7 @@ public class TSFImportExport implements IImportExport {
                     values.add(spot.getExtension(TSF.detections));
                 }
                 if(spot.hasXPrecision()) {
-                    columnNames.add(MoleculeDescriptor.Fitting.LABEL_THOMPSON);
+                    columnNames.add(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY);
                     values.add(spot.getXPrecision());
                 }
 
@@ -164,7 +164,7 @@ public class TSFImportExport implements IImportExport {
                         table.setColumnUnits(PSFModel.Params.LABEL_BACKGROUND, intensityUnits);
                     }
                     if(spot.hasXPrecision()) {
-                        table.setColumnUnits(MoleculeDescriptor.Fitting.LABEL_THOMPSON, locationUnits);
+                        table.setColumnUnits(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY, locationUnits);
                     }
                 }
                 table.addRow(values.toArray());
@@ -239,8 +239,8 @@ public class TSFImportExport implements IImportExport {
                     spotBuilder.setA((float) (fwhm1 / fwhm2));
                 }
 
-                if(mol.hasParam(MoleculeDescriptor.Fitting.LABEL_THOMPSON) && columnsSet.contains(MoleculeDescriptor.Fitting.LABEL_THOMPSON)) {
-                    float uncertainty = (float) mol.getParam(MoleculeDescriptor.Fitting.LABEL_THOMPSON, locationUnits);
+                if(mol.hasParam(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY) && columnsSet.contains(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY)) {
+                    float uncertainty = (float) mol.getParam(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY, locationUnits);
                     spotBuilder.setXPrecision(uncertainty);
                     spotBuilder.setYPrecision(uncertainty);
                 }

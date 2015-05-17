@@ -26,6 +26,10 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
     public transient static final String WLSQ = "Weighted Least squares";
     //
     protected String name = "PSF: Gaussian";
+    protected int fittingRadius;
+    protected String method;
+    protected double initialSigma;
+    protected boolean fullImageFitting;
     protected CrowdedFieldEstimatorUI crowdedField;
     //params
     protected transient ParameterKey.Integer FITRAD;
@@ -36,7 +40,7 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
     public SymmetricGaussianEstimatorUI() {
         crowdedField = new CrowdedFieldEstimatorUI();
         FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
-        METHOD = parameters.createStringField("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), WLSQ);
+        METHOD = parameters.createStringField("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), MLE);
         SIGMA = parameters.createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
         FULL_IMAGE_FITTING = parameters.createBooleanField("full_image_fitting", null, false);
     }
@@ -44,6 +48,10 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
     @Override
     public String getName() {
         return name;
+    }
+
+    public String getMethod() {
+        return method;
     }
 
     @Override
@@ -76,30 +84,31 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
 
     @Override
     public IEstimator getImplementation() {
-        String method = METHOD.getValue();
-        double sigma = SIGMA.getValue();
-        int fitradius = FITRAD.getValue();
-        SymmetricGaussianPSF psf = new SymmetricGaussianPSF(sigma);
+        method = METHOD.getValue();
+        initialSigma = SIGMA.getValue();
+        fittingRadius = FITRAD.getValue();
+        fullImageFitting = FULL_IMAGE_FITTING.getValue();
+        SymmetricGaussianPSF psf = new SymmetricGaussianPSF(initialSigma);
         OneLocationFitter fitter;
         if(LSQ.equals(method) || WLSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
-                fitter = crowdedField.getLSQImplementation(psf, sigma);
+                fitter = crowdedField.getLSQImplementation(psf, initialSigma);
             } else {
                 fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
             }
         } else if(MLE.equals(method)) {
             if(crowdedField.isEnabled()) {
-                fitter = crowdedField.getMLEImplementation(psf, sigma);
+                fitter = crowdedField.getMLEImplementation(psf, initialSigma);
             } else {
                 fitter = new MLEFitter(psf, Params.BACKGROUND);
             }
         } else {
             throw new IllegalArgumentException("Unknown fitting method: " + method);
         }
-        if(FULL_IMAGE_FITTING.getValue() == true) {
+        if(fullImageFitting) {
             return new FullImageFitting(fitter);
         } else {
-            return new MultipleLocationsImageFitting(fitradius, fitter);
+            return new MultipleLocationsImageFitting(fittingRadius, fitter);
         }
     }
 

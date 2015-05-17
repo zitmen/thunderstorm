@@ -1,16 +1,17 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.CylindricalLensCalibration;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DaostormCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.genIntSequence;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.PI;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA1;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA2;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_INTENSITY;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_BACKGROUND;
+
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.*;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
+
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EllipticGaussianEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.MeasurementProtocol;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import java.util.Arrays;
@@ -290,55 +291,133 @@ public class MoleculeDescriptor implements Cloneable {
     public static class Fitting {
 
         public static final String LABEL_CHI2 = "chi2";
-        public static final String LABEL_THOMPSON = "uncertainty";
+        public static final String LABEL_UNCERTAINTY_XY = "uncertainty_xy";
         public static final String LABEL_UNCERTAINTY_Z = "uncertainty_z";
 
-        // return uncertainty in nanometers
-        public static double ccdThompson(Molecule molecule) throws ThompsonNotApplicableException {
-            double psfSigma2, psfEnergy, bkgStd, pixelSize;
-            pixelSize = CameraSetupPlugIn.getPixelSize();
-            if(molecule.hasParam(LABEL_SIGMA)) {    // symmetric
-                psfSigma2 = molecule.getParam(LABEL_SIGMA, Units.NANOMETER)
-                        * molecule.getParam(LABEL_SIGMA, Units.NANOMETER);
-            } else if(molecule.hasParam(LABEL_SIGMA1) && molecule.hasParam(LABEL_SIGMA2)) { // eliptic
-                psfSigma2 = molecule.getParam(LABEL_SIGMA1, Units.NANOMETER)
-                        * molecule.getParam(LABEL_SIGMA2, Units.NANOMETER);
+        /**
+         * Returns lateral uncertainty in nanometers.
+         *
+         * Thompson, et al. 2002; corrected by Mortensen, et al. 2010 (16/9 instead of 1 to not underestimate)
+         * compensation for EM gain worked out by Quan, et al. 2010
+         *
+         * Note: The uncertainty is not well defined for WLSQ as it is unstable due to "zero-offset". Also,
+         *       MLE uncertainty is evaluated through CRLB, but the real experimental uncertainty of our algorithm is
+         *       higher, because MLE is difficult and we use Nelder-Mead algorithm, which performs rather poorly.
+         *       We plan to replace it by Levenberg-Marquardt algorithm as shown in Laurence, et al. 2010. Though, the
+         *       algorithm is derived as chi2 minimization.
+         */
+        public static double uncertaintyXY(Molecule molecule) throws UncertaintyNotApplicableException {
+            double psfSigma2;
+            if(molecule.hasParam(LABEL_SIGMA)) {    // 2D (symmetric Gaussian)
+                psfSigma2 = molecule.getParam(LABEL_SIGMA, Units.NANOMETER)  * molecule.getParam(LABEL_SIGMA, Units.NANOMETER);
+            } else if(molecule.hasParam(LABEL_SIGMA1) && molecule.hasParam(LABEL_SIGMA2)) { // 3D astigmatism (elliptic Gaussian)
+                psfSigma2 = molecule.getParam(LABEL_SIGMA1, Units.NANOMETER)  * molecule.getParam(LABEL_SIGMA2, Units.NANOMETER);
             } else {
-                throw new ThompsonNotApplicableException("Cannot calculate Thompson equation!");
+                throw new UncertaintyNotApplicableException("Missing parameter - `sigma`!");
             }
-            psfEnergy = molecule.getParam(LABEL_INTENSITY, Units.PHOTON);
-            bkgStd = molecule.getParam(LABEL_BACKGROUND, Units.PHOTON);
-            //
-            double xyVar = ((psfSigma2 + pixelSize * pixelSize / 12) / psfEnergy)
-                    + ((8 * PI * psfSigma2 * psfSigma2 * bkgStd * bkgStd) / (pixelSize * pixelSize * psfEnergy * psfEnergy));
-            return sqrt(xyVar);
+            double gain, readout;
+            if (CameraSetupPlugIn.getIsEmGain()) {  // EMCCD
+                gain = 2.0; // correction factor by Quan
+                readout = 0.0;
+            } else {    // CCD or sCMOS
+                gain = 1.0;
+                readout = CameraSetupPlugIn.getReadoutNoise();
+            }
+
+            double pixelSize = CameraSetupPlugIn.getPixelSize();
+            double psfPhotons = molecule.getParam(LABEL_INTENSITY, Units.PHOTON) * CameraSetupPlugIn.getQuantumEfficiency();
+            double bkgStd = molecule.getParam(LABEL_BACKGROUND, Units.PHOTON) * CameraSetupPlugIn.getQuantumEfficiency() + readout;
+            double tau = 0.0;
+
+            String fittingMethod = null;
+            MeasurementProtocol protocol = IJResultsTable.getResultsTable().getMeasurementProtocol();
+            if (protocol.analysisEstimator instanceof EllipticGaussianEstimatorUI) {    // 3D? elliptic Gauss (astigmatism)
+                fittingMethod = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).getMethod();
+                DaostormCalibration cal = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).calibration.getDaoCalibration();
+                double l2 = abs(cal.getC1() * cal.getC2());
+                double d2 = abs(cal.getD1() * cal.getD2());
+                tau = 2.0 * PI * bkgStd*bkgStd * (psfSigma2*(1.0 + l2/d2) + pixelSize*pixelSize/12.0) / (psfPhotons * pixelSize*pixelSize);
+            } else if (protocol.analysisEstimator instanceof SymmetricGaussianEstimatorUI) {    // 2D? Gauss or IntGauss
+                fittingMethod = ((SymmetricGaussianEstimatorUI) protocol.analysisEstimator).getMethod();
+                tau = 2.0 * PI * bkgStd*bkgStd * (psfSigma2 + pixelSize*pixelSize/12.0) / (psfPhotons * pixelSize*pixelSize);
+            }
+
+            if (fittingMethod != null) {
+                if (fittingMethod.equals(SymmetricGaussianEstimatorUI.MLE)) {
+                    return sqrt((gain * psfSigma2 + pixelSize*pixelSize/12.0) / psfPhotons * (1.0 + 4.0*tau + sqrt(2.0*tau/(1 + 4.0*tau))));
+                } else if (fittingMethod.equals(SymmetricGaussianEstimatorUI.LSQ)
+                        || fittingMethod.equals(SymmetricGaussianEstimatorUI.WLSQ)) {
+                    return sqrt((gain * psfSigma2 + pixelSize*pixelSize/12.0) / psfPhotons * (16.0/9.0 + 4.0*tau));
+                }
+            }
+            throw new UncertaintyNotApplicableException("Unsupported fitting method!");
         }
 
-        // return uncertainty in nanometers
-        public static double emccdThompson(Molecule molecule) throws ThompsonNotApplicableException {
-            double psfSigma2, psfEnergy, bkgStd, pixelSize;
-            pixelSize = CameraSetupPlugIn.getPixelSize();
-            if(molecule.hasParam(LABEL_SIGMA)) {    // symmetric
-                psfSigma2 = molecule.getParam(LABEL_SIGMA, Units.NANOMETER)
-                        * molecule.getParam(LABEL_SIGMA, Units.NANOMETER);
-            } else if(molecule.hasParam(LABEL_SIGMA1) && molecule.hasParam(LABEL_SIGMA2)) { // eliptic
-                psfSigma2 = molecule.getParam(LABEL_SIGMA1, Units.NANOMETER)
-                        * molecule.getParam(LABEL_SIGMA2, Units.NANOMETER);
-            } else {
-                throw new ThompsonNotApplicableException("Cannot calculate Thompson equation!");
+        /**
+         * Returns axial uncertainty in nanometers.
+         *
+         * Here we always assume MLE fit --> the math has been worked out by Rieger, et al. 2014.
+         * When we distinguish between (W)LSQ and MLE, we could work out the math for LSQ in a similar fashion
+         * as Thompson, et al. 2002 and/or Mortensen, et al. 2010.
+         */
+        public static double uncertaintyZ(Molecule molecule) throws UncertaintyNotApplicableException {
+            MeasurementProtocol protocol = IJResultsTable.getResultsTable().getMeasurementProtocol();
+            if (!(protocol.analysisEstimator instanceof EllipticGaussianEstimatorUI)
+                    || !(molecule.hasParam(LABEL_SIGMA1) && molecule.hasParam(LABEL_SIGMA2))) {
+                throw new UncertaintyNotApplicableException("Axial uncertainty cannot be calculated for 2D estimate!");
             }
-            psfEnergy = molecule.getParam(LABEL_INTENSITY, Units.PHOTON);
-            bkgStd = molecule.getParam(LABEL_BACKGROUND, Units.PHOTON);
-            //
-            double xyVar = ((2 * psfSigma2 + pixelSize * pixelSize / 12) / psfEnergy)
-                    + ((8 * PI * psfSigma2 * psfSigma2 * bkgStd * bkgStd) / (pixelSize * pixelSize * psfEnergy * psfEnergy));
-            //
-            return sqrt(xyVar);
+
+            double gain, readout;
+            if (CameraSetupPlugIn.getIsEmGain()) {  // EMCCD
+                gain = 2.0; // correction factor by Quan
+                readout = 0.0;
+            } else {    // CCD or sCMOS
+                gain = 1.0;
+                readout = CameraSetupPlugIn.getReadoutNoise();
+            }
+            double pixelSize = CameraSetupPlugIn.getPixelSize();
+            double psfPhotons = molecule.getParam(LABEL_INTENSITY, Units.PHOTON) * CameraSetupPlugIn.getQuantumEfficiency();
+            double bkgStd = molecule.getParam(LABEL_BACKGROUND, Units.PHOTON) * CameraSetupPlugIn.getQuantumEfficiency() + readout;
+            double psfSigma1 = molecule.getParam(LABEL_SIGMA1, Units.NANOMETER);
+            double psfSigma2 = molecule.getParam(LABEL_SIGMA2, Units.NANOMETER);
+            double zCoord = molecule.hasParam(LABEL_Z_REL)
+                    ? molecule.getParam(LABEL_Z_REL, Units.NANOMETER)
+                    : molecule.getParam(LABEL_Z, Units.NANOMETER);
+
+            DaostormCalibration cal = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).calibration.getDaoCalibration();
+            double l2 = abs(cal.getC1() * cal.getC2());
+            double d2 = abs(cal.getD1() * cal.getD2());
+            double tau = 2.0 * PI * bkgStd*bkgStd * (psfSigma1*psfSigma2*(1.0 + l2/d2) + pixelSize*pixelSize/12.0) / (psfPhotons * pixelSize*pixelSize);
+
+            String fittingMethod = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).getMethod();
+            if (fittingMethod != null) {
+                if (fittingMethod.equals(SymmetricGaussianEstimatorUI.MLE)
+                 || fittingMethod.equals(SymmetricGaussianEstimatorUI.LSQ)
+                 || fittingMethod.equals(SymmetricGaussianEstimatorUI.WLSQ)) {
+                    // FIXME: this is MLE calculation only! ideally, we would derive the LSQ version of stdSigma!
+                    double zLimit = sqrt(l2 + d2);  // singularity in CRLB - do not evaluate at positions beyond
+                    if (abs(zCoord) >= zLimit) return Double.POSITIVE_INFINITY;
+                    //
+                    double compensation = (sqrt(gain * psfSigma1*psfSigma1 + pixelSize*pixelSize/12.0) / psfSigma1
+                                        +  sqrt(gain * psfSigma2*psfSigma2 + pixelSize*pixelSize/12.0) / psfSigma2)
+                                        / 2.0;  // finite pixel size and em gain compensation
+                    double stdSigma = sqrt(1 + 8.0 * tau + sqrt(9.0 * tau / (1.0 + 4.0 * tau))) * compensation / sqrt(psfPhotons);
+                    double Fsq = 4.0 * l2 * zCoord*zCoord / sqr(l2 + d2 + zCoord*zCoord);
+                    double stdF = sqrt(1.0 - Fsq) * stdSigma;
+                    double stdZ = stdF * sqr(l2 + d2 + zCoord*zCoord) / (2.0 * sqrt(l2) * (l2 + d2 - zCoord*zCoord));
+                    return stdZ;
+                }
+            }
+            throw new UncertaintyNotApplicableException("Unsupported fitting method!");
         }
 
-        public static class ThompsonNotApplicableException extends Exception {
-            public ThompsonNotApplicableException(String message) {
+        public static class UncertaintyNotApplicableException extends Exception {
+            public UncertaintyNotApplicableException(String message) {
                 super(message);
+            }
+
+            public UncertaintyNotApplicableException() {
+                super("Cannot calculate the uncertainty!");
             }
         }
     }
@@ -579,7 +658,7 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(LABEL_DISTANCE_TO_GROUND_TRUTH_Z, Units.NANOMETER);
                 allUnits.put(LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ, Units.NANOMETER);
                 //
-                allUnits.put(Fitting.LABEL_THOMPSON, Units.NANOMETER);
+                allUnits.put(Fitting.LABEL_UNCERTAINTY_XY, Units.NANOMETER);
                 allUnits.put(Fitting.LABEL_UNCERTAINTY_Z, Units.NANOMETER);
             }
             if(allUnits.containsKey(paramName)) {
@@ -647,8 +726,8 @@ public class MoleculeDescriptor implements Cloneable {
             allParams.put(LABEL_DETECTIONS, MergingOperations.COUNT);
             //
             allParams.put(Fitting.LABEL_CHI2, MergingOperations.ASSIGN_NaN);
-            allParams.put(Fitting.LABEL_THOMPSON, MergingOperations.RECALC);
-            allParams.put(Fitting.LABEL_UNCERTAINTY_Z, MergingOperations.MEAN); // should be RECALC, but there is still no estabilished way to calculate z-uncertainty
+            allParams.put(Fitting.LABEL_UNCERTAINTY_XY, MergingOperations.RECALC);
+            allParams.put(Fitting.LABEL_UNCERTAINTY_Z, MergingOperations.RECALC);
         }
 
         // molecule <-- target
@@ -683,12 +762,10 @@ public class MoleculeDescriptor implements Cloneable {
                     case RECALC:
                         if (LABEL_ID.equals(paramName)) {
                             molecule.setParam(paramName, IJResultsTable.getResultsTable().getNewId());
-                        } else if (Fitting.LABEL_THOMPSON.equals(paramName)) {
-                            if (CameraSetupPlugIn.isIsEmGain()) {
-                                molecule.setParam(paramName, Units.NANOMETER, Fitting.emccdThompson(molecule));
-                            } else {
-                                molecule.setParam(paramName, Units.NANOMETER, Fitting.ccdThompson(molecule));
-                            }
+                        } else if (Fitting.LABEL_UNCERTAINTY_XY.equals(paramName)) {
+                            molecule.setParam(paramName, Units.NANOMETER, Fitting.uncertaintyXY(molecule));
+                        } else if (Fitting.LABEL_UNCERTAINTY_Z.equals(paramName)) {
+                            molecule.setParam(paramName, Units.NANOMETER, Fitting.uncertaintyZ(molecule));
                         } else {
                             throw new IllegalArgumentException("Parameter `" + paramName + "` can't be recalculated.");
                         }

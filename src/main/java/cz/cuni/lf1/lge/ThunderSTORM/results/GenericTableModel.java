@@ -364,20 +364,37 @@ public class GenericTableModel extends AbstractTableModel implements Cloneable {
         }
     }
 
-    public void calculateThompsonFormula() {
-        // Note: even though that the uncertainity can be calculated in pixels,
+    public void calculateUncertaintyXY() {
+        // Note: even though that the lateral uncertainty can be calculated in pixels,
         //       we choose to do it in nanometers by default setting
         try {
-            String paramName = MoleculeDescriptor.Fitting.LABEL_THOMPSON;
+            String paramName = MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY;
             double paramValue;
             Molecule mol;
             for(int row = 0, max = getRowCount(); row < max; row++) {
                 mol = getRow(row);
-                if(CameraSetupPlugIn.isIsEmGain()) {
-                    paramValue = MoleculeDescriptor.Fitting.emccdThompson(mol);
+                paramValue = MoleculeDescriptor.Fitting.uncertaintyXY(mol);
+                if(mol.hasParam(paramName)) {
+                    mol.setParam(paramName, Units.NANOMETER, paramValue);
                 } else {
-                    paramValue = MoleculeDescriptor.Fitting.ccdThompson(mol);
+                    mol.addParam(paramName, Units.NANOMETER, paramValue);
                 }
+            }
+            setColumnUnits(paramName, Units.NANOMETER);
+            fireTableDataChanged();
+        } catch(Exception e) {
+            // ignore...PSF does not fit all the required parameters
+        }
+    }
+
+    public void calculateUncertaintyZ() {
+        try {
+            String paramName = MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z;
+            double paramValue;
+            Molecule mol;
+            for(int row = 0, max = getRowCount(); row < max; row++) {
+                mol = getRow(row);
+                paramValue = MoleculeDescriptor.Fitting.uncertaintyZ(mol);
                 if(mol.hasParam(paramName)) {
                     mol.setParam(paramName, Units.NANOMETER, paramValue);
                 } else {

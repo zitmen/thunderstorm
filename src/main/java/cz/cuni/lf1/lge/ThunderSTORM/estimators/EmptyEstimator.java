@@ -17,6 +17,8 @@ import javax.swing.JPanel;
  */
 public class EmptyEstimator extends IEstimatorUI implements IEstimator  {
 
+    private final String name = "No estimator";
+
     @Override
     public Vector<Molecule> estimateParameters(FloatProcessor fp, Vector<Point> detections) {
         Vector<Molecule> locations = new Vector<Molecule>();
@@ -30,7 +32,7 @@ public class EmptyEstimator extends IEstimatorUI implements IEstimator  {
 
     @Override
     public String getName() {
-        return "No estimator";
+        return name;
     }
 
     @Override

@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 public abstract class IModuleUI<T extends IModule> {
 
     transient ThreadLocal<T> threadLocalImplementation;
-    protected ParameterTracker parameters = new ParameterTracker(getPreferencesPrefix());
+    transient protected ParameterTracker parameters = new ParameterTracker(getPreferencesPrefix());
 
     public IModuleUI() {
         parameters.setNoGuiParametersAllowed(true);

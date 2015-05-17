@@ -14,10 +14,11 @@ import javax.swing.JTextField;
 public class GaussianFilterUI extends IFilterUI {
 
     private final String name = "Gaussian filter";
-    private transient ParameterKey.Double sigma;
+    private double sigma;
+    private transient ParameterKey.Double sigmaParam;
 
     public GaussianFilterUI() {
-        sigma = parameters.createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
+        sigmaParam = parameters.createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class GaussianFilterUI extends IFilterUI {
     @Override
     public JPanel getOptionsPanel() {
         JTextField sigmaTextField = new JTextField("", 20);
-        parameters.registerComponent(sigma, sigmaTextField);
+        parameters.registerComponent(sigmaParam, sigmaTextField);
         //
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Sigma [px]: "), GridBagHelper.leftCol());
@@ -44,8 +45,8 @@ public class GaussianFilterUI extends IFilterUI {
 
     @Override
     public IFilter getImplementation() {
-        double sigmaValue = sigma.getValue();
-        int size = 1 + 2 * (int) MathProxy.ceil(sigmaValue * 3);
-        return new GaussianFilter(size, sigmaValue);
+        sigma = sigmaParam.getValue();
+        int size = 1 + 2 * (int) MathProxy.ceil(sigma * 3);
+        return new GaussianFilter(size, sigma);
     }
 }

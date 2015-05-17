@@ -19,12 +19,14 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.pow;
  */
 public class DefocusFunctionPoly extends DefocusFunction {
 
+    public static final String name = "ThunderSTORM";
+
     public DefocusFunctionPoly() {
     }
 
     @Override
     public String getName() {
-        return "ThunderSTORM";
+        return name;
     }
 
     @Override
@@ -98,6 +100,11 @@ public class DefocusFunctionPoly extends DefocusFunction {
     @Override
     public DefocusFunction getNewInstance(double[] params, boolean scaledToNm) {
         return new DefocusFunctionPoly(params, scaledToNm);
+    }
+
+    @Override
+    public CylindricalLensCalibration getCalibration() {
+        return new PolynomialCalibration();
     }
 
     @Override

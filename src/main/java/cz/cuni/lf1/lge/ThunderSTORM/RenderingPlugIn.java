@@ -99,8 +99,8 @@ public class RenderingPlugIn implements PlugIn {
         }
         double[] z = table.columnExists(LABEL_Z) ? table.getColumnAsDoubles(LABEL_Z) : null;
         double[] dx = null;
-        if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_THOMPSON)) {
-            dx = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_THOMPSON, MoleculeDescriptor.Units.PIXEL);
+        if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY)) {
+            dx = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY, MoleculeDescriptor.Units.PIXEL);
         }
         double[] dz = null;
         if(table.columnExists(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z)) {

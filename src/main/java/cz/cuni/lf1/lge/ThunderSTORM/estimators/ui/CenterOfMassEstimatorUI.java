@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 public class CenterOfMassEstimatorUI extends IEstimatorUI {
 
     private final String name = "Centroid of local neighborhood";
+    private int fittingRadius;
     private transient ParameterKey.Integer FITRAD;
 
     public CenterOfMassEstimatorUI() {
@@ -40,6 +41,6 @@ public class CenterOfMassEstimatorUI extends IEstimatorUI {
 
     @Override
     public IEstimator getImplementation() {
-        return new MultipleLocationsImageFitting(FITRAD.getValue(), new CentroidFitter());
+        return new MultipleLocationsImageFitting(fittingRadius = FITRAD.getValue(), new CentroidFitter());
     }
 }

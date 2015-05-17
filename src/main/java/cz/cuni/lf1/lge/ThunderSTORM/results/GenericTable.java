@@ -307,10 +307,6 @@ public abstract class GenericTable<TW extends GenericTableWindow> {
         model.convertAllColumnsToDigitalUnits();
     }
 
-    public void calculateThompsonFormula() {
-        model.calculateThompsonFormula();
-    }
-    
     public void sortTableByFrame() {
         model.sortTableByColumn(MoleculeDescriptor.LABEL_FRAME);
     }

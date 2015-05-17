@@ -1,16 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.results.PostProcessingModule;
 import ij.IJ;
+
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ServiceConfigurationError;
-import java.util.ServiceLoader;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * A class for loading modules at runtime.
@@ -37,15 +32,15 @@ public class ModuleLoader {
      * method attempts to continue loading other modules. Exception is thrown
      * only when no modules are succesfully loaded.
      *
-     * @return a vector of instances of the specified class (instantiated by the
+     * @return a list of instances of the specified class (instantiated by the
      * no-args constructor)
      * @throws RuntimeException if no modules were loaded.
      */
-    public static <T extends IModuleUI> Vector<T> getUIModules(Class<T> c) {
+    public static <T extends IModuleUI> ArrayList<T> getUIModules(Class<T> c) {
         //workaround a bug when service loading does not work after refreshing menus in ImageJ
         boolean oldUseCaching = setUseCaching(false);
 
-        Vector<T> retval = new Vector<T>();
+        ArrayList<T> retval = new ArrayList<T>();
         try {
             ServiceLoader loader = ServiceLoader.load(c, IJ.getClassLoader());
             for(Iterator<T> it = loader.iterator(); it.hasNext();) {
@@ -68,11 +63,11 @@ public class ModuleLoader {
         return retval;
     }
 
-    public static <T extends IModule> Vector<T> getModules(Class<T> c) {
+    public static <T extends IModule> ArrayList<T> getModules(Class<T> c) {
         //workaround a bug when service loading does not work after refreshing menus in ImageJ
         boolean oldUseCaching = setUseCaching(false);
 
-        Vector<T> retval = new Vector<T>();
+        ArrayList<T> retval = new ArrayList<T>();
         try {
             ServiceLoader loader = ServiceLoader.load(c, IJ.getClassLoader());
             for(Iterator<T> it = loader.iterator(); it.hasNext();) {

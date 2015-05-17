@@ -14,12 +14,14 @@ import javax.swing.JTextField;
 public class CompoundWaveletFilterUI extends IFilterUI {
 
     private final String name = "Wavelet filter (B-Spline)";
-    private transient ParameterKey.Integer order;
-    private transient ParameterKey.Double scale;
+    private double scale;
+    private int order;
+    private transient ParameterKey.Integer orderParam;
+    private transient ParameterKey.Double scaleParam;
 
     public CompoundWaveletFilterUI() {
-        scale = parameters.createDoubleField("scale", DoubleValidatorFactory.positiveNonZero(), 2.0);
-        order = parameters.createIntField("order", IntegerValidatorFactory.positiveNonZero(), 3);
+        scaleParam = parameters.createDoubleField("scale", DoubleValidatorFactory.positiveNonZero(), 2.0);
+        orderParam = parameters.createIntField("order", IntegerValidatorFactory.positiveNonZero(), 3);
     }
 
     @Override
@@ -36,8 +38,8 @@ public class CompoundWaveletFilterUI extends IFilterUI {
     public JPanel getOptionsPanel() {
         JTextField orderTextField = new JTextField("", 20);
         JTextField scaleTextField = new JTextField("", 20);
-        parameters.registerComponent(order, orderTextField);
-        parameters.registerComponent(scale, scaleTextField);
+        parameters.registerComponent(orderParam, orderTextField);
+        parameters.registerComponent(scaleParam, scaleTextField);
         //
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("B-Spline order: "), GridBagHelper.leftCol());
@@ -50,9 +52,9 @@ public class CompoundWaveletFilterUI extends IFilterUI {
 
     @Override
     public IFilter getImplementation() {
-        double scaleValue = scale.getValue();
-        int orderValue = order.getValue();
-        int size = 2 * (int) Math.ceil(orderValue * scaleValue / 2) - 1;
-        return new CompoundWaveletFilter(orderValue, scaleValue, size);
+        scale = scaleParam.getValue();
+        order = orderParam.getValue();
+        int size = 2 * (int) Math.ceil(order * scale / 2) - 1;
+        return new CompoundWaveletFilter(order, scale, size);
     }
 }

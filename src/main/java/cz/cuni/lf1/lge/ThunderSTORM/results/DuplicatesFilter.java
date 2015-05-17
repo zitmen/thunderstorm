@@ -31,12 +31,10 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingWorker;
 
 public class DuplicatesFilter extends PostProcessingModule {
 
@@ -46,7 +44,7 @@ public class DuplicatesFilter extends PostProcessingModule {
     private ParameterKey.String distFormula;
 
     public DuplicatesFilter() {
-        distFormula = params.createStringField("distFormula", null, MoleculeDescriptor.Fitting.LABEL_THOMPSON);
+        distFormula = params.createStringField("distFormula", null, MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY);
     }
 
     @Override
@@ -128,8 +126,8 @@ public class DuplicatesFilter extends PostProcessingModule {
         if(!model.columnExists(PSFModel.Params.LABEL_X) || !model.columnExists(PSFModel.Params.LABEL_Y)) {
             throw new RuntimeException(String.format("X and Y columns not found in Results table. Looking for: %s and %s. Found: %s.", PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y, model.getColumnNames()));
         }
-        if(!model.columnExists(MoleculeDescriptor.Fitting.LABEL_THOMPSON)) {
-            throw new RuntimeException(String.format("Fitting uncertainty not found in Results table. Looking for: %s. Found: %s.", MoleculeDescriptor.Fitting.LABEL_THOMPSON, model.getColumnNames()));
+        if(!model.columnExists(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY)) {
+            throw new RuntimeException(String.format("Fitting uncertainty not found in Results table. Looking for: %s. Found: %s.", MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY, model.getColumnNames()));
         }
         Node tree = new FormulaParser(formula, FormulaParser.FORMULA_RESULTS_FILTER).parse();
         tree.semanticScan();
@@ -271,8 +269,8 @@ public class DuplicatesFilter extends PostProcessingModule {
         }
 
         private double getUncertaintyNm(Molecule mol) {
-            if(mol.hasParam(MoleculeDescriptor.Fitting.LABEL_THOMPSON)) {
-                return mol.getParam(MoleculeDescriptor.Fitting.LABEL_THOMPSON, Units.NANOMETER);
+            if(mol.hasParam(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY)) {
+                return mol.getParam(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY, Units.NANOMETER);
             } else {
                 throw new RuntimeException("Fitting uncertainty not found in Results table.");
             }

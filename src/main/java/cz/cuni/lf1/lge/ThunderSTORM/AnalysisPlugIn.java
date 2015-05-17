@@ -198,6 +198,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         IJResultsTable rt = IJResultsTable.getResultsTable();
         rt.reset();
         rt.setOriginalState();
+        rt.setMeasurementProtocol(measurementProtocol);
         rt.forceHide();
         //
         return pluginFlags; // ok
@@ -300,7 +301,6 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         if(processedImage != null) {
             rt.setAnalyzedImage(processedImage);
         }
-        rt.setMeasurementProtocol(measurementProtocol);
         rt.forceShow();
         //
         // Show detections in the image

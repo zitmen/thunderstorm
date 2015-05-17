@@ -13,12 +13,13 @@ import javax.swing.JTextField;
 public class DifferenceOfBoxFiltersUI extends IFilterUI {
 
     private final String name = "Difference of averaging filters";
-    private transient ParameterKey.Integer size1;
-    private transient ParameterKey.Integer size2;
+    private int size1, size2;
+    private transient ParameterKey.Integer size1Param;
+    private transient ParameterKey.Integer size2Param;
 
     public DifferenceOfBoxFiltersUI() {
-        size1 = parameters.createIntField("size1", IntegerValidatorFactory.positiveNonZero(), 3);
-        size2 = parameters.createIntField("size2", IntegerValidatorFactory.positiveNonZero(), 5);
+        size1Param = parameters.createIntField("size1", IntegerValidatorFactory.positiveNonZero(), 3);
+        size2Param = parameters.createIntField("size2", IntegerValidatorFactory.positiveNonZero(), 5);
     }
 
     @Override
@@ -36,8 +37,8 @@ public class DifferenceOfBoxFiltersUI extends IFilterUI {
         JPanel panel = new JPanel(new GridBagLayout());
         JTextField sizeTextField1 = new JTextField("", 20);
         JTextField sizeTextField2 = new JTextField("", 20);
-        parameters.registerComponent(size1, sizeTextField1);
-        parameters.registerComponent(size2, sizeTextField2);
+        parameters.registerComponent(size1Param, sizeTextField1);
+        parameters.registerComponent(size2Param, sizeTextField2);
         //
         panel.add(new JLabel("First kernel size [px]: "), GridBagHelper.leftCol());
         panel.add(sizeTextField1, GridBagHelper.rightCol());
@@ -49,6 +50,6 @@ public class DifferenceOfBoxFiltersUI extends IFilterUI {
 
     @Override
     public IFilter getImplementation() {
-        return new DifferenceOfBoxFilters(size1.getValue(), size2.getValue());
+        return new DifferenceOfBoxFilters(size1 = size1Param.getValue(), size2 = size2Param.getValue());
     }
 }

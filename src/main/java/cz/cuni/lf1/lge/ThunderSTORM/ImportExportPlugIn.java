@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.MeasurementProtocol;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
 import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
@@ -117,6 +118,7 @@ public class ImportExportPlugIn implements PlugIn {
                     ijrt.setAnalyzedImage(null);
                 }
             }
+            importMeasurementProtocol();
             callImporter(importer, table, path, startingFrame);
             AnalysisPlugIn.setDefaultColumnsWidth(ijrt);
             ijrt.setLivePreview(dialog.showPreview.getValue());
@@ -166,13 +168,58 @@ public class ImportExportPlugIn implements PlugIn {
         if(!groundTruth && dialog.saveProtocol.getValue()) {
             IJResultsTable ijrt = (IJResultsTable) table;
             if(ijrt.getMeasurementProtocol() != null) {
-                ijrt.getMeasurementProtocol().export(getProtocolFilePath(path));
+                ijrt.getMeasurementProtocol().exportToFile(getProtocolFilePath(path));
             }
         }
 
         //export
         IImportExport exporter = getModuleByName(dialog.getFileFormat());
         callExporter(exporter, table, path, columns);
+    }
+
+    private void importMeasurementProtocol() {
+        // Create an empty protocol first
+        IJResultsTable.getResultsTable().setMeasurementProtocol(new MeasurementProtocol());
+        //
+        // Automatically load protocol, if available -> this allows for (re)calculation of
+        // fitting uncertainties and other values that depend on the data about analysis.
+        File protoFile = new File(getProtocolFilePath(path));
+        if(protoFile.exists() && protoFile.isFile()) {
+            int dialogResult = JOptionPane.showConfirmDialog(null,
+                    "We detected a measurement protocol for the selected data.\nDo you with to load the information?",
+                    "Measurement protocol", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                // Parse the protocol and attach it to the results table.
+                MeasurementProtocol protocol = MeasurementProtocol.importFromFile(getProtocolFilePath(path));
+                IJResultsTable.getResultsTable().setMeasurementProtocol(protocol);
+                // Also, update the available camera settings!
+                if (!protocol.cameraSettings.isEmpty()) {
+                    CameraSetupPlugIn.params.setNoGuiParametersAllowed(true);   // allow setting parameters even before UI is initialized
+                    if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.EM_GAIN_ENABLED)) {
+                        CameraSetupPlugIn.setIsEmGain(((Boolean) protocol.cameraSettings.get(CameraSetupPlugIn.EM_GAIN_ENABLED)).booleanValue());
+                    }
+                    if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.EM_GAIN)) {
+                        CameraSetupPlugIn.setGain(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.EM_GAIN)).doubleValue());
+                    }
+                    if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.BASELINE_OFFSET)) {
+                        CameraSetupPlugIn.setOffset(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.BASELINE_OFFSET)).doubleValue());
+                    }
+                    if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.READOUT_NOISE)) {
+                        CameraSetupPlugIn.setReadoutNoise(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.READOUT_NOISE)).doubleValue());
+                    }
+                    if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.PHOTONS_TO_ADU)) {
+                        CameraSetupPlugIn.setPhotons2ADU(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.PHOTONS_TO_ADU)).doubleValue());
+                    }
+                    if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.PIXEL_SIZE)) {
+                        CameraSetupPlugIn.setPixelSize(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.PIXEL_SIZE)).doubleValue());
+                    }
+                    if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.QUANTUM_EFFICIENCY)) {
+                        CameraSetupPlugIn.setQuantumEfficiency(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.QUANTUM_EFFICIENCY)).doubleValue());
+                    }
+                    CameraSetupPlugIn.params.setNoGuiParametersAllowed(false);   // back to the default setting
+                }
+            }
+        }
     }
 
     private void setupModules() {

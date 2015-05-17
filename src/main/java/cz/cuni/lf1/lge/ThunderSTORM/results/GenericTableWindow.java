@@ -3,8 +3,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule.DetectionStatus.FALSE_NEGATIVE;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule.DetectionStatus.FALSE_POSITIVE;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
@@ -182,12 +180,22 @@ public class GenericTableWindow {
                     }
                 });
                 popup.add(item);
-            } else if(MoleculeDescriptor.Fitting.LABEL_THOMPSON.equals(model.getColumnRealName(column))) {
+            } else if(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY.equals(model.getColumnRealName(column))) {
                 JMenuItem item = new JMenuItem("recalculate");
                 item.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        model.calculateThompsonFormula();
+                        model.calculateUncertaintyXY();
+                    }
+                });
+                popup.add(item);
+                popup.add(new JSeparator());
+            } else if(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z.equals(model.getColumnRealName(column))) {
+                JMenuItem item = new JMenuItem("recalculate");
+                item.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        model.calculateUncertaintyZ();
                     }
                 });
                 popup.add(item);

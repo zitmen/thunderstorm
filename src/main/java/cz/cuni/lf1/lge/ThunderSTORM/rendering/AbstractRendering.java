@@ -7,13 +7,11 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Uni
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.LABEL_THOMPSON;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.measure.Calibration;
-import ij.plugin.LUT_Editor;
-import ij.plugin.LutLoader;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
@@ -274,13 +272,13 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
             return;
         }
         MoleculeDescriptor descriptor = fits.get(0).descriptor;
-        boolean useDefaultDX = forceDefaultDX || !descriptor.hasParam(LABEL_THOMPSON);
+        boolean useDefaultDX = forceDefaultDX || !descriptor.hasParam(LABEL_UNCERTAINTY_XY);
         boolean useDefaultDZ = forceDefaultDZ || !descriptor.hasParam(LABEL_UNCERTAINTY_Z);
 
         for(int i = 0, im = fits.size(); i < im; i++) {
             Molecule fit = fits.elementAt(i);
             double zVal = fit.getZ();
-            double dxVal = useDefaultDX ? defaultDX : fit.getParam(LABEL_THOMPSON, PIXEL);
+            double dxVal = useDefaultDX ? defaultDX : fit.getParam(LABEL_UNCERTAINTY_XY, PIXEL);
             double dzVal = useDefaultDZ ? defaultDZ : fit.getParam(LABEL_UNCERTAINTY_Z, NANOMETER);
             //
             drawPoint(fit.getX(PIXEL), fit.getY(PIXEL), zVal, dxVal, dzVal);

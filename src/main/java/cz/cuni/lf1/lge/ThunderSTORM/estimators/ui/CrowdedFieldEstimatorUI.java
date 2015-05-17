@@ -21,9 +21,15 @@ import javax.swing.JTextField;
 
 public class CrowdedFieldEstimatorUI {
 
-    ParameterTracker params;
     private final String name = "Multi-emitter fitting analysis";
+    private boolean mfaEnabled;
+    private int nMax;
+    private double pValue;
+    private boolean keepSameIntensity;
+    private boolean intensityInRange;
+    private String intensityRange;
     //parameters
+    protected transient ParameterTracker params;
     protected transient ParameterKey.Boolean ENABLED;
     protected transient ParameterKey.Integer NMAX;
     protected transient ParameterKey.Double PVALUE;
@@ -143,10 +149,20 @@ public class CrowdedFieldEstimatorUI {
     }
 
     OneLocationFitter getMLEImplementation(PSFModel psf, double sigma) {
+        loadValues();
         Range intensityRange = isFixedIntensity() ? getIntensityRange() : null;
         MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, getMaxMolecules(), getPValue(), isKeepSameIntensity(), intensityRange);
         return fitter;
         //return new MultipleLocationsImageFitting(fitradius, fitter);
+    }
+
+    private void loadValues() {
+        intensityInRange = isFixedIntensity();
+        intensityRange = INTENSITY_RANGE.getValue();
+        nMax = getMaxMolecules();
+        pValue = getPValue();
+        keepSameIntensity = isKeepSameIntensity();
+        mfaEnabled = isEnabled();
     }
 
     OneLocationFitter getLSQImplementation(PSFModel psf, double sigma) {

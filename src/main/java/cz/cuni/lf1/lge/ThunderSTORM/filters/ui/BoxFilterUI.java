@@ -13,10 +13,11 @@ import javax.swing.JTextField;
 public class BoxFilterUI extends IFilterUI {
 
     private final String name = "Averaging (Box) filter";
-    private transient ParameterKey.Integer size;
+    private int size;
+    private transient ParameterKey.Integer sizeParam;
 
     public BoxFilterUI() {
-        size = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 3);
+        sizeParam = parameters.createIntField("size", IntegerValidatorFactory.positiveNonZero(), 3);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class BoxFilterUI extends IFilterUI {
     public JPanel getOptionsPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         JTextField sizeTextField = new JTextField("", 20);
-        parameters.registerComponent(size, sizeTextField);
+        parameters.registerComponent(sizeParam, sizeTextField);
         //
         panel.add(new JLabel("Kernel size [px]: "), GridBagHelper.leftCol());
         panel.add(sizeTextField, GridBagHelper.rightCol());
@@ -43,6 +44,6 @@ public class BoxFilterUI extends IFilterUI {
 
     @Override
     public IFilter getImplementation() {
-        return new BoxFilter(size.getValue());
+        return new BoxFilter(size = sizeParam.getValue());
     }
 }

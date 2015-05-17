@@ -21,12 +21,14 @@ import javax.swing.*;
  */
 public class DefocusFunctionSqrt extends DefocusFunction {
 
+    public static final String name = "Huang '08";
+
     public DefocusFunctionSqrt() {
     }
 
     @Override
     public String getName() {
-        return "Huang '08";
+        return name;
     }
 
     @Override
@@ -107,6 +109,11 @@ public class DefocusFunctionSqrt extends DefocusFunction {
     @Override
     public DefocusFunction getNewInstance(double[] params, boolean scaledToNm) {
         return new DefocusFunctionSqrt(params, scaledToNm);
+    }
+
+    @Override
+    public CylindricalLensCalibration getCalibration() {
+        return new DaostormCalibration();
     }
 
     @Override

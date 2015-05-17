@@ -73,16 +73,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
      * @param title title of the frame
      * @param filters vector of filter modules (they all must implement
      * {@code IFilter} interface)
-     * @param default_filter {@code filters[default_filter]} will be initially
-     * selected in combo box
      * @param detectors vector of detector modules (they all must implement
      * {@code IDetector} interface)
-     * @param default_detector {@code detector[default_detector]} will be
-     * initially selected in combo box
      * @param estimators vector of estimator modules (they all must implement
      * {@code IEstimator} interface)
-     * @param default_estimator {@code estimator[default_estimator]} will be
-     * initially selected in combo box
      */
     public AnalysisOptionsDialog(final ImagePlus imp, String title,
             List<IFilterUI> filters,

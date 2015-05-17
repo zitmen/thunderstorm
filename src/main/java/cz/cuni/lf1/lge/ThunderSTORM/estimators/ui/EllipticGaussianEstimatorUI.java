@@ -20,7 +20,8 @@ import java.io.FileReader;
 
 public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
 
-    CylindricalLensCalibration calibration;
+    private String calibrationFilePath;
+    public CylindricalLensCalibration calibration;
     protected transient ParameterKey.String CALIBRATION_PATH;
 
     public EllipticGaussianEstimatorUI() {
@@ -71,35 +72,37 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
 
     @Override
     public IEstimator getImplementation() {
-        String method = METHOD.getValue();
-        double sigma = SIGMA.getValue();
-        int fitradius = FITRAD.getValue();
+        method = METHOD.getValue();
+        initialSigma = SIGMA.getValue();
+        fittingRadius = FITRAD.getValue();
+        fullImageFitting = FULL_IMAGE_FITTING.getValue();
         PSFModel psf = new EllipticGaussianPSF(calibration);
         OneLocationFitter fitter;
         if(LSQ.equals(method) || WLSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
-                fitter = crowdedField.getLSQImplementation(psf, sigma);
+                fitter = crowdedField.getLSQImplementation(psf, initialSigma);
             } else {
                 fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
             }
 
         } else if(MLE.equals(method)) {
             if(crowdedField.isEnabled()) {
-                fitter = crowdedField.getMLEImplementation(psf, sigma);
+                fitter = crowdedField.getMLEImplementation(psf, initialSigma);
             } else {
                 fitter = new MLEFitter(psf, Params.BACKGROUND);
             }
         } else {
             throw new IllegalArgumentException("Unknown fitting method: " + method);
         }
-        IEstimator estimator = FULL_IMAGE_FITTING.getValue()
+        IEstimator estimator = fullImageFitting
                 ? new FullImageFitting(fitter)
-                : new MultipleLocationsImageFitting(fitradius, fitter);
+                : new MultipleLocationsImageFitting(fittingRadius, fitter);
         return new CylindricalLensZEstimator(estimator);
 
     }
 
     private CylindricalLensCalibration loadCalibration(String calibrationFilePath) {
+        this.calibrationFilePath = calibrationFilePath;
         try {
             Yaml yaml = new Yaml();
             Object loaded = yaml.load(new FileReader(calibrationFilePath));

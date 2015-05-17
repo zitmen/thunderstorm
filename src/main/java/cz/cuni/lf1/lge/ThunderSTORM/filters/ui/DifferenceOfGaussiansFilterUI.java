@@ -14,12 +14,13 @@ import javax.swing.JTextField;
 public class DifferenceOfGaussiansFilterUI extends IFilterUI {
 
     private final String name = "Difference-of-Gaussians filter";
-    private transient ParameterKey.Double sigmaG1;
-    private transient ParameterKey.Double sigmaG2;
+    private double sigmaG1, sigmaG2;
+    private transient ParameterKey.Double sigmaG1Param;
+    private transient ParameterKey.Double sigmaG2Param;
 
     public DifferenceOfGaussiansFilterUI() {
-        sigmaG1 = parameters.createDoubleField("sigma1", DoubleValidatorFactory.positiveNonZero(), 1);
-        sigmaG2 = parameters.createDoubleField("sigma2", DoubleValidatorFactory.positiveNonZero(), 1.6);
+        sigmaG1Param = parameters.createDoubleField("sigma1", DoubleValidatorFactory.positiveNonZero(), 1);
+        sigmaG2Param = parameters.createDoubleField("sigma2", DoubleValidatorFactory.positiveNonZero(), 1.6);
     }
 
     @Override
@@ -36,8 +37,8 @@ public class DifferenceOfGaussiansFilterUI extends IFilterUI {
     public JPanel getOptionsPanel() {
         JTextField sigma1TextField = new JTextField("", 20);
         JTextField sigma2TextField = new JTextField("", 20);
-        parameters.registerComponent(sigmaG1, sigma1TextField);
-        parameters.registerComponent(sigmaG2, sigma2TextField);
+        parameters.registerComponent(sigmaG1Param, sigma1TextField);
+        parameters.registerComponent(sigmaG2Param, sigma2TextField);
         //
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Sigma1 [px]: "), GridBagHelper.leftCol());
@@ -50,9 +51,9 @@ public class DifferenceOfGaussiansFilterUI extends IFilterUI {
 
     @Override
     public IFilter getImplementation() {
-        double s1Val = sigmaG1.getValue();
-        double s2Val = sigmaG2.getValue();
-        int size = 1 + 2 * (int) MathProxy.ceil(3 * MathProxy.max(s1Val, s2Val));
-        return new DifferenceOfGaussiansFilter(size, s1Val, s2Val);
+        sigmaG1 = sigmaG1Param.getValue();
+        sigmaG2 = sigmaG2Param.getValue();
+        int size = 1 + 2 * (int) MathProxy.ceil(3 * MathProxy.max(sigmaG1, sigmaG2));
+        return new DifferenceOfGaussiansFilter(size, sigmaG1, sigmaG2);
     }
 }

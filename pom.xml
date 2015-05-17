@@ -4,12 +4,12 @@
 
     <groupId>cz.cuni.lf1.lge</groupId>
     <artifactId>ThunderSTORM</artifactId>
-    <version>dev-2015-05-11-b1</version>
+    <version>dev-2015-05-17-b1</version>
     <packaging>jar</packaging>
 
     <name>ThunderSTORM</name>
     <description>ThunderSTORM: a comprehensive ImageJ plugin for PALM and STORM data analysis and super-resolution imaging</description>
-    <url>https://code.google.com/p/thunder-storm/</url>
+    <url>https://github.com/zitmen/thunderstorm</url>
     
     <properties>
         <skipTests>true</skipTests>

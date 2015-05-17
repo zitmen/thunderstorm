@@ -178,7 +178,7 @@ public class DataGenerator {
         frame = ImageMath.add(frame, backgroundMeanIntensity);
         //simulates poisson distributed photon arrival (and EM gain using Gamma distribution if it is enabled)
         frame = samplePoisson(frame);
-        if(CameraSetupPlugIn.isIsEmGain()){
+        if(CameraSetupPlugIn.getIsEmGain()){
             frame = sampleGamma(frame, CameraSetupPlugIn.getGain());
         }
         //convert to AD units
