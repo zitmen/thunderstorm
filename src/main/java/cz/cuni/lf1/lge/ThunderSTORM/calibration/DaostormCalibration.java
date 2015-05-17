@@ -19,31 +19,25 @@ import org.apache.commons.math3.random.RandomVectorGenerator;
 // sigma(z) = w0*sqrt(1 + ((z-c)/d)^2 + a*((z-c)/d)^3 + b*((z-c)/d)^4)
 public class DaostormCalibration extends CylindricalLensCalibration {
 
-    public static final String name = DefocusFunctionSqrt.name;
     transient DefocusFunction s1Par, s2Par;
 
     public DaostormCalibration() {
-        super();
+        super(DefocusFunctionSqrt.name);
         s1Par = null;
         s2Par = null;
     }
 
     public DaostormCalibration(double angle, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
-        super(angle, w01, a1, b1, c1, d1, w02, a2, b2, c2, d2);
+        super(DefocusFunctionSqrt.name, angle, w01, a1, b1, c1, d1, w02, a2, b2, c2, d2);
         s1Par = null;
         s2Par = null;
     }
 
     public DaostormCalibration(double angle, DefocusFunction sigma1Params, DefocusFunction sigma2Params) {
-        super(angle, sigma1Params.getW0(), sigma1Params.getA(), sigma1Params.getB(), sigma1Params.getC(), sigma1Params.getD(),
-                     sigma2Params.getW0(), sigma2Params.getA(), sigma2Params.getB(), sigma2Params.getC(), sigma2Params.getD());
+        super(DefocusFunctionSqrt.name, angle, sigma1Params.getW0(), sigma1Params.getA(), sigma1Params.getB(), sigma1Params.getC(), sigma1Params.getD(),
+                                               sigma2Params.getW0(), sigma2Params.getA(), sigma2Params.getB(), sigma2Params.getC(), sigma2Params.getD());
         s1Par = sigma1Params;
         s2Par = sigma2Params;
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     // ---------------- SIGMA -------------- //

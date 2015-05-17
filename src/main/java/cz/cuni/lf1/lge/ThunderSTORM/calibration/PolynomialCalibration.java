@@ -24,31 +24,25 @@ import org.apache.commons.math3.random.RandomVectorGenerator;
 // sigma(z) = a*(z-c)^2 + b + d*(z-c)^3
 public class PolynomialCalibration extends CylindricalLensCalibration {
 
-    public static final String name = DefocusFunctionPoly.name;
     transient DefocusFunction s1Par, s2Par;
 
     public PolynomialCalibration() {
-        super();
+        super(DefocusFunctionPoly.name);
         s1Par = null;
         s2Par = null;
     }
 
     public PolynomialCalibration(double angle, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
-        super(angle, w01, a1, b1, c1, d1, w02, a2, b2, c2, d2);
+        super(DefocusFunctionPoly.name, angle, w01, a1, b1, c1, d1, w02, a2, b2, c2, d2);
         s1Par = null;
         s2Par = null;
     }
 
     public PolynomialCalibration(double angle, DefocusFunction sigma1Params, DefocusFunction sigma2Params) {
-        super(angle, sigma1Params.getW0(), sigma1Params.getA(), sigma1Params.getB(), sigma1Params.getC(), sigma1Params.getD(),
-                     sigma2Params.getW0(), sigma2Params.getA(), sigma2Params.getB(), sigma2Params.getC(), sigma2Params.getD());
+        super(DefocusFunctionPoly.name, angle, sigma1Params.getW0(), sigma1Params.getA(), sigma1Params.getB(), sigma1Params.getC(), sigma1Params.getD(),
+                                               sigma2Params.getW0(), sigma2Params.getA(), sigma2Params.getB(), sigma2Params.getC(), sigma2Params.getD());
         s1Par = sigma1Params;
         s2Par = sigma2Params;
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     // ---------------- SIGMA -------------- //

@@ -2,6 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
 public abstract class CylindricalLensCalibration {
 
+    public String name;
     public double angle;
     public double w01, w02;
     public double a1, a2;
@@ -9,7 +10,8 @@ public abstract class CylindricalLensCalibration {
     public double c1, c2;
     public double d1, d2;
 
-    public CylindricalLensCalibration() {
+    public CylindricalLensCalibration(String calName) {
+        name = calName;
         angle = 0.0;
         w01 = w02 = 0.0;
         a1 = a2 = 0.0;
@@ -18,7 +20,8 @@ public abstract class CylindricalLensCalibration {
         d1 = d2 = 0.0;
     }
 
-    public CylindricalLensCalibration(double angle, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
+    public CylindricalLensCalibration(String calName, double angle, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
+        name = calName;
         this.angle = angle;
         this.w01 = w01;
         this.a1 = a1;
@@ -32,13 +35,16 @@ public abstract class CylindricalLensCalibration {
         this.d2 = d2;
     }
 
-    public abstract String getName();
     public abstract double evalDefocus(double z, double w0, double a, double b, double c, double d);
     public abstract double evalDefocus2(double z, double w0, double a, double b, double c, double d);
     public abstract double dwx(double z);
     public abstract double dwy(double z);
     public abstract double dwx2(double z);
     public abstract double dwy2(double z);
+
+    public String getName() {
+        return name;
+    }
 
     public double getSigma1(double z) {
         return evalDefocus(z, w01, a1, b1, c1, d1);
