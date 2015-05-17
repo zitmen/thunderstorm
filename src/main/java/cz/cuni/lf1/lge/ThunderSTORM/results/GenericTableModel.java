@@ -7,6 +7,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.util.IValue;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
+import ij.IJ;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Vector;
@@ -382,8 +384,10 @@ public class GenericTableModel extends AbstractTableModel implements Cloneable {
             }
             setColumnUnits(paramName, Units.NANOMETER);
             fireTableDataChanged();
-        } catch(Exception e) {
-            // ignore...PSF does not fit all the required parameters
+        } catch (MoleculeDescriptor.Fitting.UncertaintyNotApplicableException ex) {
+            IJ.log("PSF does not fit all the required parameters to calculate uncertainty!");
+        } catch (NullPointerException ex) {
+            IJ.log("Measurement protocol wasn't set properly to calculate uncertainty!");
         }
     }
 
