@@ -4,7 +4,7 @@
 
     <groupId>cz.cuni.lf1.lge</groupId>
     <artifactId>ThunderSTORM</artifactId>
-    <version>dev-2015-05-17-b1</version>
+    <version>dev-2015-05-29-b1</version>
     <packaging>jar</packaging>
 
     <name>ThunderSTORM</name>
@@ -13,7 +13,7 @@
     
     <properties>
         <skipTests>true</skipTests>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>    
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <imagej.path>c:\Program Files\ImageJ</imagej.path>
         <imagej1.version>1.49s</imagej1.version>
         <maven.compiler.source>1.6</maven.compiler.source>

@@ -299,12 +299,6 @@ public class MoleculeDescriptor implements Cloneable {
          *
          * Thompson, et al. 2002; corrected by Mortensen, et al. 2010 (16/9 instead of 1 to not underestimate)
          * compensation for EM gain worked out by Quan, et al. 2010
-         *
-         * Note: The uncertainty is not well defined for WLSQ as it is unstable due to "zero-offset". Also,
-         *       MLE uncertainty is evaluated through CRLB, but the real experimental uncertainty of our algorithm is
-         *       higher, because MLE is difficult and we use Nelder-Mead algorithm, which performs rather poorly.
-         *       We plan to replace it by Levenberg-Marquardt algorithm as shown in Laurence, et al. 2010. Though, the
-         *       algorithm is derived as chi2 minimization.
          */
         public static double uncertaintyXY(Molecule molecule) throws UncertaintyNotApplicableException {
             double psfSigma2;
@@ -343,10 +337,12 @@ public class MoleculeDescriptor implements Cloneable {
             }
 
             if (fittingMethod != null) {
-                if (fittingMethod.equals(SymmetricGaussianEstimatorUI.MLE)) {
+                if (fittingMethod.equals(SymmetricGaussianEstimatorUI.MLE)
+                 || fittingMethod.equals(SymmetricGaussianEstimatorUI.WLSQ)) {
+                    // Note: here we don't distinguish between MLE and WLSQ, however, there is a difference!
+                    //       For details, see supplementary note for Mortensen 2010, Eq. (46), which shows an extra offset-dependent term!
                     return sqrt((gain * psfSigma2 + pixelSize*pixelSize/12.0) / psfPhotons * (1.0 + 4.0*tau + sqrt(2.0*tau/(1 + 4.0*tau))));
-                } else if (fittingMethod.equals(SymmetricGaussianEstimatorUI.LSQ)
-                        || fittingMethod.equals(SymmetricGaussianEstimatorUI.WLSQ)) {
+                } else if (fittingMethod.equals(SymmetricGaussianEstimatorUI.LSQ)) {
                     return sqrt((gain * psfSigma2 + pixelSize*pixelSize/12.0) / psfPhotons * (16.0/9.0 + 4.0*tau));
                 }
             }
@@ -388,27 +384,35 @@ public class MoleculeDescriptor implements Cloneable {
             double l2 = abs(cal.getC1() * cal.getC2());
             double d2 = abs(cal.getD1() * cal.getD2());
             double tau = 2.0 * PI * bkgStd*bkgStd * (psfSigma1*psfSigma2*(1.0 + l2/d2) + pixelSize*pixelSize/12.0) / (psfPhotons * pixelSize*pixelSize);
-
+            double zLimit = sqrt(l2 + d2);  // singularity in CRLB - do not evaluate at positions beyond
+            if (abs(zCoord) >= zLimit) return Double.POSITIVE_INFINITY;
+            //
+            double compensation = (sqrt(gain * psfSigma1*psfSigma1 + pixelSize*pixelSize/12.0) / psfSigma1
+                                +  sqrt(gain * psfSigma2*psfSigma2 + pixelSize*pixelSize/12.0) / psfSigma2)
+                                / 2.0;  // finite pixel size and em gain compensation
+            //
+            double stdSigma;  // method-dependent parameter
             String fittingMethod = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).getMethod();
             if (fittingMethod != null) {
                 if (fittingMethod.equals(SymmetricGaussianEstimatorUI.MLE)
-                 || fittingMethod.equals(SymmetricGaussianEstimatorUI.LSQ)
-                 || fittingMethod.equals(SymmetricGaussianEstimatorUI.WLSQ)) {
-                    // FIXME: this is MLE calculation only! ideally, we would derive the LSQ version of stdSigma!
-                    double zLimit = sqrt(l2 + d2);  // singularity in CRLB - do not evaluate at positions beyond
-                    if (abs(zCoord) >= zLimit) return Double.POSITIVE_INFINITY;
-                    //
-                    double compensation = (sqrt(gain * psfSigma1*psfSigma1 + pixelSize*pixelSize/12.0) / psfSigma1
-                                        +  sqrt(gain * psfSigma2*psfSigma2 + pixelSize*pixelSize/12.0) / psfSigma2)
-                                        / 2.0;  // finite pixel size and em gain compensation
-                    double stdSigma = sqrt(1 + 8.0 * tau + sqrt(9.0 * tau / (1.0 + 4.0 * tau))) * compensation / sqrt(psfPhotons);
-                    double Fsq = 4.0 * l2 * zCoord*zCoord / sqr(l2 + d2 + zCoord*zCoord);
-                    double stdF = sqrt(1.0 - Fsq) * stdSigma;
-                    double stdZ = stdF * sqr(l2 + d2 + zCoord*zCoord) / (2.0 * sqrt(l2) * (l2 + d2 - zCoord*zCoord));
-                    return stdZ;
+                        || fittingMethod.equals(SymmetricGaussianEstimatorUI.WLSQ)) {
+                    // Note: here we don't distinguish between MLE and WLSQ, however, there is a difference!
+                    //       For details, see supplementary note for Mortensen 2010, Eq. (46), which shows an extra offset-dependent term!
+                    stdSigma = sqrt(1 + 8.0 * tau + sqrt(9.0 * tau / (1.0 + 4.0 * tau))) * compensation / sqrt(psfPhotons);
+
+                } else if (fittingMethod.equals(SymmetricGaussianEstimatorUI.LSQ)) {
+                    stdSigma = sqrt(1 + 8.0 * tau) * compensation / sqrt(psfPhotons);
+                } else {
+                    throw new UncertaintyNotApplicableException("Unsupported (unknown) fitting method!");
                 }
+            } else {
+                throw new UncertaintyNotApplicableException("Unsupported (empty) fitting method!");
             }
-            throw new UncertaintyNotApplicableException("Unsupported fitting method!");
+            //
+            double Fsq = 4.0 * l2 * zCoord*zCoord / sqr(l2 + d2 + zCoord*zCoord);
+            double stdF = sqrt(1.0 - Fsq) * stdSigma;
+            double stdZ = stdF * sqr(l2 + d2 + zCoord*zCoord) / (2.0 * sqrt(l2) * (l2 + d2 - zCoord*zCoord));
+            return stdZ;
         }
 
         public static class UncertaintyNotApplicableException extends Exception {
