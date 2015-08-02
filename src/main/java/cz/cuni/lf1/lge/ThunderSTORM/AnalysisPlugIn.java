@@ -239,7 +239,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         FloatProcessor fp = subtract((FloatProcessor) ip.crop().convertToFloat(), (float) CameraSetupPlugIn.getOffset());
         float minVal = VectorMath.min((float[]) fp.getPixels());
         if(minVal < 0) {
-            IJ.log("Camera base level is set higher than values in the image!");
+            IJ.log("\\Update:Camera base level is set higher than values in the image!");
             fp = add(-minVal, fp);
         }
         fp.setMask(roi.getMask());    

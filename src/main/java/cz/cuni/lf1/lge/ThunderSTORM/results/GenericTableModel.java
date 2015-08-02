@@ -366,50 +366,40 @@ public class GenericTableModel extends AbstractTableModel implements Cloneable {
         }
     }
 
-    public void calculateUncertaintyXY() {
+    public void calculateUncertaintyXY() throws MoleculeDescriptor.Fitting.UncertaintyNotApplicableException {
         // Note: even though that the lateral uncertainty can be calculated in pixels,
         //       we choose to do it in nanometers by default setting
-        try {
-            String paramName = MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY;
-            double paramValue;
-            Molecule mol;
-            for(int row = 0, max = getRowCount(); row < max; row++) {
-                mol = getRow(row);
-                paramValue = MoleculeDescriptor.Fitting.uncertaintyXY(mol);
-                if(mol.hasParam(paramName)) {
-                    mol.setParam(paramName, Units.NANOMETER, paramValue);
-                } else {
-                    mol.addParam(paramName, Units.NANOMETER, paramValue);
-                }
+        String paramName = MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY;
+        double paramValue;
+        Molecule mol;
+        for(int row = 0, max = getRowCount(); row < max; row++) {
+            mol = getRow(row);
+            paramValue = MoleculeDescriptor.Fitting.uncertaintyXY(mol);
+            if(mol.hasParam(paramName)) {
+                mol.setParam(paramName, Units.NANOMETER, paramValue);
+            } else {
+                mol.addParam(paramName, Units.NANOMETER, paramValue);
             }
-            setColumnUnits(paramName, Units.NANOMETER);
-            fireTableDataChanged();
-        } catch (MoleculeDescriptor.Fitting.UncertaintyNotApplicableException ex) {
-            IJ.log("PSF does not fit all the required parameters to calculate uncertainty!");
-        } catch (NullPointerException ex) {
-            IJ.log("Measurement protocol wasn't set properly to calculate uncertainty!");
         }
+        setColumnUnits(paramName, Units.NANOMETER);
+        fireTableDataChanged();
     }
 
-    public void calculateUncertaintyZ() {
-        try {
-            String paramName = MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z;
-            double paramValue;
-            Molecule mol;
-            for(int row = 0, max = getRowCount(); row < max; row++) {
-                mol = getRow(row);
-                paramValue = MoleculeDescriptor.Fitting.uncertaintyZ(mol);
-                if(mol.hasParam(paramName)) {
-                    mol.setParam(paramName, Units.NANOMETER, paramValue);
-                } else {
-                    mol.addParam(paramName, Units.NANOMETER, paramValue);
-                }
+    public void calculateUncertaintyZ() throws MoleculeDescriptor.Fitting.UncertaintyNotApplicableException {
+        String paramName = MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z;
+        double paramValue;
+        Molecule mol;
+        for(int row = 0, max = getRowCount(); row < max; row++) {
+            mol = getRow(row);
+            paramValue = MoleculeDescriptor.Fitting.uncertaintyZ(mol);
+            if(mol.hasParam(paramName)) {
+                mol.setParam(paramName, Units.NANOMETER, paramValue);
+            } else {
+                mol.addParam(paramName, Units.NANOMETER, paramValue);
             }
-            setColumnUnits(paramName, Units.NANOMETER);
-            fireTableDataChanged();
-        } catch(Exception e) {
-            // ignore...PSF does not fit all the required parameters
         }
+        setColumnUnits(paramName, Units.NANOMETER);
+        fireTableDataChanged();
     }
     
     // --------------------------------------- //

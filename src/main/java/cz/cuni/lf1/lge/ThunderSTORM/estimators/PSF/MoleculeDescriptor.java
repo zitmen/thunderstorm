@@ -281,7 +281,7 @@ public class MoleculeDescriptor implements Cloneable {
 
         int start = label.lastIndexOf('['), end = label.lastIndexOf(']');
         if((start < 0) || (end < 0) || (start > end)) {
-            return new Pair<String, Units>(label, Units.UNITLESS);
+            return new Pair<String, Units>(label.trim(), Units.UNITLESS);
         } else {
             return new Pair<String, Units>(label.substring(0, start).trim(), Units.fromString(label.substring(start + 1, end).trim()));
         }
@@ -346,7 +346,7 @@ public class MoleculeDescriptor implements Cloneable {
                     return sqrt((gain * psfSigma2 + pixelSize*pixelSize/12.0) / psfPhotons * (16.0/9.0 + 4.0*tau));
                 }
             }
-            throw new UncertaintyNotApplicableException("Unsupported fitting method!");
+            throw new UncertaintyNotApplicableException("Unsupported fitting method! Was the measurement protocol loaded properly?");
         }
 
         /**
@@ -360,7 +360,7 @@ public class MoleculeDescriptor implements Cloneable {
             MeasurementProtocol protocol = IJResultsTable.getResultsTable().getMeasurementProtocol();
             if (!(protocol.analysisEstimator instanceof EllipticGaussianEstimatorUI)
                     || !(molecule.hasParam(LABEL_SIGMA1) && molecule.hasParam(LABEL_SIGMA2))) {
-                throw new UncertaintyNotApplicableException("Axial uncertainty cannot be calculated for 2D estimate!");
+                throw new UncertaintyNotApplicableException("Axial uncertainty cannot be calculated for 2D estimate (missing sigma1, sigma2)!");
             }
 
             double gain, readout;
@@ -403,10 +403,10 @@ public class MoleculeDescriptor implements Cloneable {
                 } else if (fittingMethod.equals(SymmetricGaussianEstimatorUI.LSQ)) {
                     stdSigma = sqrt(1 + 8.0 * tau) * compensation / sqrt(psfPhotons);
                 } else {
-                    throw new UncertaintyNotApplicableException("Unsupported (unknown) fitting method!");
+                    throw new UncertaintyNotApplicableException("Unsupported (unknown) fitting method! Was the measurement protocol loaded properly?");
                 }
             } else {
-                throw new UncertaintyNotApplicableException("Unsupported (empty) fitting method!");
+                throw new UncertaintyNotApplicableException("Unsupported (empty) fitting method! Was the measurement protocol loaded properly?");
             }
             //
             double Fsq = 4.0 * l2 * zCoord*zCoord / sqr(l2 + d2 + zCoord*zCoord);

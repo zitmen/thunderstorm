@@ -185,7 +185,13 @@ public class GenericTableWindow {
                 item.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        model.calculateUncertaintyXY();
+                        try {
+                            model.calculateUncertaintyXY();
+                        } catch (MoleculeDescriptor.Fitting.UncertaintyNotApplicableException ex) {
+                            IJ.log("Cannot calculate lateral uncertainty: " + ex.getMessage());
+                        } catch (NullPointerException ex) {
+                            IJ.log("Measurement protocol wasn't set properly to calculate uncertainty!");
+                        }
                     }
                 });
                 popup.add(item);
@@ -195,7 +201,13 @@ public class GenericTableWindow {
                 item.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        model.calculateUncertaintyZ();
+                        try {
+                            model.calculateUncertaintyZ();
+                        } catch (MoleculeDescriptor.Fitting.UncertaintyNotApplicableException ex) {
+                            IJ.log("Cannot calculate axial uncertainty: " + ex.getMessage());
+                        } catch (NullPointerException ex) {
+                            IJ.log("Measurement protocol wasn't set properly to calculate uncertainty!");
+                        }
                     }
                 });
                 popup.add(item);

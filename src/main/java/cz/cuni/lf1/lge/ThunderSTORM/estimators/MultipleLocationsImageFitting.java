@@ -6,6 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.UncertaintyNotApplicableException;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.MeasurementProtocol;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.process.FloatProcessor;
@@ -184,14 +185,17 @@ public class MultipleLocationsImageFitting implements IEstimator {
 
     public static void appendCalculatedUncertainty(Molecule mol) {
         try {
-            if (IJResultsTable.getResultsTable().getMeasurementProtocol() != null) {
+            MeasurementProtocol protocol = IJResultsTable.getResultsTable().getMeasurementProtocol();
+            if (protocol != null) {
                 mol.addParam(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY, MoleculeDescriptor.Units.NANOMETER, uncertaintyXY(mol));
-                mol.addParam(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z, MoleculeDescriptor.Units.NANOMETER, uncertaintyZ(mol));
+                if (protocol.is3D()) {
+                    mol.addParam(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z, MoleculeDescriptor.Units.NANOMETER, uncertaintyZ(mol));
+                }
             }
         } catch (UncertaintyNotApplicableException ex) {
-            IJ.log("PSF does not fit all the required parameters to calculate uncertainty!");
+            IJ.log("\\Update:Cannot calculate fitting uncertainty: " + ex.getMessage());
         } catch (NullPointerException ex) {
-            IJ.log("Measurement protocol wasn't set properly to calculate uncertainty!");
+            IJ.log("\\Update:Measurement protocol wasn't set properly to calculate uncertainty!");
         }
     }
 }

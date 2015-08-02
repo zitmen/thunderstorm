@@ -9,6 +9,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.EmptyDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.EmptyEstimator;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EllipticGaussianEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.EmptyFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
@@ -32,6 +33,9 @@ public class MeasurementProtocol {
     public IDetectorUI analysisDetector;
     public IEstimatorUI analysisEstimator;
     public List<Operation> postProcessing;
+
+    private boolean is3d;
+    private boolean isSet3d;
     
     public MeasurementProtocol() {
         this.version = "ThunderSTORM (" + ThunderSTORM.VERSION + ")";
@@ -41,6 +45,7 @@ public class MeasurementProtocol {
         this.analysisDetector = new EmptyDetector();
         this.analysisEstimator = new EmptyEstimator();
         this.postProcessing = IJResultsTable.getResultsTable().getOperationHistoryPanel().getHistory();
+        this.isSet3d = false;
     }
     
     public MeasurementProtocol(ImagePlus analyzedImage, IFilterUI filter, IDetectorUI detector, IEstimatorUI estimator) {
@@ -51,6 +56,15 @@ public class MeasurementProtocol {
         this.analysisDetector = detector;
         this.analysisEstimator = estimator;
         this.postProcessing = IJResultsTable.getResultsTable().getOperationHistoryPanel().getHistory();
+        this.isSet3d = false;
+    }
+
+    public boolean is3D() {
+        if (!this.isSet3d) {
+            this.is3d = ((analysisEstimator != null) && (analysisEstimator instanceof EllipticGaussianEstimatorUI));
+            this.isSet3d = true;
+        }
+        return this.is3d;
     }
     
     public void exportToFile(String fpath) {

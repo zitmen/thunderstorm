@@ -135,7 +135,11 @@ public final class Molecule implements Comparable<Molecule> {
     }
     
     public double getParam(String param) {
-        return values.get(descriptor.getParamIndex(param));
+        try {
+            return values.get(descriptor.getParamIndex(param));
+        } catch (Exception ex)  {
+            return 0.0;
+        }
     }
     
     public double getParam(String param, Units unit) {
@@ -293,15 +297,14 @@ public final class Molecule implements Comparable<Molecule> {
     }
     
     // ======================== [ MERGING ] ===================================
-    
+
     public void updateParameters() {
         try {
             for(int i = 0, im = descriptor.getParamsCount(); i < im; i++) {
                 MoleculeDescriptor.MergingOperations.merge(this, detections, descriptor.getParamNameAt(i));
             }
         } catch(Exception ex) {
-            ex.printStackTrace();
-            IJ.showMessage("Error!", ex.toString());
+            IJ.log("\\Update:Cannot update the parameters: " + ex.getMessage());
         }
     }
 
