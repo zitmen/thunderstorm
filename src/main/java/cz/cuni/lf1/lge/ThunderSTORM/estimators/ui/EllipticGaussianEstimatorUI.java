@@ -7,9 +7,9 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.DialogStub;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterKey;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.StringValidatorFactory;
 import ij.Prefs;
 import org.yaml.snakeyaml.Yaml;
 
