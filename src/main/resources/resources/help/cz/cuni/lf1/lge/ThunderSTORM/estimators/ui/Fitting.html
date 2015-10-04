@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title></title>
-<!--Generated on Mon Oct 27 10:48:41 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<title>Untitled Document</title>
+<!--Generated on Sun Oct  4 04:52:23 2015 by LaTeXML (version 0.8.1) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
@@ -14,140 +14,150 @@
 <div class="ltx_page_content">
 <div class="ltx_document">
 <div id="Sx1" class="ltx_section">
-<h1 class="ltx_title ltx_title_section">Fitting point-spread function models</h1>
+<h2 class="ltx_title ltx_title_section">Fitting point-spread function models</h2>
 
 <div id="Sx1.SSx1" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Least-squares methods</h2>
+<h3 class="ltx_title ltx_title_subsection">Least-squares methods</h3>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
 <p class="ltx_p">To approximate the data with a point-spread function, least-squares
-methods <cite class="ltx_cite">[<a href="#bib.bib19" title="The Advanced Theory of Statistics" class="ltx_ref">4</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>, <a href="#bib.bib23" title="Optimized localization analysis for single-molecule tracking and super-resolution microscopy" class="ltx_ref">5</a>]</cite> are employed
+methods <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib19" title="The Advanced Theory of Statistics" class="ltx_ref">4</a>, <a href="#bib.bib4" title="Data reduction and error analysis for the physical science" class="ltx_ref">1</a>, <a href="#bib.bib23" title="Optimized localization analysis for single-molecule tracking and super-resolution microscopy" class="ltx_ref">5</a>]</cite> are employed
 to minimize the sum of (weighted) squared residuals defined by
 </p>
-<table id="Sx1.E1" class="ltx_equation">
+<table id="Sx1.E1" class="ltx_equation ltx_eqn_table">
 
-<tr class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-27px" src="mi/mi63.png" width="375" height="53" alt="\chi^{2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)=\sum_{x,y\in\mathcal{D%
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-35px" src="mi/mi90.png" width="494" height="69" alt="\chi^{2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)=\sum_{x,y\in\mathcal{D%
 }}{w\left(\tilde{I}\left(x,y\right)-\mathrm{PSF}\left(x,y\mid\boldsymbol{%
 \theta}\right)\right)^{2}}\,."></td>
-<td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
+      ltx_eqn_eqno ltx_align_middle
+      ltx_align_right">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">Here the residual value for the <img id="Sx1.SSx1.p1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi48.png" width="45" height="21" alt="\left(x,y\right)"> data point is
-defined as the difference between the observed image intensity <img id="Sx1.SSx1.p1.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi79.png" width="57" height="24" alt="\tilde{I}\left(x,y\right)">
-and the value approximated by the <img id="Sx1.SSx1.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi76.png" width="106" height="21" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">,
-where <img id="Sx1.SSx1.p1.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi47.png" width="15" height="16" alt="\boldsymbol{\theta}"> are the PSF parameters. The residual
-value can be further weighted by <img id="Sx1.SSx1.p1.m5" class="ltx_Math" style="vertical-align:-2px" src="mi/mi81.png" width="49" height="16" alt="w=1">, making all measurements equally
-significant, or weighted by <img id="Sx1.SSx1.p1.m6" class="ltx_Math" style="vertical-align:-6px" src="mi/mi80.png" width="111" height="24" alt="w=1/\tilde{I}\left(x,y\right)">, which
+<p class="ltx_p">Here the residual value for the <img id="Sx1.SSx1.p1.m1" class="ltx_Math" style="vertical-align:-8px" src="mi/mi34.png" width="58" height="27" alt="\left(x,y\right)"> data point is
+defined as the difference between the observed image intensity <img id="Sx1.SSx1.p1.m2" class="ltx_Math" style="vertical-align:-8px" src="mi/mi106.png" width="74" height="31" alt="\tilde{I}\left(x,y\right)">
+and the value approximated by the <img id="Sx1.SSx1.p1.m3" class="ltx_Math" style="vertical-align:-8px" src="mi/mi103.png" width="139" height="27" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">,
+where <img id="Sx1.SSx1.p1.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi78.png" width="18" height="20" alt="\boldsymbol{\theta}"> are the PSF parameters. The residual
+value can be further weighted by <img id="Sx1.SSx1.p1.m5" class="ltx_Math" style="vertical-align:-2px" src="mi/mi108.png" width="64" height="19" alt="w=1">, making all measurements equally
+significant, or weighted by <img id="Sx1.SSx1.p1.m6" class="ltx_Math" style="vertical-align:-8px" src="mi/mi107.png" width="146" height="31" alt="w=1/\tilde{I}\left(x,y\right)">, which
 takes into account the uncertainty in the number of detected photons.</p>
 </div>
 <div id="Sx1.SSx1.p2" class="ltx_para">
-<p class="ltx_p">The search for parameters <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi67.png" width="15" height="20" alt="\boldsymbol{\hat{\theta}}"> which minimize
-<img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi69.png" width="79" height="23" alt="\chi^{2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)">, leads
+<p class="ltx_p">The search for parameters <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi94.png" width="18" height="26" alt="\boldsymbol{\hat{\theta}}"> which minimize
+<img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-8px" src="mi/mi96.png" width="103" height="29" alt="\chi^{2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)">, leads
 to an optimization problem formulated as</p>
-<table id="Sx1.E2" class="ltx_equation">
+<table id="Sx1.E2" class="ltx_equation ltx_eqn_table">
 
-<tr class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi62.png" width="183" height="37" alt="\boldsymbol{\hat{\theta}}=\argmin_{\boldsymbol{\theta}}\chi^{2}\left(%
-\boldsymbol{\theta}\mid\mathcal{D}\right)\,,"></td>
-<td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-24px" src="mi/mi89.png" width="241" height="48" alt="\boldsymbol{\hat{\theta}}=\operatorname*{arg\,min}_{\boldsymbol{\theta}}\chi^{%
+2}\left(\boldsymbol{\theta}\mid\mathcal{D}\right)\,,"></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
+      ltx_eqn_eqno ltx_align_middle
+      ltx_align_right">(2)</span></td>
 </tr>
 </table>
 <p class="ltx_p">which we solve by the Levenberg-Marquardt algorithm as
-implemented in the Apache Commons Math library <cite class="ltx_cite">[<a href="#bib.bib6" title="The Apache Commons Mathematics Library; version 3.2" class="ltx_ref">2</a>]</cite>.
+implemented in the Apache Commons Math library <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib6" title="The Apache Commons Mathematics Library; version 3.2" class="ltx_ref">2</a>]</cite>.
 The starting point for the optimization process is computed from the
 data as the difference between the maximum and the minimum intensity
-values for the molecular intensity <img id="Sx1.SSx1.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi52.png" width="26" height="19" alt="\theta_{N}">, and as the minimum
-intensity value for the background offset <img id="Sx1.SSx1.p2.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi53.png" width="20" height="19" alt="\theta_{b}">. Users have
-to choose the starting point for the approximate molecular width <img id="Sx1.SSx1.p2.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi78.png" width="22" height="19" alt="\theta_{\sigma}">.
-The sub-pixel refinement of the coordinates is obtained as <img id="Sx1.SSx1.p2.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi70.png" width="63" height="23" alt="\hat{x}_{0}=\hat{\theta}_{x}">
-and <img id="Sx1.SSx1.p2.m7" class="ltx_Math" style="vertical-align:-7px" src="mi/mi71.png" width="61" height="26" alt="\hat{y}_{0}=\hat{\theta}_{y}">, where <img id="Sx1.SSx1.p2.m8" class="ltx_Math" style="vertical-align:-14px" src="mi/mi66.png" width="125" height="35" alt="\boldsymbol{\hat{\theta}}=\left[\hat{\theta}_{x},\hat{\theta}_{y},\ldots\right]">.</p>
+values for the molecular intensity <img id="Sx1.SSx1.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi83.png" width="33" height="24" alt="\theta_{N}">, and as the minimum
+intensity value for the background offset <img id="Sx1.SSx1.p2.m4" class="ltx_Math" style="vertical-align:-5px" src="mi/mi84.png" width="25" height="24" alt="\theta_{b}">. Users have
+to choose the starting point for the approximate molecular width <img id="Sx1.SSx1.p2.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi105.png" width="28" height="24" alt="\theta_{\sigma}">.
+The sub-pixel refinement of the coordinates is obtained as <img id="Sx1.SSx1.p2.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi97.png" width="82" height="30" alt="\hat{x}_{0}=\hat{\theta}_{x}">
+and <img id="Sx1.SSx1.p2.m7" class="ltx_Math" style="vertical-align:-9px" src="mi/mi98.png" width="79" height="33" alt="\hat{y}_{0}=\hat{\theta}_{y}">, where <img id="Sx1.SSx1.p2.m8" class="ltx_Math" style="vertical-align:-17px" src="mi/mi93.png" width="164" height="46" alt="\boldsymbol{\hat{\theta}}=\left[\hat{\theta}_{x},\hat{\theta}_{y},\ldots\right]">.</p>
 </div>
 </div>
 <div id="Sx1.SSx2" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Maximum-likelihood estimation</h2>
+<h3 class="ltx_title ltx_title_subsection">Maximum-likelihood estimation</h3>
 
 <div id="Sx1.SSx2.p1" class="ltx_para">
 <p class="ltx_p">This approach assumes that the number of photons collected by a single
 camera pixel follows the Poisson distribution. Thus, the probability
-of <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi73.png" width="14" height="12" alt="\kappa"> photons arriving at a camera pixel, where the expected
-number of photons is <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi75.png" width="14" height="16" alt="\lambda">, is given by</p>
-<table id="Sx1.E3" class="ltx_equation">
+of <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi100.png" width="18" height="14" alt="\kappa"> photons arriving at a camera pixel, where the expected
+number of photons is <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi102.png" width="18" height="20" alt="\lambda">, is given by</p>
+<table id="Sx1.E3" class="ltx_equation ltx_eqn_table">
 
-<tr class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi64.png" width="147" height="43" alt="p\left(\kappa\mid\lambda\right)=\frac{\lambda^{\kappa}\mathrm{e}^{-\lambda}}{%
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.E3.m1" class="ltx_Math" style="vertical-align:-18px" src="mi/mi91.png" width="194" height="55" alt="p\left(\kappa\mid\lambda\right)=\frac{\lambda^{\kappa}\mathrm{e}^{-\lambda}}{%
 \kappa!}\,."></td>
-<td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(3)</span></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
+      ltx_eqn_eqno ltx_align_middle
+      ltx_align_right">(3)</span></td>
 </tr>
 </table>
 </div>
 <div id="Sx1.SSx2.p2" class="ltx_para">
 <p class="ltx_p">Suppose that samples are drawn independently from the Poisson distribution,
-with the expected photon count <img id="Sx1.SSx2.p2.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi74.png" width="140" height="21" alt="\lambda=\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">
+with the expected photon count <img id="Sx1.SSx2.p2.m1" class="ltx_Math" style="vertical-align:-8px" src="mi/mi101.png" width="184" height="27" alt="\lambda=\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">
 given by the point-spread function model, and the observed photon
-count <img id="Sx1.SSx2.p2.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi72.png" width="91" height="24" alt="\kappa=\tilde{I}\left(x,y\right)"> given by the image intensity
-expressed in photons. The likelihood <cite class="ltx_cite">[<a href="#bib.bib19" title="The Advanced Theory of Statistics" class="ltx_ref">4</a>, <a href="#bib.bib23" title="Optimized localization analysis for single-molecule tracking and super-resolution microscopy" class="ltx_ref">5</a>, <a href="#bib.bib33" title="Fast, single-molecule localization that achieves theoretically minimum uncertainty" class="ltx_ref">7</a>, <a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">3</a>]</cite>
-of the parameters <img id="Sx1.SSx2.p2.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi47.png" width="15" height="16" alt="\boldsymbol{\theta}"> can be modeled as</p>
-<table id="Sx1.E4" class="ltx_equation">
+count <img id="Sx1.SSx2.p2.m2" class="ltx_Math" style="vertical-align:-8px" src="mi/mi99.png" width="119" height="31" alt="\kappa=\tilde{I}\left(x,y\right)"> given by the image intensity
+expressed in photons. The likelihood <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib19" title="The Advanced Theory of Statistics" class="ltx_ref">4</a>, <a href="#bib.bib23" title="Optimized localization analysis for single-molecule tracking and super-resolution microscopy" class="ltx_ref">5</a>, <a href="#bib.bib33" title="Fast, single-molecule localization that achieves theoretically minimum uncertainty" class="ltx_ref">7</a>, <a href="#bib.bib15" title="Simultaneous multiple-emitter fitting for single molecule super-resolution imaging" class="ltx_ref">3</a>]</cite>
+of the parameters <img id="Sx1.SSx2.p2.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi78.png" width="18" height="20" alt="\boldsymbol{\theta}"> can be modeled as</p>
+<table id="Sx1.E4" class="ltx_equation ltx_eqn_table">
 
-<tr class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E4.m1" class="ltx_Math" style="vertical-align:-27px" src="mi/mi60.png" width="380" height="61" alt="L(\boldsymbol{\theta}\mid\mathcal{D})=\prod_{x,y\in\mathcal{D}}\frac{\mathrm{%
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.E4.m1" class="ltx_Math" style="vertical-align:-35px" src="mi/mi87.png" width="502" height="80" alt="L(\boldsymbol{\theta}\mid\mathcal{D})=\prod_{x,y\in\mathcal{D}}\frac{\mathrm{%
 PSF}\left(x,y\mid\boldsymbol{\theta}\right)^{\tilde{I}\left(x,y\right)}\mathrm%
 {e}^{-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)}}{\tilde{I}\left(x,y%
 \right)!}\,."></td>
-<td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(4)</span></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
+      ltx_eqn_eqno ltx_align_middle
+      ltx_align_right">(4)</span></td>
 </tr>
 </table>
 </div>
 <div id="Sx1.SSx2.p3" class="ltx_para">
-<p class="ltx_p">The maximum likelihood estimate of the parameters <img id="Sx1.SSx2.p3.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi47.png" width="15" height="16" alt="\boldsymbol{\theta}">
-is, by definition, the value that maximizes the likelihood <img id="Sx1.SSx2.p3.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi65.png" width="69" height="21" alt="L(\boldsymbol{\theta}\mid\mathcal{D})">.
-Intuitively, the estimate <img id="Sx1.SSx2.p3.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi67.png" width="15" height="20" alt="\boldsymbol{\hat{\theta}}"> corresponds
-to the value <img id="Sx1.SSx2.p3.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi47.png" width="15" height="16" alt="\boldsymbol{\theta}"> that best agrees with the data.
+<p class="ltx_p">The maximum likelihood estimate of the parameters <img id="Sx1.SSx2.p3.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi78.png" width="18" height="20" alt="\boldsymbol{\theta}">
+is, by definition, the value that maximizes the likelihood <img id="Sx1.SSx2.p3.m2" class="ltx_Math" style="vertical-align:-8px" src="mi/mi92.png" width="90" height="27" alt="L(\boldsymbol{\theta}\mid\mathcal{D})">.
+Intuitively, the estimate <img id="Sx1.SSx2.p3.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi94.png" width="18" height="26" alt="\boldsymbol{\hat{\theta}}"> corresponds
+to the value <img id="Sx1.SSx2.p3.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi78.png" width="18" height="20" alt="\boldsymbol{\theta}"> that best agrees with the data.
 The maximization problem has the form</p>
-<table id="Sx1.E5" class="ltx_equation">
+<table id="Sx1.E5" class="ltx_equation ltx_eqn_table">
 
-<tr class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E5.m1" class="ltx_Math" style="vertical-align:-27px" src="mi/mi61.png" width="482" height="49" alt="\boldsymbol{\hat{\theta}}=\argmax_{\boldsymbol{\theta}}\sum_{x,y\in\mathcal{D}%
-}{\left[\tilde{I}\left(x,y\right)\ln{\left(\mathrm{PSF}\left(x,y\mid%
-\boldsymbol{\theta}\right)\right)}-\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta%
-}\right)\right]}\,,"></td>
-<td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(5)</span></td>
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.E5.m1" class="ltx_Math" style="vertical-align:-35px" src="mi/mi88.png" width="636" height="64" alt="\boldsymbol{\hat{\theta}}=\operatorname*{arg\,max}_{\boldsymbol{\theta}}\sum_{%
+x,y\in\mathcal{D}}{\left[\tilde{I}\left(x,y\right)\ln{\left(\mathrm{PSF}\left(%
+x,y\mid\boldsymbol{\theta}\right)\right)}-\mathrm{PSF}\left(x,y\mid\boldsymbol%
+{\theta}\right)\right]}\,,"></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
+      ltx_eqn_eqno ltx_align_middle
+      ltx_align_right">(5)</span></td>
 </tr>
 </table>
-<p class="ltx_p">which we solve by the Nelder-Mead method <cite class="ltx_cite">[<a href="#bib.bib25" title="Algorithm AS 47–function minimization using a simplex procedure" class="ltx_ref">6</a>]</cite>. The starting
+<p class="ltx_p">which we solve by the Nelder-Mead method <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib25" title="Algorithm AS 47–function minimization using a simplex procedure" class="ltx_ref">6</a>]</cite>. The starting
 point for the optimization process is computed from the data as the
 difference between the maximum and the minimum intensity values for
-the molecular intensity <img id="Sx1.SSx2.p3.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi52.png" width="26" height="19" alt="\theta_{N}">, and as the minimum intensity
-value for the background offset <img id="Sx1.SSx2.p3.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi53.png" width="20" height="19" alt="\theta_{b}">. Users have to choose
-the starting point for the approximate molecular width <img id="Sx1.SSx2.p3.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi78.png" width="22" height="19" alt="\theta_{\sigma}">.
-The sub-pixel refinement of the coordinates is obtained as <img id="Sx1.SSx2.p3.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi70.png" width="63" height="23" alt="\hat{x}_{0}=\hat{\theta}_{x}">
-and <img id="Sx1.SSx2.p3.m9" class="ltx_Math" style="vertical-align:-7px" src="mi/mi71.png" width="61" height="26" alt="\hat{y}_{0}=\hat{\theta}_{y}">, where <img id="Sx1.SSx2.p3.m10" class="ltx_Math" style="vertical-align:-14px" src="mi/mi66.png" width="125" height="35" alt="\boldsymbol{\hat{\theta}}=\left[\hat{\theta}_{x},\hat{\theta}_{y},\ldots\right]">.</p>
+the molecular intensity <img id="Sx1.SSx2.p3.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi83.png" width="33" height="24" alt="\theta_{N}">, and as the minimum intensity
+value for the background offset <img id="Sx1.SSx2.p3.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi84.png" width="25" height="24" alt="\theta_{b}">. Users have to choose
+the starting point for the approximate molecular width <img id="Sx1.SSx2.p3.m7" class="ltx_Math" style="vertical-align:-5px" src="mi/mi105.png" width="28" height="24" alt="\theta_{\sigma}">.
+The sub-pixel refinement of the coordinates is obtained as <img id="Sx1.SSx2.p3.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi97.png" width="82" height="30" alt="\hat{x}_{0}=\hat{\theta}_{x}">
+and <img id="Sx1.SSx2.p3.m9" class="ltx_Math" style="vertical-align:-9px" src="mi/mi98.png" width="79" height="33" alt="\hat{y}_{0}=\hat{\theta}_{y}">, where <img id="Sx1.SSx2.p3.m10" class="ltx_Math" style="vertical-align:-17px" src="mi/mi93.png" width="164" height="46" alt="\boldsymbol{\hat{\theta}}=\left[\hat{\theta}_{x},\hat{\theta}_{y},\ldots\right]">.</p>
 </div>
 </div>
 <div id="Sx1.SSx3" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Constraining parameters of PSF models</h2>
+<h3 class="ltx_title ltx_title_subsection">Constraining parameters of PSF models</h3>
 
 <div id="Sx1.SSx3.p1" class="ltx_para">
 <p class="ltx_p">The Levenberg-Marquardt algorithm and the Nelder-Mead method used
-above search for values of the parameters <img id="Sx1.SSx3.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi47.png" width="15" height="16" alt="\boldsymbol{\theta}"> over
+above search for values of the parameters <img id="Sx1.SSx3.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi78.png" width="18" height="20" alt="\boldsymbol{\theta}"> over
 an infinite interval. The optimization process can therefore converge
 to a solution with negative values which is impossible for variables
 corresponding to image intensity or to the standard deviation of a
 Gaussian PSF. We therefore limit the interval of possible values by
-transforming the relevant parameters and using <img id="Sx1.SSx3.p1.m2" class="ltx_Math" style="vertical-align:-14px" src="mi/mi77.png" width="114" height="35" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\tilde{\theta}}\right)">
-in Equations (<a href="#Sx1.E2" title="(2) ‣ Least-squares methods ‣ Fitting point-spread function models" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>) and (<a href="#Sx1.E5" title="(5) ‣ Maximum-likelihood estimation ‣ Fitting point-spread function models" class="ltx_ref"><span class="ltx_text ltx_ref_tag">5</span></a>) instead of <img id="Sx1.SSx3.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi76.png" width="106" height="21" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">.
-The transformation for a 2D Gaussian PSF model is <img id="Sx1.SSx3.p1.m4" class="ltx_Math" style="vertical-align:-8px" src="mi/mi68.png" width="174" height="27" alt="\boldsymbol{\tilde{\theta}}=\left[\theta_{x},\theta_{y},\theta_{\sigma}^{2},%
+transforming the relevant parameters and using <img id="Sx1.SSx3.p1.m2" class="ltx_Math" style="vertical-align:-17px" src="mi/mi104.png" width="149" height="46" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\tilde{\theta}}\right)">
+in Equations (<a href="#Sx1.E2" title="(2) ‣ Least-squares methods ‣ Fitting point-spread function models" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>) and (<a href="#Sx1.E5" title="(5) ‣ Maximum-likelihood estimation ‣ Fitting point-spread function models" class="ltx_ref"><span class="ltx_text ltx_ref_tag">5</span></a>) instead of <img id="Sx1.SSx3.p1.m3" class="ltx_Math" style="vertical-align:-8px" src="mi/mi103.png" width="139" height="27" alt="\mathrm{PSF}\left(x,y\mid\boldsymbol{\theta}\right)">.
+The transformation for a 2D Gaussian PSF model is <img id="Sx1.SSx3.p1.m4" class="ltx_Math" style="vertical-align:-10px" src="mi/mi95.png" width="228" height="34" alt="\boldsymbol{\tilde{\theta}}=\left[\theta_{x},\theta_{y},\theta_{\sigma}^{2},%
 \theta_{N}^{2},\theta_{b}^{2}\right]">.
 The optimization process is still unconstrained but will result in
 positive PSF parameters. Such a transformation also improves the
@@ -155,7 +165,7 @@ stability of the fit.</p>
 </div>
 </div>
 <div id="Sx1.SSx4" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Guidelines for the choice of parameters</h2>
+<h3 class="ltx_title ltx_title_subsection">Guidelines for the choice of parameters</h3>
 
 <div id="Sx1.SSx4.p1" class="ltx_para">
 <p class="ltx_p">Fitting PSF models by maximum likelihood estimation generally gives
@@ -171,7 +181,7 @@ the fitting radius should be an integer number close to 3*sigma.</p>
 </div>
 </div>
 <div id="Sx1.SSx5" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">See also</h2>
+<h3 class="ltx_title ltx_title_subsection">See also</h3>
 
 <div id="Sx1.SSx5.p1" class="ltx_para">
 <ul id="I1" class="ltx_itemize">
@@ -216,51 +226,51 @@ the fitting radius should be an integer number close to 3*sigma.</p>
 </div>
 </div>
 <div id="bib" class="ltx_bibliography">
-<h1 class="ltx_title ltx_title_bibliography">References</h1>
+<h2 class="ltx_title ltx_title_bibliography">References</h2>
 
 <ul id="L1" class="ltx_biblist">
 <li id="bib.bib4" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. R. Bevington and D. K. Robinson</span><span class="ltx_text ltx_bib_year">(2003)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. R. Bevington and D. K. Robinson</span><span class="ltx_text ltx_bib_year"> (2003)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Data reduction and error analysis for the physical science</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Data reduction and error analysis for the physical science</span>.
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_series">McGraw-Hill Higher Education</span>,  <span class="ltx_text ltx_bib_publisher">McGraw-Hill</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><span class="ltx_text isbn ltx_bib_external">ISBN 9780072472271</span></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><span class="ltx_text isbn ltx_bib_external">ISBN 9780072472271</span></span>
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p1" title="Least-squares methods ‣ Fitting point-spread function models" class="ltx_ref"><span class="ltx_text ltx_ref_title">Least-squares methods</span></a>.
 </span>
 </li>
 <li id="bib.bib6" class="ltx_bibitem ltx_bib_misc">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">Commons-Math</span><span class="ltx_text ltx_bib_year">(2013-04)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">Commons-Math</span><span class="ltx_text ltx_bib_year"> (2013-04)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">The Apache Commons Mathematics Library; version 3.2</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">The Apache Commons Mathematics Library; version 3.2</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://commons.apache.org/proper/commons-math/" title="" class="ltx_ref ltx_bib_external">Link</a></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://commons.apache.org/proper/commons-math/" title="" class="ltx_ref ltx_bib_external">Link</a></span>
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p2" title="Least-squares methods ‣ Fitting point-spread function models" class="ltx_ref"><span class="ltx_text ltx_ref_title">Least-squares methods</span></a>.
 </span>
 </li>
 <li id="bib.bib15" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. Huang, S. L. Schwartz, J. M. Byars and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2011)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">F. Huang, S. L. Schwartz, J. M. Byars and K. A. Lidke</span><span class="ltx_text ltx_bib_year"> (2011)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Simultaneous multiple-emitter fitting for single molecule super-resolution imaging</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Simultaneous multiple-emitter fitting for single molecule super-resolution imaging</span>.
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Biomedical Optics Express</span> <span class="ltx_text ltx_bib_volume">2</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 1377–93</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/BOE.2.001377" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/BOE.2.001377" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx2.p2" title="Maximum-likelihood estimation ‣ Fitting point-spread function models" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
 </span>
 </li>
 <li id="bib.bib19" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[4]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. Kendall and A. Stuart</span><span class="ltx_text ltx_bib_year">(1979)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. Kendall and A. Stuart</span><span class="ltx_text ltx_bib_year"> (1979)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">The Advanced Theory of Statistics</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">The Advanced Theory of Statistics</span>.
 </span>
 <span class="ltx_bibblock"> <span class="ltx_text ltx_bib_publisher">London: Charles Griffin</span>.
 </span>
@@ -270,13 +280,13 @@ the fitting radius should be an integer number close to 3*sigma.</p>
 </li>
 <li id="bib.bib23" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[5]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">K. I. Mortensen, L. S. Churchman, J. A. Spudich and H. Flyvbjerg</span><span class="ltx_text ltx_bib_year">(2010)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">K. I. Mortensen, L. S. Churchman, J. A. Spudich and H. Flyvbjerg</span><span class="ltx_text ltx_bib_year"> (2010)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Optimized localization analysis for single-molecule tracking and super-resolution microscopy</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Optimized localization analysis for single-molecule tracking and super-resolution microscopy</span>.
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Nature Methods</span> <span class="ltx_text ltx_bib_volume">7</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 377–381</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1038/nmeth.1447" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1038/nmeth.1447" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p1" title="Least-squares methods ‣ Fitting point-spread function models" class="ltx_ref"><span class="ltx_text ltx_ref_title">Least-squares methods</span></a>,
 <a href="#Sx1.SSx2.p2" title="Maximum-likelihood estimation ‣ Fitting point-spread function models" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
@@ -284,27 +294,27 @@ the fitting radius should be an integer number close to 3*sigma.</p>
 </li>
 <li id="bib.bib25" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[6]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. O’Neill</span><span class="ltx_text ltx_bib_year">(1971)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. O’Neill</span><span class="ltx_text ltx_bib_year"> (1971)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Algorithm AS 47–function minimization using a simplex procedure</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Algorithm AS 47–function minimization using a simplex procedure</span>.
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Applied Statistics</span> <span class="ltx_text ltx_bib_volume">20</span>, <span class="ltx_text ltx_bib_pages"> pp. 338–45</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://www.jstor.org/stable/2346772" title="" class="ltx_ref ltx_bib_external">Link</a></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://www.jstor.org/stable/2346772" title="" class="ltx_ref ltx_bib_external">Link</a></span>
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx2.p3" title="Maximum-likelihood estimation ‣ Fitting point-spread function models" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
 </span>
 </li>
 <li id="bib.bib33" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[7]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. S. Smith, N. Joseph, B. Rieger and K. A. Lidke</span><span class="ltx_text ltx_bib_year">(2010)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. S. Smith, N. Joseph, B. Rieger and K. A. Lidke</span><span class="ltx_text ltx_bib_year"> (2010)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Fast, single-molecule localization that achieves theoretically minimum uncertainty</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Fast, single-molecule localization that achieves theoretically minimum uncertainty</span>.
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Nature Methods</span> <span class="ltx_text ltx_bib_volume">7</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 373–5</span>.
 </span>
 <span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1038/nmeth.1449" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
-<span class="ltx_text issn ltx_bib_external">ISSN 1548-7105</span></span>.
+<span class="ltx_text issn ltx_bib_external">ISSN 1548-7105</span></span>
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx2.p2" title="Maximum-likelihood estimation ‣ Fitting point-spread function models" class="ltx_ref"><span class="ltx_text ltx_ref_title">Maximum-likelihood estimation</span></a>.
 </span>
@@ -314,7 +324,7 @@ the fitting radius should be an integer number close to 3*sigma.</p>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Mon Oct 27 10:48:41 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Sun Oct  4 04:52:23 2015 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

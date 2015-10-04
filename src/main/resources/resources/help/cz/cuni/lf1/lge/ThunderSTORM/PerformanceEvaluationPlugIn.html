@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title></title>
-<!--Generated on Mon Oct 27 10:49:20 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<title>Untitled Document</title>
+<!--Generated on Sun Oct  4 04:52:10 2015 by LaTeXML (version 0.8.1) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../LaTeXML.css" type="text/css">
@@ -14,7 +14,7 @@
 <div class="ltx_page_content">
 <div class="ltx_document">
 <div id="Sx1" class="ltx_section">
-<h1 class="ltx_title ltx_title_section">Performance evaluation</h1>
+<h2 class="ltx_title ltx_title_section">Performance evaluation</h2>
 
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">The performance of localization algorithms (for <a href="detectors/Detectors.html" title="" class="ltx_ref">approximate</a>
@@ -34,7 +34,7 @@ in various data formats, thus the performance can also be evaluated
 for other SMLM localization software.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Counting localized and missed molecules</h2>
+<h3 class="ltx_title ltx_title_subsection">Counting localized and missed molecules</h3>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
 <p class="ltx_p">The process of performance evaluation starts by pairing the localized
@@ -49,34 +49,34 @@ which were not associated with the localized molecules are counted
 as FNs. With a growing density of molecules it becomes more important
 how the algorithm performs the matching. To solve the problem of finding
 the correct matching between localized molecules and the ground-truth
-data, the Gale-Shapley algorithm <cite class="ltx_cite">[<a href="#bib.bib8" title="College admissions and the stability of marriage" class="ltx_ref">1</a>]</cite> is used. KD-trees
-<cite class="ltx_cite">[<a href="#bib.bib20" title="The Art Of Computer Programming" class="ltx_ref">2</a>]</cite> are employed for an effective implementation.</p>
+data, the Gale-Shapley algorithm <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib8" title="College admissions and the stability of marriage" class="ltx_ref">1</a>]</cite> is used. KD-trees
+<cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib20" title="The Art Of Computer Programming" class="ltx_ref">2</a>]</cite> are employed for an effective implementation.</p>
 </div>
 </div>
 <div id="Sx1.SSx2" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Precision and recall</h2>
+<h3 class="ltx_title ltx_title_subsection">Precision and recall</h3>
 
 <div id="Sx1.SSx2.p1" class="ltx_para">
 <p class="ltx_p">Statistical measures related to the number of correctly or incorrectly
-detected molecules, or missed molecules, are the recall <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi26.png" width="13" height="12" alt="r"> (also
-called sensitivity) and the precision <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi7.png" width="13" height="15" alt="p"> (also called positive predictive
-value) <cite class="ltx_cite">[<a href="#bib.bib37" title="Introduction to Data Mining" class="ltx_ref">4</a>, <a href="#bib.bib40" title="Real-time computation of subdiffraction-resolution fluorescence images" class="ltx_ref">5</a>, <a href="#bib.bib18" title="Minimizing detection errors in single molecule localization microscopy" class="ltx_ref">3</a>]</cite>. Their definitions
+detected molecules, or missed molecules, are the recall <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="15" height="14" alt="r"> (also
+called sensitivity) and the precision <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-7px" src="mi/mi26.png" width="16" height="19" alt="p"> (also called positive predictive
+value) <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib37" title="Introduction to Data Mining" class="ltx_ref">4</a>, <a href="#bib.bib40" title="Real-time computation of subdiffraction-resolution fluorescence images" class="ltx_ref">5</a>, <a href="#bib.bib18" title="Minimizing detection errors in single molecule localization microscopy" class="ltx_ref">3</a>]</cite>. Their definitions
 are given by</p>
-<table id="Sx1.EGx1" class="ltx_equationgroup ltx_eqn_eqnarray">
+<table id="Sx1.EGx1" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
 
-<tr id="Sx1.Ex1" class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_td ltx_align_right"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi44.png" width="13" height="12" alt="\displaystyle r"></td>
-<td class="ltx_td ltx_align_center"><img id="Sx1.Ex1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi8.png" width="18" height="11" alt="\displaystyle="></td>
-<td class="ltx_td ltx_align_left"><img id="Sx1.Ex1.m3" class="ltx_Math" style="vertical-align:-16px" src="mi/mi39.png" width="87" height="41" alt="\displaystyle\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FN}}\,,"></td>
-<td class="ltx_eqn_pad"></td>
+<tr id="Sx1.Ex1" class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi34.png" width="15" height="14" alt="\displaystyle r"></td>
+<td class="ltx_td ltx_align_center ltx_eqn_cell"><img id="Sx1.Ex1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi1.png" width="22" height="12" alt="\displaystyle="></td>
+<td class="ltx_td ltx_align_left ltx_eqn_cell"><img id="Sx1.Ex1.m3" class="ltx_Math" style="vertical-align:-20px" src="mi/mi29.png" width="114" height="53" alt="\displaystyle\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FN}}\,,"></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
 </tr>
-<tr id="Sx1.Ex2" class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_td ltx_align_right"><img id="Sx1.Ex2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi42.png" width="13" height="15" alt="\displaystyle p"></td>
-<td class="ltx_td ltx_align_center"><img id="Sx1.Ex2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi8.png" width="18" height="11" alt="\displaystyle="></td>
-<td class="ltx_td ltx_align_left"><img id="Sx1.Ex2.m3" class="ltx_Math" style="vertical-align:-16px" src="mi/mi40.png" width="86" height="41" alt="\displaystyle\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FP}}\,."></td>
-<td class="ltx_eqn_pad"></td>
+<tr id="Sx1.Ex2" class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><img id="Sx1.Ex2.m1" class="ltx_Math" style="vertical-align:-7px" src="mi/mi32.png" width="16" height="19" alt="\displaystyle p"></td>
+<td class="ltx_td ltx_align_center ltx_eqn_cell"><img id="Sx1.Ex2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi1.png" width="22" height="12" alt="\displaystyle="></td>
+<td class="ltx_td ltx_align_left ltx_eqn_cell"><img id="Sx1.Ex2.m3" class="ltx_Math" style="vertical-align:-20px" src="mi/mi30.png" width="112" height="53" alt="\displaystyle\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FP}}\,."></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
 </tr>
 </table>
 <p class="ltx_p">Recall measures the fraction of correctly identified molecules, and
@@ -86,55 +86,55 @@ for values of recall and precision both equal to 1.0.</p>
 </div>
 </div>
 <div id="Sx1.SSx3" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">F1 score</h2>
+<h3 class="ltx_title ltx_title_subsection">F1 score</h3>
 
 <div id="Sx1.SSx3.p1" class="ltx_para">
 <p class="ltx_p">For purposes of comparison between multiple algorithms, it is convenient
 to combine precision and recall into a single measure of performance
 with some trade-off between both values. A traditional method for
-this applies the <img id="Sx1.SSx3.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi28.png" width="23" height="18" alt="F_{1}"> score <cite class="ltx_cite">[<a href="#bib.bib37" title="Introduction to Data Mining" class="ltx_ref">4</a>, <a href="#bib.bib18" title="Minimizing detection errors in single molecule localization microscopy" class="ltx_ref">3</a>]</cite>
+this applies the <img id="Sx1.SSx3.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi35.png" width="30" height="23" alt="F_{1}"> score <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib37" title="Introduction to Data Mining" class="ltx_ref">4</a>, <a href="#bib.bib18" title="Minimizing detection errors in single molecule localization microscopy" class="ltx_ref">3</a>]</cite>
 defined by
 </p>
-<table id="Sx1.Ex3" class="ltx_equation">
+<table id="Sx1.Ex3" class="ltx_equation ltx_eqn_table">
 
-<tr class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.Ex3.m1" class="ltx_Math" style="vertical-align:-18px" src="mi/mi37.png" width="98" height="43" alt="F_{1}=\frac{2pr}{p+r}\,."></td>
-<td class="ltx_eqn_pad"></td>
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.Ex3.m1" class="ltx_Math" style="vertical-align:-22px" src="mi/mi27.png" width="128" height="55" alt="F_{1}=\frac{2pr}{p+r}\,."></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
 </tr>
 </table>
-<p class="ltx_p">Values of the <img id="Sx1.SSx3.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi28.png" width="23" height="18" alt="F_{1}"> score close to zero indicate both bad recall
+<p class="ltx_p">Values of the <img id="Sx1.SSx3.p1.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi35.png" width="30" height="23" alt="F_{1}"> score close to zero indicate both bad recall
 and precision while values approaching 1.0 signify a good ratio between
 recall and precision.</p>
 </div>
 </div>
 <div id="Sx1.SSx4" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">Jaccard index</h2>
+<h3 class="ltx_title ltx_title_subsection">Jaccard index</h3>
 
 <div id="Sx1.SSx4.p1" class="ltx_para">
 <p class="ltx_p">Another measure suitable for comparing similarity and diversity of
-sets of samples is the Jaccard index <cite class="ltx_cite">[<a href="#bib.bib37" title="Introduction to Data Mining" class="ltx_ref">4</a>]</cite> defined
+sets of samples is the Jaccard index <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib37" title="Introduction to Data Mining" class="ltx_ref">4</a>]</cite> defined
 by the formula</p>
-<table id="Sx1.Ex4" class="ltx_equation">
+<table id="Sx1.Ex4" class="ltx_equation ltx_eqn_table">
 
-<tr class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.Ex4.m1" class="ltx_Math" style="vertical-align:-19px" src="mi/mi38.png" width="107" height="45" alt="J=\frac{\left|\mathcal{A}\cap\mathcal{B}\right|}{\left|\mathcal{A}\cup\mathcal%
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.Ex4.m1" class="ltx_Math" style="vertical-align:-24px" src="mi/mi28.png" width="140" height="59" alt="J=\frac{\left|\mathcal{A}\cap\mathcal{B}\right|}{\left|\mathcal{A}\cup\mathcal%
 {B}\right|}\,."></td>
-<td class="ltx_eqn_pad"></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
 </tr>
 </table>
-<p class="ltx_p">Here <img id="Sx1.SSx4.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi48.png" width="18" height="16" alt="\mathcal{A}"> is the set of ground-truth molecular positions,
-<img id="Sx1.SSx4.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi49.png" width="16" height="16" alt="\mathcal{B}"> is the set of all molecular positions localized by
-processing the data, intersection <img id="Sx1.SSx4.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi46.png" width="108" height="21" alt="\left|\mathcal{A}\cap\mathcal{B}\right|=\mathrm{TP}">
-gives the number of true positive detections, union <img id="Sx1.SSx4.p1.m4" class="ltx_Math" style="vertical-align:-6px" src="mi/mi47.png" width="199" height="21" alt="\left|\mathcal{A}\cup\mathcal{B}\right|=\mathrm{TP}+\mathrm{FP}+\mathrm{FN}">,
-and <img id="Sx1.SSx4.p1.m5" class="ltx_Math" style="vertical-align:-6px" src="mi/mi45.png" width="19" height="21" alt="\left|\cdot\right|"> denotes the size of the set. The Jaccard
+<p class="ltx_p">Here <img id="Sx1.SSx4.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi39.png" width="23" height="19" alt="\mathcal{A}"> is the set of ground-truth molecular positions,
+<img id="Sx1.SSx4.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi40.png" width="20" height="19" alt="\mathcal{B}"> is the set of all molecular positions localized by
+processing the data, intersection <img id="Sx1.SSx4.p1.m3" class="ltx_Math" style="vertical-align:-8px" src="mi/mi37.png" width="141" height="27" alt="\left|\mathcal{A}\cap\mathcal{B}\right|=\mathrm{TP}">
+gives the number of true positive detections, union <img id="Sx1.SSx4.p1.m4" class="ltx_Math" style="vertical-align:-8px" src="mi/mi38.png" width="262" height="27" alt="\left|\mathcal{A}\cup\mathcal{B}\right|=\mathrm{TP}+\mathrm{FP}+\mathrm{FN}">,
+and <img id="Sx1.SSx4.p1.m5" class="ltx_Math" style="vertical-align:-8px" src="mi/mi36.png" width="24" height="27" alt="\left|\cdot\right|"> denotes the size of the set. The Jaccard
 index ranges from zero to one and a theoretical optimum is achieved
 for values of the Jaccard index equal to 1.0.</p>
 </div>
 </div>
 <div id="Sx1.SSx5" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">RMS distance</h2>
+<h3 class="ltx_title ltx_title_subsection">RMS distance</h3>
 
 <div id="Sx1.SSx5.p1" class="ltx_para">
 <p class="ltx_p">For all molecules identified as true positives, we also calculate
@@ -143,7 +143,7 @@ the molecules and their localizations.</p>
 </div>
 </div>
 <div id="Sx1.SSx6" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">See also</h2>
+<h3 class="ltx_title ltx_title_subsection">See also</h3>
 
 <div id="Sx1.SSx6.p1" class="ltx_para">
 <ul id="I1" class="ltx_itemize">
@@ -164,27 +164,27 @@ the molecules and their localizations.</p>
 </div>
 </div>
 <div id="bib" class="ltx_bibliography">
-<h1 class="ltx_title ltx_title_bibliography">References</h1>
+<h2 class="ltx_title ltx_title_bibliography">References</h2>
 
 <ul id="L1" class="ltx_biblist">
 <li id="bib.bib8" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">D. Gale and L. S. Shapley</span><span class="ltx_text ltx_bib_year">(1962)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">D. Gale and L. S. Shapley</span><span class="ltx_text ltx_bib_year"> (1962)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">College admissions and the stability of marriage</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">College admissions and the stability of marriage</span>.
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">The American Mathematical Monthly</span> <span class="ltx_text ltx_bib_volume">69</span> (<span class="ltx_text ltx_bib_number">1</span>), <span class="ltx_text ltx_bib_pages"> pp. 9–15</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.2307/2312726" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.2307/2312726" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx1.p1" title="Counting localized and missed molecules ‣ Performance evaluation" class="ltx_ref"><span class="ltx_text ltx_ref_title">Counting localized and missed molecules</span></a>.
 </span>
 </li>
 <li id="bib.bib20" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">D. E. Knuth</span><span class="ltx_text ltx_bib_year">(1997)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">D. E. Knuth</span><span class="ltx_text ltx_bib_year"> (1997)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">The Art Of Computer Programming</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">The Art Of Computer Programming</span>.
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_edition">3rd edition</span>, Vol. <span class="ltx_text ltx_bib_volume">1</span>,  <span class="ltx_text ltx_bib_publisher">Addison-Wesley</span>, <span class="ltx_text ltx_bib_place">Boston</span>.
 </span>
@@ -193,13 +193,13 @@ the molecules and their localizations.</p>
 </li>
 <li id="bib.bib18" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. Křížek, I. Raška and G. M. Hagen</span><span class="ltx_text ltx_bib_year">(2011)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. Křížek, I. Raška and G. M. Hagen</span><span class="ltx_text ltx_bib_year"> (2011)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Minimizing detection errors in single molecule localization microscopy</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Minimizing detection errors in single molecule localization microscopy</span>.
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Optics Express</span> <span class="ltx_text ltx_bib_volume">19</span> (<span class="ltx_text ltx_bib_number">4</span>), <span class="ltx_text ltx_bib_pages"> pp. 3226–35</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/OE.19.003226" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/OE.19.003226" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx2.p1" title="Precision and recall ‣ Performance evaluation" class="ltx_ref"><span class="ltx_text ltx_ref_title">Precision and recall</span></a>,
 <a href="#Sx1.SSx3.p1" title="F1 score ‣ Performance evaluation" class="ltx_ref"><span class="ltx_text ltx_ref_title">F1 score</span></a>.
@@ -207,13 +207,13 @@ the molecules and their localizations.</p>
 </li>
 <li id="bib.bib37" class="ltx_bibitem ltx_bib_book">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[4]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P.-N. Tan, M. Steinbach and V. Kumar</span><span class="ltx_text ltx_bib_year">(2005)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P.-N. Tan, M. Steinbach and V. Kumar</span><span class="ltx_text ltx_bib_year"> (2005)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Introduction to Data Mining</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Introduction to Data Mining</span>.
 </span>
 <span class="ltx_bibblock"> <span class="ltx_text ltx_bib_publisher">Addison-Wesley Longman Publishing Co.</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://www-users.cs.umn.edu/~kumar/dmbook/index.php" title="" class="ltx_ref ltx_bib_external">Link</a></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://www-users.cs.umn.edu/~kumar/dmbook/index.php" title="" class="ltx_ref ltx_bib_external">Link</a></span>
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx2.p1" title="Precision and recall ‣ Performance evaluation" class="ltx_ref"><span class="ltx_text ltx_ref_title">Precision and recall</span></a>,
 <a href="#Sx1.SSx3.p1" title="F1 score ‣ Performance evaluation" class="ltx_ref"><span class="ltx_text ltx_ref_title">F1 score</span></a>,
@@ -222,13 +222,13 @@ the molecules and their localizations.</p>
 </li>
 <li id="bib.bib40" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[5]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">S. Wolter, M. Schüttpelz, M. Tscherepanow, S. van de Linde, M. Heilemann and M. Sauer</span><span class="ltx_text ltx_bib_year">(2010)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">S. Wolter, M. Schüttpelz, M. Tscherepanow, S. van de Linde, M. Heilemann and M. Sauer</span><span class="ltx_text ltx_bib_year"> (2010)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Real-time computation of subdiffraction-resolution fluorescence images</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Real-time computation of subdiffraction-resolution fluorescence images</span>.
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Journal of Microscopy</span> <span class="ltx_text ltx_bib_volume">237</span> (<span class="ltx_text ltx_bib_number">1</span>), <span class="ltx_text ltx_bib_pages"> pp. 12–22</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1111/j.1365-2818.2009.03287.x" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1111/j.1365-2818.2009.03287.x" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
 </span>
 <span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.SSx2.p1" title="Precision and recall ‣ Performance evaluation" class="ltx_ref"><span class="ltx_text ltx_ref_title">Precision and recall</span></a>.
 </span>
@@ -238,7 +238,7 @@ the molecules and their localizations.</p>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Mon Oct 27 10:49:20 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Sun Oct  4 04:52:10 2015 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

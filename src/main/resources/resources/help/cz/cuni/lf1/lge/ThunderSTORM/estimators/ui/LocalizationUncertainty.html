@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title></title>
-<!--Generated on Mon Oct 27 10:48:49 2014 by LaTeXML (version 0.7.999_04) http://dlmf.nist.gov/LaTeXML/.-->
+<title>Untitled Document</title>
+<!--Generated on Sun Oct  4 04:52:18 2015 by LaTeXML (version 0.8.1) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
@@ -14,51 +14,137 @@
 <div class="ltx_page_content">
 <div class="ltx_document">
 <div id="Sx1" class="ltx_section">
-<h1 class="ltx_title ltx_title_section">Localization uncertainty</h1>
+<h2 class="ltx_title ltx_title_section">2D localization uncertainty</h2>
 
 <div id="Sx1.p1" class="ltx_para">
-<p class="ltx_p">Let <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi105.png" width="15" height="12" alt="\sigma"> be the standard deviation of a fitted Gaussian PSF in
-nm, <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi107.png" width="13" height="12" alt="a"> is the (backprojected) pixel size in nm, <img id="Sx1.p1.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi18.png" width="20" height="16" alt="N"> is the number
-of photons detected for a given molecule, and <img id="Sx1.p1.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi108.png" width="12" height="16" alt="b"> is the background
+<p class="ltx_p">Let <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi13.png" width="28" height="30" alt="\hat{\theta}_{\sigma}"> be the standard deviation of a fitted
+Gaussian PSF in <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi15.png" width="37" height="14" alt="\mathrm{nm}">, <img id="Sx1.p1.m3" class="ltx_Math" style="vertical-align:-2px" src="mi/mi17.png" width="17" height="14" alt="a"> is the backprojected pixel size
+in <img id="Sx1.p1.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi15.png" width="37" height="14" alt="\mathrm{nm}">, <img id="Sx1.p1.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi10.png" width="33" height="30" alt="\hat{\theta}_{N}"> is estimate of the number of
+photons detected for a given molecule, and <img id="Sx1.p1.m6" class="ltx_Math" style="vertical-align:-2px" src="mi/mi14.png" width="14" height="26" alt="\hat{b}"> is the background
 signal level in photons calculated as the standard deviation of the
-residuals between the raw data and the fitted PSF model <cite class="ltx_cite">[<a href="#bib.bib18" title="Minimizing detection errors in single molecule localization microscopy" class="ltx_ref">1</a>]</cite>.
-The uncertainty in the lateral position of a molecule can be approximated
-by the formula <cite class="ltx_cite">[<a href="#bib.bib38" title="Precise nanometer localization analysis for individual fluorescent probes" class="ltx_ref">3</a>]</cite></p>
-<table id="Sx1.E1" class="ltx_equation">
+residuals between the raw data and the fitted PSF model. The uncertainty
+of least-squares or maximum-likelihood estimate of lateral position
+of a molecule is estimated as</p>
+<table id="Sx1.E1" class="ltx_equation ltx_eqn_table">
 
-<tr class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi104.png" width="265" height="42" alt="\left\langle(\Delta x)^{2}\right\rangle=\frac{\sigma^{2}+a^{2}/12}{N}+\frac{8%
-\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,."></td>
-<td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-42px" src="mi/mi5.png" width="542" height="96" alt="\begin{array}[]{rcl}\left.(\Delta\hat{\theta}_{xy})^{2}\right|_{\mathrm{LSQ}}&amp;%
+=&amp;\frac{g\hat{\theta}_{\sigma^{2}}+a^{2}/12}{\hat{\theta}_{N}}\left(\frac{16}{%
+9}+4\tau\right)\,,\\
+\left.(\Delta\hat{\theta}_{xy})^{2}\right|_{\mathrm{MLE}}&amp;=&amp;\frac{g\hat{\theta%
+}_{\sigma^{2}}+a^{2}/12}{\hat{\theta}_{N}}\left(1+4\tau+\sqrt{\frac{2\tau}{1+4%
+\tau}}\right)\,,\end{array}"></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
+      ltx_eqn_eqno ltx_align_middle
+      ltx_align_right">(1)</span></td>
+</tr>
+</table>
+<p class="ltx_p">respectively. Here</p>
+<table id="Sx1.Ex1" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-25px" src="mi/mi7.png" width="295" height="65" alt="\tau=\frac{2\pi(\hat{b}^{2}+r)(\hat{\theta}_{\sigma}^{2}+a^{2}/12)}{a^{2}\hat{%
+\theta}_{N}}\,."></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
 </tr>
 </table>
 </div>
 <div id="Sx1.p2" class="ltx_para">
-<p class="ltx_p">The previous equation can be further adjusted to take EM gain of EMCCD
-cameras into account <cite class="ltx_cite">[<a href="#bib.bib27" title="Localization capability and limitation of electron-multiplying charge-coupled, scientific complementary metal-oxide semiconductor, and charge-coupled devices for superresolution imaging" class="ltx_ref">2</a>]</cite>, giving the expression</p>
-<table id="Sx1.E2" class="ltx_equation">
+<p class="ltx_p">The uncertainty for least-squares estimate is also known as the Thompson-Larson-Webb
+formula <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib38" title="Precise nanometer localization analysis for individual fluorescent probes" class="ltx_ref">3</a>]</cite>, which has been altered with the correction
+factor of <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-10px" src="mi/mi9.png" width="28" height="32" alt="\frac{16}{9}"> as suggested by <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib23" title="Optimized localization analysis for single-molecule tracking and super-resolution microscopy" class="ltx_ref">1</a>]</cite>.
+The uncertainty for maximum-likelihood was derived in <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">Rieger2014</span>]</cite>.
+Finally, the compensation for readout noise <img id="Sx1.p2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi27.png" width="15" height="14" alt="r"> and EM gain <img id="Sx1.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi22.png" width="16" height="19" alt="g">
+has been added by following <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib27" title="Localization capability and limitation of electron-multiplying charge-coupled, scientific complementary metal-oxide semiconductor, and charge-coupled devices for superresolution imaging" class="ltx_ref">2</a>]</cite>, who suggested that when
+using EMCCD cameras, the correction factors should be set to <img id="Sx1.p2.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi25.png" width="58" height="19" alt="r=0">,
+<img id="Sx1.p2.m5" class="ltx_Math" style="vertical-align:-7px" src="mi/mi21.png" width="59" height="24" alt="g=2"> and when using CCD or sCMOS cameras the readout noise in electron
+counts should be set to <img id="Sx1.p2.m6" class="ltx_Math" style="vertical-align:-7px" src="mi/mi26.png" width="101" height="24" alt="r=g=2">.</p>
+</div>
+</div>
+<div id="Sx2" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">3D localization uncertainty</h2>
 
-<tr class="ltx_equation ltx_align_baseline">
-<td class="ltx_eqn_pad"></td>
-<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-14px" src="mi/mi103.png" width="274" height="42" alt="\left\langle(\Delta x)^{2}\right\rangle=\frac{2\sigma^{2}+a^{2}/12}{N}+\frac{8%
-\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,."></td>
-<td class="ltx_eqn_pad"></td>
-<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
+<div id="Sx2.p1" class="ltx_para">
+<p class="ltx_p">The lateral uncertainty is calculated same as in the <a href="#Sx1.E1" title="(1) ‣ 2D localization uncertainty" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>,
+but <img id="Sx2.p1.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi16.png" width="17" height="14" alt="\tau"> differs because of the axial defocus (PSF spreads and
+is never focused in both planes simultaneously, thus the uncertainty
+is worse). This has been derived in <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">Rieger2014</span>]</cite> as</p>
+<table id="Sx2.Ex2" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx2.Ex2.m1" class="ltx_Math" style="vertical-align:-25px" src="mi/mi6.png" width="446" height="65" alt="\tau=\frac{2\pi(\hat{b}^{2}+r)(\hat{\theta}_{\sigma_{1}}\hat{\theta}_{\sigma_{%
+2}}(1+l^{2}/d^{2})+a^{2}/12)}{a^{2}\hat{\theta}_{N}}\,."></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
 </tr>
 </table>
 </div>
-<div id="Sx1.p3" class="ltx_para">
-<p class="ltx_p">In the 3D case, the localization uncertainty of molecular positions
-in the lateral direction is determined according to Equations (<a href="#Sx1.E2" title="(2) ‣ Localization uncertainty" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>)
-or (<a href="#Sx1.E1" title="(1) ‣ Localization uncertainty" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>), where we use <img id="Sx1.p3.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi106.png" width="151" height="23" alt="\sigma^{2}=\sigma_{1}\left(\theta_{z}\right)\sigma_{2}\left(\theta_{z}\right)">.
-In the axial direction, we use a constant, user-specified value.</p>
-</div>
-<div id="Sx1.SSx1" class="ltx_subsection">
-<h2 class="ltx_title ltx_title_subsection">See also</h2>
+<div id="Sx2.p2" class="ltx_para">
+<p class="ltx_p">Since the axial position is estimated from <img id="Sx2.p2.m1" class="ltx_Math" style="vertical-align:-8px" src="mi/mi11.png" width="36" height="32" alt="\hat{\theta}_{\sigma_{1}}">
+and <img id="Sx2.p2.m2" class="ltx_Math" style="vertical-align:-8px" src="mi/mi12.png" width="36" height="32" alt="\hat{\theta}_{\sigma_{2}}">, the axial uncertainty is calculated
+from uncertainty of these parameters</p>
+<table id="Sx2.E2" class="ltx_equation ltx_eqn_table">
 
-<div id="Sx1.SSx1.p1" class="ltx_para">
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx2.E2.m1" class="ltx_Math" style="vertical-align:-51px" src="mi/mi4.png" width="540" height="114" alt="\begin{array}[]{rcl}\left.(\Delta\hat{\theta}_{\sigma_{j}})^{2}\right|_{%
+\mathrm{LSQ}}&amp;=&amp;\frac{g\hat{\theta}_{\sigma_{j}^{2}}+a^{2}/12}{\hat{\theta}_{N%
+}}\left(1+8\tau\right)\,,\\
+\left.(\Delta\hat{\theta}_{\sigma_{j}})^{2}\right|_{\mathrm{MLE}}&amp;=&amp;\frac{g%
+\hat{\theta}_{\sigma_{j}^{2}}+a^{2}/12}{\hat{\theta}_{N}}\left(1+8\tau+\sqrt{%
+\frac{9\tau}{1+4\tau}}\right)\,,\end{array}"></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
+      ltx_eqn_eqno ltx_align_middle
+      ltx_align_right">(2)</span></td>
+</tr>
+</table>
+<p class="ltx_p">where <img id="Sx2.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi23.png" width="15" height="24" alt="j"> can be substituted to calculate uncertainty of <img id="Sx2.p2.m4" class="ltx_Math" style="vertical-align:-8px" src="mi/mi11.png" width="36" height="32" alt="\hat{\theta}_{\sigma_{1}}">
+and <img id="Sx2.p2.m5" class="ltx_Math" style="vertical-align:-8px" src="mi/mi12.png" width="36" height="32" alt="\hat{\theta}_{\sigma_{2}}">. Then from error propagation follows</p>
+<table id="Sx2.EGx1" class="ltx_equationgroup ltx_eqn_gather ltx_eqn_table">
+
+<tr id="Sx2.E3" class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx2.E3.m1" class="ltx_Math" style="vertical-align:-28px" src="mi/mi3.png" width="227" height="68" alt="\displaystyle F^{2}=\frac{4l^{2}\hat{\theta}_{z}^{2}}{(l^{2}+d^{2}+\hat{\theta%
+}_{z}^{2})^{2}}\,,"></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
+      ltx_eqn_eqno ltx_align_middle
+      ltx_align_right">(3)</span></td>
+</tr>
+<tr id="Sx2.E4" class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx2.E4.m1" class="ltx_Math" style="vertical-align:-38px" src="mi/mi1.png" width="474" height="88" alt="\displaystyle(\Delta F)^{2}=(1-F^{2})\left[\left(\frac{\Delta\hat{\theta}_{%
+\sigma_{1}}}{\hat{\theta}_{\sigma_{1}}}\right)^{2}+\left(\frac{\Delta\hat{%
+\theta}_{\sigma_{2}}}{\hat{\theta}_{\sigma_{2}}}\right)^{2}\right]\,,"></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
+      ltx_eqn_eqno ltx_align_middle
+      ltx_align_right">(4)</span></td>
+</tr>
+<tr id="Sx2.E5" class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><img id="Sx2.E5.m1" class="ltx_Math" style="vertical-align:-28px" src="mi/mi2.png" width="364" height="68" alt="\displaystyle(\Delta\hat{\theta}_{z})^{2}=(\Delta F)^{2}\frac{(l^{2}+d^{2}+%
+\hat{\theta}_{z}^{2})^{4}}{4l^{2}(l^{2}+d^{2}-\hat{\theta}_{z}^{2})^{2}}\,,"></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
+      ltx_eqn_eqno ltx_align_middle
+      ltx_align_right">(5)</span></td>
+</tr>
+</table>
+<p class="ltx_p">where <img id="Sx2.p2.m6" class="ltx_Math" style="vertical-align:-2px" src="mi/mi8.png" width="23" height="20" alt="2l"> is the distance between focal planes given by the astigmatic
+lens and the geometry of the setup and <img id="Sx2.p2.m7" class="ltx_Math" style="vertical-align:-2px" src="mi/mi19.png" width="16" height="20" alt="d"> is a measure of focal
+depth. These quantities are already known during the 3D fitting process
+as <img id="Sx2.p2.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi24.png" width="94" height="26" alt="l^{2}\propto c_{1}c_{2}"> and <img id="Sx2.p2.m9" class="ltx_Math" style="vertical-align:-5px" src="mi/mi20.png" width="103" height="26" alt="d^{2}\propto d_{1}d_{2}">, where
+<img id="Sx2.p2.m10" class="ltx_Math" style="vertical-align:-7px" src="mi/mi18.png" width="121" height="25" alt="c_{1},c_{2},d_{1},d_{2}"> are parameters of the <a href="../../calibration/DefocusModels.html" title="" class="ltx_ref">defocus curves</a>.</p>
+</div>
+<div id="Sx2.SSx1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">See also</h3>
+
+<div id="Sx2.SSx1.p1" class="ltx_para">
 <ul id="I1" class="ltx_itemize">
 <li id="I1.i1" class="ltx_item" style="list-style-type:none;">
 <span class="ltx_tag ltx_tag_itemize">•</span> 
@@ -89,46 +175,46 @@ In the axial direction, we use a constant, user-specified value.</p>
 </div>
 </div>
 <div id="bib" class="ltx_bibliography">
-<h1 class="ltx_title ltx_title_bibliography">References</h1>
+<h2 class="ltx_title ltx_title_bibliography">References</h2>
 
 <ul id="L1" class="ltx_biblist">
-<li id="bib.bib18" class="ltx_bibitem ltx_bib_article">
+<li id="bib.bib23" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. Křížek, I. Raška and G. M. Hagen</span><span class="ltx_text ltx_bib_year">(2011)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">K. I. Mortensen, L. S. Churchman, J. A. Spudich and H. Flyvbjerg</span><span class="ltx_text ltx_bib_year"> (2010)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Minimizing detection errors in single molecule localization microscopy</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Optimized localization analysis for single-molecule tracking and super-resolution microscopy</span>.
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Optics Express</span> <span class="ltx_text ltx_bib_volume">19</span> (<span class="ltx_text ltx_bib_number">4</span>), <span class="ltx_text ltx_bib_pages"> pp. 3226–35</span>.
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Nature Methods</span> <span class="ltx_text ltx_bib_volume">7</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 377–381</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1364/OE.19.003226" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1038/nmeth.1447" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
 </span>
-<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Localization uncertainty" class="ltx_ref"><span class="ltx_text ltx_ref_title">Localization uncertainty</span></a>.
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p2" title="2D localization uncertainty" class="ltx_ref"><span class="ltx_text ltx_ref_title">2D localization uncertainty</span></a>.
 </span>
 </li>
 <li id="bib.bib27" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">T. Quan, S. Zeng and Z.-L. Huang</span><span class="ltx_text ltx_bib_year">(2010)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">T. Quan, S. Zeng and Z.-L. Huang</span><span class="ltx_text ltx_bib_year"> (2010)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Localization capability and limitation of electron-multiplying charge-coupled, scientific complementary metal-oxide semiconductor, and charge-coupled devices for superresolution imaging</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Localization capability and limitation of electron-multiplying charge-coupled, scientific complementary metal-oxide semiconductor, and charge-coupled devices for superresolution imaging</span>.
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Journal of Biomedical Optics</span> <span class="ltx_text ltx_bib_volume">15</span> (<span class="ltx_text ltx_bib_number">6</span>), <span class="ltx_text ltx_bib_pages"> pp. 066005</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1117/1.3505017" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1117/1.3505017" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
 </span>
-<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p2" title="Localization uncertainty" class="ltx_ref"><span class="ltx_text ltx_ref_title">Localization uncertainty</span></a>.
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p2" title="2D localization uncertainty" class="ltx_ref"><span class="ltx_text ltx_ref_title">2D localization uncertainty</span></a>.
 </span>
 </li>
 <li id="bib.bib38" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[3]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. E. Thompson, D. R. Larson and W. W. Webb</span><span class="ltx_text ltx_bib_year">(2002)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">R. E. Thompson, D. R. Larson and W. W. Webb</span><span class="ltx_text ltx_bib_year"> (2002)</span>
 </span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Precise nanometer localization analysis for individual fluorescent probes</span>,
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Precise nanometer localization analysis for individual fluorescent probes</span>.
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Biophysical Journal</span> <span class="ltx_text ltx_bib_volume">82</span> (<span class="ltx_text ltx_bib_number">5</span>), <span class="ltx_text ltx_bib_pages"> pp. 2775–83</span>.
 </span>
-<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1016/S0006-3495(02)75618-X" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>.
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="http://dx.doi.org/10.1016/S0006-3495(02)75618-X" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
 </span>
-<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p1" title="Localization uncertainty" class="ltx_ref"><span class="ltx_text ltx_ref_title">Localization uncertainty</span></a>.
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#Sx1.p2" title="2D localization uncertainty" class="ltx_ref"><span class="ltx_text ltx_ref_title">2D localization uncertainty</span></a>.
 </span>
 </li>
 </ul>
@@ -136,7 +222,7 @@ In the axial direction, we use a constant, user-specified value.</p>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Mon Oct 27 10:48:49 2014 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Sun Oct  4 04:52:18 2015 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

@@ -1,5 +1,5 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
 \begin_document
 \begin_header
 \textclass article
@@ -15,13 +15,13 @@
 \font_roman default
 \font_sans default
 \font_typewriter default
+\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
-
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -32,15 +32,24 @@
 \use_hyperref false
 \papersize default
 \use_geometry false
-\use_amsmath 1
-\use_esint 1
-\use_mhchem 1
-\use_mathdots 1
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
 \cite_engine basic
+\cite_engine_type default
+\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
+\justification true
 \use_refstyle 1
 \index Index
 \shortcut idx
@@ -64,68 +73,152 @@
 \begin_body
 
 \begin_layout Section*
-Localization uncertainty
+2D localization uncertainty
 \end_layout
 
 \begin_layout Standard
 Let 
-\begin_inset Formula $\sigma$
+\begin_inset Formula $\hat{\theta}_{\sigma}$
 \end_inset
 
- be the standard deviation of a fitted Gaussian PSF in nm, 
+ be the standard deviation of a fitted Gaussian PSF in 
+\begin_inset Formula $\mathrm{nm}$
+\end_inset
+
+, 
 \begin_inset Formula $a$
 \end_inset
 
- is the (backprojected) pixel size in nm, 
-\begin_inset Formula $N$
+ is the backprojected pixel size in 
+\begin_inset Formula $\mathrm{nm}$
 \end_inset
 
- is the number of photons detected for a given molecule, and 
-\begin_inset Formula $b$
+, 
+\begin_inset Formula $\hat{\theta}_{N}$
+\end_inset
+
+ is estimate of the number of photons detected for a given molecule, and
+ 
+\begin_inset Formula $\hat{b}$
 \end_inset
 
  is the background signal level in photons calculated as the standard deviation
- of the residuals between the raw data and the fitted PSF model 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Krizek2011"
+ of the residuals between the raw data and the fitted PSF model.
+ The uncertainty of least-squares or maximum-likelihood estimate of lateral
+ position of a molecule is estimated as 
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rcl}
+\left.(\Delta\hat{\theta}_{xy})^{2}\right|_{\mathrm{LSQ}} & = & \frac{g\hat{\theta}_{\sigma^{2}}+a^{2}/12}{\hat{\theta}_{N}}\left(\frac{16}{9}+4\tau\right)\,,\\
+\left.(\Delta\hat{\theta}_{xy})^{2}\right|_{\mathrm{MLE}} & = & \frac{g\hat{\theta}_{\sigma^{2}}+a^{2}/12}{\hat{\theta}_{N}}\left(1+4\tau+\sqrt{\frac{2\tau}{1+4\tau}}\right)\,,
+\end{array}\label{eq:2d-uncertainty-xy}
+\end{equation}
 
 \end_inset
 
-.
- The uncertainty in the lateral position of a molecule can be approximated
- by the formula 
+respectively.
+ Here 
+\begin_inset Formula 
+\[
+\tau=\frac{2\pi(\hat{b}^{2}+r)(\hat{\theta}_{\sigma}^{2}+a^{2}/12)}{a^{2}\hat{\theta}_{N}}\,.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The uncertainty for least-squares estimate is also known as the Thompson-Larson-
+Webb formula 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Thompson2002"
 
 \end_inset
 
+, which has been altered with the correction factor of 
+\begin_inset Formula $\frac{16}{9}$
+\end_inset
 
-\begin_inset Formula 
-\begin{equation}
-\left\langle (\Delta x)^{2}\right\rangle =\frac{\sigma^{2}+a^{2}/12}{N}+\frac{8\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,.\label{eq:thompson_ccd}
-\end{equation}
+ as suggested by 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Mortensen-NM-2010"
 
 \end_inset
 
+.
+ The uncertainty for maximum-likelihood was derived in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rieger2014"
 
-\end_layout
+\end_inset
 
-\begin_layout Standard
-The previous equation can be further adjusted to take EM gain of EMCCD cameras
- into account 
+.
+ Finally, the compensation for readout noise 
+\begin_inset Formula $r$
+\end_inset
+
+ and EM gain 
+\begin_inset Formula $g$
+\end_inset
+
+ has been added by following 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Quan2010"
 
 \end_inset
 
-, giving the expression
+, who suggested that when using EMCCD cameras, the correction factors should
+ be set to 
+\begin_inset Formula $r=0$
+\end_inset
+
+, 
+\begin_inset Formula $g=2$
+\end_inset
+
+ and when using CCD or sCMOS cameras the readout noise in electron counts
+ should be set to 
+\begin_inset Formula $r=g=2$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section*
+3D localization uncertainty
+\end_layout
+
+\begin_layout Standard
+The lateral uncertainty is calculated same as in the 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2d-uncertainty-xy"
+
+\end_inset
+
+, but 
+\begin_inset Formula $\tau$
+\end_inset
+
+ differs because of the axial defocus (PSF spreads and is never focused
+ in both planes simultaneously, thus the uncertainty is worse).
+ This has been derived in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rieger2014"
+
+\end_inset
+
+ as 
 \begin_inset Formula 
-\begin{equation}
-\left\langle (\Delta x)^{2}\right\rangle =\frac{2\sigma^{2}+a^{2}/12}{N}+\frac{8\pi\sigma^{4}b^{2}}{a^{2}N^{2}}\,.\label{eq:thompson_emccd}
-\end{equation}
+\[
+\tau=\frac{2\pi(\hat{b}^{2}+r)(\hat{\theta}_{\sigma_{1}}\hat{\theta}_{\sigma_{2}}(1+l^{2}/d^{2})+a^{2}/12)}{a^{2}\hat{\theta}_{N}}\,.
+\]
 
 \end_inset
 
@@ -133,27 +226,85 @@ key "Quan2010"
 \end_layout
 
 \begin_layout Standard
-In the 3D case, the localization uncertainty of molecular positions in the
- lateral direction is determined according to Equations 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:thompson_emccd"
+Since the axial position is estimated from 
+\begin_inset Formula $\hat{\theta}_{\sigma_{1}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\theta}_{\sigma_{2}}$
+\end_inset
+
+, the axial uncertainty is calculated from uncertainty of these parameters
+ 
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rcl}
+\left.(\Delta\hat{\theta}_{\sigma_{j}})^{2}\right|_{\mathrm{LSQ}} & = & \frac{g\hat{\theta}_{\sigma_{j}^{2}}+a^{2}/12}{\hat{\theta}_{N}}\left(1+8\tau\right)\,,\\
+\left.(\Delta\hat{\theta}_{\sigma_{j}})^{2}\right|_{\mathrm{MLE}} & = & \frac{g\hat{\theta}_{\sigma_{j}^{2}}+a^{2}/12}{\hat{\theta}_{N}}\left(1+8\tau+\sqrt{\frac{9\tau}{1+4\tau}}\right)\,,
+\end{array}\label{eq:3d-uncertainty-sigma}
+\end{equation}
 
 \end_inset
 
- or 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:thompson_ccd"
-
+where 
+\begin_inset Formula $j$
 \end_inset
 
-, where we use 
-\begin_inset Formula $\sigma^{2}=\sigma_{1}\left(\theta_{z}\right)\sigma_{2}\left(\theta_{z}\right)$
+ can be substituted to calculate uncertainty of 
+\begin_inset Formula $\hat{\theta}_{\sigma_{1}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\theta}_{\sigma_{2}}$
 \end_inset
 
 .
- In the axial direction, we use a constant, user-specified value.
+ Then from error propagation follows 
+\begin_inset Formula 
+\begin{gather}
+F^{2}=\frac{4l^{2}\hat{\theta}_{z}^{2}}{(l^{2}+d^{2}+\hat{\theta}_{z}^{2})^{2}}\,,\\
+(\Delta F)^{2}=(1-F^{2})\left[\left(\frac{\Delta\hat{\theta}_{\sigma_{1}}}{\hat{\theta}_{\sigma_{1}}}\right)^{2}+\left(\frac{\Delta\hat{\theta}_{\sigma_{2}}}{\hat{\theta}_{\sigma_{2}}}\right)^{2}\right]\,,\\
+(\Delta\hat{\theta}_{z})^{2}=(\Delta F)^{2}\frac{(l^{2}+d^{2}+\hat{\theta}_{z}^{2})^{4}}{4l^{2}(l^{2}+d^{2}-\hat{\theta}_{z}^{2})^{2}}\,,
+\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $2l$
+\end_inset
+
+ is the distance between focal planes given by the astigmatic lens and the
+ geometry of the setup and 
+\begin_inset Formula $d$
+\end_inset
+
+ is a measure of focal depth.
+ These quantities are already known during the 3D fitting process as 
+\begin_inset Formula $l^{2}\propto c_{1}c_{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $d^{2}\propto d_{1}d_{2}$
+\end_inset
+
+, where 
+\begin_inset Formula $c_{1},c_{2},d_{1},d_{2}$
+\end_inset
+
+ are parameters of the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../../calibration/DefocusModels.html}{defocus curves}
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection*

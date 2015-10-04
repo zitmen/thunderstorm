@@ -4,7 +4,7 @@
 
     <groupId>cz.cuni.lf1.lge</groupId>
     <artifactId>ThunderSTORM</artifactId>
-    <version>dev-2015-08-02-b1</version>
+    <version>dev-2015-10-03-b1</version>
     <packaging>jar</packaging>
 
     <name>ThunderSTORM</name>
@@ -14,11 +14,11 @@
     <properties>
         <skipTests>true</skipTests>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <imagej.path>c:\Program Files\ImageJ</imagej.path>
+        <imagej.path>~/.imagej</imagej.path>
         <imagej1.version>1.49s</imagej1.version>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
-        <lyx.path>/cygdrive/c/Program Files (x86)/Lyx 2.0/bin/LyX.exe</lyx.path>
+        <lyx.path>lyx</lyx.path>
         <help.dir>${basedir}/src/main/resources/resources/help</help.dir>
     </properties>
 
@@ -168,7 +168,7 @@
                             <skip>${skipHelpCompilation}</skip>
                             <workingDirectory>${help.dir}</workingDirectory>
 <!-- Note that the BAT file contains the path to cygwin installation. -->
-                            <executable>compile-html-help.bat</executable>
+                            <executable>./compile-html-help.sh</executable>
                             <commandlineArgs>"${lyx.path}"</commandlineArgs>
                         </configuration>
 <!-- Unix-based systems (TODO: create profiles)
