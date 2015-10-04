@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>Untitled Document</title>
-<!--Generated on Sun Oct  4 04:52:35 2015 by LaTeXML (version 0.8.1) http://dlmf.nist.gov/LaTeXML/.-->
+<title></title>
+<!--Generated on Sun Oct  4 04:18:05 2015 by LaTeXML (version 0.8.0) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
@@ -14,44 +14,44 @@
 <div class="ltx_page_content">
 <div class="ltx_document">
 <div id="Sx1" class="ltx_section">
-<h2 class="ltx_title ltx_title_section">Difference-of-Gaussians filter</h2>
+<h1 class="ltx_title ltx_title_section">Difference-of-Gaussians filter</h1>
 
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">The difference-of-Gaussians filter is a feature enhancement algorithm
 which acts as a band-pass filter. The <a href="Convolution.html" title="" class="ltx_ref">convolution kernel</a>
 is formed as the difference of two Gaussian kernels
 </p>
-<table id="Sx1.Ex1" class="ltx_equation ltx_eqn_table">
+<table id="Sx1.Ex1" class="ltx_equation">
 
-<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
-<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
-<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-8px" src="mi/mi52.png" width="357" height="27" alt="K_{\mathrm{DoG}}\left(x,y\mid\sigma_{1},\sigma_{2}\right)=K_{\mathrm{G1}}-K_{%
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.Ex1.m1" class="ltx_Math" style="vertical-align:-6px" src="mi/mi50.png" width="271" height="21" alt="K_{\mathrm{DoG}}\left(x,y\mid\sigma_{1},\sigma_{2}\right)=K_{\mathrm{G1}}-K_{%
 \mathrm{G2}}\,,"></td>
-<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td class="ltx_eqn_pad"></td>
 </tr>
 </table>
-<p class="ltx_p">where the standard deviation <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi59.png" width="83" height="20" alt="\sigma_{2}&gt;\sigma_{1}">, and the kernels
-are given by <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-8px" src="mi/mi54.png" width="216" height="27" alt="K_{\mathrm{G1}}=K_{\mathrm{G}}\left(x,y\mid\sigma_{1}\right)">
-and <img id="Sx1.p1.m3" class="ltx_Math" style="vertical-align:-8px" src="mi/mi56.png" width="216" height="27" alt="K_{\mathrm{G2}}=K_{\mathrm{G}}\left(x,y\mid\sigma_{2}\right)">.
-The sizes for both kernels are computed as <img id="Sx1.p1.m4" class="ltx_Math" style="vertical-align:-8px" src="mi/mi61.png" width="154" height="27" alt="l=1+2\left\lceil 3\sigma_{2}\right\rceil">.
-The standard deviations <img id="Sx1.p1.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi58.png" width="28" height="18" alt="\sigma_{1}"> and <img id="Sx1.p1.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi60.png" width="28" height="18" alt="\sigma_{2}"> are user-specified
+<p class="ltx_p">where the standard deviation <img id="Sx1.p1.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi57.png" width="63" height="16" alt="\sigma_{2}&gt;\sigma_{1}">, and the kernels
+are given by <img id="Sx1.p1.m2" class="ltx_Math" style="vertical-align:-6px" src="mi/mi52.png" width="164" height="21" alt="K_{\mathrm{G1}}=K_{\mathrm{G}}\left(x,y\mid\sigma_{1}\right)">
+and <img id="Sx1.p1.m3" class="ltx_Math" style="vertical-align:-6px" src="mi/mi54.png" width="164" height="21" alt="K_{\mathrm{G2}}=K_{\mathrm{G}}\left(x,y\mid\sigma_{2}\right)">.
+The sizes for both kernels are computed as <img id="Sx1.p1.m4" class="ltx_Math" style="vertical-align:-6px" src="mi/mi59.png" width="118" height="21" alt="l=1+2\left\lceil 3\sigma_{2}\right\rceil">.
+The standard deviations <img id="Sx1.p1.m5" class="ltx_Math" style="vertical-align:-5px" src="mi/mi56.png" width="22" height="14" alt="\sigma_{1}"> and <img id="Sx1.p1.m6" class="ltx_Math" style="vertical-align:-5px" src="mi/mi58.png" width="22" height="14" alt="\sigma_{2}"> are user-specified
 parameters.</p>
 </div>
 <div id="Sx1.p2" class="ltx_para">
-<p class="ltx_p">Although the kernel <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi53.png" width="63" height="23" alt="K_{\mathrm{DoG}}"> is not separable, the filtered
+<p class="ltx_p">Although the kernel <img id="Sx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi51.png" width="48" height="18" alt="K_{\mathrm{DoG}}"> is not separable, the filtered
 image can be obtained by subtracting two images filtered with <a href="GaussianFilterUI.html" title="" class="ltx_ref">Gaussian kernels</a>
 having different standard deviations,</p>
-<table id="Sx1.Ex2" class="ltx_equation ltx_eqn_table">
+<table id="Sx1.Ex2" class="ltx_equation">
 
-<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
-<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
-<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.Ex2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi51.png" width="373" height="23" alt="F=I*K_{\mathrm{DoG}}=I*K_{\mathrm{G}1}-I*K_{\mathrm{G}2}\,."></td>
-<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.Ex2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi49.png" width="283" height="18" alt="F=I*K_{\mathrm{DoG}}=I*K_{\mathrm{G}1}-I*K_{\mathrm{G}2}\,."></td>
+<td class="ltx_eqn_pad"></td>
 </tr>
 </table>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
-<h3 class="ltx_title ltx_title_subsection">Threshold for approximate localization of molecules</h3>
+<h2 class="ltx_title ltx_title_subsection">Threshold for approximate localization of molecules</h2>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
 <p class="ltx_p">The <a href="../../detectors/Threshold.html" title="" class="ltx_ref">threshold</a> value can be
@@ -60,27 +60,27 @@ and operators with variables based on the current raw or filtered
 image. Variables provided by this filter are:
 </p>
 </div>
-<div id="Sx1.SSx1.p2" class="ltx_para ltx_noindent">
-<table class="ltx_tabular ltx_guessed_headers ltx_align_middle">
+<div id="Sx1.SSx1.p2" class="ltx_para">
+<table class="ltx_tabular ltx_align_middle">
 <thead class="ltx_thead">
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_th_row"><span class="ltx_text ltx_font_typewriter">DoG.I</span></th>
-<th class="ltx_td ltx_align_left ltx_th ltx_th_column">current raw input image</th>
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">DoG.I</span></th>
+<th class="ltx_td ltx_align_left">current raw input image</th>
 </tr>
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_th_row"><span class="ltx_text ltx_font_typewriter">DoG.F</span></th>
-<th class="ltx_td ltx_align_left ltx_th ltx_th_column">corresponding filtered image</th>
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">DoG.F</span></th>
+<th class="ltx_td ltx_align_left">corresponding filtered image</th>
 </tr>
 </thead>
 <tbody class="ltx_tbody">
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text ltx_font_typewriter">DoG.G1</span></th>
-<td class="ltx_td ltx_align_left">result of filtering only with <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi55.png" width="49" height="23" alt="K_{\mathrm{G1}}">
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">DoG.G1</span></th>
+<td class="ltx_td ltx_align_left">result of filtering only with <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi53.png" width="38" height="18" alt="K_{\mathrm{G1}}">
 </td>
 </tr>
 <tr class="ltx_tr">
-<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text ltx_font_typewriter">DoG.G2</span></th>
-<td class="ltx_td ltx_align_left">result of filtering only with <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi57.png" width="49" height="23" alt="K_{\mathrm{G2}}">
+<th class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_typewriter">DoG.G2</span></th>
+<td class="ltx_td ltx_align_left">result of filtering only with <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-5px" src="mi/mi55.png" width="38" height="18" alt="K_{\mathrm{G2}}">
 </td>
 </tr>
 </tbody>
@@ -88,7 +88,7 @@ image. Variables provided by this filter are:
 </div>
 </div>
 <div id="Sx1.SSx2" class="ltx_subsection">
-<h3 class="ltx_title ltx_title_subsection">See also</h3>
+<h2 class="ltx_title ltx_title_subsection">See also</h2>
 
 <div id="Sx1.SSx2.p1" class="ltx_para">
 <ul id="I1" class="ltx_itemize">
@@ -111,7 +111,7 @@ image. Variables provided by this filter are:
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Sun Oct  4 04:52:35 2015 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Sun Oct  4 04:18:05 2015 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

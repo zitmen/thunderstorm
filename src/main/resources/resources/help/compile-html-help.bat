@@ -6,4 +6,4 @@ set CWD=%CD%
 
 C:
 chdir C:\cygwin64\bin
-bash --login -i -c "set -o igncr; cd '%CWD%'; ./compile-html-help.sh "%1""
+bash --login -i -c "set -o igncr; export SHELLOPTS; cd '%CWD%'; ./compile-html-help.sh "%1""

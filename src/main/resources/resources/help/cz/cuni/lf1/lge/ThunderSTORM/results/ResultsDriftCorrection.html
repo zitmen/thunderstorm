@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>Untitled Document</title>
-<!--Generated on Sun Oct  4 04:52:02 2015 by LaTeXML (version 0.8.1) http://dlmf.nist.gov/LaTeXML/.-->
+<title></title>
+<!--Generated on Sun Oct  4 04:18:21 2015 by LaTeXML (version 0.8.0) http://dlmf.nist.gov/LaTeXML/.-->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../../../../../LaTeXML.css" type="text/css">
@@ -14,7 +14,7 @@
 <div class="ltx_page_content">
 <div class="ltx_document">
 <div id="Sx1" class="ltx_section">
-<h2 class="ltx_title ltx_title_section">Lateral drift correction</h2>
+<h1 class="ltx_title ltx_title_section">Lateral drift correction</h1>
 
 <div id="Sx1.p1" class="ltx_para">
 <p class="ltx_p">Long time-series data acquisitions usually suffer from sample drift.
@@ -28,7 +28,7 @@ can be applied to the whole dataset, or drift estimated from one channel
 can be applied to correct drift in another channel.</p>
 </div>
 <div id="Sx1.SSx1" class="ltx_subsection">
-<h3 class="ltx_title ltx_title_subsection">Fiducial markers</h3>
+<h2 class="ltx_title ltx_title_subsection">Fiducial markers</h2>
 
 <div id="Sx1.SSx1.p1" class="ltx_para">
 <p class="ltx_p">A common approach for correcting drift is performed by tracking fiducial
@@ -45,47 +45,43 @@ performed by the <a href="ResultsGrouping.html" title="" class="ltx_ref">merging
 <div id="Sx1.SSx1.p2" class="ltx_para">
 <p class="ltx_p">The sample drift is obtained by averaging the relative trajectories
 of all identified fiducial markers into a single trajectory. The sample
-drift at each frame <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-7px" src="mi/mi19.png" width="124" height="24" alt="t=1,\ldots,T">, is computed (for <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi21.png" width="18" height="14" alt="x"> and <img id="Sx1.SSx1.p2.m3" class="ltx_Math" style="vertical-align:-7px" src="mi/mi23.png" width="17" height="19" alt="y">)
+drift at each frame <img id="Sx1.SSx1.p2.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi10.png" width="95" height="19" alt="t=1,\ldots,T">, is computed (for <img id="Sx1.SSx1.p2.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi12.png" width="14" height="12" alt="x"> and <img id="Sx1.SSx1.p2.m3" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="13" height="15" alt="y">)
 according to the formula</p>
-<table id="Sx1.E1" class="ltx_equation ltx_eqn_table">
+<table id="Sx1.E1" class="ltx_equation">
 
-<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
-<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
-<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-32px" src="mi/mi11.png" width="242" height="76" alt="\overline{x}_{t}=\frac{1}{M}\sum_{i=1}^{M}\left(x_{i,t}-\theta_{i}\right)\,."></td>
-<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
-<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
-      ltx_eqn_eqno ltx_align_middle
-      ltx_align_right">(1)</span></td>
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.E1.m1" class="ltx_Math" style="vertical-align:-25px" src="mi/mi2.png" width="184" height="58" alt="\overline{x}_{t}=\frac{1}{M}\sum_{i=1}^{M}\left(x_{i,t}-\theta_{i}\right)\,."></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(1)</span></td>
 </tr>
 </table>
-<p class="ltx_p">Here <img id="Sx1.SSx1.p2.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi12.png" width="29" height="19" alt="M"> is the number of fiducial markers, <img id="Sx1.SSx1.p2.m5" class="ltx_Math" style="vertical-align:-9px" src="mi/mi22.png" width="38" height="21" alt="x_{i,t}"> is the absolute
-position of the <img id="Sx1.SSx1.p2.m6" class="ltx_Math" style="vertical-align:-2px" src="mi/mi16.png" width="12" height="19" alt="i">-th marker at frame <img id="Sx1.SSx1.p2.m7" class="ltx_Math" style="vertical-align:-2px" src="mi/mi20.png" width="13" height="18" alt="t">, <img id="Sx1.SSx1.p2.m8" class="ltx_Math" style="vertical-align:-7px" src="mi/mi15.png" width="132" height="24" alt="i=1,\ldots,M">, and
-<img id="Sx1.SSx1.p2.m9" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="23" height="24" alt="\theta_{i}"> is an unknown offset which has to be subtracted from
+<p class="ltx_p">Here <img id="Sx1.SSx1.p2.m4" class="ltx_Math" style="vertical-align:-2px" src="mi/mi3.png" width="23" height="16" alt="M"> is the number of fiducial markers, <img id="Sx1.SSx1.p2.m5" class="ltx_Math" style="vertical-align:-7px" src="mi/mi13.png" width="30" height="17" alt="x_{i,t}"> is the absolute
+position of the <img id="Sx1.SSx1.p2.m6" class="ltx_Math" style="vertical-align:-2px" src="mi/mi7.png" width="10" height="16" alt="i">-th marker at frame <img id="Sx1.SSx1.p2.m7" class="ltx_Math" style="vertical-align:-2px" src="mi/mi11.png" width="11" height="15" alt="t">, <img id="Sx1.SSx1.p2.m8" class="ltx_Math" style="vertical-align:-5px" src="mi/mi6.png" width="100" height="19" alt="i=1,\ldots,M">, and
+<img id="Sx1.SSx1.p2.m9" class="ltx_Math" style="vertical-align:-5px" src="mi/mi5.png" width="18" height="19" alt="\theta_{i}"> is an unknown offset which has to be subtracted from
 the absolute marker position to obtain the relative position.</p>
 </div>
 <div id="Sx1.SSx1.p3" class="ltx_para">
-<p class="ltx_p">The offset <img id="Sx1.SSx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi14.png" width="23" height="24" alt="\theta_{i}"> is estimated by least squares minimization
+<p class="ltx_p">The offset <img id="Sx1.SSx1.p3.m1" class="ltx_Math" style="vertical-align:-5px" src="mi/mi5.png" width="18" height="19" alt="\theta_{i}"> is estimated by least squares minimization
 of the sum of squared differences between the relative marker positions
 and the relative sample drift, summed over all markers and frames.
 The optimization is defined by the formula</p>
-<table id="Sx1.E2" class="ltx_equation ltx_eqn_table">
+<table id="Sx1.E2" class="ltx_equation">
 
-<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
-<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
-<td class="ltx_eqn_cell ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-32px" src="mi/mi10.png" width="427" height="76" alt="\hat{\boldsymbol{\theta}}=\operatorname*{arg\,min}_{\boldsymbol{\theta}=\left[%
-\theta_{1},\ldots,\theta_{M}\right]}\sum_{t=1}^{T}\sum_{i=1}^{M}\left(\left(x_%
-{i,t}-\theta_{i}\right)-\overline{x}_{t}\right)^{2}\,,"></td>
-<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
-<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation
-      ltx_eqn_eqno ltx_align_middle
-      ltx_align_right">(2)</span></td>
+<tr class="ltx_equation ltx_align_baseline">
+<td class="ltx_eqn_pad"></td>
+<td class="ltx_align_center"><img id="Sx1.E2.m1" class="ltx_Math" style="vertical-align:-25px" src="mi/mi1.png" width="323" height="58" alt="\hat{\boldsymbol{\theta}}=\argmin_{\boldsymbol{\theta}=\left[\theta_{1},\ldots%
+,\theta_{M}\right]}\sum_{t=1}^{T}\sum_{i=1}^{M}\left(\left(x_{i,t}-\theta_{i}%
+\right)-\overline{x}_{t}\right)^{2}\,,"></td>
+<td class="ltx_eqn_pad"></td>
+<td rowspan="1" class="ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation">(2)</span></td>
 </tr>
 </table>
-<p class="ltx_p">where <img id="Sx1.SSx1.p3.m2" class="ltx_Math" style="vertical-align:-17px" src="mi/mi13.png" width="176" height="46" alt="\hat{\boldsymbol{\theta}}=\left[\hat{\theta}_{1},\ldots,\hat{\theta}_{M}\right]">
+<p class="ltx_p">where <img id="Sx1.SSx1.p3.m2" class="ltx_Math" style="vertical-align:-14px" src="mi/mi4.png" width="134" height="35" alt="\hat{\boldsymbol{\theta}}=\left[\hat{\theta}_{1},\ldots,\hat{\theta}_{M}\right]">
 are the values of the estimated offset for each of the markers.</p>
 </div>
 <div id="Sx1.SSx1.p4" class="ltx_para">
-<p class="ltx_p">In reality, some of the points <img id="Sx1.SSx1.p4.m1" class="ltx_Math" style="vertical-align:-9px" src="mi/mi22.png" width="38" height="21" alt="x_{i,t}"> may be missing because the
+<p class="ltx_p">In reality, some of the points <img id="Sx1.SSx1.p4.m1" class="ltx_Math" style="vertical-align:-7px" src="mi/mi13.png" width="30" height="17" alt="x_{i,t}"> may be missing because the
 markers might not be localized in some frames. If this is the case,
 the relative sample drift in Equation (<a href="#Sx1.E1" title="(1) ‣ Fiducial markers ‣ Lateral drift correction" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>)
 is computed only from the corresponding number of fiducial markers.
@@ -94,7 +90,7 @@ in Equation (<a href="#Sx1.E2" title="(2) ‣ Fiducial markers ‣ Lateral drift
 </div>
 <div id="Sx1.SSx1.p5" class="ltx_para">
 <p class="ltx_p">The final drift trajectory is smoothed by robust locally weighted
-regression <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib5" title="Robust Locally Weighted Regression and Smoothing Scatterplots" class="ltx_ref">1</a>]</cite>. Users can specify the maximum merging
+regression <cite class="ltx_cite">[<a href="#bib.bib5" title="Robust Locally Weighted Regression and Smoothing Scatterplots" class="ltx_ref">1</a>]</cite>. Users can specify the maximum merging
 distance and the minimum number of frames in which a molecule must
 appear to be considered as a fiducial marker, and the trajectory smoothing
 factor.</p>
@@ -109,7 +105,7 @@ drift trajectory can then be saved to a file and applied later to
 the whole dataset.</p>
 </div>
 <div id="Sx1.SSx1.SSSx1" class="ltx_subsubsection">
-<h4 class="ltx_title ltx_title_subsubsection">Guidelines for the choice of parameters</h4>
+<h3 class="ltx_title ltx_title_subsubsection">Guidelines for the choice of parameters</h3>
 
 <div id="Sx1.SSx1.SSSx1.p1" class="ltx_para">
 <p class="ltx_p">Fiducial markers are automatically detected as molecules that stay
@@ -135,17 +131,17 @@ the whole dataset.</p>
 </div>
 </div>
 <div id="Sx1.SSx2" class="ltx_subsection">
-<h3 class="ltx_title ltx_title_subsection">Cross-correlation</h3>
+<h2 class="ltx_title ltx_title_subsection">Cross-correlation</h2>
 
 <div id="Sx1.SSx2.p1" class="ltx_para">
 <p class="ltx_p">ThunderSTORM also supports lateral drift correction using the method
-of Mlodzianoski et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib22" title="Sample drift correction in 3D fluorescence photoactivation localization microscopy" class="ltx_ref">2</a>]</cite>. Here, the list
-of localized molecules is split into <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-4px" src="mi/mi17.png" width="58" height="21" alt="n+1"> batches based on the frame
+of Mlodzianoski et al. <cite class="ltx_cite">[<a href="#bib.bib22" title="Sample drift correction in 3D fluorescence photoactivation localization microscopy" class="ltx_ref">2</a>]</cite>. Here, the list
+of localized molecules is split into <img id="Sx1.SSx2.p1.m1" class="ltx_Math" style="vertical-align:-3px" src="mi/mi8.png" width="45" height="17" alt="n+1"> batches based on the frame
 in which they appeared. Each batch is used to create one super-resolution
 image. The presumption of this method is that similar structures will
 appear in all reconstructed images. Cross-correlation methods are
 used to determine the shift between the first image and each of the
-subsequent images. This leads to <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi18.png" width="18" height="14" alt="n"> cross-correlation images, where
+subsequent images. This leads to <img id="Sx1.SSx2.p1.m2" class="ltx_Math" style="vertical-align:-2px" src="mi/mi9.png" width="15" height="12" alt="n"> cross-correlation images, where
 the shift in the position caused by the drift corresponds to the relative
 position between the global intensity maximum peaks. The localized
 peaks are assigned to the central frame of each batch sequence and
@@ -156,12 +152,12 @@ are corrected for drift using the estimated values.</p>
 <div id="Sx1.SSx2.p2" class="ltx_para">
 <p class="ltx_p">In our implementation, super-resolution images are created by the
 <a href="../rendering/ui/ASHRenderingUI.html" title="" class="ltx_ref">average shifted histograms</a>
-method described in Section <span class="ltx_ref ltx_missing_label ltx_ref_self">LABEL:sub:Averaged-shifted-histograms</span>,
+method described in Section <span class="ltx_ref ltx_ref_self">LABEL:sub:Averaged-shifted-histograms</span>,
 cross-correlation images are computed by Fast Fourier Transform methods
 as implemented in ImageJ, and the location of global intensity maximum
 peaks is determined with sub-pixel precision using the <a href="../estimators/ui/RadialSymmetryEstimatorUI.html" title="" class="ltx_ref">radial symmetry</a>
-method described in Section <span class="ltx_ref ltx_missing_label ltx_ref_self">LABEL:sub:Radial-symmetry</span>. The number
-of batches <img id="Sx1.SSx2.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi18.png" width="18" height="14" alt="n"> and the magnification of super-resolution images is
+method described in Section <span class="ltx_ref ltx_ref_self">LABEL:sub:Radial-symmetry</span>. The number
+of batches <img id="Sx1.SSx2.p2.m1" class="ltx_Math" style="vertical-align:-2px" src="mi/mi9.png" width="15" height="12" alt="n"> and the magnification of super-resolution images is
 defined by users. For better stability of the solution, intensity
 maximum peaks are first localized in cross-correlation images computed
 from reconstructed images with a magnification of one. The peak position
@@ -171,7 +167,7 @@ position of the peak is obtained as a local intensity maximum in close
 proximity to the peak obtained at lower magnification.</p>
 </div>
 <div id="Sx1.SSx2.SSSx1" class="ltx_subsubsection">
-<h4 class="ltx_title ltx_title_subsubsection">Guidelines for the choice of parameters</h4>
+<h3 class="ltx_title ltx_title_subsubsection">Guidelines for the choice of parameters</h3>
 
 <div id="Sx1.SSx2.SSSx1.p1" class="ltx_para">
 <p class="ltx_p">The parameter “Number of bins”
@@ -192,7 +188,7 @@ checkbox.</p>
 </div>
 </div>
 <div id="Sx1.SSx3" class="ltx_subsection">
-<h3 class="ltx_title ltx_title_subsection">See also</h3>
+<h2 class="ltx_title ltx_title_subsection">See also</h2>
 
 <div id="Sx1.SSx3.p1" class="ltx_para">
 <ul id="I1" class="ltx_itemize">
@@ -207,12 +203,12 @@ checkbox.</p>
 </div>
 </div>
 <div id="bib" class="ltx_bibliography">
-<h2 class="ltx_title ltx_title_bibliography">References</h2>
+<h1 class="ltx_title ltx_title_bibliography">References</h1>
 
 <ul id="L1" class="ltx_biblist">
 <li id="bib.bib5" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[1]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">W. S. Cleveland</span><span class="ltx_text ltx_bib_year"> (1979)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">W. S. Cleveland</span><span class="ltx_text ltx_bib_year">(1979)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Robust Locally Weighted Regression and Smoothing Scatterplots</span>.
 </span>
@@ -225,7 +221,7 @@ checkbox.</p>
 </li>
 <li id="bib.bib22" class="ltx_bibitem ltx_bib_article">
 <span class="ltx_bibtag ltx_bib_key ltx_role_refnum">[2]</span>
-<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. J. Mlodzianoski, J. M. Schreiner, S. P. Callahan, K. Smolková, A. Dlasková, J. Santorová, P. Ježek and J. Bewersdorf</span><span class="ltx_text ltx_bib_year"> (2011)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. J. Mlodzianoski, J. M. Schreiner, S. P. Callahan, K. Smolková, A. Dlasková, J. Santorová, P. Ježek and J. Bewersdorf</span><span class="ltx_text ltx_bib_year">(2011)</span>
 </span>
 <span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Sample drift correction in 3D fluorescence photoactivation localization microscopy</span>.
 </span>
@@ -241,7 +237,7 @@ checkbox.</p>
 </div>
 </div>
 <div class="ltx_page_footer">
-<div class="ltx_page_logo">Generated  on Sun Oct  4 04:52:02 2015 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+<div class="ltx_page_logo">Generated  on Sun Oct  4 04:18:21 2015 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
 </div>
 </div>
 </div>

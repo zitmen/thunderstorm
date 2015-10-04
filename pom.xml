@@ -14,11 +14,11 @@
     <properties>
         <skipTests>true</skipTests>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <imagej.path>~/.imagej</imagej.path>
+        <imagej.path>C:\Program Files\ImageJ</imagej.path>
         <imagej1.version>1.49s</imagej1.version>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
-        <lyx.path>lyx</lyx.path>
+        <lyx.path>C:\Program Files (x86)\LyX 2.1\bin\lyx.exe</lyx.path>
         <help.dir>${basedir}/src/main/resources/resources/help</help.dir>
     </properties>
 
@@ -168,7 +168,7 @@
                             <skip>${skipHelpCompilation}</skip>
                             <workingDirectory>${help.dir}</workingDirectory>
 <!-- Note that the BAT file contains the path to cygwin installation. -->
-                            <executable>./compile-html-help.sh</executable>
+                            <executable>compile-html-help.bat</executable>
                             <commandlineArgs>"${lyx.path}"</commandlineArgs>
                         </configuration>
 <!-- Unix-based systems (TODO: create profiles)
