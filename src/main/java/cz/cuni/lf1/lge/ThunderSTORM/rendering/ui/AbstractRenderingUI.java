@@ -4,12 +4,12 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.LutPicker;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.Validator;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterKey;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterTracker;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.Validator;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.ValidatorException;
 
 import javax.swing.*;
 import java.awt.*;

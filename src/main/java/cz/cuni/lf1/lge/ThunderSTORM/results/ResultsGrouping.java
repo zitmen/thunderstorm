@@ -9,9 +9,9 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 
 import cz.cuni.lf1.lge.ThunderSTORM.util.WorkerThread;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterKey;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.IntegerValidatorFactory;
 import ij.IJ;
 
 import java.awt.*;

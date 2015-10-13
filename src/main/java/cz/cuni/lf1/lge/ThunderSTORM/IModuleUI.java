@@ -1,7 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
-import javax.swing.JPanel;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterTracker;
+
+import javax.swing.*;
 
 /**
  * The interface every module has to implement.

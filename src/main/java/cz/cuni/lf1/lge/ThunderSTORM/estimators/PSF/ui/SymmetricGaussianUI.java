@@ -7,7 +7,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui.IPsfUI.fwhm2sigma;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import cz.cuni.lf1.lge.ThunderSTORM.util.RangeValidatorFactory;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterKey;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;

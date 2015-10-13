@@ -30,14 +30,14 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.DialogStub;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterKey;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.ParameterTracker.Condition;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.DoubleValidatorFactory;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.IntegerValidatorFactory;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.StringValidatorFactory;
-import cz.cuni.lf1.lge.thunderstorm.util.macroui.validators.ValidatorException;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.DialogStub;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterKey;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterTracker;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterTracker.Condition;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.StringValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.ValidatorException;
 import ij.IJ;
 
 import java.lang.reflect.Type;
