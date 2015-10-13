@@ -3,15 +3,13 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui.IPsfUI.fwhm2sigma;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import cz.cuni.lf1.lge.ThunderSTORM.util.RangeValidatorFactory;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterKey;
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Note: here `sigma` and `z` are not semantically correct; The reason for this

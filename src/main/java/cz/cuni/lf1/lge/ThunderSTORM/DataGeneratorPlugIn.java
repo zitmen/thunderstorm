@@ -1,56 +1,40 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.CardsPanel;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.DataGenerator;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.Drift;
 import cz.cuni.lf1.lge.ThunderSTORM.datagen.EmitterModel;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui.IPsfUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
-import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
-import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
-import cz.cuni.lf1.lge.ThunderSTORM.util.RangeValidatorFactory;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.DialogStub;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterKey;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterTracker;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.DoubleValidatorFactory;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.IntegerValidatorFactory;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.Validator;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.ValidatorException;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.Macro;
-import ij.Prefs;
+import cz.cuni.lf1.lge.ThunderSTORM.util.*;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.DialogStub;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.Validator;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.ValidatorException;
+import ij.*;
 import ij.measure.Calibration;
 import ij.plugin.PlugIn;
 import ij.process.FloatProcessor;
 import ij.process.ShortProcessor;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 
 public class DataGeneratorPlugIn implements PlugIn {
 

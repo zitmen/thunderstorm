@@ -7,10 +7,10 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.WorkerThread;
 import cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree.KDTree;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterKey;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.DoubleValidatorFactory;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.IntegerValidatorFactory;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.StringValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.StringValidatorFactory;
 import ij.IJ;
 
 import javax.swing.*;

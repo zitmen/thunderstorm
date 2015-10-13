@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.CalibrationProcess;
 import cz.cuni.lf1.lge.ThunderSTORM.drift.CorrelationDriftEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.drift.CrossCorrelationDriftResults;
 import cz.cuni.lf1.lge.ThunderSTORM.drift.DriftResults;
@@ -15,10 +14,27 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.DialogStub;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker.Condition;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.StringValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.ValidatorException;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import cz.cuni.lf1.lge.ThunderSTORM.util.WorkerThread;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Plot;
+import net.java.balloontip.BalloonTip;
+import net.java.balloontip.styles.RoundedBalloonStyle;
+import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,29 +42,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.io.*;
-import java.util.concurrent.ExecutionException;
-import javax.swing.*;
-
-import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.DialogStub;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterKey;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterTracker;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterTracker.Condition;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.DoubleValidatorFactory;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.IntegerValidatorFactory;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.StringValidatorFactory;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.ValidatorException;
-import ij.IJ;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import net.java.balloontip.BalloonTip;
-import net.java.balloontip.styles.RoundedBalloonStyle;
-import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
-import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 public class ResultsDriftCorrection extends PostProcessingModule {
 

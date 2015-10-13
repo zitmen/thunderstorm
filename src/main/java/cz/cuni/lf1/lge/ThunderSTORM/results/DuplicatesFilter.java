@@ -15,7 +15,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
 import cz.cuni.lf1.lge.ThunderSTORM.util.WorkerThread;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterKey;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
 import ij.IJ;
 import java.awt.Color;
 import java.awt.GridBagConstraints;

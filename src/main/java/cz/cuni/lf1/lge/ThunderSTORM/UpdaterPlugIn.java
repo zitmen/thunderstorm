@@ -3,34 +3,22 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.DialogStub;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterTracker;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.DialogStub;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
 import ij.IJ;
 import ij.Menus;
 import ij.Prefs;
 import ij.plugin.PlugIn;
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.io.BufferedReader;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 public class UpdaterPlugIn implements PlugIn {
 

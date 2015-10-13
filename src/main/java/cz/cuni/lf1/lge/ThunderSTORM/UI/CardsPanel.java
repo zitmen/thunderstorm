@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.UI;
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterTracker;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.GridBagConstraints;

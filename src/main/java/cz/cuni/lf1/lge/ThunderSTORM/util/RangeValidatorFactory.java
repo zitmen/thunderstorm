@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.Validator;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.validators.ValidatorException;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.Validator;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.ValidatorException;
 
 public class RangeValidatorFactory {
 

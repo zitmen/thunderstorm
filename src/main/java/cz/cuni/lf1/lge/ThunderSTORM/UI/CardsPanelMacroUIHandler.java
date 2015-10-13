@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.handlers.ComponentHandler;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.handlers.ComponentHandler;
 import java.util.List;
 
 public class CardsPanelMacroUIHandler implements ComponentHandler<String> {

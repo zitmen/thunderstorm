@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import cz.cuni.lf1.lge.ThunderSTORM.util.macroui.ParameterTracker;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
 
 import javax.swing.*;
 
