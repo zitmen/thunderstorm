@@ -1,45 +1,34 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.abs;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
 import ij.IJ;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-import org.apache.commons.collections.primitives.ArrayDoubleList;
-import org.apache.commons.collections.primitives.DoubleList;
+
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 
 public final class Molecule implements Comparable<Molecule> {
 
     public MoleculeDescriptor descriptor;
     private List<Molecule> detections;    // for merging of re-appearing molecules (post-processing)
     public List<Molecule> neighbors;    // for molecule matching (performance evaluation)
-    public DoubleList values;
+    public double[] values;
 
-    public Molecule(MoleculeDescriptor descriptor, DoubleList values) {
-        this.descriptor = descriptor;
-        this.values = values;
-    }
-    
     public Molecule(MoleculeDescriptor descriptor, double [] values) {
         this.descriptor = descriptor;
-        this.values = new ArrayDoubleList(values.length);
-        for(int i = 0; i < values.length; i++) {
-            this.values.add(values[i]);
-        }
+        this.values = new double[values.length];
+        System.arraycopy(values, 0, this.values, 0, values.length);
     }
     
     public Molecule(Params params) {
         assert(params.hasParam(Params.X) && params.hasParam(Params.Y));
         
         this.descriptor = new MoleculeDescriptor(params);
-        this.values = new ArrayDoubleList(params.values.length);
-        for(int i = 0; i < params.values.length; i++) {
-            values.add(params.values[i]);
-        }
+        this.values = new double[params.values.length];
+        System.arraycopy(params.values, 0, values, 0, params.values.length);
     }
     
     public Molecule(Molecule mol) {
@@ -105,13 +94,21 @@ public final class Molecule implements Comparable<Molecule> {
         if(hasParam(name)) {   // is the param already present in the table?
             setParam(name, value);  // then just set the value
         } else {                // if it's not, then add new column and set the value
+            int pos = values.length;
             try {
-                descriptor.insertParamAt(column, name, values.size(), units);
+                descriptor.insertParamAt(column, name, pos, units);
             } catch(Exception ex) {
-                assert(false) : "This was supposed to never happen due to the `hasParam` check!";
+                assert false : "This was supposed to never happen due to the `hasParam` check!";
             }
-            values.add(value);  // values can be added at the last position since we implement extra indexing for this
+            values = realloc(values, pos+1);    // realloc (ineffective, but it's not supposed to be used often anyway)
+            values[pos] = value; // values can be added at the last position since we implement extra indexing for this
         }
+    }
+
+    private static double[] realloc(double[] source, int newLength) {
+        double[] retval = new double[newLength];
+        System.arraycopy(source, 0, retval, 0, source.length);
+        return retval;
     }
     
     public boolean hasParam(String name) {
@@ -119,24 +116,23 @@ public final class Molecule implements Comparable<Molecule> {
     }
 
     public double getParamAt(int i) {
-        return values.get(i);
+        return values[i];
     }
     
     public double getParamAtColumn(int c) {
-        return values.get(descriptor.indices.get(c));
+        return values[descriptor.indices.get(c)];
     }
     
     public void setParamAt(int i, double value) {
-        if(i >= values.size()) {
-            values.add(i, value);
-        } else {
-            values.set(i, value);
+        if(i >= values.length) {
+            values = realloc(values, i + 1);
         }
+        values[i] = value;
     }
     
     public double getParam(String param) {
         try {
-            return values.get(descriptor.getParamIndex(param));
+            return values[descriptor.getParamIndex(param)];
         } catch (Exception ex)  {
             return 0.0;
         }
@@ -152,15 +148,16 @@ public final class Molecule implements Comparable<Molecule> {
     
     public void setParam(String param, Units unit, double value) {
         int i = descriptor.getParamIndex(param);
-        if(i >= values.size()) {
-            values.add(i, value);
+        if(i >= values.length) {
+            values = realloc(values, i + 1);
+            values[i] = value;
             try {
                 descriptor.addParam(param, i, unit);
             } catch(Exception ex) {
                 //
             }
         } else {
-            values.set(i, value);
+            values[i] = value;
             descriptor.setColumnUnits(unit, descriptor.getParamColumn(param));
         }
     }
@@ -220,10 +217,6 @@ public final class Molecule implements Comparable<Molecule> {
     public Units getParamUnits(String name) {
         return descriptor.units.get(descriptor.getParamColumn(name));
     }
-    
-    public Units getParamUnits(int column) {
-        return descriptor.units.get(column);
-    }
 
     @Override
     public String toString() {
@@ -236,7 +229,7 @@ public final class Molecule implements Comparable<Molecule> {
                 }
                 sb.append(descriptor.labels.get(i));
                 sb.append("=");
-                sb.append(values.get(descriptor.indices.get(i)));
+                sb.append(values[descriptor.indices.get(i)]);
             }
             sb.append("]");
             return sb.toString();
@@ -254,7 +247,7 @@ public final class Molecule implements Comparable<Molecule> {
                     }
                     sb.append(detection.descriptor.labels.get(i));
                     sb.append("=");
-                    sb.append(detection.values.get(detection.descriptor.indices.get(i)));
+                    sb.append(detection.values[detection.descriptor.indices.get(i)]);
                 }
                 sb.append("]");
             }
@@ -265,7 +258,7 @@ public final class Molecule implements Comparable<Molecule> {
     
     @Override
     public Molecule clone() {
-        assert(true) : "Use clone(MoleculeDescriptor) instead!!!";
+        assert true : "Use clone(MoleculeDescriptor) instead!!!";
         throw new UnsupportedOperationException("Use `Molecule.clone(MoleculeDescriptor)` instead!!!");
     }
     
@@ -275,19 +268,13 @@ public final class Molecule implements Comparable<Molecule> {
      * Caller has to duplicate the descriptor if it is required!
      */
     public Molecule clone(MoleculeDescriptor descriptor) {
-        Molecule mol = new Molecule(descriptor, new ArrayDoubleList(values));
+        double[] vals = new double[values.length];
+        System.arraycopy(values, 0, vals, 0, values.length);
+        Molecule mol = new Molecule(descriptor, vals);
         mol.detections = detections != null ? new Vector<Molecule>(detections) : null;
         return mol;
     }
 
-    public static double[] extractParamToArray(List<Molecule> fits, int param) {
-        double[] array = new double[fits.size()];
-        for (int i = 0; i < fits.size(); i++) {
-            array[i] = fits.get(i).getParamAt(param);
-        }
-        return array;
-    }
-    
     public static double[] extractParamToArray(List<Molecule> fits, String param) {
         double[] array = new double[fits.size()];
         for (int i = 0; i < fits.size(); i++) {
@@ -308,26 +295,14 @@ public final class Molecule implements Comparable<Molecule> {
         }
     }
 
-    public double dist2xy(Molecule mol) {
-        return (sqr(mol.getX() - getX()) + sqr(mol.getY() - getY()));
-    }
-    
     public double dist2xy(Molecule mol, Units units) {
         return (sqr(mol.getX(units) - getX(units)) + sqr(mol.getY(units) - getY(units)));
     }
-    
-    public double dist2z(Molecule mol) {
-        return sqr(mol.getZ() - getZ());
-    }
-    
+
     public double dist2z(Molecule mol, Units units) {
         return sqr(mol.getZ(units) - getZ(units));
     }
-    
-    public double dist2xyz(Molecule mol) {
-        return (sqr(mol.getX() - getX()) + sqr(mol.getY() - getY()));
-    }
-    
+
     public double dist2xyz(Molecule mol, Units units) {
         return (sqr(mol.getX(units) - getX(units)) + sqr(mol.getY(units) - getY(units)) + sqr(mol.getZ(units) - getZ(units)));
     }
@@ -387,8 +362,8 @@ public final class Molecule implements Comparable<Molecule> {
         return status;
     }
 
-    public static enum DetectionStatus {
-        UNSPECIFIED, TRUE_POSITIVE, FALSE_POSITIVE, FALSE_NEGATIVE;
+    public enum DetectionStatus {
+        UNSPECIFIED, TRUE_POSITIVE, FALSE_POSITIVE, FALSE_NEGATIVE
     }
 
 }

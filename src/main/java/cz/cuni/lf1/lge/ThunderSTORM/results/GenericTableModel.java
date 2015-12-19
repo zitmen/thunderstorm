@@ -187,11 +187,11 @@ public class GenericTableModel extends AbstractTableModel implements Cloneable {
 
     @Override
     public Double getValueAt(int rowIndex, int columnIndex) {
-        return rows.elementAt(rowIndex).values.get(columns.indices.elementAt(columnIndex));
+        return rows.elementAt(rowIndex).values[columns.indices.elementAt(columnIndex)];
     }
 
     public Double getValueAt(int rowIndex, String columnName) {
-        return rows.elementAt(rowIndex).values.get(columns.getParamIndex(columnName));
+        return rows.elementAt(rowIndex).values[columns.getParamIndex(columnName)];
     }
 
     public void setColumnUnits(String columnName, Units new_units) {
@@ -284,7 +284,7 @@ public class GenericTableModel extends AbstractTableModel implements Cloneable {
     
     public void insertColumn(int columnIndex, String name, Units units, IValue<Double> value) {
         for(Molecule row : rows) {
-            row.insertParamAt(columnIndex, name, units, value.getValue().doubleValue());
+            row.insertParamAt(columnIndex, name, units, value.getValue());
         }
         fireTableStructureChanged();
         fireTableDataChanged();

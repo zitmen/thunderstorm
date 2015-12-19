@@ -1,13 +1,16 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
-import au.com.bytecode.opencsv.CSVReader;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import ij.process.FloatProcessor;
-import java.io.FileReader;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -17,6 +20,19 @@ import java.util.Vector;
  * Importing CSV files and translating them into internal plugin objects (FloatProcessor, PSFModel, Point).
  */
 public class CSV {
+
+    private static List<String[]> readCsv(String fname) {
+        List<String[]> lines = new ArrayList<String[]>();
+        LineIterator it = null;
+        try {
+            it = FileUtils.lineIterator(new File(fname), "UTF-8");
+            while (it.hasNext()) lines.add(it.nextLine().split(","));
+        } catch (IOException ignored) {
+        } finally {
+            if (it != null) LineIterator.closeQuietly(it);
+        }
+        return lines;
+    }
     
     /**
      * Read an input CSV file and interpret the data as an image (FloatProcessor).
@@ -28,9 +44,7 @@ public class CSV {
      * @throws InvalidObjectException if the input file does not contain any data
      */
     public static FloatProcessor csv2fp(String fname) throws IOException, InvalidObjectException {
-        CSVReader csvReader = new CSVReader(new FileReader(fname));
-        List<String[]> lines = csvReader.readAll();
-        csvReader.close();
+        List<String[]> lines = readCsv(fname);
         
         if(lines.size() < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
         if(lines.get(0).length < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
@@ -63,9 +77,7 @@ public class CSV {
      * @see PSFModel
      */
     public static Vector<Molecule> csv2psf(String fname, int start_row, int start_col) throws IOException, InvalidObjectException, Exception {
-        CSVReader csvReader = new CSVReader(new FileReader(fname));
-        List<String[]> lines = csvReader.readAll();
-        csvReader.close();
+        List<String[]> lines = readCsv(fname);
         
         if(lines.size() < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
         if(lines.get(0).length < 1) throw new InvalidObjectException("CSV data have to be in a full square/rectangle matrix!");
@@ -82,31 +94,5 @@ public class CSV {
             false)));
         }
         return loc;
-    }
-
-    /**
-     * Read an input CSV file and interpret the data as a set of Points.
-     * 
-     * This method actually calls the {@code csv2psf} method first and then
-     * converts all {@code PSFModel}s to {@code Point}s, i.e., fills the
-     * {@code x,y} coordinates.
-     *
-     * @param fname path to an input CSV file
-     * @param start_row row offset from which we want to read the data
-     * @param start_col column offset from which we want to read the data
-     * @return a Vector of PSFs initialized based on the data in CSV file
-     * 
-     * @throws IOException if the input file specified by {@fname was not found or cannot be opened for reading}
-     * @throws InvalidObjectException if the input file does not contain any data
-     * 
-     * @see Point
-     */
-    public static Vector<Point> csv2point(String fname, int start_row, int start_col) throws IOException, Exception {
-        Vector<Molecule> list = csv2psf(fname, start_row, start_col);
-        Vector<Point> points = new Vector<Point>();
-        for(Molecule psf : list) {
-            points.add(new Point(psf.getX(), psf.getY()));
-        }
-        return points;
     }
 }

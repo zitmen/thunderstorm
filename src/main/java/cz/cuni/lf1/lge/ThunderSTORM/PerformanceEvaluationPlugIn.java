@@ -71,7 +71,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
             // insert the new columns before parallel processing starts
             IJResultsTable rt = IJResultsTable.getResultsTable();
             MoleculeDescriptor descriptor = rt.getDescriptor();
-            int lastIndex = rt.getRow(0).values.size();
+            int lastIndex = rt.getRow(0).values.length;
             descriptor.addParam(MoleculeDescriptor.LABEL_GROUND_TRUTH_ID, lastIndex, Units.UNITLESS);
             descriptor.addParam(MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH_XY, lastIndex+1, units);
             descriptor.addParam(MoleculeDescriptor.LABEL_DISTANCE_TO_GROUND_TRUTH_Z, lastIndex+2, units);

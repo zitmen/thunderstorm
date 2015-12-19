@@ -36,13 +36,13 @@ public class EmitterModel {
     }
     
     public boolean isOutOfRoi(Rectangle roi) {
-        return (roi.contains(molecule.getX(), molecule.getY()) == false);
+        return (!roi.contains(molecule.getX(), molecule.getY()));
     }
     
     public void generate(FloatProcessor img) {
-        double [] params = new double[molecule.values.size()];
+        double [] params = new double[molecule.values.length];
         for(int i = 0; i < params.length; i++) {
-            params[i] = molecule.values.get(i);
+            params[i] = molecule.values[i];
         }
         //
         int width = img.getWidth(), height = img.getHeight();

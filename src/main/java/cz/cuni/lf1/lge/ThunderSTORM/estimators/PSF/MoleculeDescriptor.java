@@ -246,8 +246,11 @@ public class MoleculeDescriptor implements Cloneable {
             }
         }
         // Molecule can't have less values then it has parameters!
-        for(int i = max_i + 1 - mol.values.size(); i > 0; i--) {
-            mol.values.add(0.0);    // fill with zeros
+        if (max_i+1 > mol.values.length) {
+            double[] tmp = mol.values;
+            mol.values = new double[max_i+1];
+            System.arraycopy(tmp, 0, mol.values, 0, tmp.length);
+            Arrays.fill(mol.values, tmp.length, mol.values.length, 0.0);
         }
     }
 
@@ -637,7 +640,7 @@ public class MoleculeDescriptor implements Cloneable {
                 groupMap.put(Units.RADIAN, 3);
                 groupMap.put(Units.UNITLESS, 4);
             }
-            return groups[groupMap.get(selected).intValue()];
+            return groups[groupMap.get(selected)];
         }
 
         public static Units getDefaultUnit(String paramName) {

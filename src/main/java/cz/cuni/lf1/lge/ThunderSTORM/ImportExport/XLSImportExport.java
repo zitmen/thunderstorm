@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 public class XLSImportExport extends DLMImportExport implements IImportExport {
 
     public XLSImportExport() {
-        super('\t');
+        super("\t");
     }
     
     @Override
