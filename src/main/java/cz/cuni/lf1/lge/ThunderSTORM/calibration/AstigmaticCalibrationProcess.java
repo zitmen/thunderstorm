@@ -1,40 +1,41 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_ANGLE;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA1;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA2;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.CalibrationEstimatorUI;
+
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_FRAME;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.*;
+
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AstigmatismCalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
+
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
-import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.stat.ranking.NaturalRanking;
 
-public class CalibrationProcess {
+public class AstigmaticCalibrationProcess {
 
     IFilterUI selectedFilterUI;
     IDetectorUI selectedDetectorUI;
-    CalibrationEstimatorUI calibrationEstimatorUI;
+    AstigmatismCalibrationEstimatorUI calibrationEstimatorUI;
     DefocusFunction defocusModel;
     double stageStep;
     double zRange;
@@ -52,7 +53,7 @@ public class CalibrationProcess {
     private double[] allSigma1s;
     private double[] allSigma2s;
 
-    public CalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, CalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit, ImagePlus imp, Roi roi) {
+    public AstigmaticCalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, AstigmatismCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit, ImagePlus imp, Roi roi) {
         this.selectedFilterUI = selectedFilterUI;
         this.selectedDetectorUI = selectedDetectorUI;
         this.calibrationEstimatorUI = calibrationEstimatorUI;
@@ -153,8 +154,8 @@ public class CalibrationProcess {
 
                 //retrieve values again after filtering out fits not in range
                 double[] framesArray = p.getFramesAsArrayOfZ(z0guess, stageStep);
-                double[] sigma1AsArray = p.getSigma1AsArray();
-                double[] sigma2AsArray = p.getSigma2AsArray();
+                double[] sigma1AsArray = p.getAsArray(LABEL_SIGMA1);
+                double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
 
                 //fit s1,2 = polynomial(frame)
                 DefocusFunction polynomS1;
@@ -299,7 +300,7 @@ public class CalibrationProcess {
         return finalMean;
     }
 
-    public CylindricalLensCalibration getCalibration(DefocusFunction defocusModel) {
+    public DefocusCalibration getCalibration(DefocusFunction defocusModel) {
         return defocusModel.getCalibration(angle, polynomS1Final, polynomS2Final);
     }
 
@@ -384,10 +385,10 @@ public class CalibrationProcess {
      * guess z0 of molecule
      */
     private double guessZ0(Position p) {
-        double[] sigma1AsArray = p.getSigma1AsArray();
-        double[] sigma2AsArray = p.getSigma2AsArray();
-        double[] framesArray = p.getFramesAsArray();
-        double[] intensityAsArray = p.getIntensityAsArray();
+        double[] sigma1AsArray = p.getAsArray(LABEL_SIGMA1);
+        double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
+        double[] framesArray = p.getAsArray(LABEL_FRAME);
+        double[] intensityAsArray = p.getAsArray(LABEL_INTENSITY);
 
         NaturalRanking ranker = new NaturalRanking();
         double[] ratiosAsArray = new double[sigma1AsArray.length];
@@ -411,5 +412,59 @@ public class CalibrationProcess {
         }
 
         return framesArray[minIdx];
+    }
+
+    /**
+     * draws overlay with each detection and also the positions of beads that
+     * were used for fitting polynomials
+     */
+    public void drawOverlay() {
+        imp.setOverlay(null);
+        Rectangle roiBounds = roi.getBounds();
+
+        //allFits
+        Map<Integer, List<Molecule>> fitsByFrame = new HashMap<Integer, List<Molecule>>(beadFits.getAllFits().size());
+        for(Molecule mol : beadFits.getAllFits()) {
+            int frame = (int) mol.getParam(LABEL_FRAME);
+            List<Molecule> list;
+            if(!fitsByFrame.containsKey(frame)) {
+                list = new ArrayList<Molecule>();
+                fitsByFrame.put(frame, list);
+            } else {
+                list = fitsByFrame.get(frame);
+            }
+            list.add(mol);
+        }
+        for(Map.Entry<Integer, List<Molecule>> frameFitsEntry : fitsByFrame.entrySet()) {
+            int frame = frameFitsEntry.getKey();
+            List<Molecule> fits = frameFitsEntry.getValue();
+            double[] xAll = new double[fits.size()];
+            double[] yAll = new double[fits.size()];
+            for(int i = 0; i < fits.size(); i++) {
+                Molecule mol = fits.get(i);
+                xAll[i] = mol.getX(MoleculeDescriptor.Units.PIXEL) + roiBounds.x;
+                yAll[i] = mol.getY(MoleculeDescriptor.Units.PIXEL) + roiBounds.y;
+            }
+            RenderingOverlay.showPointsInImage(imp, xAll, yAll, frame, Color.BLUE, RenderingOverlay.MARKER_CROSS);
+        }
+
+        //centroids of used molecules
+        double[] xCentroids = new double[usedPositions.size()];
+        double[] yCentroids = new double[usedPositions.size()];
+        for(int i = 0; i < xCentroids.length; i++) {
+            Position p = usedPositions.get(i);
+            xCentroids[i] = p.centroidX + roiBounds.x;
+            yCentroids[i] = p.centroidY + roiBounds.y;
+        }
+        RenderingOverlay.showPointsInImage(imp, xCentroids, yCentroids, Color.red, RenderingOverlay.MARKER_CIRCLE);
+        //usedFits
+        for(Position p : usedPositions) {
+            double[] frame = p.getAsArray(LABEL_FRAME);
+            double[] x = VectorMath.add(p.getAsArray(LABEL_X), roiBounds.x);
+            double[] y = VectorMath.add(p.getAsArray(LABEL_Y), roiBounds.y);
+            for(int i = 0; i < frame.length; i++) {
+                RenderingOverlay.showPointsInImage(imp, new double[]{x[i]}, new double[]{y[i]}, (int) frame[i], Color.RED, RenderingOverlay.MARKER_CROSS);
+            }
+        }
     }
 }

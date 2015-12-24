@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.CylindricalLensCalibration;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DaostormCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.*;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
@@ -22,7 +22,7 @@ import java.io.FileReader;
 public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
 
     private String calibrationFilePath;
-    public CylindricalLensCalibration calibration;
+    public DefocusCalibration calibration;
     protected transient ParameterKey.String CALIBRATION_PATH;
 
     private transient DaostormCalibration daoCalibration;   // internal variable for calculation of uncertainty
@@ -112,12 +112,12 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
 
     }
 
-    private CylindricalLensCalibration loadCalibration(String calibrationFilePath) {
+    private DefocusCalibration loadCalibration(String calibrationFilePath) {
         this.calibrationFilePath = calibrationFilePath;
         try {
             Yaml yaml = new Yaml();
             Object loaded = yaml.load(new FileReader(calibrationFilePath));
-            return (CylindricalLensCalibration) loaded;
+            return (DefocusCalibration) loaded;
         } catch(FileNotFoundException ex) {
             throw new RuntimeException("Could not read calibration file.", ex);
         } catch(ClassCastException ex) {

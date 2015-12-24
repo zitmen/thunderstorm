@@ -2,22 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import org.apache.commons.math3.analysis.MultivariateFunction;
-import org.apache.commons.math3.analysis.MultivariateVectorFunction;
-import org.apache.commons.math3.optim.InitialGuess;
-import org.apache.commons.math3.optim.MaxEval;
-import org.apache.commons.math3.optim.PointValuePair;
-import org.apache.commons.math3.optim.SimplePointChecker;
-import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
-import org.apache.commons.math3.optim.nonlinear.scalar.MultiStartMultivariateOptimizer;
-import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
-import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunctionGradient;
-import org.apache.commons.math3.optim.nonlinear.scalar.gradient.NonLinearConjugateGradientOptimizer;
-import org.apache.commons.math3.random.RandomVectorGenerator;
-
 // sigma(z) = w0*sqrt(1 + ((z-c)/d)^2 + a*((z-c)/d)^3 + b*((z-c)/d)^4)
-public class DaostormCalibration extends CylindricalLensCalibration {
+public class DaostormCalibration extends DefocusCalibration {
 
     transient DefocusFunction s1Par, s2Par;
 

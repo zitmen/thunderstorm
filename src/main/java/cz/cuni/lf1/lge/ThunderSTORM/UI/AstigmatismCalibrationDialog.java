@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class CalibrationDialog extends DialogStub implements ActionListener {
+public class AstigmatismCalibrationDialog extends DialogStub implements ActionListener {
 
     ParameterKey.Double stageStep;
     ParameterKey.Double zRangeLimit;
@@ -49,7 +49,7 @@ public class CalibrationDialog extends DialogStub implements ActionListener {
     ExecutorService previewThreadRunner = Executors.newSingleThreadExecutor();
     Future<?> previewFuture = null;
 
-    public CalibrationDialog(ImagePlus imp, List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators, List<DefocusFunction> defocusing) {
+    public AstigmatismCalibrationDialog(ImagePlus imp, List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators, List<DefocusFunction> defocusing) {
         super(new ParameterTracker("thunderstorm.calibration"), IJ.getInstance(), "Calibration options");
         params.getComponentHandlers().addForStringParameters(CardsPanel.class, new CardsPanelMacroUIHandler());
 

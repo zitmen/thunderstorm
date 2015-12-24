@@ -45,7 +45,7 @@ public class MoleculeMatcher {
         //
         // Clean the data
         for (Molecule d : det) {
-            if (d.neighbors != null) d.neighbors.clear();
+            d.clearNeighbors();
             d.setStatus(Molecule.DetectionStatus.UNSPECIFIED);
             d.setParam(LABEL_GROUND_TRUTH_ID, Units.UNITLESS, 0);
             d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XY, distUnits, Double.POSITIVE_INFINITY);
@@ -53,7 +53,7 @@ public class MoleculeMatcher {
             d.setParam(LABEL_DISTANCE_TO_GROUND_TRUTH_XYZ, distUnits, Double.POSITIVE_INFINITY);
         }
         for (Molecule g : gt) {
-            if (g.neighbors != null) g.neighbors.clear();
+            g.clearNeighbors();
             g.setStatus(Molecule.DetectionStatus.UNSPECIFIED);
         }
         //

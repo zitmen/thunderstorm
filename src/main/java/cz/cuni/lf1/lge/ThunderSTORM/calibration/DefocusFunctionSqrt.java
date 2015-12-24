@@ -112,12 +112,12 @@ public class DefocusFunctionSqrt extends DefocusFunction {
     }
 
     @Override
-    public CylindricalLensCalibration getCalibration() {
+    public DefocusCalibration getCalibration() {
         return new DaostormCalibration();
     }
 
     @Override
-    public CylindricalLensCalibration getCalibration(double angle, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final) {
+    public DefocusCalibration getCalibration(double angle, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final) {
         return new DaostormCalibration(angle, polynomS1Final, polynomS2Final);
     }
 

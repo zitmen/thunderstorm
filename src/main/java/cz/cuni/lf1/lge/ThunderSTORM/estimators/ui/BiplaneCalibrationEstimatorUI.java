@@ -6,17 +6,16 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 
 import javax.swing.*;
 
-public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
+public class BiplaneCalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
 
-    private final String name = "Elliptic Gaussian w/ angle";
-    private double angle;
-    private boolean angleWasSet = false;
+    private final String name = "Symmetric Gaussian";
     private DefocusFunction defocus = null;
 
-    public CalibrationEstimatorUI() {
+    public BiplaneCalibrationEstimatorUI() {
         super();
         crowdedField = new CrowdedFieldEstimatorUI() {
             @Override
@@ -62,17 +61,8 @@ public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
         return name;
     }
 
-    public void setAngle(double fixedAngle) {
-        this.angle = fixedAngle;
-        angleWasSet = true;
-    }
-
     public void setDefocusModel(DefocusFunction defocus) {
         this.defocus = defocus;
-    }
-
-    public void unsetAngle() {
-        angleWasSet = false;
     }
 
     public int getFitradius() {
@@ -84,7 +74,7 @@ public class CalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
         String method = METHOD.getValue();
         double sigma = SIGMA.getValue();
         int fitradius = FITRAD.getValue();
-        PSFModel psf = angleWasSet ? new EllipticGaussianPSF(sigma, angle) : new EllipticGaussianWAnglePSF(sigma, 0);
+        PSFModel psf = new SymmetricGaussianPSF(sigma);
         if(LSQ.equals(method) || WLSQ.equals(method)) {
             LSQFitter fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
             return new MultipleLocationsImageFitting(fitradius, fitter);

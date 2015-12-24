@@ -4,7 +4,7 @@ import com.google.gson.*;
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.ModuleLoader;
 import cz.cuni.lf1.lge.ThunderSTORM.ThunderSTORM;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.CylindricalLensCalibration;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.EmptyDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
@@ -95,7 +95,7 @@ public class MeasurementProtocol {
         gson.registerTypeAdapter(IFilterUI.class, new FilterAdapter());
         gson.registerTypeAdapter(IDetectorUI.class, new DetectorAdapter());
         gson.registerTypeAdapter(IEstimatorUI.class, new EstimatorAdapter());
-        gson.registerTypeAdapter(CylindricalLensCalibration.class, new CylindricalLensCalibrationAdapter());
+        gson.registerTypeAdapter(DefocusCalibration.class, new CylindricalLensCalibrationAdapter());
         gson.registerTypeAdapter(Operation.class, new OperationAdapter());
         BufferedReader reader = null;
         try {
@@ -177,9 +177,9 @@ public class MeasurementProtocol {
         }
     }
 
-    private static class CylindricalLensCalibrationAdapter implements JsonDeserializer<CylindricalLensCalibration> {
+    private static class CylindricalLensCalibrationAdapter implements JsonDeserializer<DefocusCalibration> {
         @Override
-        public CylindricalLensCalibration deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public DefocusCalibration deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String name = json.getAsJsonObject().get("name").getAsString();
             for (DefocusFunction defocusFn : ModuleLoader.getUIModules(DefocusFunction.class)) {
                 if (name.equals(defocusFn.getName())) {

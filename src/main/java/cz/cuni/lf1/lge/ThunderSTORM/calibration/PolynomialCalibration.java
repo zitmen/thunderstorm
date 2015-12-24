@@ -2,27 +2,13 @@ package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import org.apache.commons.math3.analysis.MultivariateFunction;
-import org.apache.commons.math3.analysis.MultivariateVectorFunction;
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 import org.apache.commons.math3.fitting.CurveFitter;
-import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.optim.*;
-import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
-import org.apache.commons.math3.optim.nonlinear.scalar.MultiStartMultivariateOptimizer;
-import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
-import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunctionGradient;
-import org.apache.commons.math3.optim.nonlinear.scalar.gradient.NonLinearConjugateGradientOptimizer;
-import org.apache.commons.math3.optim.nonlinear.vector.ModelFunction;
-import org.apache.commons.math3.optim.nonlinear.vector.ModelFunctionJacobian;
-import org.apache.commons.math3.optim.nonlinear.vector.Target;
-import org.apache.commons.math3.optim.nonlinear.vector.Weight;
 import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
-import org.apache.commons.math3.random.RandomVectorGenerator;
 
 // sigma(z) = a*(z-c)^2 + b + d*(z-c)^3
-public class PolynomialCalibration extends CylindricalLensCalibration {
+public class PolynomialCalibration extends DefocusCalibration {
 
     transient DefocusFunction s1Par, s2Par;
 

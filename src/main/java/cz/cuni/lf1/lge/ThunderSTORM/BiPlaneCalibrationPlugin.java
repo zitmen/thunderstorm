@@ -1,68 +1,67 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import cz.cuni.lf1.lge.ThunderSTORM.UI.AstigmatismCalibrationDialog;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.*;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.BiplaneCalibrationDialog;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.BiplaneCalibrationProcess;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.NoMoleculesFittedException;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AstigmatismCalibrationEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.BiplaneCalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.Utils;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Plot;
-import ij.plugin.PlugIn;
-import ij.process.FloatProcessor;
-import java.awt.Color;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import javax.swing.JOptionPane;
-
 import ij.gui.Roi;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import ij.plugin.PlugIn;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
-public class CylindricalLensCalibrationPlugin implements PlugIn {
+public class BiPlaneCalibrationPlugin implements PlugIn {
 
     DefocusFunction defocusModel;
     IFilterUI selectedFilterUI;
     IDetectorUI selectedDetectorUI;
-    AstigmatismCalibrationEstimatorUI calibrationEstimatorUI;
+    BiplaneCalibrationEstimatorUI calibrationEstimatorUI;
     String savePath;
     double stageStep;
     double zRangeLimit;//in nm
-    ImagePlus imp;
-    Roi roi;
+    ImagePlus imp1, imp2;
+    Roi roi1, roi2;
+
+    private boolean isStack(ImagePlus imp) {
+        if(imp == null) {
+            IJ.error("No image open.");
+            return false;
+        }
+        if(imp.getImageStackSize() < 2) {
+            IJ.error("Requires a stack.");
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public void run(String arg) {
         GUI.setLookAndFeel();
         //
-        imp = IJ.getImage();
-        if(imp == null) {
-            IJ.error("No image open.");
+        if (Utils.getOpenImageTitles(true).length < 3) {    // 3 = 2 images + 1 empty string
+            IJ.error("Two images must be opened for biplane calibration to work!");
             return;
         }
-        if(imp.getImageStackSize() < 2) {
-            IJ.error("Requires a stack.");
-            return;
-        }
+        //
         try {
             //load modules
-            calibrationEstimatorUI = new AstigmatismCalibrationEstimatorUI();
+            calibrationEstimatorUI = new BiplaneCalibrationEstimatorUI();
             List<IFilterUI> filters = ModuleLoader.getUIModules(IFilterUI.class);
             List<IDetectorUI> detectors = ModuleLoader.getUIModules(IDetectorUI.class);
             List<IEstimatorUI> estimators = Arrays.asList(new IEstimatorUI[]{calibrationEstimatorUI}); // only one estimator can be used
@@ -75,8 +74,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             } catch(Exception e) {
                 IJ.handleException(e);
             }
-            AstigmatismCalibrationDialog dialog;
-            dialog = new AstigmatismCalibrationDialog(imp, filters, detectors, estimators, defocusFunctions);
+            BiplaneCalibrationDialog dialog = new BiplaneCalibrationDialog(filters, detectors, estimators, defocusFunctions);
             if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
                 return;
             }
@@ -87,13 +85,14 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             zRangeLimit = dialog.getZRangeLimit();
             defocusModel = dialog.getActiveDefocusFunction();
 
-            roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
+            if (!isStack(imp1 = dialog.getFirstPlaneStack())) return;
+            if (!isStack(imp2 = dialog.getSecondPlaneStack())) return;
+
+            roi1 = imp1.getRoi() != null ? imp1.getRoi() : new Roi(0, 0, imp1.getWidth(), imp1.getHeight());
+            roi2 = imp2.getRoi() != null ? imp2.getRoi() : new Roi(0, 0, imp2.getWidth(), imp2.getHeight());
 
             //perform the calibration
-            final AstigmaticCalibrationProcess process = new AstigmaticCalibrationProcess(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, imp, roi);
-
-            process.estimateAngle();
-            IJ.log("angle = " + process.getAngle());
+            final BiplaneCalibrationProcess process = new BiplaneCalibrationProcess(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, imp1, imp2, roi1, roi2);
 
             try {
                 process.fitQuadraticPolynomials();
@@ -120,7 +119,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         }
     }
 
-    private void showAnotherLocationDialog(IOException ex, final AstigmaticCalibrationProcess process) {
+    private void showAnotherLocationDialog(IOException ex, final BiplaneCalibrationProcess process) {
         final JDialog dialog = new JDialog(IJ.getInstance(), "Error");
         dialog.getContentPane().setLayout(new BorderLayout(0, 10));
         dialog.getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -163,10 +162,10 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     }
 
     private void drawSigmaPlots(List<DefocusFunction> sigma1Quadratics, List<DefocusFunction> sigma2Quadratics,
-            DefocusFunction sigma1param, DefocusFunction sigma2param,
-            double[] allFrames, double[] allSigma1s, double[] allSigma2s) {
+                                DefocusFunction sigma1param, DefocusFunction sigma2param,
+                                double[] allFrames, double[] allSigma1s, double[] allSigma2s) {
 
-        Plot plot = new Plot("Sigma", "z [nm]", "sigma [px]", (float[]) null, (float[]) null);
+        Plot plot = new Plot("Sigma", "z [nm]", "sigma [px]", null, (float[]) null);
         plot.setSize(1024, 768);
         //range
         plot.setLimits(-2*zRangeLimit, +2*zRangeLimit, 0, stageStep);
@@ -213,41 +212,5 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         plot.setColor(Color.blue);
         plot.addLabel(0.1, 0.9, "sigma2");
         plot.show();
-    }
-
-    private void showHistoImages(List<DefocusFunction> sigma1Quadratics, List<DefocusFunction> sigma2Quadratics) {
-        FloatProcessor a1 = new FloatProcessor(1, sigma1Quadratics.size());
-        FloatProcessor a2 = new FloatProcessor(1, sigma2Quadratics.size());
-        FloatProcessor b1 = new FloatProcessor(1, sigma2Quadratics.size());
-        FloatProcessor b2 = new FloatProcessor(1, sigma2Quadratics.size());
-        FloatProcessor cdif = new FloatProcessor(1, sigma2Quadratics.size());
-
-        for(int i = 0; i < sigma1Quadratics.size(); i++) {
-            a1.setf(i, (float) sigma1Quadratics.get(i).getA());
-            b1.setf(i, (float) sigma1Quadratics.get(i).getB());
-            a2.setf(i, (float) sigma2Quadratics.get(i).getA());
-            b2.setf(i, (float) sigma2Quadratics.get(i).getB());
-            cdif.setf(i, (float) (sigma2Quadratics.get(i).getC() - sigma1Quadratics.get(i).getC()));
-        }
-        new ImagePlus("a1", a1).show();
-        new ImagePlus("a2", a2).show();
-        new ImagePlus("b1", b1).show();
-        new ImagePlus("b2", b2).show();
-        new ImagePlus("cdif", cdif).show();
-    }
-
-    private void dumpShiftedPoints(double[] allFrames, double[] allSigma1s, double[] allSigma2s) {
-        try {
-            FileWriter fw = new FileWriter("d:\\dump.txt");
-            fw.append("allFrames:\n");
-            fw.append(Arrays.toString(allFrames));
-            fw.append("\nallSigma1:\n");
-            fw.append(Arrays.toString(allSigma1s));
-            fw.append("\nallSigma2:\n");
-            fw.append(Arrays.toString(allSigma2s));
-            fw.close();
-        } catch(Exception ex) {
-            IJ.handleException(ex);
-        }
     }
 }

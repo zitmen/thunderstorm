@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.CylindricalLensCalibration;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
@@ -12,7 +12,7 @@ import java.util.Arrays;
  */
 public class EllipticGaussianPSF extends PSFModel {
 
-    CylindricalLensCalibration calibration = null;
+    DefocusCalibration calibration = null;
     double defaultSigma = 1.6;
     double fi, sinfi, cosfi;
 
@@ -23,7 +23,7 @@ public class EllipticGaussianPSF extends PSFModel {
         this.cosfi = Math.cos(fi);
     }
 
-    public EllipticGaussianPSF(CylindricalLensCalibration calibration) {
+    public EllipticGaussianPSF(DefocusCalibration calibration) {
         this.calibration = calibration;
         this.fi = calibration.getAngle();
         this.sinfi = Math.sin(fi);

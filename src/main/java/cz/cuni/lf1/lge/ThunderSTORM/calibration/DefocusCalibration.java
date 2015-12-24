@@ -1,8 +1,17 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-public abstract class CylindricalLensCalibration {
+import ij.IJ;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public abstract class DefocusCalibration {
 
     public String name;
+    public boolean isBiplane;
+    public Homography.TransformationMatrix homography;
     public double angle;
     public double w01, w02;
     public double a1, a2;
@@ -10,8 +19,10 @@ public abstract class CylindricalLensCalibration {
     public double c1, c2;
     public double d1, d2;
 
-    public CylindricalLensCalibration(String calName) {
+    public DefocusCalibration(String calName) {
         name = calName;
+        isBiplane = false;
+        homography = null;
         angle = 0.0;
         w01 = w02 = 0.0;
         a1 = a2 = 0.0;
@@ -20,9 +31,28 @@ public abstract class CylindricalLensCalibration {
         d1 = d2 = 0.0;
     }
 
-    public CylindricalLensCalibration(String calName, double angle, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
+    public DefocusCalibration(String calName, double angle, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
         name = calName;
         this.angle = angle;
+        this.isBiplane = false;
+        this.homography = null;
+        this.w01 = w01;
+        this.a1 = a1;
+        this.b1 = b1;
+        this.c1 = c1;
+        this.d1 = d1;
+        this.w02 = w02;
+        this.a2 = a2;
+        this.b2 = b2;
+        this.c2 = c2;
+        this.d2 = d2;
+    }
+
+    public DefocusCalibration(String calName, Homography.TransformationMatrix homography, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
+        name = calName;
+        this.angle = 0.0;
+        this.isBiplane = true;
+        this.homography = homography;
         this.w01 = w01;
         this.a1 = a1;
         this.b1 = b1;
@@ -60,6 +90,14 @@ public abstract class CylindricalLensCalibration {
 
     public double getSigma2Squared(double z) {
         return evalDefocus2(z, w02, a2, b2, c2, d2);
+    }
+
+    public boolean isBiplane() {
+        return isBiplane;
+    }
+
+    public Homography.TransformationMatrix getHomography() {
+        return homography;
     }
 
     public double getAngle() {
@@ -153,4 +191,21 @@ public abstract class CylindricalLensCalibration {
     // Daostorm calibration model contains D (depth of field) information,
     // which is necessary for calculation of uncertainty of an estimator
     public abstract DaostormCalibration getDaoCalibration();
+
+    public void saveToFile(String path) throws IOException {
+        FileWriter fw = null;
+        try {
+            File file = new File(path);
+            Yaml yaml = new Yaml();
+            fw = new FileWriter(file);
+            yaml.dump(this, fw);
+            IJ.log("Calibration file saved to: " + file.getAbsolutePath());
+            IJ.showStatus("Calibration file saved to " + file.getAbsolutePath());
+        } finally {
+            if(fw != null) {
+                fw.close();
+            }
+        }
+
+    }
 }

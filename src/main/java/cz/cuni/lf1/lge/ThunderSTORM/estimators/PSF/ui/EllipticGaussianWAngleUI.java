@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui;
 
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.CylindricalLensCalibration;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
@@ -30,7 +30,7 @@ public class EllipticGaussianWAngleUI extends IPsfUI {
     private final transient ParameterKey.String CALIBRATION = parameters.createStringField("calibration", StringValidatorFactory.fileExists(), Defaults.CALIBRATION);
     private final transient ParameterKey.String Z_RANGE = parameters.createStringField("z_range", RangeValidatorFactory.fromTo(), Defaults.Z_RANGE);
     
-    private CylindricalLensCalibration calibration;
+    private DefocusCalibration calibration;
     
     @Override
     public String getName() {
@@ -120,11 +120,11 @@ public class EllipticGaussianWAngleUI extends IPsfUI {
         public static final String Z_RANGE = "-300:+300";
     }
     
-    private CylindricalLensCalibration loadCalibration(String calibrationFilePath) {
+    private DefocusCalibration loadCalibration(String calibrationFilePath) {
         try {
             Yaml yaml = new Yaml();
             Object loaded = yaml.load(new FileReader(calibrationFilePath));
-            return (CylindricalLensCalibration) loaded;
+            return (DefocusCalibration) loaded;
         } catch(FileNotFoundException ex) {
             throw new RuntimeException("Could not read calibration file.", ex);
         } catch(ClassCastException ex) {

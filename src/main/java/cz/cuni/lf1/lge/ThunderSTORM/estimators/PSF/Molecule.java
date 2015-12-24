@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
+import cz.cuni.lf1.lge.ThunderSTORM.util.IMatchable;
 import ij.IJ;
 
 import java.util.ArrayList;
@@ -10,11 +11,11 @@ import java.util.Vector;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 
-public final class Molecule implements Comparable<Molecule> {
+public final class Molecule implements Comparable<Molecule>, IMatchable<Molecule> {
 
     public MoleculeDescriptor descriptor;
     private List<Molecule> detections;    // for merging of re-appearing molecules (post-processing)
-    public List<Molecule> neighbors;    // for molecule matching (performance evaluation)
+    private List<Molecule> neighbors;    // for molecule matching (performance evaluation)
     public double[] values;
 
     public Molecule(MoleculeDescriptor descriptor, double [] values) {
@@ -71,9 +72,19 @@ public final class Molecule implements Comparable<Molecule> {
         return sqrt(getDist2Lateral(mol, distUnits));
     }
     public double getDistAxial(Molecule mol, Units distUnits) { return abs(getZ(distUnits) - mol.getZ(distUnits)); }
-    
-    public double getDist2(Molecule mol) {
+
+    @Override
+    public double getDist2(IMatchable mol) {
         return sqr(getX() - mol.getX()) + sqr(getY() - mol.getY()) + sqr(getZ() - mol.getZ());
+    }
+
+    @Override
+    public List<Molecule> getNeighbors() {
+        return neighbors;
+    }
+
+    public void clearNeighbors() {
+        if (neighbors != null) neighbors.clear();
     }
 
     /**
