@@ -7,6 +7,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.BiplaneCalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
@@ -31,6 +32,18 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.*;
 // TODO: refactor!!! This is absolutely horrific violation of encapsulation!
 public class BiplaneCalibrationProcess {
 
+    // config
+    private static final int minimumFitsCount = 20;
+    private static final int polyFitMaxIters = 750;
+    private static final int finalPolyFitMaxIters = 2000;
+    private static final int minFitsInZRange = 10;
+    private static final int movingAverageLag = 5;
+    private static final boolean checkIfDefocusIsInRange = false;
+    private static final int inlierFittingMaxIters = 5;
+    private static final double inlierFittingInlierFraction = 0.9;
+    private static final boolean showResultsTable = false;
+
+    // processing
     IFilterUI selectedFilterUI;
     IDetectorUI selectedDetectorUI;
     BiplaneCalibrationEstimatorUI calibrationEstimatorUI;
@@ -39,7 +52,9 @@ public class BiplaneCalibrationProcess {
     double zRange;
     ImagePlus imp1, imp2;
     Roi roi1, roi2;
+
     //results
+    private double angle = Double.NaN;
     private Homography.TransformationMatrix transformationMatrix;
     private PSFSeparator beadFits1, beadFits2;
     private List<Position> usedPositions;
@@ -65,8 +80,8 @@ public class BiplaneCalibrationProcess {
     }
 
     public void fitQuadraticPolynomials() {
-        beadFits1 = fitFixedAngle(imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
-        beadFits2 = fitFixedAngle(imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
+        beadFits1 = fitFixedAngle(angle, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
+        beadFits2 = fitFixedAngle(angle, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
 
         IJ.showStatus("Estimating homography between the planes...");
         transformationMatrix = Homography.estimateTransform((int) roi1.getFloatWidth(), (int) roi1.getFloatHeight(), beadFits1,
@@ -78,7 +93,7 @@ public class BiplaneCalibrationProcess {
                                                                                          (int) roi2.getFloatWidth(), (int) roi2.getFloatHeight(), beadFits2);
 
         //fit a quadratic polynomial to sigma1 = f(zpos) and sigma1 = f(zpos) for each bead
-        IterativeFitting polynomialFitter = new IterativeFitting(5, 0.9);
+        IterativeFitting polynomialFitter = new IterativeFitting(inlierFittingMaxIters, inlierFittingInlierFraction);
         allPolynomsS1 = new ArrayList<DefocusFunction>();
         allPolynomsS2 = new ArrayList<DefocusFunction>();
 
@@ -94,7 +109,7 @@ public class BiplaneCalibrationProcess {
             IJ.showStatus("Fitting polynoms: molecule " + moleculesProcessed + " of " + positions.size() + "...");
 
             try {
-                if(p.getSize() < 20) {
+                if(p.getSize() < minimumFitsCount) {
                     continue;
                 }
                 double z0guess = guessZ0(p);
@@ -109,8 +124,8 @@ public class BiplaneCalibrationProcess {
                 DefocusFunction polynomS1;
                 DefocusFunction polynomS2;
                 try {
-                    polynomS1 = polynomialFitter.fitParams(defocusModel, framesArray, sigma1AsArray, 750);
-                    polynomS2 = polynomialFitter.fitParams(defocusModel, framesArray, sigma2AsArray, 750);
+                    polynomS1 = polynomialFitter.fitParams(defocusModel, framesArray, sigma1AsArray, polyFitMaxIters);
+                    polynomS2 = polynomialFitter.fitParams(defocusModel, framesArray, sigma2AsArray, polyFitMaxIters);
                 } catch(TooManyEvaluationsException e) {
                     //discard not converged
                     //IJ.log(e.toString());
@@ -120,12 +135,13 @@ public class BiplaneCalibrationProcess {
                     continue;
                 }
 
-                if(!isInZRange(polynomS1.getC()) || !isInZRange(polynomS2.getC())) {//realy bad fit?
+                // defocus out of range?
+                if(checkIfDefocusIsInRange && (!isInZRange(polynomS1.getC()) || !isInZRange(polynomS2.getC()))) {
                     continue;
                 }
                 // find the center point between the minima of the two polynomials and shift the origin
                 double intersection = (polynomS1.getC() + polynomS2.getC()) / 2;
-                if(!hasEnoughData(framesArray, intersection) || !isInZRange(intersection)) {
+                if(!hasEnoughData(framesArray, intersection) || (checkIfDefocusIsInRange && !isInZRange(intersection))) {
                     continue;
                 }
                 allPolynomsS1.add(polynomS1);
@@ -146,8 +162,8 @@ public class BiplaneCalibrationProcess {
         allFrames = flattenListOfArrays(framesArrays);
         allSigma1s = flattenListOfArrays(sigma1Arrays);
         allSigma2s = flattenListOfArrays(sigma2Arrays);
-        polynomS1Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma1s, 2000);
-        polynomS2Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma2s, 2000);
+        polynomS1Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma1s, finalPolyFitMaxIters);
+        polynomS2Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma2s, finalPolyFitMaxIters);
 
         IJ.showProgress(1);
     }
@@ -167,7 +183,8 @@ public class BiplaneCalibrationProcess {
         return retVal;
     }
 
-    protected static PSFSeparator fitFixedAngle(ImagePlus imp, final Roi roi, final IFilterUI filter, final IDetectorUI detector, final BiplaneCalibrationEstimatorUI estimator, DefocusFunction defocusModel) {
+    protected static PSFSeparator fitFixedAngle(double angle, ImagePlus imp, final Roi roi, final IFilterUI filter, final IDetectorUI detector, final BiplaneCalibrationEstimatorUI estimator, DefocusFunction defocusModel) {
+        estimator.setAngle(angle);
         estimator.setDefocusModel(defocusModel);
         estimator.resetThreadLocal(); //angle changed so we need to discard the old threadlocal implementations
         //fit stack again with fixed angle
@@ -190,6 +207,9 @@ public class BiplaneCalibrationProcess {
                 for(Molecule fit : fits) {
                     fit.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, i);
                     separator.add(fit);
+                    if (showResultsTable) {
+                        IJResultsTable.getResultsTable().addRow(fit);
+                    }
                 }
                 IJ.showProgress(0.45 + 0.45 * (double) framesProcessed.intValue() / (double) stack.getSize());
                 IJ.showStatus("Fitting " + LABEL_SIGMA1 + " and " + LABEL_SIGMA2 + ": frame " + framesProcessed + " of " + stack.getSize() + "...");
@@ -197,6 +217,12 @@ public class BiplaneCalibrationProcess {
         });
         for (Position p : separator.getPositions()) {
             p.sortFitsByFrame();
+        }
+        if (showResultsTable) {
+            IJResultsTable.getResultsTable().sortTableByFrame();
+            IJResultsTable.getResultsTable().deleteColumn(LABEL_Z);     // not applicable here
+            IJResultsTable.getResultsTable().deleteColumn(LABEL_Z_REL); // not applicable here
+            IJResultsTable.getResultsTable().show();
         }
         return separator;
     }
@@ -206,25 +232,17 @@ public class BiplaneCalibrationProcess {
     }
 
     private boolean hasEnoughData(double[] framesArray, double intersection) {
-        int minPts = (int) MathProxy.max(10, 0.2 * framesArray.length);
+        int minPts = (int) MathProxy.max(minFitsInZRange, 0.2 * framesArray.length);
 
-        int smallerThanCenterSigma1 = 0;
-        int smallerThanCenterSigma2 = 0;
+        int smallerThanCenter = 0;
         for (double aFramesArray : framesArray) {
             if (aFramesArray < intersection) {
-                smallerThanCenterSigma1++;
-            }
-            if (aFramesArray < intersection) {
-                smallerThanCenterSigma2++;
+                smallerThanCenter++;
             }
         }
-        int greaterThanCenterSigma1 = framesArray.length - smallerThanCenterSigma1;
-        int greaterThanCenterSigma2 = framesArray.length - smallerThanCenterSigma2;
+        int greaterThanCenter = framesArray.length - smallerThanCenter;
 
-        return !(smallerThanCenterSigma1 < minPts
-                || greaterThanCenterSigma1 < minPts
-                || smallerThanCenterSigma2 < minPts
-                || greaterThanCenterSigma2 < minPts);
+        return !(smallerThanCenter < minPts || greaterThanCenter < minPts);
     }
 
     public DefocusCalibration getCalibration(DefocusFunction defocusModel) {
@@ -292,17 +310,17 @@ public class BiplaneCalibrationProcess {
         double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
         double[] intensityAsArray = p.getAsArray(LABEL_INTENSITY);
 
-        double[] ratiosAsArray = new double[sigma1AsArray.length];
+        double[] ratios = new double[sigma1AsArray.length];
         for(int i = 0; i < intensityAsArray.length; i++) {
-            ratiosAsArray[i] = Math.max(sigma1AsArray[i], sigma2AsArray[i]) / Math.min(sigma1AsArray[i], sigma2AsArray[i]);;
+            ratios[i] = Math.max(sigma1AsArray[i], sigma2AsArray[i]) / Math.min(sigma1AsArray[i], sigma2AsArray[i]);
+            ratios[i] /= intensityAsArray[i];
         }
 
-        double minVal = ratiosAsArray[0] / intensityAsArray[0];
+        ratios = VectorMath.movingAverage(ratios, movingAverageLag);
+
         int minIdx = 0;
-        for(int i = 1; i < ratiosAsArray.length; i++) {
-            double val = ratiosAsArray[i] / intensityAsArray[i];
-            if(val < minVal) {
-                minVal = val;
+        for(int i = 1; i < ratios.length; i++) {
+            if(ratios[i] < ratios[minIdx]) {
                 minIdx = i;
             }
         }

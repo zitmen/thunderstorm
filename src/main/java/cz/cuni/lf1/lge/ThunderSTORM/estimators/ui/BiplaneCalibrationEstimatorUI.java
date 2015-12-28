@@ -13,6 +13,8 @@ import javax.swing.*;
 public class BiplaneCalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
 
     private final String name = "Symmetric Gaussian";
+    private double angle;
+    private boolean angleWasSet = false;
     private DefocusFunction defocus = null;
 
     public BiplaneCalibrationEstimatorUI() {
@@ -61,8 +63,17 @@ public class BiplaneCalibrationEstimatorUI extends SymmetricGaussianEstimatorUI 
         return name;
     }
 
+    public void setAngle(double fixedAngle) {
+        this.angle = fixedAngle;
+        angleWasSet = true;
+    }
+
     public void setDefocusModel(DefocusFunction defocus) {
         this.defocus = defocus;
+    }
+
+    public void unsetAngle() {
+        angleWasSet = false;
     }
 
     public int getFitradius() {

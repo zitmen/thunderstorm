@@ -42,6 +42,7 @@ public class AstigmaticCalibrationProcess {
     private static final boolean checkIfDefocusIsInRange = false;
     private static final int inlierFittingMaxIters = 5;
     private static final double inlierFittingInlierFraction = 0.9;
+    private static final boolean showResultsTable = true;
 
     // processing
     IFilterUI selectedFilterUI;
@@ -138,7 +139,7 @@ public class AstigmaticCalibrationProcess {
     }
 
     public void fitQuadraticPolynomials() {
-        beadFits = fitFixedAngle();
+        beadFits = fitFixedAngle(angle, imp, roi, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
         List<Position> positions = beadFits.getPositions();
 
         //fit a quadratic polynomial to sigma1 = f(zpos) and sigma1 = f(zpos) for each bead
@@ -232,12 +233,12 @@ public class AstigmaticCalibrationProcess {
         return retVal;
     }
 
-    protected PSFSeparator fitFixedAngle() {
-        calibrationEstimatorUI.setAngle(angle);
-        calibrationEstimatorUI.setDefocusModel(defocusModel);
-        calibrationEstimatorUI.resetThreadLocal(); //angle changed so we need to discard the old threadlocal implementations
+    protected static PSFSeparator fitFixedAngle(double angle, ImagePlus imp, final Roi roi, final IFilterUI filter, final IDetectorUI detector, final AstigmatismCalibrationEstimatorUI estimator, DefocusFunction defocusModel) {
+        estimator.setAngle(angle);
+        estimator.setDefocusModel(defocusModel);
+        estimator.resetThreadLocal(); //angle changed so we need to discard the old threadlocal implementations
         //fit stack again with fixed angle
-        final PSFSeparator separator = new PSFSeparator(calibrationEstimatorUI.getFitradius());
+        final PSFSeparator separator = new PSFSeparator(estimator.getFitradius());
         final ImageStack stack = imp.getStack();
         final AtomicInteger framesProcessed = new AtomicInteger(0);
         Loop.withIndex(1, stack.getSize() + 1, new Loop.BodyWithIndex() {
@@ -249,14 +250,16 @@ public class AstigmaticCalibrationProcess {
                 FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
                 fp.setMask(roi.getMask());
                 Thresholder.setCurrentImage(fp);
-                Vector<Molecule> fits = calibrationEstimatorUI.getThreadLocalImplementation().estimateParameters(fp,
-                        Point.applyRoiMask(roi, selectedDetectorUI.getThreadLocalImplementation().detectMoleculeCandidates(selectedFilterUI.getThreadLocalImplementation().filterImage(fp))));
+                Vector<Molecule> fits = estimator.getThreadLocalImplementation().estimateParameters(fp,
+                        Point.applyRoiMask(roi, detector.getThreadLocalImplementation().detectMoleculeCandidates(filter.getThreadLocalImplementation().filterImage(fp))));
                 framesProcessed.incrementAndGet();
 
                 for(Molecule fit : fits) {
                     fit.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, i);
                     separator.add(fit);
-                    IJResultsTable.getResultsTable().addRow(fit);
+                    if (showResultsTable) {
+                        IJResultsTable.getResultsTable().addRow(fit);
+                    }
                 }
                 IJ.showProgress(0.45 + 0.45 * (double) framesProcessed.intValue() / (double) stack.getSize());
                 IJ.showStatus("Fitting " + LABEL_SIGMA1 + " and " + LABEL_SIGMA2 + ": frame " + framesProcessed + " of " + stack.getSize() + "...");
@@ -265,10 +268,12 @@ public class AstigmaticCalibrationProcess {
         for (Position p : separator.getPositions()) {
             p.sortFitsByFrame();
         }
-        IJResultsTable.getResultsTable().sortTableByFrame();
-        IJResultsTable.getResultsTable().deleteColumn(LABEL_Z);     // not applicable here
-        IJResultsTable.getResultsTable().deleteColumn(LABEL_Z_REL); // not applicable here
-        IJResultsTable.getResultsTable().show();
+        if (showResultsTable) {
+            IJResultsTable.getResultsTable().sortTableByFrame();
+            IJResultsTable.getResultsTable().deleteColumn(LABEL_Z);     // not applicable here
+            IJResultsTable.getResultsTable().deleteColumn(LABEL_Z_REL); // not applicable here
+            IJResultsTable.getResultsTable().show();
+        }
         return separator;
     }
 
@@ -413,17 +418,21 @@ public class AstigmaticCalibrationProcess {
         return p.fits.get(minIdx).getParam(LABEL_FRAME);
     }
 
+    public void drawOverlay() {
+        drawOverlay(imp, roi, beadFits.getAllFits(), usedPositions);
+    }
+
     /**
      * draws overlay with each detection and also the positions of beads that
      * were used for fitting polynomials
      */
-    public void drawOverlay() {
+    private static void drawOverlay(ImagePlus imp, Roi roi, List<Molecule> allFits, List<Position> usedPositions) {
         imp.setOverlay(null);
         Rectangle roiBounds = roi.getBounds();
 
         //allFits
-        Map<Integer, List<Molecule>> fitsByFrame = new HashMap<Integer, List<Molecule>>(beadFits.getAllFits().size());
-        for(Molecule mol : beadFits.getAllFits()) {
+        Map<Integer, List<Molecule>> fitsByFrame = new HashMap<Integer, List<Molecule>>(allFits.size());
+        for(Molecule mol : allFits) {
             int frame = (int) mol.getParam(LABEL_FRAME);
             List<Molecule> list;
             if(!fitsByFrame.containsKey(frame)) {
