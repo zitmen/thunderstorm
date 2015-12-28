@@ -86,5 +86,6 @@ abstract public class DefocusFunction extends IModuleUI<DefocusFunction> impleme
     public abstract DefocusFunction getNewInstance(double[] params, boolean scaledToNm);
     public abstract DefocusCalibration getCalibration();    // just to get an empty instance
     public abstract DefocusCalibration getCalibration(double angle, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final);
+    public abstract DefocusCalibration getCalibration(Homography.TransformationMatrix biplaneTransformation, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final);
     public abstract double[] getInitialParams(double xmin, double ymin);
 }

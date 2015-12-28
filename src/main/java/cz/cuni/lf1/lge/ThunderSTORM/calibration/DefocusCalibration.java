@@ -11,13 +11,14 @@ public abstract class DefocusCalibration {
 
     public String name;
     public boolean isBiplane;
-    public Homography.TransformationMatrix homography;
     public double angle;
     public double w01, w02;
     public double a1, a2;
     public double b1, b2;
     public double c1, c2;
     public double d1, d2;
+
+    private Homography.TransformationMatrix homography;
 
     public DefocusCalibration(String calName) {
         name = calName;
@@ -94,10 +95,6 @@ public abstract class DefocusCalibration {
 
     public boolean isBiplane() {
         return isBiplane;
-    }
-
-    public Homography.TransformationMatrix getHomography() {
-        return homography;
     }
 
     public double getAngle() {
@@ -196,9 +193,9 @@ public abstract class DefocusCalibration {
         FileWriter fw = null;
         try {
             File file = new File(path);
-            Yaml yaml = new Yaml();
             fw = new FileWriter(file);
-            yaml.dump(this, fw);
+            new Yaml().dump(this, fw);
+            new Yaml(new Homography.TransformationMatrix.YamlRepresenter()).dump(homography, fw);
             IJ.log("Calibration file saved to: " + file.getAbsolutePath());
             IJ.showStatus("Calibration file saved to " + file.getAbsolutePath());
         } finally {
@@ -206,6 +203,5 @@ public abstract class DefocusCalibration {
                 fw.close();
             }
         }
-
     }
 }

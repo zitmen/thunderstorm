@@ -122,6 +122,11 @@ public class DefocusFunctionSqrt extends DefocusFunction {
     }
 
     @Override
+    public DefocusCalibration getCalibration(Homography.TransformationMatrix biplaneTransformation, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final) {
+        return new DaostormCalibration(biplaneTransformation, polynomS1Final, polynomS2Final);
+    }
+
+    @Override
     public String toString() {
         return String.format(Locale.ENGLISH, "%e*sqrt(1 + ((z%+g)/%e)^2 %+e*((z%+g)/%e)^3 %+e*((z%+g)/%e)^4)", w0, -c, d, a, -c, d, b, -c, d);
     }

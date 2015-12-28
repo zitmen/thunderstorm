@@ -31,6 +31,13 @@ public class PolynomialCalibration extends DefocusCalibration {
         s2Par = sigma2Params;
     }
 
+    public PolynomialCalibration(Homography.TransformationMatrix biplaneTransformation, DefocusFunction sigma1Params, DefocusFunction sigma2Params) {
+        super(DefocusFunctionPoly.name, biplaneTransformation, sigma1Params.getW0(), sigma1Params.getA(), sigma1Params.getB(), sigma1Params.getC(), sigma1Params.getD(),
+                sigma2Params.getW0(), sigma2Params.getA(), sigma2Params.getB(), sigma2Params.getC(), sigma2Params.getD());
+        s1Par = sigma1Params;
+        s2Par = sigma2Params;
+    }
+
     // ---------------- SIGMA -------------- //
 
     @Override

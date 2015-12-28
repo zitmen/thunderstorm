@@ -1,7 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.PriorityQueue;
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 import org.apache.commons.math3.fitting.CurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
@@ -11,16 +11,17 @@ import org.apache.commons.math3.optim.SimplePointChecker;
 
 public class IterativeFitting {
 
-    private double inlierFraction = 0.9;
-    private int maxIterations = 5;
+    private double inlierFraction;
+    private int maxIterations;
 
-    public static void shiftInZ(double[] quadratic, double shift) {
-        quadratic[0] -= shift;
+    public IterativeFitting(int maxIterations, double inlierFraction) {
+        this.maxIterations = maxIterations;
+        this.inlierFraction = inlierFraction;
     }
 
     private double[] fit(double[] x, double[] y, ParametricUnivariateFunction function, double[] initialParams, int maxIter) {
         int numberOfInliers = (int) (inlierFraction * x.length);
-        CurveFitter<ParametricUnivariateFunction> fitter = new CurveFitter<ParametricUnivariateFunction>(new LevenbergMarquardtOptimizer(new SimplePointChecker(10e-10, 10e-10, maxIter)));
+        CurveFitter<ParametricUnivariateFunction> fitter = new CurveFitter<ParametricUnivariateFunction>(new LevenbergMarquardtOptimizer(new SimplePointChecker(10e-3, 10e-3, maxIter)));
         WeightedObservedPoint[] points = new WeightedObservedPoint[x.length];
         //fit using all points
         for(int i = 0; i < x.length; i++) {
@@ -73,26 +74,21 @@ public class IterativeFitting {
     }
 
     protected static int[] findIndicesOfSmallestN(final double[] values, int n) {
-        int[] result = new int[n];
-        PriorityQueue<Integer> topN = new PriorityQueue<Integer>(n, new Comparator<Integer>() {
+        if (values.length < n) {
+            throw new IllegalArgumentException("`values` must not have less than `n` elements!");
+        }
+
+        Integer[] indices = new Integer[values.length];
+        for(int i = 0; i < values.length; i++) indices[i] = i;
+        Arrays.sort(indices, new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {
-                return -Double.compare(values[o1], values[o2]);
+                return Double.compare(values[o1], values[o2]);
             }
         });
-        for(int i = 0; i < values.length; i++) {
-            if(topN.size() < n) {
-                topN.add(i);
-            } else {
-                if(values[topN.peek()] > values[i]) {
-                    topN.remove();
-                    topN.add(i);
-                }
-            }
-        }
-        for(int i = 0; i < result.length; i++) {
-            result[i] = topN.remove();
-        }
+
+        int[] result = new int[n];
+        for(int i = 0; i < result.length; i++) result[i] = indices[i];
         return result;
     }
 }

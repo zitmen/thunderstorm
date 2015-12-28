@@ -19,7 +19,6 @@ import ij.gui.Roi;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
-import org.apache.commons.math3.stat.ranking.NaturalRanking;
 
 import java.awt.*;
 import java.util.*;
@@ -70,11 +69,16 @@ public class BiplaneCalibrationProcess {
         beadFits2 = fitFixedAngle(imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
 
         IJ.showStatus("Estimating homography between the planes...");
-        transformationMatrix = Homography.estimateTransform(imp1.getWidth(), imp1.getHeight(), beadFits1, imp2.getWidth(), imp2.getHeight(), beadFits2);
-        Collection<Position> positions = Homography.mergePositions(transformationMatrix, beadFits1, beadFits2);
+        transformationMatrix = Homography.estimateTransform((int) roi1.getFloatWidth(), (int) roi1.getFloatHeight(), beadFits1,
+                                                            (int) roi2.getFloatWidth(), (int) roi2.getFloatHeight(), beadFits2);
+        if (transformationMatrix == null) {
+            throw new TransformEstimationFailedException("Could not estimate a transform between the planes!");
+        }
+        Collection<Position> positions = Homography.mergePositions(transformationMatrix, (int) roi1.getFloatWidth(), (int) roi1.getFloatHeight(), beadFits1,
+                                                                                         (int) roi2.getFloatWidth(), (int) roi2.getFloatHeight(), beadFits2);
 
         //fit a quadratic polynomial to sigma1 = f(zpos) and sigma1 = f(zpos) for each bead
-        IterativeFitting polynomialFitter = new IterativeFitting();
+        IterativeFitting polynomialFitter = new IterativeFitting(5, 0.9);
         allPolynomsS1 = new ArrayList<DefocusFunction>();
         allPolynomsS2 = new ArrayList<DefocusFunction>();
 
@@ -96,12 +100,12 @@ public class BiplaneCalibrationProcess {
                 double z0guess = guessZ0(p);
                 p.discardFitsByFrameRange(z0guess - zRange/stageStep, z0guess + zRange/stageStep);
 
-                //retrieve values again after filtering out fits not in range
+                // retrieve values again after filtering out fits not in range
                 double[] framesArray = p.getFramesAsArrayOfZ(z0guess, stageStep);
                 double[] sigma1AsArray = p.getAsArray(LABEL_SIGMA1);
                 double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
 
-                //fit s1,2 = polynomial(frame)
+                // fit s1,2 = polynomial(frame)
                 DefocusFunction polynomS1;
                 DefocusFunction polynomS2;
                 try {
@@ -116,10 +120,11 @@ public class BiplaneCalibrationProcess {
                     continue;
                 }
 
-                //find the center point between the minima of the two polynomials and shift the origin
+                if(!isInZRange(polynomS1.getC()) || !isInZRange(polynomS2.getC())) {//realy bad fit?
+                    continue;
+                }
+                // find the center point between the minima of the two polynomials and shift the origin
                 double intersection = (polynomS1.getC() + polynomS2.getC()) / 2;
-                polynomS1.shiftInZ(intersection);
-                polynomS2.shiftInZ(intersection);
                 if(!hasEnoughData(framesArray, intersection) || !isInZRange(intersection)) {
                     continue;
                 }
@@ -127,16 +132,12 @@ public class BiplaneCalibrationProcess {
                 allPolynomsS2.add(polynomS2);
                 usedPositions.add(p);
 
-                //save values used for fitting for this molecule, subtract moleucle the z-pos so that values from all molecules are aligned
+                // save values used for fitting for this molecule
                 sigma1Arrays.add(sigma1AsArray);
                 sigma2Arrays.add(sigma2AsArray);
-                double[] shiftedFrames = framesArray.clone();
-                for(int i = 0; i < shiftedFrames.length; i++) {
-                    shiftedFrames[i] -= intersection;
-                }
-                framesArrays.add(shiftedFrames);
+                framesArrays.add(framesArray);
             } catch(TooManyEvaluationsException ex) {
-                //discard fits that do not converge
+                // discard fits that do not converge
             }
         }
         if(framesArrays.size() < 1) {
@@ -173,7 +174,7 @@ public class BiplaneCalibrationProcess {
         final PSFSeparator separator = new PSFSeparator(estimator.getFitradius());
         final ImageStack stack = imp.getStack();
         final AtomicInteger framesProcessed = new AtomicInteger(0);
-        Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
+        Loop.withIndex(1, stack.getSize() + 1, new Loop.BodyWithIndex() {
             @Override
             public void run(int i) {
                 //fit elliptic gaussians
@@ -194,7 +195,9 @@ public class BiplaneCalibrationProcess {
                 IJ.showStatus("Fitting " + LABEL_SIGMA1 + " and " + LABEL_SIGMA2 + ": frame " + framesProcessed + " of " + stack.getSize() + "...");
             }
         });
-        //group fits from the same bead through z-stack
+        for (Position p : separator.getPositions()) {
+            p.sortFitsByFrame();
+        }
         return separator;
     }
 
@@ -225,7 +228,7 @@ public class BiplaneCalibrationProcess {
     }
 
     public DefocusCalibration getCalibration(DefocusFunction defocusModel) {
-        return defocusModel.getCalibration(0, polynomS1Final, polynomS2Final);
+        return defocusModel.getCalibration(transformationMatrix, polynomS1Final, polynomS2Final);
     }
 
     public Homography.TransformationMatrix getHomography() {
@@ -287,36 +290,30 @@ public class BiplaneCalibrationProcess {
     private static double guessZ0(Position p) {
         double[] sigma1AsArray = p.getAsArray(LABEL_SIGMA1);
         double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
-        double[] framesArray = p.getAsArray(LABEL_FRAME);
         double[] intensityAsArray = p.getAsArray(LABEL_INTENSITY);
 
-        NaturalRanking ranker = new NaturalRanking();
         double[] ratiosAsArray = new double[sigma1AsArray.length];
-        for(int i = 0; i < framesArray.length; i++) {
-            double ratio = Math.max(sigma1AsArray[i], sigma2AsArray[i]) / Math.min(sigma1AsArray[i], sigma2AsArray[i]);
-            ratiosAsArray[i] = ratio;
+        for(int i = 0; i < intensityAsArray.length; i++) {
+            ratiosAsArray[i] = Math.max(sigma1AsArray[i], sigma2AsArray[i]) / Math.min(sigma1AsArray[i], sigma2AsArray[i]);;
         }
 
-        double[] ratiosRanks = ranker.rank(ratiosAsArray);
-        double[] sigma1Ranks = ranker.rank(sigma1AsArray);
-        double[] intensityRanks = ranker.rank(intensityAsArray);
-
-        double minVal = ratiosRanks[0] * sigma1Ranks[0] / intensityRanks[0];
+        double minVal = ratiosAsArray[0] / intensityAsArray[0];
         int minIdx = 0;
-        for(int i = 0; i < ratiosRanks.length; i++) {
-            double val = ratiosRanks[i] * sigma1Ranks[i] / intensityRanks[i];
+        for(int i = 1; i < ratiosAsArray.length; i++) {
+            double val = ratiosAsArray[i] / intensityAsArray[i];
             if(val < minVal) {
                 minVal = val;
                 minIdx = i;
             }
         }
 
-        return framesArray[minIdx];
+        return p.fits.get(minIdx).getParam(LABEL_FRAME);
     }
 
     public void drawOverlay() {
         drawOverlay(imp1, roi1, beadFits1.getAllFits(), usedPositions);
-        drawOverlay(imp2, roi2, beadFits2.getAllFits(), Homography.transformPositions(transformationMatrix, usedPositions));
+        drawOverlay(imp2, roi2, beadFits2.getAllFits(), Homography.transformPositions(transformationMatrix,
+                    usedPositions, (int) roi2.getFloatWidth(), (int) roi2.getFloatHeight()));
     }
 
     /**

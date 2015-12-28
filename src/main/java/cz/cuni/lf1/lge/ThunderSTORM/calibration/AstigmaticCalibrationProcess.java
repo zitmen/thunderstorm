@@ -12,6 +12,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.*;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AstigmatismCalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
@@ -29,10 +30,20 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
-import org.apache.commons.math3.stat.ranking.NaturalRanking;
 
 public class AstigmaticCalibrationProcess {
 
+    // config
+    private static final int minimumFitsCount = 20;
+    private static final int polyFitMaxIters = 750;
+    private static final int finalPolyFitMaxIters = 2000;
+    private static final int minFitsInZRange = 10;
+    private static final int movingAverageLag = 5;
+    private static final boolean checkIfDefocusIsInRange = false;
+    private static final int inlierFittingMaxIters = 5;
+    private static final double inlierFittingInlierFraction = 0.9;
+
+    // processing
     IFilterUI selectedFilterUI;
     IDetectorUI selectedDetectorUI;
     AstigmatismCalibrationEstimatorUI calibrationEstimatorUI;
@@ -41,6 +52,7 @@ public class AstigmaticCalibrationProcess {
     double zRange;
     ImagePlus imp;
     Roi roi;
+
     //results
     private double angle = Double.NaN;
     private PSFSeparator beadFits;
@@ -130,7 +142,7 @@ public class AstigmaticCalibrationProcess {
         List<Position> positions = beadFits.getPositions();
 
         //fit a quadratic polynomial to sigma1 = f(zpos) and sigma1 = f(zpos) for each bead
-        IterativeFitting polynomialFitter = new IterativeFitting();
+        IterativeFitting polynomialFitter = new IterativeFitting(inlierFittingMaxIters, inlierFittingInlierFraction);
         allPolynomsS1 = new ArrayList<DefocusFunction>();
         allPolynomsS2 = new ArrayList<DefocusFunction>();
 
@@ -146,23 +158,23 @@ public class AstigmaticCalibrationProcess {
             IJ.showStatus("Fitting polynoms: molecule " + moleculesProcessed + " of " + positions.size() + "...");
 
             try {
-                if(p.getSize() < 20) {
+                if(p.getSize() < minimumFitsCount) {
                     continue;
                 }
                 double z0guess = guessZ0(p);
                 p.discardFitsByFrameRange(z0guess - zRange/stageStep, z0guess + zRange/stageStep);
 
-                //retrieve values again after filtering out fits not in range
+                // retrieve values again after filtering out fits not in range
                 double[] framesArray = p.getFramesAsArrayOfZ(z0guess, stageStep);
                 double[] sigma1AsArray = p.getAsArray(LABEL_SIGMA1);
                 double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
 
-                //fit s1,2 = polynomial(frame)
+                // fit s1,2 = polynomial(frame)
                 DefocusFunction polynomS1;
                 DefocusFunction polynomS2;
                 try {
-                    polynomS1 = polynomialFitter.fitParams(defocusModel, framesArray, sigma1AsArray, 750);
-                    polynomS2 = polynomialFitter.fitParams(defocusModel, framesArray, sigma2AsArray, 750);
+                    polynomS1 = polynomialFitter.fitParams(defocusModel, framesArray, sigma1AsArray, polyFitMaxIters);
+                    polynomS2 = polynomialFitter.fitParams(defocusModel, framesArray, sigma2AsArray, polyFitMaxIters);
                 } catch(TooManyEvaluationsException e) {
                     //discard not converged
                     //IJ.log(e.toString());
@@ -172,30 +184,25 @@ public class AstigmaticCalibrationProcess {
                     continue;
                 }
 
-                if(!isInZRange(polynomS1.getC()) || !isInZRange(polynomS2.getC())) {//realy bad fit?
-                    //continue;
+                // defocus out of range?
+                if(checkIfDefocusIsInRange && (!isInZRange(polynomS1.getC()) || !isInZRange(polynomS2.getC()))) {
+                    continue;
                 }
-                //find the center point between the minima of the two polynomials and shift the origin
+                // find the center point between the minima of the two polynomials and shift the origin
                 double intersection = (polynomS1.getC() + polynomS2.getC()) / 2;
-                polynomS1.shiftInZ(intersection);
-                polynomS2.shiftInZ(intersection);
-                if(!hasEnoughData(framesArray, intersection) || !isInZRange(intersection)) {
+                if(!hasEnoughData(framesArray, intersection) || (checkIfDefocusIsInRange && !isInZRange(intersection))) {
                     continue;
                 }
                 allPolynomsS1.add(polynomS1);
                 allPolynomsS2.add(polynomS2);
                 usedPositions.add(p);
 
-                //save values used for fitting for this molecule, subtract moleucle the z-pos so that values from all molecules are aligned
+                // save values used for fitting for this molecule
                 sigma1Arrays.add(sigma1AsArray);
                 sigma2Arrays.add(sigma2AsArray);
-                double[] shiftedFrames = framesArray.clone();
-                for(int i = 0; i < shiftedFrames.length; i++) {
-                    shiftedFrames[i] -= intersection;
-                }
-                framesArrays.add(shiftedFrames);
+                framesArrays.add(framesArray);
             } catch(TooManyEvaluationsException ex) {
-                //discard fits that do not converge
+                // discard fits that do not converge
             }
         }
         if(framesArrays.size() < 1) {
@@ -204,22 +211,22 @@ public class AstigmaticCalibrationProcess {
         allFrames = flattenListOfArrays(framesArrays);
         allSigma1s = flattenListOfArrays(sigma1Arrays);
         allSigma2s = flattenListOfArrays(sigma2Arrays);
-        polynomS1Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma1s, 2000);
-        polynomS2Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma2s, 2000);
+        polynomS1Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma1s, finalPolyFitMaxIters);
+        polynomS2Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma2s, finalPolyFitMaxIters);
 
         IJ.showProgress(1);
     }
 
-    private double[] flattenListOfArrays(List<double[]> list) {
+    private static double[] flattenListOfArrays(List<double[]> list) {
         int allFitsCount = 0;
         for(double[] ds : list) {
             allFitsCount += ds.length;
         }
         double[] retVal = new double[allFitsCount];
         int idx = 0;
-        for(int i = 0; i < list.size(); i++) {
-            for(int j = 0; j < list.get(i).length; j++) {
-                retVal[idx++] = list.get(i)[j];
+        for (double[] aList : list) {
+            for (double anAList : aList) {
+                retVal[idx++] = anAList;
             }
         }
         return retVal;
@@ -233,7 +240,7 @@ public class AstigmaticCalibrationProcess {
         final PSFSeparator separator = new PSFSeparator(calibrationEstimatorUI.getFitradius());
         final ImageStack stack = imp.getStack();
         final AtomicInteger framesProcessed = new AtomicInteger(0);
-        Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
+        Loop.withIndex(1, stack.getSize() + 1, new Loop.BodyWithIndex() {
             @Override
             public void run(int i) {
                 //fit elliptic gaussians
@@ -249,12 +256,19 @@ public class AstigmaticCalibrationProcess {
                 for(Molecule fit : fits) {
                     fit.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, i);
                     separator.add(fit);
+                    IJResultsTable.getResultsTable().addRow(fit);
                 }
                 IJ.showProgress(0.45 + 0.45 * (double) framesProcessed.intValue() / (double) stack.getSize());
                 IJ.showStatus("Fitting " + LABEL_SIGMA1 + " and " + LABEL_SIGMA2 + ": frame " + framesProcessed + " of " + stack.getSize() + "...");
             }
         });
-        //group fits from the same bead through z-stack
+        for (Position p : separator.getPositions()) {
+            p.sortFitsByFrame();
+        }
+        IJResultsTable.getResultsTable().sortTableByFrame();
+        IJResultsTable.getResultsTable().deleteColumn(LABEL_Z);     // not applicable here
+        IJResultsTable.getResultsTable().deleteColumn(LABEL_Z_REL); // not applicable here
+        IJResultsTable.getResultsTable().show();
         return separator;
     }
 
@@ -263,25 +277,17 @@ public class AstigmaticCalibrationProcess {
     }
 
     private boolean hasEnoughData(double[] framesArray, double intersection) {
-        int minPts = (int) MathProxy.max(10, 0.2 * framesArray.length);
+        int minPts = (int) MathProxy.max(minFitsInZRange, 0.2 * framesArray.length);
 
-        int smallerThanCenterSigma1 = 0;
-        int smallerThanCenterSigma2 = 0;
-        for(int i = 0; i < framesArray.length; i++) {
-            if(framesArray[i] < intersection) {
-                smallerThanCenterSigma1++;
-            }
-            if(framesArray[i] < intersection) {
-                smallerThanCenterSigma2++;
+        int smallerThanCenter = 0;
+        for (double aFramesArray : framesArray) {
+            if (aFramesArray < intersection) {
+                smallerThanCenter++;
             }
         }
-        int greaterThanCenterSigma1 = framesArray.length - smallerThanCenterSigma1;
-        int greaterThanCenterSigma2 = framesArray.length - smallerThanCenterSigma2;
+        int greaterThanCenter = framesArray.length - smallerThanCenter;
 
-        if(smallerThanCenterSigma1 < minPts || greaterThanCenterSigma1 < minPts || smallerThanCenterSigma2 < minPts || greaterThanCenterSigma2 < minPts) {
-            return false;
-        }
-        return true;
+        return !(smallerThanCenter < minPts || greaterThanCenter < minPts);
     }
 
     private double bootstrapMeanEstimation(List<Double> values, int resamples, int sampleSize) {
@@ -384,34 +390,27 @@ public class AstigmaticCalibrationProcess {
     /**
      * guess z0 of molecule
      */
-    private double guessZ0(Position p) {
+    private static double guessZ0(Position p) {
         double[] sigma1AsArray = p.getAsArray(LABEL_SIGMA1);
         double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
-        double[] framesArray = p.getAsArray(LABEL_FRAME);
         double[] intensityAsArray = p.getAsArray(LABEL_INTENSITY);
 
-        NaturalRanking ranker = new NaturalRanking();
-        double[] ratiosAsArray = new double[sigma1AsArray.length];
-        for(int i = 0; i < framesArray.length; i++) {
-            double ratio = Math.max(sigma1AsArray[i], sigma2AsArray[i]) / Math.min(sigma1AsArray[i], sigma2AsArray[i]);
-            ratiosAsArray[i] = ratio;
+        double[] ratios = new double[sigma1AsArray.length];
+        for(int i = 0; i < intensityAsArray.length; i++) {
+            ratios[i] = Math.max(sigma1AsArray[i], sigma2AsArray[i]) / Math.min(sigma1AsArray[i], sigma2AsArray[i]);
+            ratios[i] /= intensityAsArray[i];
         }
 
-        double[] ratiosRanks = ranker.rank(ratiosAsArray);
-        double[] sigma1Ranks = ranker.rank(sigma1AsArray);
-        double[] intensityRanks = ranker.rank(intensityAsArray);
+        ratios = VectorMath.movingAverage(ratios, movingAverageLag);
 
-        double minVal = ratiosRanks[0] * sigma1Ranks[0] / intensityRanks[0];
         int minIdx = 0;
-        for(int i = 0; i < ratiosRanks.length; i++) {
-            double val = ratiosRanks[i] * sigma1Ranks[i] / intensityRanks[i];
-            if(val < minVal) {
-                minVal = val;
+        for(int i = 1; i < ratios.length; i++) {
+            if(ratios[i] < ratios[minIdx]) {
                 minIdx = i;
             }
         }
 
-        return framesArray[minIdx];
+        return p.fits.get(minIdx).getParam(LABEL_FRAME);
     }
 
     /**

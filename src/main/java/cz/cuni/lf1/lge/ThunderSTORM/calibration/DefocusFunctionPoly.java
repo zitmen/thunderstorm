@@ -113,6 +113,11 @@ public class DefocusFunctionPoly extends DefocusFunction {
     }
 
     @Override
+    public DefocusCalibration getCalibration(Homography.TransformationMatrix biplaneTransformation, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final) {
+        return new PolynomialCalibration(biplaneTransformation, polynomS1Final, polynomS2Final);
+    }
+
+    @Override
     public double[] getInitialParams(double xmin, double ymin) {
         return new double[]{1, xmin, 1e-2, ymin, 0};
     }

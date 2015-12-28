@@ -14,7 +14,7 @@ public class IterativeQuadraticFittingTest {
     
     @Test
     public void testFitParams() {
-        IterativeFitting polynomialFitter = new IterativeFitting();
+        IterativeFitting polynomialFitter = new IterativeFitting(5, 0.9);
         
         DefocusFunction sigma1params = polynomialFitter.fitParams(new DefocusFunctionPoly(), zpos, sigma1, 1000);
         System.out.println("s1: " + sigma1params);

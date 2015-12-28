@@ -2,6 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.util.ArrayIndexComparator;
 import cz.cuni.lf1.lge.ThunderSTORM.util.IMatchable;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_FRAME;
@@ -54,6 +56,17 @@ public class PSFSeparator {
         List<Molecule> fits = new ArrayList<Molecule>();
         private List<Position> neighbors;   // just for matching
 
+        public void sortFitsByFrame() {
+            ArrayIndexComparator cmp = new ArrayIndexComparator(getAsArray(LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS));
+            Integer indices [] = cmp.createIndexArray();
+            Arrays.sort(indices, cmp);
+            List<Molecule> unsorted = fits;
+            fits = new ArrayList<Molecule>(unsorted.size());
+            for (int index : indices) {
+                fits.add(unsorted.get(index));
+            }
+        }
+
         private void add(Molecule fit) {
             sumX += fit.getX();
             sumY += fit.getY();
@@ -88,12 +101,22 @@ public class PSFSeparator {
             return array;
         }
 
-        public void setFromArray(String fieldName, double[] values) {
+        public double[] getAsArray(String fieldName, MoleculeDescriptor.Units unit) {
+            double[] array = new double[fits.size()];
+            int i = 0;
+            for(Molecule psf : fits) {
+                array[i] = psf.getParam(fieldName, unit);
+                i++;
+            }
+            return array;
+        }
+
+        public void setFromArray(String fieldName, MoleculeDescriptor.Units unit, double[] values) {
             if (values.length != fits.size()) {
                 throw new IllegalArgumentException("`values` and `fits` must be of the same length!");
             }
             for (int i = 0; i < values.length; i++) {
-                fits.get(i).setParam(fieldName, values[i]);
+                fits.get(i).insertParamAt(0, fieldName, unit, values[i]);
             }
         }
 

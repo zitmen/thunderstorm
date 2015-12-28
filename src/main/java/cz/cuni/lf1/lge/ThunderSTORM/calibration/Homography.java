@@ -4,13 +4,20 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA1;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA2;
 
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import cz.cuni.lf1.lge.ThunderSTORM.util.StableMatching;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.EigenDecomposition;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.RealVector;
+import org.apache.commons.math3.linear.*;
+import org.yaml.snakeyaml.constructor.AbstractConstruct;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.SequenceNode;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Represent;
+import org.yaml.snakeyaml.representer.Representer;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
@@ -36,10 +43,10 @@ public class Homography {
      * 4) Return the List of Positions containing the Molecules with sigmas properly set
      *    --> these are used for estimation of calibration curves
      */
-    public static Collection<Position> mergePositions(TransformationMatrix transform, PSFSeparator fits1, PSFSeparator fits2) {
+    public static Collection<Position> mergePositions(TransformationMatrix transform, int w1, int h1, PSFSeparator fits1, int w2, int h2, PSFSeparator fits2) {
         // 1)
-        List<Position> p1 = applyH(transform, fits1.getPositions());
-        List<Position> p2 = fits2.getPositions();
+        List<Position> p1 = copyInnerFits(applyH(transform, moveToCenterXY(fits1, w1, h1)), fits1.getPositions());
+        List<Position> p2 = copyInnerFits(moveToCenterXY(fits2, w2, h2), fits2.getPositions());
         for (Position p : p1) {
             p.addNeighbors(p2, dist2thr);
         }
@@ -51,8 +58,8 @@ public class Homography {
             pos1.discardFitsByFrameSet(pos2.getFramesAsSet());
             pos2.discardFitsByFrameSet(pos1.getFramesAsSet());
             // 3)
-            pos1.setFromArray(LABEL_SIGMA1, pos1.getAsArray(LABEL_SIGMA));
-            pos1.setFromArray(LABEL_SIGMA2, pos2.getAsArray(LABEL_SIGMA));
+            pos1.setFromArray(LABEL_SIGMA1, MoleculeDescriptor.Units.PIXEL, pos1.getAsArray(LABEL_SIGMA, MoleculeDescriptor.Units.PIXEL));
+            pos1.setFromArray(LABEL_SIGMA2, MoleculeDescriptor.Units.PIXEL, pos2.getAsArray(LABEL_SIGMA, MoleculeDescriptor.Units.PIXEL));
             // -> [optional] recalculate the position as it has been transformed by the transform
             pos1.recalculateCentroid();
         }
@@ -60,8 +67,18 @@ public class Homography {
         return pairs.keySet();
     }
 
-    public static List<PSFSeparator.Position> transformPositions(TransformationMatrix transformationMatrix, List<PSFSeparator.Position> positions) {
-        return applyH(transformationMatrix, positions);
+    private static List<Position> copyInnerFits(List<Position> positions, List<Position> source) {
+        if (positions.size() != source.size()) {
+            throw new IllegalArgumentException("`positions` and `source` have to be of the same size!");
+        }
+        for (int i = 0; i < positions.size(); i++) {
+            positions.get(i).fits = source.get(i).fits;
+        }
+        return positions;
+    }
+
+    public static List<PSFSeparator.Position> transformPositions(TransformationMatrix transformationMatrix, List<PSFSeparator.Position> positions, int width, int height) {
+        return moveToBoundaryXY(applyH(transformationMatrix, moveToCenterXY(positions, width, height)), width, height);
     }
 
     public static class TransformationMatrix {
@@ -74,8 +91,8 @@ public class Homography {
         public Position transform(RealMatrix vec) {
             RealMatrix res = matrix.multiply(vec);  // 1x3 matrix
             Position pos = new Position();
-            pos.centroidX = res.getEntry(0, 0) / res.getEntry(0, 2);
-            pos.centroidY = res.getEntry(0, 1) / res.getEntry(0, 2);
+            pos.centroidX = res.getEntry(0, 0) / res.getEntry(2, 0);
+            pos.centroidY = res.getEntry(1, 0) / res.getEntry(2, 0);
             return pos;
         }
 
@@ -106,12 +123,105 @@ public class Homography {
             H.matrix = matrix;
             return H;
         }
+
+        @Override
+        public String toString() {
+            if (matrix == null) return "null";
+            String str = "{";
+            for (int r = 0; r < matrix.getRowDimension(); r++) {
+                str += "{";
+                for (int c = 0; c < matrix.getColumnDimension(); c++) {
+                    str += matrix.getEntry(r, c) + ",";
+                }
+                str = str.substring(0, str.length() - 1) + "},";
+            }
+            str = str.substring(0, str.length() - 1) + "}";
+            return str;
+        }
+
+        public static TransformationMatrix getNormalization(List<Position> positions) {
+            // calculate a translation
+            Position centroid = new Position();
+            for (Position p : positions) {
+                centroid.centroidX += p.centroidX;
+                centroid.centroidY += p.centroidY;
+            }
+            centroid.centroidX /= (double) positions.size();
+            centroid.centroidY /= (double) positions.size();
+            // calculate an isotropic scale
+            double scale = 0;
+            for (Position p : positions) {
+                scale += Math.sqrt(calcDist2(centroid, p));
+            }
+            scale /= (double) positions.size() * Math.sqrt(2);
+            // create a normalization matrix
+            return TransformationMatrix.createFrom(new Array2DRowRealMatrix(new double[][]
+                {{1.0/scale, 0.0      , -centroid.centroidX/scale},
+                 {0.0      , 1.0/scale, -centroid.centroidY/scale},
+                 {0.0      , 0.0      , 1.0}}));
+        }
+
+        public static TransformationMatrix getDenormalizedHomography(TransformationMatrix homography, TransformationMatrix norm1, TransformationMatrix norm2) {
+            if (homography == null || norm1 == null || norm2 == null) return null;
+
+            RealMatrix Hhat = homography.matrix;
+            RealMatrix T1 = norm1.matrix;
+            RealMatrix T2inv = new LUDecomposition(norm2.matrix).getSolver().getInverse();
+            RealMatrix H = T2inv.multiply(Hhat).multiply(T1);
+            double norm = H.getEntry(2, 2);
+            for (int r = 0; r < 3; r++) {
+                for (int c = 0; c < 3; c++) {
+                    H.setEntry(r, c, H.getEntry(r, c) / norm);
+                }
+            }
+            return TransformationMatrix.createFrom(H);
+        }
+
+        // TODO: constructor is not used anywhere, this it's not tested!!!
+        public static class YamlConstructor extends Constructor {
+            public YamlConstructor() {
+                this.yamlConstructors.put(new Tag("!!" + TransformationMatrix.class.getCanonicalName()), new ConstructHomography());
+            }
+
+            private class ConstructHomography extends AbstractConstruct {
+                public Object construct(Node node) {
+                    List<Double> sequence = (List<Double>) constructSequence((SequenceNode) node);
+                    if (sequence == null || sequence.size() != 9) return null;
+                    double[][] mat = new double[3][3];
+                    for (int r = 0, i = 0; r < 3; r++) {
+                        for (int c = 0; c < 3; c++, i++) {
+                            mat[r][c] = sequence.get(i);
+                        }
+                    }
+                    return TransformationMatrix.createFrom(new Array2DRowRealMatrix(mat));
+                }
+            }
+        }
+
+        public static class YamlRepresenter extends Representer {
+            public YamlRepresenter() {
+                this.representers.put(Homography.TransformationMatrix.class, new RepresentHomography());
+            }
+
+            private class RepresentHomography implements Represent {
+                public Node representData(Object data) {
+                    //return representScalar(new Tag("!!" + TransformationMatrix.class.getCanonicalName()), data.toString());
+                    List<Double> sequence = new ArrayList<Double>(9);
+                    TransformationMatrix mat = (TransformationMatrix) data;
+                    for (int r = 0; r < 3; r++) {
+                        for (int c = 0; c < 3; c++) {
+                            sequence.add(mat.matrix.getEntry(r, c));
+                        }
+                    }
+                    return representSequence(new Tag("!!" + TransformationMatrix.class.getCanonicalName()), sequence, null);
+                }
+            }
+        }
     }
 
-    private static List<Position> moveToCenterXY(PSFSeparator fits, int width, int height) {
+    private static List<Position> moveToCenterXY(List<Position> posIn, int width, int height) {
         double shiftX = ((double) width) / 2.0;
         double shiftY = ((double) height) / 2.0;
-        List<Position> posIn = fits.getPositions();
         List<Position> posOut = new ArrayList<Position>(posIn.size());
         for (Position p : posIn) {
             Position pos = new Position();
@@ -122,10 +232,13 @@ public class Homography {
         return posOut;
     }
 
-    private static List<Position> moveToBoundaryXY(PSFSeparator fits, int width, int height) {
+    private static List<Position> moveToCenterXY(PSFSeparator fits, int width, int height) {
+        return moveToCenterXY(fits.getPositions(), width, height);
+    }
+
+    private static List<Position> moveToBoundaryXY(List<Position> posIn, int width, int height) {
         double shiftX = ((double) width) / 2.0;
         double shiftY = ((double) height) / 2.0;
-        List<Position> posIn = fits.getPositions();
         List<Position> posOut = new ArrayList<Position>(posIn.size());
         for (Position p : posIn) {
             Position pos = new Position();
@@ -136,8 +249,14 @@ public class Homography {
         return posOut;
     }
 
+    private static List<Position> moveToBoundaryXY(PSFSeparator fits, int width, int height) {
+        return moveToBoundaryXY(fits.getPositions(), width, height);
+    }
+
     // Find the translation between two planes using a set of corresponding points (RANSAC method is used).
     private static TransformationMatrix findTranslationAndFlip(List<Position> p1, List<Position> p2) {
+        if (p1 == null || p2 == null) return null;
+
         RansacConfig config = new RansacConfig();
         config.minPtNum = 2;
         config.iterNum = 1000;
@@ -168,13 +287,15 @@ public class Homography {
 
     // Find the homography between two planes using a set of corresponding points. RANSAC method is used.
     private static TransformationMatrix findHomography(final TransformationMatrix initialGuess, List<Position> p1, List<Position> p2) {
+        if (initialGuess == null || p1 == null || p2 == null) return null;
+
         RansacConfig config = new RansacConfig();
         config.minPtNum = 4;
         config.iterNum = 1000;
         config.thDist = 1;  // precision [px]; usualy the precision is much higher (~1e-6 px)
         config.thInlr = Math.max(2.0, Math.round(0.5 * Math.min(p1.size(), p2.size())));    // 50%
         config.pairs = true;
-        config.thPairDist = 15;   // mutual distance of paired molecules [px] (should be same as `coef.thDist` set in `findTranslationAndFlip`)
+        config.thPairDist = 50;   // mutual distance of paired molecules [px] (should be same as `coef.thDist` set in `findTranslationAndFlip`)
         config.thAllowedTransformChange = 100.0;    // point [1,1] after applying T can't move further than 100px,
                                                     // otherwise something is wrong, since this step should be just
                                                     // for fine-tuning! (this value is large on purpose, so the test
@@ -198,7 +319,11 @@ public class Homography {
         };
 
         Pair<List<Position>, List<Position>> pairs = initialPairing(config.thPairDist, initialGuess, p1, p2);
-        return ransac(pairs.first, pairs.second, config, functions);
+        TransformationMatrix norm1 = TransformationMatrix.getNormalization(pairs.first);
+        TransformationMatrix norm2 = TransformationMatrix.getNormalization(pairs.second);
+        TransformationMatrix homography = ransac(applyH(norm1, pairs.first), applyH(norm2, pairs.second), config, functions);
+        config.thDist *= norm1.matrix.getEntry(0, 0);   // isotropic scale
+        return TransformationMatrix.getDenormalizedHomography(homography, norm1, norm2);
     }
 
     private static double calcDist2(Position p1, Position p2) {
@@ -216,13 +341,14 @@ public class Homography {
         boolean[] bi = new boolean[distIdx2.size()];
         Arrays.fill(bi, false);
         for (int i = 0; i < bi.length; i++) {
-            bi[i] = distIdx1.get(distIdx2.get(i).second).second == i;
+            Pair<Double, Integer> pair = distIdx1.get(distIdx2.get(i).second);
+            bi[i] = pair.second == i;
             if (!bi[i]) {
-                distIdx2.get(i).first = Double.POSITIVE_INFINITY;
+                pair.first = Double.POSITIVE_INFINITY;
             }
         }
 
-        return distIdx2;
+        return distIdx1;
     }
 
     private static List<Pair<Double, Integer>> pDist2(List<Position> pts1, List<Position> pts2) {
@@ -239,14 +365,8 @@ public class Homography {
     private static Pair<double[][], int[][]> pDist2All(List<Position> pts1, List<Position> pts2) {
         final double[][] distMap = new double[pts1.size()][pts2.size()];
         for (int i = 0; i < pts1.size(); i++) {
-            for (int j = 0; j < pts2.size() && j < i; j++) {
-                distMap[i][j] = calcDist2(pts1.get(i), pts2.get(j));
-            }
-            if (i < pts2.size()) {
-                distMap[i][i] = Double.POSITIVE_INFINITY;
-            }
-            for (int j = i + 1; j < pts2.size(); j++) {
-                distMap[i][j] = distMap[j][i];
+            for (int j = 0; j < pts2.size(); j++) {
+                distMap[i][j] = Math.sqrt(calcDist2(pts1.get(i), pts2.get(j)));
             }
         }
         int[][] idxMap = new int[pts1.size()][pts2.size()];
@@ -387,12 +507,11 @@ public class Homography {
      */
     private static Pair<List<Position>, List<Position>> initialPairing(double thPairDist, TransformationMatrix H, List<Position> pts1, List<Position> pts2) {
         Pair<double[][], int[][]> DI = pDist2All(pts2, applyH(H, pts1));
-        double thr2 = thPairDist * thPairDist;
         List<Position> X = new ArrayList<Position>();
         List<Position> Y = new ArrayList<Position>();
         for (int i = 0; i < DI.first.length; i++){
-            for (int j = 0; j < DI.first[i].length && j < i; j++){
-                if (DI.first[i][j] < thr2) {
+            for (int j = 0; j < DI.first[i].length; j++){
+                if (DI.first[i][j] < thPairDist) {
                     X.add(pts1.get(j));
                     Y.add(pts2.get(i));
                 }
@@ -403,33 +522,40 @@ public class Homography {
 
     // H is 3x3, H*[pts1(:,i);1] ~ [pts2(:,i);1], H(3,3) = 1
     private static TransformationMatrix solveHomography(List<Position> p1, List<Position> p2) {
+        if (p1.size() != p2.size()) {
+            throw new IllegalArgumentException("`p1` and `p2` must have the same number of elements!");
+        }
+        if (p1.size() < 4) {
+            throw new IllegalArgumentException("Homography can't be solved for less than 4 points of interest!");
+        }
+
         double[][] A = zeros(2*p1.size(), 9);
         for (int i = 0; i < p1.size(); i++) {
             A[2*i][0] = p1.get(i).centroidX;
             A[2*i][1] = p1.get(i).centroidY;
-            A[2*i][3] = 1.0;
-            A[2*i+1][4] = p1.get(i).centroidX;
-            A[2*i+1][5] = p1.get(i).centroidY;
-            A[2*i+1][6] = 1.0;
-            A[2*i][7] = -p2.get(i).centroidX * p1.get(i).centroidX;
+            A[2*i][2] = 1.0;
+            A[2*i+1][3] = p1.get(i).centroidX;
+            A[2*i+1][4] = p1.get(i).centroidY;
+            A[2*i+1][5] = 1.0;
+            A[2*i][6] = -p2.get(i).centroidX * p1.get(i).centroidX;
+            A[2*i+1][6] = -p2.get(i).centroidY * p1.get(i).centroidX;
+            A[2*i][7] = -p2.get(i).centroidX * p1.get(i).centroidY;
             A[2*i+1][7] = -p2.get(i).centroidY * p1.get(i).centroidY;
-            A[2*i][8] = -p2.get(i).centroidY * p1.get(i).centroidX ;
-            A[2*i+1][8] = -p2.get(i).centroidX * 1.0;
-            A[2*i][9] = -p2.get(i).centroidX * p1.get(i).centroidY;
-            A[2*i+1][9] = -p2.get(i).centroidY * 1.0;
+            A[2*i][8] = -p2.get(i).centroidX;
+            A[2*i+1][8] = -p2.get(i).centroidY;
         }
 
         // [evec,~] = eig(A'*A);
         Array2DRowRealMatrix matA = new Array2DRowRealMatrix(A);
-        EigenDecomposition eig = new EigenDecomposition(matA.multiply(matA.transpose()));
+        EigenDecomposition eig = new EigenDecomposition(matA.transpose().multiply(matA));
 
         // H = reshape(evec(:,1),[3,3])';
         // H = H/H(end); % make H(3,3) = 1
         Array2DRowRealMatrix H = new Array2DRowRealMatrix(3, 3);
-        RealVector eigVec = eig.getEigenvector(1);
+        RealVector eigVec = eig.getEigenvector(8);
         for (int r = 0, i = 0; r < 3; r++) {
             for (int c = 0; c < 3; c++, i++) {
-                H.setEntry(r, c, eigVec.getEntry(i) / eigVec.getEntry(9));
+                H.setEntry(r, c, eigVec.getEntry(i) / eigVec.getEntry(8));
             }
         }
 
@@ -497,28 +623,31 @@ public class Homography {
             throw new IllegalArgumentException("ransac: `p1` and `p2` must have the same number of items!");
         }
 
-        int[] inlrNum = new int[conf.iterNum];
-        double[] inlrDist = new double[conf.iterNum];
-        TransformationMatrix[] fLib = new TransformationMatrix[conf.iterNum];
+        List<Integer> inlrNum = new ArrayList<Integer>(conf.iterNum);
+        List<Double> inlrDist = new ArrayList<Double>(conf.iterNum);
+        List<TransformationMatrix> fLib = new ArrayList<TransformationMatrix>(conf.iterNum);
 
-        for (int p = 1; p <= conf.iterNum; p++) {
+        for (int p = 0; p < conf.iterNum; p++) {
             // 1. fit using  random points
-            int[] sampleIdx1 = randIndex(ptNum1, conf.minPtNum);
-            int[] sampleIdx2 = conf.pairs ? sampleIdx1 : randIndex(ptNum2, conf.minPtNum);
+            int[] sampleIdx1 = randIndex(ptNum1 - 1, conf.minPtNum);
+            int[] sampleIdx2 = conf.pairs ? sampleIdx1 : randIndex(ptNum2 - 1, conf.minPtNum);
             TransformationMatrix f1 = functions.findTransform(select(p1, sampleIdx1), select(p2, sampleIdx2));
+            if (!functions.isResultValid(f1)) continue;
 
             // 2. count the inliers, if more than thInlr, refit; else iterate
             List<Pair<Double, Integer>> distIdx = functions.distance(f1, p1, p2);
             List<Integer> inlier1 = findInliers(distIdx, conf.thDist);
-            if (!functions.isResultValid(f1)) continue;
             if (inlier1.size() < conf.thInlr) continue;
-            inlrNum[p] = inlier1.size();
-            inlrDist[p] = VectorMath.sum(selectDistances(distIdx, inlier1));
-            fLib[p] = functions.findTransform(select(p1, inlier1), select(p2, selectIndices(distIdx, inlier1)));
+
+            // 3. store the transform made of the inliers
+            inlrNum.add(inlier1.size());
+            inlrDist.add(VectorMath.sum(selectDistances(distIdx, inlier1)));
+            fLib.add(functions.findTransform(select(p1, inlier1), select(p2, selectIndices(distIdx, inlier1))));
         }
 
-        // 3. choose the coef with the most inliers
-        return fLib[findBest(inlrNum, inlrDist)];
+        // 4. choose the coef with the most inliers
+        if (inlrNum.isEmpty()) return null;
+        return fLib.get(findBest(inlrNum, inlrDist));
     }
 
     /**
@@ -526,15 +655,18 @@ public class Homography {
      * with the same number of inliers, then choose the one with the
      * minimum distance.
      */
-    private static int findBest(int[] inlrNum, double[] inlrDist) {
-        if (inlrNum.length != inlrDist.length) {
+    private static int findBest(List<Integer> inlrNum, List<Double> inlrDist) {
+        if (inlrNum.size() != inlrDist.size()) {
             throw new IllegalArgumentException("`inlrNum` and `inlrDist` must have the same number of elements!");
         }
-        int maxInlrVal = VectorMath.max(inlrNum);
-        int minDistIdx = 0;
-        for (int i = 1; i < inlrNum.length; i++) {
-            if (inlrNum[i] == maxInlrVal) {
-                if (inlrDist[i] < inlrDist[minDistIdx]) {
+        int minDistIdx = 0, maxInlrVal = inlrNum.get(0);
+        for (int i = 1; i < inlrNum.size(); i++) {
+            int inlr = inlrNum.get(i);
+            if (inlr > maxInlrVal) {
+                maxInlrVal = inlr;
+                minDistIdx = i;
+            } else if (inlr == maxInlrVal) {
+                if (inlrDist.get(i) < inlrDist.get(minDistIdx)) {
                     minDistIdx = i;
                 }
             }
@@ -546,7 +678,7 @@ public class Homography {
      * Randomly, non-repeatedly select `len` integers from 1:`maxIndex`.
      */
     private static int[] randIndex(int maxIndex, int len) {
-        if (len >= maxIndex) {
+        if (len > maxIndex + 1) {
             throw new IllegalArgumentException("randIndex: `len` can't be greater than number of indices when selecting non-repeatedly!");
         }
 
@@ -572,10 +704,10 @@ public class Homography {
         return ret;
     }
 
-    private static List<Integer> findInliers(List<Pair<Double, Integer>> distIdx, double thDist2) {
+    private static List<Integer> findInliers(List<Pair<Double, Integer>> distIdx, double thDist) {
         List<Integer> ret = new ArrayList<Integer>();
         for (int i = 0; i < distIdx.size(); i++) {
-            if (distIdx.get(i).first < thDist2) {
+            if (distIdx.get(i).first < thDist) {
                 ret.add(i);
             }
         }
@@ -584,16 +716,16 @@ public class Homography {
 
     private static int[] selectIndices(List<Pair<Double, Integer>> distIdx, List<Integer> idx) {
         int[] ret = new int[idx.size()];
-        for (int i : idx) {
-            ret[i] = distIdx.get(i).second;
+        for (int i = 0; i < idx.size(); i++) {
+            ret[i] = distIdx.get(idx.get(i)).second;
         }
         return ret;
     }
 
     private static double[] selectDistances(List<Pair<Double, Integer>> distIdx, List<Integer> idx) {
         double[] ret = new double[idx.size()];
-        for (int i : idx) {
-            ret[i] = distIdx.get(i).first;
+        for (int i = 0; i < idx.size(); i++) {
+            ret[i] = distIdx.get(idx.get(i)).first;
         }
         return ret;
     }

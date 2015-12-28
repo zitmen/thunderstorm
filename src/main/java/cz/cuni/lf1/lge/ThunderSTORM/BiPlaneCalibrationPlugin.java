@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.BiplaneCalibrationProcess;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.NoMoleculesFittedException;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.TransformEstimationFailedException;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.BiplaneCalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
@@ -91,17 +92,31 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
             roi1 = imp1.getRoi() != null ? imp1.getRoi() : new Roi(0, 0, imp1.getWidth(), imp1.getHeight());
             roi2 = imp2.getRoi() != null ? imp2.getRoi() : new Roi(0, 0, imp2.getWidth(), imp2.getHeight());
 
+            if (roi1.getFloatWidth() != roi2.getFloatWidth() || roi1.getFloatHeight() != roi2.getFloatHeight()) {
+                IJ.error("Both used images (or ROIs) must be of the same size!");
+                return;
+            }
+
             //perform the calibration
             final BiplaneCalibrationProcess process = new BiplaneCalibrationProcess(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, imp1, imp2, roi1, roi2);
 
             try {
                 process.fitQuadraticPolynomials();
+                IJ.log("Homography transformation matrix: " + process.getHomography().toString());
                 IJ.log("s1 = " + process.getPolynomS1Final().toString());
                 IJ.log("s2 = " + process.getPolynomS2Final().toString());
+            } catch(TransformEstimationFailedException ex) {
+                IJ.showMessage("Error", ex.getMessage());
+                IJ.showStatus("Calibration failed.");
+                IJ.showProgress(1.0);
+                return;
             } catch(NoMoleculesFittedException ex) {
-                //if no beads were succesfully fitted, draw localizations anyway
+                // if no beads were successfully fitted, draw localizations anyway
+                IJ.log("Homography transformation matrix: " + process.getHomography().toString());
                 process.drawOverlay();
-                IJ.handleException(ex);
+                IJ.showMessage("Error", ex.getMessage());
+                IJ.showStatus("Calibration failed.");
+                IJ.showProgress(1.0);
                 return;
             }
             process.drawOverlay();
