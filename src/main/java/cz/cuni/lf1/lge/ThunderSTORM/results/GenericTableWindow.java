@@ -323,6 +323,9 @@ public class GenericTableWindow {
         @Override
         public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
             final Component c = super.prepareRenderer(renderer, row, column);
+            if (column < 0 || column >= getColumnCount()) return c;
+            if (row < 0 || row >= getRowCount()) return c;
+
             NumberFormat formatter = NumberFormat.getInstance(Locale.ENGLISH);
             ((DecimalFormat) formatter).setGroupingUsed(false);
             ((JLabel) c).setText(formatter.format(getValueAt(row, column)));

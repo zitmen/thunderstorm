@@ -2,15 +2,13 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.*;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 
 import javax.swing.*;
 
-public class BiplaneCalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
+public class BiplaneCalibrationEstimatorUI extends SymmetricGaussianEstimatorUI implements ICalibrationEstimatorUI {
 
     private final String name = "Symmetric Gaussian";
     private double angle;

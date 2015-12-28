@@ -9,7 +9,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 
 import javax.swing.*;
 
-public class AstigmatismCalibrationEstimatorUI extends SymmetricGaussianEstimatorUI {
+public class AstigmatismCalibrationEstimatorUI extends SymmetricGaussianEstimatorUI implements ICalibrationEstimatorUI {
 
     private final String name = "Elliptic Gaussian w/ angle";
     private double angle;

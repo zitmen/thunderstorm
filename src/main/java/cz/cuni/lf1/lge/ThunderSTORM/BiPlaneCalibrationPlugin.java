@@ -12,17 +12,13 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.Utils;
+import cz.cuni.lf1.lge.ThunderSTORM.util.UI;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.Plot;
 import ij.gui.Roi;
 import ij.plugin.PlugIn;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -97,8 +93,10 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
                 return;
             }
 
-            //perform the calibration
-            final BiplaneCalibrationProcess process = new BiplaneCalibrationProcess(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, imp1, imp2, roi1, roi2);
+            // perform the calibration
+            final BiplaneCalibrationProcess process = new BiplaneCalibrationProcess(
+                    selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI,
+                    defocusModel, stageStep, zRangeLimit, imp1, imp2, roi1, roi2);
 
             try {
                 process.fitQuadraticPolynomials();
@@ -120,112 +118,15 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
                 return;
             }
             process.drawOverlay();
-            drawSigmaPlots(process.getAllPolynomsS1(), process.getAllPolynomsS2(),
-                    process.getPolynomS1Final(), process.getPolynomS2Final(),
-                    process.getAllFrames(), process.getAllSigma1s(), process.getAllSigma2s());
+            process.drawSigmaPlots();
 
             try {
                 process.getCalibration(defocusModel).saveToFile(savePath);
             } catch(IOException ex) {
-                showAnotherLocationDialog(ex, process);
+                UI.showAnotherLocationDialog(ex, process.getCalibration(defocusModel));
             }
         } catch(Exception ex) {
             IJ.handleException(ex);
         }
-    }
-
-    private void showAnotherLocationDialog(IOException ex, final BiplaneCalibrationProcess process) {
-        final JDialog dialog = new JDialog(IJ.getInstance(), "Error");
-        dialog.getContentPane().setLayout(new BorderLayout(0, 10));
-        dialog.getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        dialog.add(new JLabel("Could not save calibration file. " + ex.getMessage(), SwingConstants.CENTER));
-        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-        JButton ok = new JButton("OK");
-        dialog.getRootPane().setDefaultButton(ok);
-        ok.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose();
-            }
-        });
-        JButton newLocation = new JButton("Save to other path");
-        newLocation.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser jfc = new JFileChooser(IJ.getDirectory("image"));
-                jfc.showSaveDialog(null);
-                File f = jfc.getSelectedFile();
-                if(f != null) {
-                    try {
-                        process.getCalibration(defocusModel).saveToFile(f.getAbsolutePath());
-                    } catch(IOException ex) {
-                        showAnotherLocationDialog(ex, process);
-                    }
-                }
-                dialog.dispose();
-            }
-        });
-        buttonsPane.add(newLocation);
-        buttonsPane.add(ok);
-        dialog.getContentPane().add(buttonsPane, BorderLayout.SOUTH);
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.getRootPane().setDefaultButton(ok);
-        dialog.pack();
-        ok.requestFocusInWindow();
-        dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
-    }
-
-    private void drawSigmaPlots(List<DefocusFunction> sigma1Quadratics, List<DefocusFunction> sigma2Quadratics,
-                                DefocusFunction sigma1param, DefocusFunction sigma2param,
-                                double[] allFrames, double[] allSigma1s, double[] allSigma2s) {
-
-        Plot plot = new Plot("Sigma", "z [nm]", "sigma [px]", null, (float[]) null);
-        plot.setSize(1024, 768);
-        //range
-        plot.setLimits(-2*zRangeLimit, +2*zRangeLimit, 0, stageStep);
-        double[] xVals = new double[(int)(2*zRangeLimit/stageStep) * 2 + 1];
-        for(int val = -2*(int)zRangeLimit, i = 0; val <= +2*(int)zRangeLimit; val += stageStep, i++) {
-            xVals[i] = val;
-        }
-        plot.draw();
-        //add points
-        plot.setColor(new Color(255, 200, 200));
-        plot.addPoints(allFrames, allSigma1s, Plot.CROSS);
-        plot.setColor(new Color(200, 200, 255));
-        plot.addPoints(allFrames, allSigma2s, Plot.CROSS);
-
-        //add polynomials
-        for(int i = 0; i < sigma1Quadratics.size(); i++) {
-            double[] sigma1Vals = new double[xVals.length];
-            double[] sigma2Vals = new double[xVals.length];
-            for(int j = 0; j < sigma1Vals.length; j++) {
-                sigma1Vals[j] = sigma1Quadratics.get(i).value(xVals[j]);
-                sigma2Vals[j] = sigma2Quadratics.get(i).value(xVals[j]);
-            }
-            plot.setColor(new Color(255, 230, 230));
-            plot.addPoints(xVals, sigma1Vals, Plot.LINE);
-            plot.setColor(new Color(230, 230, 255));
-            plot.addPoints(xVals, sigma2Vals, Plot.LINE);
-        }
-
-        //add final fitted curves
-        double[] sigma1ValsAll = new double[xVals.length];
-        double[] sigma2ValsAll = new double[xVals.length];
-        for(int j = 0; j < sigma1ValsAll.length; j++) {
-            sigma1ValsAll[j] = sigma1param.value(xVals[j]);
-            sigma2ValsAll[j] = sigma2param.value(xVals[j]);
-        }
-        plot.setColor(new Color(255, 0, 0));
-        plot.addPoints(xVals, sigma1ValsAll, Plot.LINE);
-        plot.setColor(new Color(0, 0, 255));
-        plot.addPoints(xVals, sigma2ValsAll, Plot.LINE);
-
-        //legend
-        plot.setColor(Color.red);
-        plot.addLabel(0.1, 0.8, "sigma1");
-        plot.setColor(Color.blue);
-        plot.addLabel(0.1, 0.9, "sigma2");
-        plot.show();
     }
 }

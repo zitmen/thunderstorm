@@ -195,7 +195,9 @@ public abstract class DefocusCalibration {
             File file = new File(path);
             fw = new FileWriter(file);
             new Yaml().dump(this, fw);
-            new Yaml(new Homography.TransformationMatrix.YamlRepresenter()).dump(homography, fw);
+            if (homography != null) {
+                new Yaml(new Homography.TransformationMatrix.YamlRepresenter()).dump(homography, fw);
+            }
             IJ.log("Calibration file saved to: " + file.getAbsolutePath());
             IJ.showStatus("Calibration file saved to " + file.getAbsolutePath());
         } finally {
