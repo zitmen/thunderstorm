@@ -2,12 +2,11 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.BiplaneCalibrationDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.BiplaneCalibrationProcess;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.NoMoleculesFittedException;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.TransformEstimationFailedException;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.*;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AstigmaticBiplaneCalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.BiplaneCalibrationEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.ICalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
@@ -28,7 +27,7 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
     DefocusFunction defocusModel;
     IFilterUI selectedFilterUI;
     IDetectorUI selectedDetectorUI;
-    BiplaneCalibrationEstimatorUI calibrationEstimatorUI;
+    ICalibrationEstimatorUI calibrationEstimatorUI;
     String savePath;
     double stageStep;
     double zRangeLimit;//in nm
@@ -58,10 +57,9 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
         //
         try {
             //load modules
-            calibrationEstimatorUI = new BiplaneCalibrationEstimatorUI();
             List<IFilterUI> filters = ModuleLoader.getUIModules(IFilterUI.class);
             List<IDetectorUI> detectors = ModuleLoader.getUIModules(IDetectorUI.class);
-            List<IEstimatorUI> estimators = Arrays.asList(new IEstimatorUI[]{calibrationEstimatorUI}); // only one estimator can be used
+            List<IEstimatorUI> estimators = Arrays.asList(new IEstimatorUI[]{new BiplaneCalibrationEstimatorUI(), new AstigmaticBiplaneCalibrationEstimatorUI()}); // only certain estimators can be used
             List<DefocusFunction> defocusFunctions = ModuleLoader.getUIModules(DefocusFunction.class);
             Thresholder.loadFilters(filters);
 
@@ -77,6 +75,7 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
             }
             selectedFilterUI = dialog.getActiveFilterUI();
             selectedDetectorUI = dialog.getActiveDetectorUI();
+            calibrationEstimatorUI = (ICalibrationEstimatorUI) dialog.getActiveEstimatorUI();
             savePath = dialog.getSavePath();
             stageStep = dialog.getStageStep();
             zRangeLimit = dialog.getZRangeLimit();
@@ -94,15 +93,12 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
             }
 
             // perform the calibration
-            final BiplaneCalibrationProcess process = new BiplaneCalibrationProcess(
+            final ICalibrationProcess process = CalibrationProcessFactory.create(
                     selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI,
                     defocusModel, stageStep, zRangeLimit, imp1, imp2, roi1, roi2);
 
             try {
-                process.fitQuadraticPolynomials();
-                IJ.log("Homography transformation matrix: " + process.getHomography().toString());
-                IJ.log("s1 = " + process.getPolynomS1Final().toString());
-                IJ.log("s2 = " + process.getPolynomS2Final().toString());
+                process.runCalibration();
             } catch(TransformEstimationFailedException ex) {
                 IJ.showMessage("Error", ex.getMessage());
                 IJ.showStatus("Calibration failed.");
@@ -110,7 +106,6 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
                 return;
             } catch(NoMoleculesFittedException ex) {
                 // if no beads were successfully fitted, draw localizations anyway
-                IJ.log("Homography transformation matrix: " + process.getHomography().toString());
                 process.drawOverlay();
                 IJ.showMessage("Error", ex.getMessage());
                 IJ.showStatus("Calibration failed.");

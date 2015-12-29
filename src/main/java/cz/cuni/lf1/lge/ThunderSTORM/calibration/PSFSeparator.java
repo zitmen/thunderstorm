@@ -76,6 +76,24 @@ public class PSFSeparator {
             centroidY = sumY / (double) fits.size();
         }
 
+        public void validate() {
+            // ensure only a single fit per frame! (it's very important for a calibration process)
+            // one option to solve this would be to select only the fit closest to the centroid, however,
+            // we expect that quality of the closes fit could be negatively influenced by the nearby
+            // eliminated fits, thus the solution we use is elimination of all such fits!
+            Set<Integer> visited = new HashSet<Integer>();
+            int frame;
+            Iterator<Molecule> iter = fits.iterator();
+            while (iter.hasNext()) {
+                frame = (int) iter.next().getParam(LABEL_FRAME);
+                if (visited.contains(frame)) {
+                    iter.remove();
+                } else {
+                    visited.add(frame);
+                }
+            }
+        }
+
         public void recalculateCentroid() {
             sumX = 0.0;
             sumY = 0.0;
@@ -92,6 +110,9 @@ public class PSFSeparator {
         }
 
         public double[] getAsArray(String fieldName) {
+            if (fits.isEmpty()) return null;
+            if (!fits.get(0).hasParam(fieldName)) return null;
+
             double[] array = new double[fits.size()];
             int i = 0;
             for(Molecule psf : fits) {
@@ -102,6 +123,9 @@ public class PSFSeparator {
         }
 
         public double[] getAsArray(String fieldName, MoleculeDescriptor.Units unit) {
+            if (fits.isEmpty()) return null;
+            if (!fits.get(0).hasParam(fieldName)) return null;
+
             double[] array = new double[fits.size()];
             int i = 0;
             for(Molecule psf : fits) {
@@ -121,6 +145,9 @@ public class PSFSeparator {
         }
 
         public double[] getFramesAsArrayOfZ(double z0, double stageStep) {
+            if (fits.isEmpty()) return null;
+            if (!fits.get(0).hasParam(LABEL_FRAME)) return null;
+
             double[] array = new double[fits.size()];
             int i = 0;
             for(Molecule psf : fits) {

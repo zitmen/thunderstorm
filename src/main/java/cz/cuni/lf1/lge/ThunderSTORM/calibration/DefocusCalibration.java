@@ -18,7 +18,7 @@ public abstract class DefocusCalibration {
     public double c1, c2;
     public double d1, d2;
 
-    private Homography.TransformationMatrix homography;
+    protected Homography.TransformationMatrix homography;
 
     public DefocusCalibration(String calName) {
         name = calName;
@@ -32,27 +32,10 @@ public abstract class DefocusCalibration {
         d1 = d2 = 0.0;
     }
 
-    public DefocusCalibration(String calName, double angle, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
+    public DefocusCalibration(String calName, double angle, Homography.TransformationMatrix homography, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
         name = calName;
         this.angle = angle;
-        this.isBiplane = false;
-        this.homography = null;
-        this.w01 = w01;
-        this.a1 = a1;
-        this.b1 = b1;
-        this.c1 = c1;
-        this.d1 = d1;
-        this.w02 = w02;
-        this.a2 = a2;
-        this.b2 = b2;
-        this.c2 = c2;
-        this.d2 = d2;
-    }
-
-    public DefocusCalibration(String calName, Homography.TransformationMatrix homography, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
-        name = calName;
-        this.angle = 0.0;
-        this.isBiplane = true;
+        this.isBiplane = (homography == null);
         this.homography = homography;
         this.w01 = w01;
         this.a1 = a1;

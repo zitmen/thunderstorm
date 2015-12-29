@@ -13,21 +13,14 @@ public class DaostormCalibration extends DefocusCalibration {
         s2Par = null;
     }
 
-    public DaostormCalibration(double angle, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
-        super(DefocusFunctionSqrt.name, angle, w01, a1, b1, c1, d1, w02, a2, b2, c2, d2);
+    public DaostormCalibration(double angle, Homography.TransformationMatrix biplaneTransformation, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
+        super(DefocusFunctionSqrt.name, angle, biplaneTransformation, w01, a1, b1, c1, d1, w02, a2, b2, c2, d2);
         s1Par = null;
         s2Par = null;
     }
 
-    public DaostormCalibration(double angle, DefocusFunction sigma1Params, DefocusFunction sigma2Params) {
-        super(DefocusFunctionSqrt.name, angle, sigma1Params.getW0(), sigma1Params.getA(), sigma1Params.getB(), sigma1Params.getC(), sigma1Params.getD(),
-                                               sigma2Params.getW0(), sigma2Params.getA(), sigma2Params.getB(), sigma2Params.getC(), sigma2Params.getD());
-        s1Par = sigma1Params;
-        s2Par = sigma2Params;
-    }
-
-    public DaostormCalibration(Homography.TransformationMatrix biplaneTransformation, DefocusFunction sigma1Params, DefocusFunction sigma2Params) {
-        super(DefocusFunctionSqrt.name, biplaneTransformation, sigma1Params.getW0(), sigma1Params.getA(), sigma1Params.getB(), sigma1Params.getC(), sigma1Params.getD(),
+    public DaostormCalibration(double angle, Homography.TransformationMatrix biplaneTransformation, DefocusFunction sigma1Params, DefocusFunction sigma2Params) {
+        super(DefocusFunctionSqrt.name, angle, biplaneTransformation, sigma1Params.getW0(), sigma1Params.getA(), sigma1Params.getB(), sigma1Params.getC(), sigma1Params.getD(),
                 sigma2Params.getW0(), sigma2Params.getA(), sigma2Params.getB(), sigma2Params.getC(), sigma2Params.getD());
         s1Par = sigma1Params;
         s2Par = sigma2Params;

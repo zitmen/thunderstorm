@@ -11,7 +11,7 @@ public class PolynomialCalibrationTest {
         double angle = 45;
         double[] sigma1 = {1, -10, 0.0003, 1.986, 1};
         double[] sigma2 = {1, 2.2354, 0.0003, 2.015, 1};
-        PolynomialCalibration calibration = new PolynomialCalibration(angle, new DefocusFunctionPoly(sigma1, false), new DefocusFunctionPoly(sigma2, false));
+        PolynomialCalibration calibration = new PolynomialCalibration(angle, null, new DefocusFunctionPoly(sigma1, false), new DefocusFunctionPoly(sigma2, false));
         Yaml yaml = new Yaml();
         String output = yaml.dump(calibration);
         System.out.println(output);

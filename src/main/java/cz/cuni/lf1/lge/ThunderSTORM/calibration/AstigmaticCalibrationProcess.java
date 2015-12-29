@@ -1,13 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AstigmatismCalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
-
-import java.util.Collection;
 
 public class AstigmaticCalibrationProcess extends AbstractCalibrationProcess {
 
@@ -18,22 +16,29 @@ public class AstigmaticCalibrationProcess extends AbstractCalibrationProcess {
     // results
     private PSFSeparator beadFits;
 
-    public AstigmaticCalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, AstigmatismCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit, ImagePlus imp, Roi roi) {
+    public AstigmaticCalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, AstigmatismCalibrationEstimatorUI calibrationEstimatorUI,
+                                        DefocusFunction defocusModel, double stageStep, double zRangeLimit, ImagePlus imp, Roi roi) {
         super(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
         this.imp = imp;
         this.roi = roi;
     }
 
     @Override
-    protected Collection<Position> fitPositions(double angle) {
+    public void runCalibration() {
+        angle = estimateAngle(imp, roi);
+        IJ.log("angle = " + angle);
+
         beadFits = fitFixedAngle(angle, imp, roi, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
-        return beadFits.getPositions();
+        fitQuadraticPolynomials(beadFits.getPositions());
+        IJ.log("s1 = " + polynomS1Final.toString());
+        IJ.log("s2 = " + polynomS1Final.toString());
     }
 
     public DefocusCalibration getCalibration(DefocusFunction defocusModel) {
-        return defocusModel.getCalibration(angle, polynomS1Final, polynomS2Final);
+        return defocusModel.getCalibration(angle, null, polynomS1Final, polynomS2Final);
     }
 
+    @Override
     public void drawOverlay() {
         drawOverlay(imp, roi, beadFits.getAllFits(), usedPositions);
     }

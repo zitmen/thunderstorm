@@ -117,13 +117,8 @@ public class DefocusFunctionSqrt extends DefocusFunction {
     }
 
     @Override
-    public DefocusCalibration getCalibration(double angle, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final) {
-        return new DaostormCalibration(angle, polynomS1Final, polynomS2Final);
-    }
-
-    @Override
-    public DefocusCalibration getCalibration(Homography.TransformationMatrix biplaneTransformation, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final) {
-        return new DaostormCalibration(biplaneTransformation, polynomS1Final, polynomS2Final);
+    public DefocusCalibration getCalibration(double angle, Homography.TransformationMatrix biplaneTransformation, DefocusFunction polynomS1Final, DefocusFunction polynomS2Final) {
+        return new DaostormCalibration(angle, biplaneTransformation, polynomS1Final, polynomS2Final);
     }
 
     @Override

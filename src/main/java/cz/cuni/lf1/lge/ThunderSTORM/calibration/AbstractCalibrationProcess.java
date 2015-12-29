@@ -30,18 +30,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_FRAME;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.*;
 
-abstract class AbstractCalibrationProcess {
+abstract class AbstractCalibrationProcess implements ICalibrationProcess {
 
     // config
     protected static final int minimumFitsCount = 20;
     protected static final int polyFitMaxIters = 750;
     protected static final int finalPolyFitMaxIters = 2000;
-    protected static final int minFitsInZRange = 10;
+    protected static final int minFitsInZRange = 3;
     protected static final int movingAverageLag = 5;
     protected static final boolean checkIfDefocusIsInRange = false;
     protected static final int inlierFittingMaxIters = 5;
     protected static final double inlierFittingInlierFraction = 0.9;
-    protected static final boolean showResultsTable = true;
+    protected static final boolean showResultsTable = false;
 
     // processing
     protected IFilterUI selectedFilterUI;
@@ -53,6 +53,7 @@ abstract class AbstractCalibrationProcess {
 
     // results
     protected double angle = 0.0;
+    protected Homography.TransformationMatrix transformationMatrix = null;
     protected List<PSFSeparator.Position> usedPositions;
     protected DefocusFunction polynomS2Final;
     protected DefocusFunction polynomS1Final;
@@ -71,30 +72,12 @@ abstract class AbstractCalibrationProcess {
         this.zRange = zRangeLimit;
     }
 
-    abstract protected Collection<PSFSeparator.Position> fitPositions(double angle);
-
-    public void fitQuadraticPolynomials() {
-        fitQuadraticPolynomials(fitPositions(angle));
-    }
-
-    public DefocusFunction getPolynomS1Final() {
-        return polynomS1Final;
-    }
-
-    public DefocusFunction getPolynomS2Final() {
-        return polynomS2Final;
-    }
-
-    public double getAngle() {
-        return angle;
-    }
-
     /**
      * Estimates the rotation angle of the cylindrical lens. If the lens is
      * aligned with camera or the angle is known, you can use setAngle(double)
      * instead.
      */
-    public void estimateAngle(ImagePlus imp, final Roi roi) {
+    protected double estimateAngle(ImagePlus imp, final Roi roi) {
         final List<Double> angles = Collections.synchronizedList(new ArrayList<Double>());
         final ImageStack stack = imp.getStack();
         final AtomicInteger framesProcessed = new AtomicInteger(0);
@@ -146,7 +129,7 @@ abstract class AbstractCalibrationProcess {
         }
         double sin = bootstrapMeanEstimation(sins, 100, angles.size());
         double cos = bootstrapMeanEstimation(coss, 100, angles.size());
-        angle = MathProxy.atan2(sin, cos) / 4;
+        return MathProxy.atan2(sin, cos) / 4;
     }
 
     protected void fitQuadraticPolynomials(Collection<PSFSeparator.Position> positions) {
@@ -174,16 +157,16 @@ abstract class AbstractCalibrationProcess {
                 p.discardFitsByFrameRange(z0guess - zRange/stageStep, z0guess + zRange/stageStep);
 
                 // retrieve values again after filtering out fits not in range
-                double[] framesArray = p.getFramesAsArrayOfZ(z0guess, stageStep);
-                double[] sigma1AsArray = p.getAsArray(LABEL_SIGMA1);
-                double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
+                double[] framesArrayOfZ = p.getFramesAsArrayOfZ(z0guess, stageStep);
+                double[] sigma1Array = p.getAsArray(LABEL_SIGMA1);
+                double[] sigma2Array = p.getAsArray(LABEL_SIGMA2);
 
                 // fit s1,2 = polynomial(frame)
                 DefocusFunction polynomS1;
                 DefocusFunction polynomS2;
                 try {
-                    polynomS1 = polynomialFitter.fitParams(defocusModel, framesArray, sigma1AsArray, polyFitMaxIters);
-                    polynomS2 = polynomialFitter.fitParams(defocusModel, framesArray, sigma2AsArray, polyFitMaxIters);
+                    polynomS1 = polynomialFitter.fitParams(defocusModel, framesArrayOfZ, sigma1Array, polyFitMaxIters);
+                    polynomS2 = polynomialFitter.fitParams(defocusModel, framesArrayOfZ, sigma2Array, polyFitMaxIters);
                 } catch(TooManyEvaluationsException e) {
                     //discard not converged
                     //IJ.log(e.toString());
@@ -199,7 +182,7 @@ abstract class AbstractCalibrationProcess {
                 }
                 // find the center point between the minima of the two polynomials and shift the origin
                 double intersection = (polynomS1.getC() + polynomS2.getC()) / 2;
-                if(!hasEnoughData(framesArray, intersection) || (checkIfDefocusIsInRange && !isInZRange(intersection))) {
+                if(!hasEnoughData(framesArrayOfZ, intersection) || (checkIfDefocusIsInRange && !isInZRange(intersection))) {
                     continue;
                 }
                 allPolynomsS1.add(polynomS1);
@@ -207,9 +190,9 @@ abstract class AbstractCalibrationProcess {
                 usedPositions.add(p);
 
                 // save values used for fitting for this molecule
-                sigma1Arrays.add(sigma1AsArray);
-                sigma2Arrays.add(sigma2AsArray);
-                framesArrays.add(framesArray);
+                sigma1Arrays.add(sigma1Array);
+                sigma2Arrays.add(sigma2Array);
+                framesArrays.add(framesArrayOfZ);
             } catch(TooManyEvaluationsException ex) {
                 // discard fits that do not converge
             }
@@ -260,6 +243,7 @@ abstract class AbstractCalibrationProcess {
         });
         for (PSFSeparator.Position p : separator.getPositions()) {
             p.sortFitsByFrame();
+            p.validate();
         }
         if (showResultsTable) {
             IJResultsTable.getResultsTable().sortTableByFrame();
@@ -343,7 +327,7 @@ abstract class AbstractCalibrationProcess {
     /**
      * guess z0 of molecule
      */
-    private static double guessZ0(PSFSeparator.Position p) {
+    protected double guessZ0(PSFSeparator.Position p) {
         double[] sigma1AsArray = p.getAsArray(LABEL_SIGMA1);
         double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
         double[] intensityAsArray = p.getAsArray(LABEL_INTENSITY);
@@ -386,8 +370,6 @@ abstract class AbstractCalibrationProcess {
     }
 
     private boolean hasEnoughData(double[] framesArray, double intersection) {
-        int minPts = (int) MathProxy.max(minFitsInZRange, 0.2 * framesArray.length);
-
         int smallerThanCenter = 0;
         for (double aFramesArray : framesArray) {
             if (aFramesArray < intersection) {
@@ -396,38 +378,47 @@ abstract class AbstractCalibrationProcess {
         }
         int greaterThanCenter = framesArray.length - smallerThanCenter;
 
-        return !(smallerThanCenter < minPts || greaterThanCenter < minPts);
+        return !(smallerThanCenter < minFitsInZRange
+                || greaterThanCenter < minFitsInZRange
+                || framesArray.length < minimumFitsCount);
     }
 
-    public void drawSigmaPlots() {
-        Plot plot = new Plot("Sigma", "z [nm]", "sigma [px]", null, (float[]) null);
-        plot.setSize(1024, 768);
+    protected static List<PSFSeparator.Position> filterPositions(PSFSeparator fits) {
+        List<PSFSeparator.Position> ret = new ArrayList<PSFSeparator.Position>();
+        for (PSFSeparator.Position fit : fits.getPositions()) {
+            if (fit.getSize() >= minimumFitsCount) {
+                ret.add(fit);
+            }
+        }
+        return ret;
+    }
 
+    protected static void drawSigmaPlots(Plot plot, SigmaPlotConfig cfg) {
         // range
-        plot.setLimits(-2*zRange, +2*zRange, 0, stageStep);
-        double[] xVals = new double[(int)(2*zRange/stageStep) * 2 + 1];
-        for(int val = -2*(int)zRange, i = 0; val <= +2*(int)zRange; val += stageStep, i++) {
+        plot.setLimits(-2*cfg.zRange, +2*cfg.zRange, 0, cfg.stageStep);
+        double[] xVals = new double[(int)(2*cfg.zRange/cfg.stageStep) * 2 + 1];
+        for(int val = -2*(int)cfg.zRange, i = 0; val <= +2*(int)cfg.zRange; val += cfg.stageStep, i++) {
             xVals[i] = val;
         }
         plot.draw();
 
         // add points
-        plot.setColor(new Color(255, 200, 200));
-        plot.addPoints(allFrames, allSigma1s, Plot.CROSS);
-        plot.setColor(new Color(200, 200, 255));
-        plot.addPoints(allFrames, allSigma2s, Plot.CROSS);
+        plot.setColor(cfg.allSigma1sColor);
+        plot.addPoints(cfg.allFrames, cfg.allSigma1s, Plot.CROSS);
+        plot.setColor(cfg.allSigma2sColor);
+        plot.addPoints(cfg.allFrames, cfg.allSigma2s, Plot.CROSS);
 
         // add polynomials
-        for(int i = 0; i < allPolynomsS1.size(); i++) {
+        for(int i = 0; i < cfg.allPolynomsS1.size(); i++) {
             double[] sigma1Vals = new double[xVals.length];
             double[] sigma2Vals = new double[xVals.length];
             for(int j = 0; j < sigma1Vals.length; j++) {
-                sigma1Vals[j] = allPolynomsS1.get(i).value(xVals[j]);
-                sigma2Vals[j] = allPolynomsS2.get(i).value(xVals[j]);
+                sigma1Vals[j] = cfg.allPolynomsS1.get(i).value(xVals[j]);
+                sigma2Vals[j] = cfg.allPolynomsS2.get(i).value(xVals[j]);
             }
-            plot.setColor(new Color(255, 230, 230));
+            plot.setColor(cfg.allPolynomsS1Color);
             plot.addPoints(xVals, sigma1Vals, Plot.LINE);
-            plot.setColor(new Color(230, 230, 255));
+            plot.setColor(cfg.allPolynomsS2Color);
             plot.addPoints(xVals, sigma2Vals, Plot.LINE);
         }
 
@@ -435,20 +426,19 @@ abstract class AbstractCalibrationProcess {
         double[] sigma1ValsAll = new double[xVals.length];
         double[] sigma2ValsAll = new double[xVals.length];
         for(int j = 0; j < sigma1ValsAll.length; j++) {
-            sigma1ValsAll[j] = polynomS1Final.value(xVals[j]);
-            sigma2ValsAll[j] = polynomS2Final.value(xVals[j]);
+            sigma1ValsAll[j] = cfg.polynomS1Final.value(xVals[j]);
+            sigma2ValsAll[j] = cfg.polynomS2Final.value(xVals[j]);
         }
-        plot.setColor(new Color(255, 0, 0));
+        plot.setColor(cfg.polynomS1FinalColor);
         plot.addPoints(xVals, sigma1ValsAll, Plot.LINE);
-        plot.setColor(new Color(0, 0, 255));
+        plot.setColor(cfg.polynomS2FinalColor);
         plot.addPoints(xVals, sigma2ValsAll, Plot.LINE);
 
         //legend
-        plot.setColor(Color.red);
-        plot.addLabel(0.1, 0.8, "sigma1");
-        plot.setColor(Color.blue);
-        plot.addLabel(0.1, 0.9, "sigma2");
-        plot.show();
+        plot.setColor(cfg.polynomS1FinalColor);
+        plot.addLabel(cfg.legend1X, cfg.legend1Y, cfg.legend1Label);
+        plot.setColor(cfg.polynomS2FinalColor);
+        plot.addLabel(cfg.legend2X, cfg.legend2Y, cfg.legend2Label);
     }
 
     private void showHistoImages() {
@@ -485,5 +475,67 @@ abstract class AbstractCalibrationProcess {
         } catch(Exception ex) {
             IJ.handleException(ex);
         }
+    }
+
+    @Override
+    public void drawSigmaPlots() {
+        // config
+        SigmaPlotConfig cfg = new SigmaPlotConfig();
+        cfg.zRange = zRange;
+        cfg.stageStep = stageStep;
+        cfg.allFrames = allFrames;
+        cfg.allSigma1s = allSigma1s;
+        cfg.allSigma2s = allSigma2s;
+        cfg.allPolynomsS1 = allPolynomsS1;
+        cfg.allPolynomsS2 = allPolynomsS2;
+        cfg.polynomS1Final = polynomS1Final;
+        cfg.polynomS2Final = polynomS2Final;
+        cfg.allSigma1sColor = new Color(255, 200, 200);
+        cfg.allSigma2sColor = new Color(200, 200, 255);
+        cfg.allPolynomsS1Color = new Color(255, 230, 230);
+        cfg.allPolynomsS2Color = new Color(230, 230, 255);
+        cfg.polynomS1FinalColor = new Color(255, 0, 0);
+        cfg.polynomS2FinalColor = new Color(0, 0, 255);
+        cfg.legend1X = 0.1;
+        cfg.legend1Y = 0.8;
+        cfg.legend1Label = "sigma1";
+        cfg.legend2X = 0.1;
+        cfg.legend2Y = 0.9;
+        cfg.legend2Label = "sigma2";
+
+        // plot
+        Plot plot = new Plot("Sigma", "z [nm]", "sigma [px]", null, (float[]) null);
+        plot.setSize(1024, 768);
+        drawSigmaPlots(plot, cfg);
+
+        // display
+        plot.show();
+    }
+
+    protected static class SigmaPlotConfig {
+        public double zRange;
+        public double stageStep;
+
+        public double[] allFrames;
+        public double[] allSigma1s;
+        public double[] allSigma2s;
+        public List<DefocusFunction> allPolynomsS1;
+        public List<DefocusFunction> allPolynomsS2;
+        public DefocusFunction polynomS1Final;
+        public DefocusFunction polynomS2Final;
+
+        public Color allSigma1sColor;
+        public Color allSigma2sColor;
+        public Color allPolynomsS1Color;
+        public Color allPolynomsS2Color;
+        public Color polynomS1FinalColor;
+        public Color polynomS2FinalColor;
+
+        public double legend1X;
+        public double legend1Y;
+        public String legend1Label;
+        public double legend2X;
+        public double legend2Y;
+        public String legend2Label;
     }
 }

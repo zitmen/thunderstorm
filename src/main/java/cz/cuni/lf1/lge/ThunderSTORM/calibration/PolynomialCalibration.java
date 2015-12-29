@@ -18,21 +18,14 @@ public class PolynomialCalibration extends DefocusCalibration {
         s2Par = null;
     }
 
-    public PolynomialCalibration(double angle, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
-        super(DefocusFunctionPoly.name, angle, w01, a1, b1, c1, d1, w02, a2, b2, c2, d2);
+    public PolynomialCalibration(double angle, Homography.TransformationMatrix biplanetransform, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
+        super(DefocusFunctionPoly.name, angle, biplanetransform, w01, a1, b1, c1, d1, w02, a2, b2, c2, d2);
         s1Par = null;
         s2Par = null;
     }
 
-    public PolynomialCalibration(double angle, DefocusFunction sigma1Params, DefocusFunction sigma2Params) {
-        super(DefocusFunctionPoly.name, angle, sigma1Params.getW0(), sigma1Params.getA(), sigma1Params.getB(), sigma1Params.getC(), sigma1Params.getD(),
-                                               sigma2Params.getW0(), sigma2Params.getA(), sigma2Params.getB(), sigma2Params.getC(), sigma2Params.getD());
-        s1Par = sigma1Params;
-        s2Par = sigma2Params;
-    }
-
-    public PolynomialCalibration(Homography.TransformationMatrix biplaneTransformation, DefocusFunction sigma1Params, DefocusFunction sigma2Params) {
-        super(DefocusFunctionPoly.name, biplaneTransformation, sigma1Params.getW0(), sigma1Params.getA(), sigma1Params.getB(), sigma1Params.getC(), sigma1Params.getD(),
+    public PolynomialCalibration(double angle, Homography.TransformationMatrix biplaneTransformation, DefocusFunction sigma1Params, DefocusFunction sigma2Params) {
+        super(DefocusFunctionPoly.name, angle, biplaneTransformation, sigma1Params.getW0(), sigma1Params.getA(), sigma1Params.getB(), sigma1Params.getC(), sigma1Params.getD(),
                 sigma2Params.getW0(), sigma2Params.getA(), sigma2Params.getB(), sigma2Params.getC(), sigma2Params.getD());
         s1Par = sigma1Params;
         s2Par = sigma2Params;
@@ -102,7 +95,7 @@ public class PolynomialCalibration extends DefocusCalibration {
         double [] parSigma1 = fitter1.fit(1000, sqrtFn, new double[] {2.0, c1, 0.0, 0.0, zRange/2.0});
         double [] parSigma2 = fitter2.fit(1000, sqrtFn, new double[] {2.0, c2, 0.0, 0.0, zRange/2.0});
 
-        return new DaostormCalibration(angle, parSigma1[0], parSigma1[2], parSigma1[3], parSigma1[1], parSigma1[4],
-                                              parSigma2[0], parSigma2[2], parSigma2[3], parSigma2[1], parSigma2[4]);
+        return new DaostormCalibration(angle, homography, parSigma1[0], parSigma1[2], parSigma1[3], parSigma1[1], parSigma1[4],
+                                                    parSigma2[0], parSigma2[2], parSigma2[3], parSigma2[1], parSigma2[4]);
     }
 }

@@ -1,10 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA1;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_SIGMA2;
-
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.util.IBinaryTransform;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import cz.cuni.lf1.lge.ThunderSTORM.util.StableMatching;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
@@ -12,12 +8,10 @@ import org.apache.commons.math3.linear.*;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
@@ -30,7 +24,7 @@ public class Homography {
 
     private static final double dist2thr = 10.0;
 
-    public static TransformationMatrix estimateTransform(int w1, int h1, PSFSeparator fits1, int w2, int h2, PSFSeparator fits2) {
+    public static TransformationMatrix estimateTransform(int w1, int h1, List<Position> fits1, int w2, int h2, List<Position> fits2) {
         List<Position> pt1 = moveToCenterXY(fits1, w1, h1);
         List<Position> pt2 = moveToCenterXY(fits2, w2, h2);
         return findHomography(findTranslationAndFlip(pt1, pt2), pt1, pt2);
@@ -40,13 +34,13 @@ public class Homography {
      * 1) Based on the transformation, pair up the fits[1|2] together
      * 2) For each fit in matched subset of fits1 select only the subset of Molecules (z-slice) present both in fits[1|2]
      * 3) For each pair of Molecules assign sigma1 and sigma2 for the moleule from fits1
-     * 4) Return the List of Positions containing the Molecules with sigmas properly set
+     * 4) Return the Map of Positions containing the Molecules with sigmas properly set
      *    --> these are used for estimation of calibration curves
      */
-    public static Collection<Position> mergePositions(TransformationMatrix transform, int w1, int h1, PSFSeparator fits1, int w2, int h2, PSFSeparator fits2) {
+    public static Map<Position, Position> mergePositions(TransformationMatrix transform, IBinaryTransform<Position> mapping, int w1, int h1, List<Position> fits1, int w2, int h2, List<Position> fits2) {
         // 1)
-        List<Position> p1 = copyInnerFits(applyH(transform, moveToCenterXY(fits1, w1, h1)), fits1.getPositions());
-        List<Position> p2 = copyInnerFits(moveToCenterXY(fits2, w2, h2), fits2.getPositions());
+        List<Position> p1 = copyInnerFits(applyH(transform, moveToCenterXY(fits1, w1, h1)), fits1);
+        List<Position> p2 = copyInnerFits(moveToCenterXY(fits2, w2, h2), fits2);
         for (Position p : p1) {
             p.addNeighbors(p2, dist2thr);
         }
@@ -58,13 +52,13 @@ public class Homography {
             pos1.discardFitsByFrameSet(pos2.getFramesAsSet());
             pos2.discardFitsByFrameSet(pos1.getFramesAsSet());
             // 3)
-            pos1.setFromArray(LABEL_SIGMA1, MoleculeDescriptor.Units.PIXEL, pos1.getAsArray(LABEL_SIGMA, MoleculeDescriptor.Units.PIXEL));
-            pos1.setFromArray(LABEL_SIGMA2, MoleculeDescriptor.Units.PIXEL, pos2.getAsArray(LABEL_SIGMA, MoleculeDescriptor.Units.PIXEL));
+            mapping.map(pos1, pos2);
             // -> [optional] recalculate the position as it has been transformed by the transform
             pos1.recalculateCentroid();
+            pos2.recalculateCentroid();
         }
         // 4)
-        return pairs.keySet();
+        return pairs;
     }
 
     private static List<Position> copyInnerFits(List<Position> positions, List<Position> source) {
@@ -185,7 +179,7 @@ public class Homography {
 
             private class ConstructHomography extends AbstractConstruct {
                 public Object construct(Node node) {
-                    List<Double> sequence = (List<Double>) constructSequence((SequenceNode) node);
+                    @SuppressWarnings("unchecked") List<Double> sequence = (List<Double>) constructSequence((SequenceNode) node);
                     if (sequence == null || sequence.size() != 9) return null;
                     double[][] mat = new double[3][3];
                     for (int r = 0, i = 0; r < 3; r++) {
@@ -232,10 +226,6 @@ public class Homography {
         return posOut;
     }
 
-    private static List<Position> moveToCenterXY(PSFSeparator fits, int width, int height) {
-        return moveToCenterXY(fits.getPositions(), width, height);
-    }
-
     private static List<Position> moveToBoundaryXY(List<Position> posIn, int width, int height) {
         double shiftX = ((double) width) / 2.0;
         double shiftY = ((double) height) / 2.0;
@@ -249,10 +239,6 @@ public class Homography {
         return posOut;
     }
 
-    private static List<Position> moveToBoundaryXY(PSFSeparator fits, int width, int height) {
-        return moveToBoundaryXY(fits.getPositions(), width, height);
-    }
-
     // Find the translation between two planes using a set of corresponding points (RANSAC method is used).
     private static TransformationMatrix findTranslationAndFlip(List<Position> p1, List<Position> p2) {
         if (p1 == null || p2 == null) return null;
@@ -261,7 +247,7 @@ public class Homography {
         config.minPtNum = 2;
         config.iterNum = 1000;
         config.thDist = 15;
-        config.thInlr = Math.max(2.0, Math.round(0.1 * Math.min(p1.size(), p2.size())));    // 10%
+        config.thInlr = Math.max(config.minPtNum, Math.round(0.1 * Math.min(p1.size(), p2.size())));    // 10%
         config.pairs = false;
         config.thAllowedTransformChange = Double.POSITIVE_INFINITY;    // don't check, since this is a simple transform
 
@@ -293,7 +279,7 @@ public class Homography {
         config.minPtNum = 4;
         config.iterNum = 1000;
         config.thDist = 1;  // precision [px]; usualy the precision is much higher (~1e-6 px)
-        config.thInlr = Math.max(2.0, Math.round(0.5 * Math.min(p1.size(), p2.size())));    // 50%
+        config.thInlr = Math.max(config.minPtNum, Math.round(0.5 * Math.min(p1.size(), p2.size())));    // 50%
         config.pairs = true;
         config.thPairDist = 50;   // mutual distance of paired molecules [px] (should be same as `coef.thDist` set in `findTranslationAndFlip`)
         config.thAllowedTransformChange = 100.0;    // point [1,1] after applying T can't move further than 100px,

@@ -3,6 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AstigmatismCalibrationDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.AstigmaticCalibrationProcess;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.CalibrationProcessFactory;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.NoMoleculesFittedException;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
@@ -76,17 +77,12 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
 
             // perform the calibration
-            final AstigmaticCalibrationProcess process = new AstigmaticCalibrationProcess(
+            final AstigmaticCalibrationProcess process = (AstigmaticCalibrationProcess) CalibrationProcessFactory.create(
                     selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI,
                     defocusModel, stageStep, zRangeLimit, imp, roi);
 
-            process.estimateAngle(imp, roi);
-            IJ.log("angle = " + process.getAngle());
-
             try {
-                process.fitQuadraticPolynomials();
-                IJ.log("s1 = " + process.getPolynomS1Final().toString());
-                IJ.log("s2 = " + process.getPolynomS2Final().toString());
+                process.runCalibration();
             } catch(NoMoleculesFittedException ex) {
                 // if no beads were succesfully fitted, draw localizations anyway
                 process.drawOverlay();
