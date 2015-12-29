@@ -31,7 +31,7 @@ public class AstigmaticCalibrationProcess extends AbstractCalibrationProcess {
         beadFits = fitFixedAngle(angle, imp, roi, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
         fitQuadraticPolynomials(beadFits.getPositions());
         IJ.log("s1 = " + polynomS1Final.toString());
-        IJ.log("s2 = " + polynomS1Final.toString());
+        IJ.log("s2 = " + polynomS2Final.toString());
     }
 
     public DefocusCalibration getCalibration(DefocusFunction defocusModel) {

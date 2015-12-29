@@ -42,7 +42,7 @@ public class BiplaneCalibrationProcess extends AbstractCalibrationProcess {
 
         fitQuadraticPolynomials(positions);
         IJ.log("s1 = " + polynomS1Final.toString());
-        IJ.log("s2 = " + polynomS1Final.toString());
+        IJ.log("s2 = " + polynomS2Final.toString());
     }
 
     public DefocusCalibration getCalibration(DefocusFunction defocusModel) {
