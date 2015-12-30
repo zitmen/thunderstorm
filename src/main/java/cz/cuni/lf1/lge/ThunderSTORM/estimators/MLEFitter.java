@@ -6,8 +6,9 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.optimizers.NelderMead;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class MLEFitter implements OneLocationFitter {
+public class MLEFitter implements OneLocationFitter, OneLocationBiplaneFitter {
 
     PSFModel psfModel;
     public double[] fittedModelValues;
@@ -60,6 +61,11 @@ public class MLEFitter implements OneLocationFitter {
             }
         }
         return mol;
+    }
+
+    @Override
+    public Molecule fit(SubImage plane1, SubImage plane2) {
+        throw new NotImplementedException();
     }
 
     private void convertMoleculeToDigitalUnits(Molecule mol) {

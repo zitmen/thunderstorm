@@ -4,7 +4,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.round;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.ceil;
 import ij.gui.Roi;
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * The class encapsulates X,Y representation of a single point and its
@@ -399,7 +399,7 @@ public class Point<T extends Number> {
         }
     }
 
-    public static Vector<Point> applyRoiMask(Roi roi, Vector<Point> detections) {
+    public static List<Point> applyRoiMask(Roi roi, List<Point> detections) {
         if(roi == null) {
             return detections;
         } else {

@@ -177,7 +177,7 @@ public class CrowdedFieldEstimatorsTest {
         }
 
         return ((MFA_AbstractFitter) fitter).eliminateBadFits(
-            fitter.fit(new OneLocationFitter.SubImage(2 * FITRADIUS + 1, 2 * FITRADIUS + 1,
+            fitter.fit(new SubImage(2 * FITRADIUS + 1, 2 * FITRADIUS + 1,
                 xgrid, ygrid, values[dataset - 1], 0.0, 0.0, MoleculeDescriptor.Units.DIGITAL)),
                 FITRADIUS, FITRADIUS);
     }

@@ -5,7 +5,9 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
-import java.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JPanel;
 
 /**
@@ -20,8 +22,8 @@ public class EmptyEstimator extends IEstimatorUI implements IEstimator  {
     private final String name = "No estimator";
 
     @Override
-    public Vector<Molecule> estimateParameters(FloatProcessor fp, Vector<Point> detections) {
-        Vector<Molecule> locations = new Vector<Molecule>();
+    public List<Molecule> estimateParameters(FloatProcessor fp, List<Point> detections) {
+        List<Molecule> locations = new ArrayList<Molecule>();
 
         for (Point detection : detections) {
             locations.add(new Molecule(new PSFModel.Params(new int[]{PSFModel.Params.X, PSFModel.Params.Y},

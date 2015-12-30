@@ -10,6 +10,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.detectors.EmptyDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.EmptyEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EllipticGaussianEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IBiplaneEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.EmptyFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
@@ -32,6 +33,7 @@ public class MeasurementProtocol {
     public IFilterUI analysisFilter;
     public IDetectorUI analysisDetector;
     public IEstimatorUI analysisEstimator;
+    public IBiplaneEstimatorUI analysisBiplaneEstimator;
     public List<Operation> postProcessing;
 
     private boolean is3d;
@@ -59,7 +61,21 @@ public class MeasurementProtocol {
         this.isSet3d = false;
     }
 
+    public MeasurementProtocol(ImagePlus analyzedPlane1, ImagePlus analyzedPlane2, IFilterUI filter, IDetectorUI detector, IBiplaneEstimatorUI biplaneEstimator) {
+        this.version = "ThunderSTORM (" + ThunderSTORM.VERSION + ")";
+        this.imageInfo = getImageInfo(analyzedPlane1);  // TODO: append the second image info!!!
+        this.cameraSettings = CameraSetupPlugIn.exportSettings();
+        this.analysisFilter = filter;
+        this.analysisDetector = detector;
+        this.analysisBiplaneEstimator = biplaneEstimator;
+        this.postProcessing = IJResultsTable.getResultsTable().getOperationHistoryPanel().getHistory();
+        this.isSet3d = false;
+    }
+
     public boolean is3D() {
+        // this is used as an indicator whether to calculate the z-uncertainty;
+        // since we don't have a implementation for biplane, the function returns
+        // tru only for astigmatism
         if (!this.isSet3d) {
             this.is3d = ((analysisEstimator != null) && (analysisEstimator instanceof EllipticGaussianEstimatorUI));
             this.isSet3d = true;
@@ -95,6 +111,7 @@ public class MeasurementProtocol {
         gson.registerTypeAdapter(IFilterUI.class, new FilterAdapter());
         gson.registerTypeAdapter(IDetectorUI.class, new DetectorAdapter());
         gson.registerTypeAdapter(IEstimatorUI.class, new EstimatorAdapter());
+        gson.registerTypeAdapter(IBiplaneEstimatorUI.class, new BiplaneEstimatorAdapter());
         gson.registerTypeAdapter(DefocusCalibration.class, new CylindricalLensCalibrationAdapter());
         gson.registerTypeAdapter(Operation.class, new OperationAdapter());
         BufferedReader reader = null;
@@ -171,6 +188,19 @@ public class MeasurementProtocol {
             for (IEstimatorUI estimator : ModuleLoader.getUIModules(IEstimatorUI.class)) {
                 if (name.equals(estimator.getName())) {
                     return context.deserialize(json, estimator.getClass());
+                }
+            }
+            throw new JsonParseException("Unknown estimator \"" + name + "\"!");
+        }
+    }
+
+    private static class BiplaneEstimatorAdapter implements JsonDeserializer<IBiplaneEstimatorUI> {
+        @Override
+        public IBiplaneEstimatorUI deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            String name = json.getAsJsonObject().get("name").getAsString();
+            for (IBiplaneEstimatorUI biplaneEstimator : ModuleLoader.getUIModules(IBiplaneEstimatorUI.class)) {
+                if (name.equals(biplaneEstimator.getName())) {
+                    return context.deserialize(json, biplaneEstimator.getClass());
                 }
             }
             throw new JsonParseException("Unknown estimator \"" + name + "\"!");

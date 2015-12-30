@@ -123,7 +123,7 @@ public class RenderingPlugIn implements PlugIn {
         ImagePlus im;
 
         if(MacroParser.isRanFromMacro()) {
-            MacroParser parser = new MacroParser(null, null, null, knownRenderers);
+            MacroParser parser = new MacroParser(false, null, null, null, knownRenderers);
             selectedRendererUI = parser.getRendererUI();
 
             String autosize = Macro.getValue(Macro.getOptions(), "autosize", AutoSize.MANUAL.getValue());

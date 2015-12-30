@@ -14,6 +14,8 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.process.FloatProcessor;
+
+import java.util.List;
 import java.util.Vector;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -75,7 +77,7 @@ public class EstimatorsTest {
         FloatProcessor image = (FloatProcessor) IJ.openImage(basePath + "tubulins1_00020.tif").getProcessor().convertToFloat();
         FloatProcessor filtered = (new CompoundWaveletFilter()).filterImage(image);
         Vector<Point> detections = (new CentroidOfConnectedComponentsDetector("16", true)).detectMoleculeCandidates(filtered);
-        Vector<Molecule> fits = estimator.estimateParameters(image, detections);
+        List<Molecule> fits = estimator.estimateParameters(image, detections);
         for(Molecule fit : fits) {
             convertXYToNanoMeters(fit, 150.0);
         }
@@ -112,7 +114,7 @@ public class EstimatorsTest {
         }
     }
 
-    static Vector<Pair> pairFitsAndDetections2GroundTruths(Vector<Point> detections, Vector<Molecule> fits, Vector<Molecule> ground_truth) {
+    static Vector<Pair> pairFitsAndDetections2GroundTruths(Vector<Point> detections, List<Molecule> fits, Vector<Molecule> ground_truth) {
         assertNotNull(fits);
         assertNotNull(detections);
         assertNotNull(ground_truth);
@@ -126,15 +128,15 @@ public class EstimatorsTest {
         double best_dist2, dist2;
         for(int i = 0, im = fits.size(); i < im; i++) {
             best_fit = 0;
-            best_dist2 = dist2(fits.elementAt(i), ground_truth.elementAt(best_fit));
+            best_dist2 = dist2(fits.get(i), ground_truth.elementAt(best_fit));
             for(int j = 1, jm = ground_truth.size(); j < jm; j++) {
-                dist2 = dist2(fits.elementAt(i), ground_truth.elementAt(j));
+                dist2 = dist2(fits.get(i), ground_truth.elementAt(j));
                 if(dist2 < best_dist2) {
                     best_dist2 = dist2;
                     best_fit = j;
                 }
             }
-            pairs.add(new Pair(detections.elementAt(i), fits.elementAt(i), ground_truth.elementAt(best_fit)));
+            pairs.add(new Pair(detections.elementAt(i), fits.get(i), ground_truth.elementAt(best_fit)));
         }
 
         return pairs;

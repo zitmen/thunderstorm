@@ -117,7 +117,7 @@ public class OneLocationFittersTest {
                 idx++;
             }
         }
-        Molecule fit = fitter.fit(new OneLocationFitter.SubImage(11, 11, xgrid, ygrid, values, 0.5, 0.5));
+        Molecule fit = fitter.fit(new SubImage(11, 11, xgrid, ygrid, values, 0.5, 0.5));
         return fit;
     }
 }

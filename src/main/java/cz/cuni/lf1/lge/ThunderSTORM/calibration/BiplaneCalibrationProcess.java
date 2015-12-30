@@ -23,9 +23,6 @@ public class BiplaneCalibrationProcess extends AbstractCalibrationProcess {
     ImagePlus imp1, imp2;
     Roi roi1, roi2;
 
-    // results
-    private PSFSeparator beadFits1, beadFits2;
-
     public BiplaneCalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, BiplaneCalibrationEstimatorUI calibrationEstimatorUI,
                                      DefocusFunction defocusModel, double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2) {
         super(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
@@ -58,10 +55,8 @@ public class BiplaneCalibrationProcess extends AbstractCalibrationProcess {
 
     protected Collection<Position> fitPositions() {
         angle = 0.0;
-        beadFits1 = fitFixedAngle(angle, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
-        beadFits2 = fitFixedAngle(angle, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
-        List<Position> fits1 = filterPositions(beadFits1);
-        List<Position> fits2 = filterPositions(beadFits2);
+        List<Position> fits1 = filterPositions(fitFixedAngle(angle, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel));
+        List<Position> fits2 = filterPositions(fitFixedAngle(angle, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel));
 
         IJ.showStatus("Estimating homography between the planes...");
         transformationMatrix = Homography.estimateTransform(

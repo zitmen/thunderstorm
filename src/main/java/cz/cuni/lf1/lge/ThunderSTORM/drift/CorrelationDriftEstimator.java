@@ -1,10 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.drift;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.RadialSymmetryFitter;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.SubImage;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
 import ij.process.FHT;
@@ -263,7 +263,7 @@ public class CorrelationDriftEstimator {
             }
         }
 
-        OneLocationFitter.SubImage subImage = new OneLocationFitter.SubImage(roiSize, roiSize, null, null, subImageData, 0, 0);
+        SubImage subImage = new SubImage(roiSize, roiSize, null, null, subImageData, 0, 0);
         RadialSymmetryFitter radialSymmetryFitter = new RadialSymmetryFitter();
         Molecule psf = radialSymmetryFitter.fit(subImage);
 

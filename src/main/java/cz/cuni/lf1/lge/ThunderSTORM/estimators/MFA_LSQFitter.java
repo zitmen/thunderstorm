@@ -10,6 +10,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
 import org.apache.commons.math3.distribution.FDistribution;
 import org.apache.commons.math3.exception.NotStrictlyPositiveException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class MFA_LSQFitter extends MFA_AbstractFitter {
 
@@ -31,7 +32,7 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
     }
 
     @Override
-    public Molecule fit(OneLocationFitter.SubImage subimage) {
+    public Molecule fit(SubImage subimage) {
         Molecule mol;
         double[] fittedParams = null;
         MultiPSF model, modelBest = null;
@@ -84,5 +85,10 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
             }
         }
         return eliminateBadFits(mol, ((double) subimage.size_x) / 2.0 - defaultSigma / 2.0, ((double) subimage.size_y) / 2.0 - defaultSigma / 2.0);
+    }
+
+    @Override
+    public Molecule fit(SubImage plane1, SubImage plane2) {
+        throw new NotImplementedException();
     }
 }

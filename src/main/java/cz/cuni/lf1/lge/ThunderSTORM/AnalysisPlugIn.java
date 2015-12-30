@@ -62,9 +62,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     private int selectedRenderer;
     private ImagePlus processedImage;
     private RenderingQueue renderingQueue;
-    private ImagePlus renderedImage;
     private Roi roi;
-    private MeasurementProtocol measurementProtocol;
     private AnalysisOptionsDialog dialog;
     
     /**
@@ -119,6 +117,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
      */
     @Override
     public int showDialog(final ImagePlus imp, final String command, PlugInFilterRunner pfr) {
+        MeasurementProtocol measurementProtocol;
         try {
             // load modules
             allFilters = ModuleLoader.getUIModules(IFilterUI.class);
@@ -126,9 +125,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             allEstimators = ModuleLoader.getUIModules(IEstimatorUI.class);
             allRenderers = ModuleLoader.getUIModules(IRendererUI.class);
 
+            ImagePlus renderedImage;
             if(MacroParser.isRanFromMacro()) {
                 //parse the macro options
-                MacroParser parser = new MacroParser(allFilters, allEstimators, allDetectors, allRenderers);
+                MacroParser parser = new MacroParser(false, allFilters, allEstimators, allDetectors, allRenderers);
                 selectedFilter = parser.getFilterIndex();
                 selectedDetector = parser.getDetectorIndex();
                 selectedEstimator = parser.getEstimatorIndex();
@@ -248,7 +248,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             FloatProcessor filtered = allFilters.get(selectedFilter).getThreadLocalImplementation().filterImage(fp);
             IDetector detector = allDetectors.get(selectedDetector).getThreadLocalImplementation();
             Vector<Point> detections = detector.detectMoleculeCandidates(filtered);
-            Vector<Molecule> fits = allEstimators.get(selectedEstimator).getThreadLocalImplementation().estimateParameters(fp, Point.applyRoiMask(roi, detections));
+            List<Molecule> fits = allEstimators.get(selectedEstimator).getThreadLocalImplementation().estimateParameters(fp, Point.applyRoiMask(roi, detections));
             storeFits(fits, ip.getSliceNumber());
             nProcessed.incrementAndGet();
             if(fits.size() > 0) {
@@ -269,7 +269,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         }
     }
     
-    synchronized public void storeFits(Vector<Molecule> fits, int frame) {
+    synchronized public void storeFits(Iterable<Molecule> fits, int frame) {
         IJResultsTable rt = IJResultsTable.getResultsTable();
         for(Molecule psf : fits) {
             psf.insertParamAt(0, MoleculeDescriptor.LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS, (double)frame);

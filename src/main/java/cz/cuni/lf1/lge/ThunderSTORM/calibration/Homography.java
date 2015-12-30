@@ -1,9 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-import cz.cuni.lf1.lge.ThunderSTORM.util.IBinaryTransform;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
-import cz.cuni.lf1.lge.ThunderSTORM.util.StableMatching;
-import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.util.*;
 import org.apache.commons.math3.linear.*;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -61,6 +61,47 @@ public class Homography {
         return pairs;
     }
 
+    /**
+     * This method is simplier compared to the other one in the fact that fits[1|2]
+     * are supposed to be in the same frame, but different planes. The only purpose
+     * is to match the pairs.
+     *
+     * TODO: this is not very effective approach as the number of allocations is large!
+     */
+    public static List<Pair<Point, Point>> mergePositions(int width, int height, TransformationMatrix transform, List<Point> fits1, List<Point> fits2, double dist2nm) {
+        MoleculeDescriptor descriptor = new MoleculeDescriptor(
+                new String[]{ MoleculeDescriptor.LABEL_ID, PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y },
+                new MoleculeDescriptor.Units[] { MoleculeDescriptor.Units.UNITLESS, MoleculeDescriptor.Units.PIXEL, MoleculeDescriptor.Units.PIXEL });
+        // wrap to molecules
+        List<Molecule> m1 = new ArrayList<Molecule>(fits1.size());
+        List<Molecule> m2 = new ArrayList<Molecule>(fits2.size());
+        for (int i = 0; i < fits1.size(); i++) {
+            Point p = fits1.get(i);
+            m1.add(new Molecule(descriptor, new double[] {
+                    i, p.getX().doubleValue(), p.getY().doubleValue() }));
+        }
+        for (int i = 0; i < fits2.size(); i++) {
+            Point p = fits2.get(i);
+            m2.add(new Molecule(descriptor, new double[] {
+                    i, p.getX().doubleValue(), p.getY().doubleValue() }));
+        }
+        // pair up the molecules
+        m1 = applyH(transform, moveToCenterXY(m1, width, height));
+        m2 = moveToCenterXY(m2, width, height);
+        for (Molecule m : m1) {
+            m.addNeighbors(m2, false, dist2nm, MoleculeDescriptor.Units.NANOMETER);
+        }
+        Map<Molecule, Molecule> map = StableMatching.match(m1);
+        // unwrap
+        List<Pair<Point, Point>> pairs = new ArrayList<Pair<Point, Point>>(map.size());
+        int idIndex = descriptor.getParamIndex(MoleculeDescriptor.LABEL_ID);
+        for (Map.Entry<Molecule, Molecule> pair : map.entrySet()) {
+            pairs.add(new Pair<Point, Point>(fits1.get((int) pair.getKey().getParamAt(idIndex)),
+                                             fits2.get((int) pair.getValue().getParamAt(idIndex))));
+        }
+        return pairs;
+    }
+
     private static List<Position> copyInnerFits(List<Position> positions, List<Position> source) {
         if (positions.size() != source.size()) {
             throw new IllegalArgumentException("`positions` and `source` have to be of the same size!");
@@ -82,11 +123,12 @@ public class Homography {
             matrix = null;
         }
 
-        public Position transform(RealMatrix vec) {
-            RealMatrix res = matrix.multiply(vec);  // 1x3 matrix
-            Position pos = new Position();
-            pos.centroidX = res.getEntry(0, 0) / res.getEntry(2, 0);
-            pos.centroidY = res.getEntry(1, 0) / res.getEntry(2, 0);
+        public <T extends IMatchable<T>> T transform(T p) {
+            RealMatrix pMat = new Array2DRowRealMatrix(new double[][]{{p.getX()}, {p.getY()}, {1.0}});   // 3x1 matrix
+            RealMatrix res = matrix.multiply(pMat);  // 1x3 matrix
+            T pos = p.clone();
+            pos.setX(res.getEntry(0, 0) / res.getEntry(2, 0));
+            pos.setY(res.getEntry(1, 0) / res.getEntry(2, 0));
             return pos;
         }
 
@@ -171,10 +213,9 @@ public class Homography {
             return TransformationMatrix.createFrom(H);
         }
 
-        // TODO: constructor is not used anywhere, this it's not tested!!!
         public static class YamlConstructor extends Constructor {
             public YamlConstructor() {
-                this.yamlConstructors.put(new Tag("!!" + TransformationMatrix.class.getCanonicalName()), new ConstructHomography());
+                this.yamlConstructors.put(new Tag("!homography"), new ConstructHomography());
             }
 
             private class ConstructHomography extends AbstractConstruct {
@@ -199,7 +240,6 @@ public class Homography {
 
             private class RepresentHomography implements Represent {
                 public Node representData(Object data) {
-                    //return representScalar(new Tag("!!" + TransformationMatrix.class.getCanonicalName()), data.toString());
                     List<Double> sequence = new ArrayList<Double>(9);
                     TransformationMatrix mat = (TransformationMatrix) data;
                     for (int r = 0; r < 3; r++) {
@@ -207,20 +247,20 @@ public class Homography {
                             sequence.add(mat.matrix.getEntry(r, c));
                         }
                     }
-                    return representSequence(new Tag("!!" + TransformationMatrix.class.getCanonicalName()), sequence, null);
+                    return representSequence(new Tag("!homography"), sequence, null);
                 }
             }
         }
     }
 
-    private static List<Position> moveToCenterXY(List<Position> posIn, int width, int height) {
+    private static <T extends IMatchable<T>> List<T> moveToCenterXY(Iterable<T> posIn, int width, int height) {
         double shiftX = ((double) width) / 2.0;
         double shiftY = ((double) height) / 2.0;
-        List<Position> posOut = new ArrayList<Position>(posIn.size());
-        for (Position p : posIn) {
-            Position pos = new Position();
-            pos.centroidX = p.centroidX - shiftX;
-            pos.centroidY = p.centroidY - shiftY;
+        List<T> posOut = new ArrayList<T>();
+        for (T p : posIn) {
+            T pos = p.clone();
+            pos.setX(p.getX() - shiftX);
+            pos.setY(p.getY() - shiftY);
             posOut.add(pos);
         }
         return posOut;
@@ -385,11 +425,10 @@ public class Homography {
         return indices;
     }
 
-    private static List<Position> applyH(TransformationMatrix t, List<Position> pIn) {
-        List<Position> pOut = new ArrayList<Position>(pIn.size());
-        for (Position p : pIn) {
-            RealMatrix pMat = new Array2DRowRealMatrix(new double[][]{{p.centroidX}, {p.centroidY}, {1.0}});   // 3x1 matrix
-            pOut.add(t.transform(pMat));
+    private static <T extends IMatchable<T>> List<T> applyH(TransformationMatrix t, Iterable<T> pIn) {
+        List<T> pOut = new ArrayList<T>();
+        for (T p : pIn) {
+            pOut.add(t.transform(p));
         }
         return pOut;
     }
@@ -560,7 +599,7 @@ public class Homography {
 
     // how much has the transformation changed?
     private static boolean validateH(double thDist, TransformationMatrix initial, TransformationMatrix result) {
-        RealMatrix ones = new Array2DRowRealMatrix(new double[][] {{1.0}, {1.0}, {1.0}});   // 3x1 matrix
+        Position ones = new Position(1.0, 1.0);
         return calcDist2(initial.transform(ones), result.transform(ones)) < (thDist * thDist);
     }
 

@@ -2,41 +2,48 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.Homography;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.UncertaintyNotApplicableException;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.MeasurementProtocol;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.process.FloatProcessor;
 import org.apache.commons.math3.exception.ConvergenceException;
 import org.apache.commons.math3.exception.MaxCountExceededException;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.uncertaintyXY;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.uncertaintyZ;
 
-public class MultipleLocationsImageFitting implements IEstimator {
+public class MultipleLocationsBiplaneFitting implements IBiplaneEstimator {
 
-    FloatProcessor image;
-    List<Point> locations;
-    double[] subimageData;
+    FloatProcessor plane1, plane2;
+    List<Pair<Point, Point>> locations;
+    double distThrNm;
+    double[] subimageData1;
+    double[] subimageData2;
     int subimageSize;
     int bigSubImageSize;
     int[] xgrid;
     int[] ygrid;
-    List<Molecule> results;
-    final OneLocationFitter fitter;
+    Vector<Molecule> results;
+    final OneLocationBiplaneFitter fitter;
     MoleculeDescriptor moleculeDescriptor;
+    Homography.TransformationMatrix homography;
 
-    public MultipleLocationsImageFitting(int fittingRadius, OneLocationFitter fitter) {
+    public MultipleLocationsBiplaneFitting(int fittingRadius, double distThrNm, Homography.TransformationMatrix homography, OneLocationBiplaneFitter fitter) {
         this.subimageSize = fittingRadius;
+        this.distThrNm = distThrNm;
+        this.homography = homography;
         this.fitter = fitter;
         bigSubImageSize = 2 * fittingRadius + 1;
-        subimageData = new double[bigSubImageSize * bigSubImageSize];
+        subimageData1 = new double[bigSubImageSize * bigSubImageSize];  // to prevent multiple allocations
+        subimageData2 = new double[bigSubImageSize * bigSubImageSize];  // to prevent multiple allocations
         initializeGrid();
     }
 
@@ -54,7 +61,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
         }
     }
 
-    public void extractSubimageData(int x, int y) {
+    public void extractSubimageData(double[] /*[out]*/data, FloatProcessor image, int x, int y) {
         float[] pixels = (float[]) image.getPixels();
         int roiX = x - subimageSize;
         int roiY = y - subimageSize;
@@ -63,54 +70,58 @@ public class MultipleLocationsImageFitting implements IEstimator {
             int offset1 = (ys - roiY) * bigSubImageSize;
             int offset2 = ys * image.getWidth() + roiX;
             for(int xs = 0; xs < bigSubImageSize; xs++) {
-                subimageData[offset1++] = pixels[offset2++];
+                data[offset1++] = pixels[offset2++];
             }
         }
     }
 
     public void run() throws StoppedByUserException {
 
-        for(int i = 0; i < locations.size(); i++) {
+        for (Pair<Point, Point> location : locations) {
             GUI.checkIJEscapePressed();
-            int xInt = locations.get(i).x.intValue();
-            int yInt = locations.get(i).y.intValue();
+            int xInt1 = location.first.x.intValue();
+            int yInt1 = location.first.y.intValue();
+            int xInt2 = location.second.x.intValue();
+            int yInt2 = location.second.y.intValue();
 
-            if(!isCloseToBorder(xInt, yInt)) {
+            if (!isCloseToBorder(plane1, xInt1, yInt1) && !isCloseToBorder(plane2, xInt2, yInt2)) {
                 try {
-                    extractSubimageData(xInt, yInt);
-                    //new ImagePlus(String.valueOf(i),new FloatProcessor(2*subimageSize+1, 2*subimageSize+1, subimageData)).show();
-                    SubImage subImage = new SubImage(
-                            2*subimageSize+1,
-                            2*subimageSize+1,
-                            xgrid,
-                            ygrid,
-                            subimageData,
-                            locations.get(i).getX().doubleValue() - xInt,
-                            locations.get(i).getY().doubleValue() - yInt);
+                    extractSubimageData(subimageData1, plane1, xInt1, yInt1);
+                    extractSubimageData(subimageData2, plane2, xInt2, yInt2);
+                    SubImage subImage1 = new SubImage(
+                            2 * subimageSize + 1, 2 * subimageSize + 1,
+                            xgrid, ygrid, subimageData1,
+                            location.first.getX().doubleValue() - xInt1,
+                            location.first.getY().doubleValue() - yInt1);
+                    SubImage subImage2 = new SubImage(
+                            2 * subimageSize + 1, 2 * subimageSize + 1,
+                            xgrid, ygrid, subimageData2,
+                            location.second.getX().doubleValue() - xInt2,
+                            location.second.getY().doubleValue() - yInt2);
 
-                    Molecule psf = fitter.fit(subImage);
+                    Molecule psf = fitter.fit(subImage1, subImage2);
                     //replace molecule descriptor to a common one for all molecules
-                    if(moleculeDescriptor != null){
+                    if (moleculeDescriptor != null) {
                         moleculeDescriptor.validateMolecule(psf);
                         psf.descriptor = moleculeDescriptor;
-                    }else{
+                    } else {
                         moleculeDescriptor = psf.descriptor;
                     }
-                    if(psf.isSingleMolecule()) {
-                        if(checkIsInSubimage(psf.getX(), psf.getY())) {
-                            psf.setX(psf.getX() + xInt + 0.5);
-                            psf.setY(psf.getY() + yInt + 0.5);
+                    if (psf.isSingleMolecule()) {
+                        if (checkIsInSubimage(psf.getX(), psf.getY())) {
+                            psf.setX(psf.getX() + xInt1 + 0.5); // x-position in the first plane
+                            psf.setY(psf.getY() + yInt1 + 0.5); // y-position in the first plane
                             psf.setDetections(null);
-                            appendGoodnessOfFit(psf, fitter, subImage);
+                            appendGoodnessOfFit(psf, fitter, subImage1, subImage2);
                             appendCalculatedUncertainty(psf);
                             results.add(psf);
                         }
                     } else {
-                        for(Molecule m : psf.getDetections()) {
-                            if(checkIsInSubimage(m.getX(), m.getY())) {
-                                m.setX(m.getX() + xInt + 0.5);
-                                m.setY(m.getY() + yInt + 0.5);
-                                appendGoodnessOfFit(m, fitter, subImage);
+                        for (Molecule m : psf.getDetections()) {
+                            if (checkIsInSubimage(m.getX(), m.getY())) {
+                                m.setX(m.getX() + xInt1 + 0.5); // x-position in the first plane
+                                m.setY(m.getY() + yInt1 + 0.5); // y-position in the first plane
+                                appendGoodnessOfFit(m, fitter, subImage1, subImage2);
                                 appendCalculatedUncertainty(m);
                                 results.add(m);
                             }
@@ -133,34 +144,29 @@ public class MultipleLocationsImageFitting implements IEstimator {
         }
     }
 
-    boolean isCloseToBorder(int x, int y) {
-        if(x < subimageSize || x > image.getWidth() - subimageSize - 1) {
-            return true;
-        }
-        if(y < subimageSize || y > image.getHeight() - subimageSize - 1) {
-            return true;
-        }
-        return false;
+    boolean isCloseToBorder(FloatProcessor image, int x, int y) {
+        return x < subimageSize || x > image.getWidth() - subimageSize - 1
+            || y < subimageSize || y > image.getHeight() - subimageSize - 1;
     }
 
     @Override
-    public List<Molecule> estimateParameters(ij.process.FloatProcessor image, List<Point> detections) throws StoppedByUserException{
-        this.image = image;
-        this.locations = detections;
-        results = new ArrayList<Molecule>();
+    public Vector<Molecule> estimateParameters(FloatProcessor plane1, FloatProcessor plane2,
+                                               List<Point> detections1, List<Point> detections2) throws StoppedByUserException{
+        this.plane1 = plane1;
+        this.plane2 = plane2;
+        this.locations = Homography.mergePositions(plane1.getWidth(), plane2.getHeight(),
+                                    homography, detections1, detections2, distThrNm*distThrNm);
+        results = new Vector<Molecule>();
         run();
         return extractMacroMolecules(results);
     }
 
     private boolean checkIsInSubimage(double x, double y) {
-        if(Math.abs(x) > subimageSize || Math.abs(y) > subimageSize) {
-            return false;
-        }
-        return true;
+        return !(Math.abs(x) > subimageSize || Math.abs(y) > subimageSize);
     }
 
-    private List<Molecule> extractMacroMolecules(List<Molecule> macroMolecules) {
-        List<Molecule> extracted = new ArrayList<Molecule>();
+    private Vector<Molecule> extractMacroMolecules(Vector<Molecule> macroMolecules) {
+        Vector<Molecule> extracted = new Vector<Molecule>();
         for(Molecule mol : macroMolecules) {
             if(mol.isSingleMolecule()) {
                 extracted.add(mol);
@@ -171,7 +177,10 @@ public class MultipleLocationsImageFitting implements IEstimator {
         return extracted;
     }
 
-    public static void appendGoodnessOfFit(Molecule mol, OneLocationFitter fitter, SubImage subimage) {
+    public static void appendGoodnessOfFit(Molecule mol, OneLocationBiplaneFitter fitter, SubImage subimage1, SubImage subimage2) {
+        // TODO: implement chi2 calculation!!!
+        IJ.log("\\Update:Method `appendGoodnessOfFit`: not implemented!");
+        /*
         LSQFitter lsqfit;
         if(fitter instanceof LSQFitter) {
             lsqfit = (LSQFitter)fitter;
@@ -180,8 +189,11 @@ public class MultipleLocationsImageFitting implements IEstimator {
         } else {
             return;
         }
-        double chi2 = lsqfit.psfModel.getChiSquared(subimage.xgrid, subimage.ygrid, subimage.values, lsqfit.fittedParameters, lsqfit.useWeighting);
+        double chi2 = lsqfit.psfModel.getChiSquared(subimage1.xgrid, subimage1.ygrid, subimage1.values,
+                                                    subimage2.xgrid, subimage2.ygrid, subimage2.values,
+                                                    lsqfit.fittedParameters, lsqfit.useWeighting);
         mol.addParam(MoleculeDescriptor.Fitting.LABEL_CHI2, MoleculeDescriptor.Units.UNITLESS, chi2);
+        */
     }
 
     public static void appendCalculatedUncertainty(Molecule mol) {
@@ -189,9 +201,6 @@ public class MultipleLocationsImageFitting implements IEstimator {
             MeasurementProtocol protocol = IJResultsTable.getResultsTable().getMeasurementProtocol();
             if (protocol != null) {
                 mol.addParam(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY, MoleculeDescriptor.Units.NANOMETER, uncertaintyXY(mol));
-                if (protocol.is3D()) {
-                    mol.addParam(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z, MoleculeDescriptor.Units.NANOMETER, uncertaintyZ(mol));
-                }
             }
         } catch (UncertaintyNotApplicableException ex) {
             IJ.log("\\Update:Cannot calculate fitting uncertainty: " + ex.getMessage());

@@ -3,7 +3,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.log;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
+
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.SubImage;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
@@ -283,7 +284,7 @@ public abstract class PSFModel implements IModule {
      * first step of nelder-mead simplex algorithm. Used in mle estimator.
      */
     public abstract double[] getInitialSimplex();
-    public abstract double[] getInitialParams(OneLocationFitter.SubImage subImage);
+    public abstract double[] getInitialParams(SubImage subImage);
     public abstract Molecule newInstanceFromParams(double[] params, MoleculeDescriptor.Units subImageUnits, boolean afterFitting);
     // --> afterFitting: there might be some normalizations before/after fitting; this method is also used in rendering, where such normalization isn't needed
 }

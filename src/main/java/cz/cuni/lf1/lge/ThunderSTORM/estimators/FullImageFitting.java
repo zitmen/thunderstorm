@@ -4,8 +4,9 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * This is used for MFA PSF fitting on the entire image.
@@ -21,8 +22,8 @@ public class FullImageFitting implements IEstimator {
     }
     
     @Override
-    public Vector<Molecule> estimateParameters(FloatProcessor image, Vector<Point> detections) throws StoppedByUserException {
-        Vector results = new Vector<Molecule>();
+    public List<Molecule> estimateParameters(FloatProcessor image, List<Point> detections) throws StoppedByUserException {
+        List<Molecule> results = new ArrayList<Molecule>();
         try {
             int w = image.getWidth();
             int h = image.getHeight();
@@ -30,7 +31,7 @@ public class FullImageFitting implements IEstimator {
             int y0 = h / 2;
             initializeGrid(x0, y0, w, h);
             int maxI = getBestDetection(detections);
-            OneLocationFitter.SubImage subImage = new OneLocationFitter.SubImage(
+            SubImage subImage = new SubImage(
                     image.getWidth(), image.getHeight(),
                     xgrid, ygrid, getImageData(image),
                     detections.get(maxI).x.doubleValue() - x0,

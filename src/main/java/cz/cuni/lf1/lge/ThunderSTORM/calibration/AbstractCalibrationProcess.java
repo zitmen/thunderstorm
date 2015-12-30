@@ -82,7 +82,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
         final ImageStack stack = imp.getStack();
         final AtomicInteger framesProcessed = new AtomicInteger(0);
         final ICalibrationEstimatorUI threadLocalEstimatorUI = calibrationEstimatorUI;
-        Loop.withIndex(1, stack.getSize(), new Loop.BodyWithIndex() {
+        Loop.withIndex(1, stack.getSize() + 1, new Loop.BodyWithIndex() {
             @Override
             public void run(int i) {
                 ImageProcessor ip = stack.getProcessor(i);
@@ -90,7 +90,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
                 FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
                 fp.setMask(roi.getMask());
                 Thresholder.setCurrentImage(fp);
-                Vector<Molecule> fits = threadLocalEstimatorUI.getThreadLocalImplementation().estimateParameters(fp,
+                List<Molecule> fits = threadLocalEstimatorUI.getThreadLocalImplementation().estimateParameters(fp,
                         Point.applyRoiMask(roi, selectedDetectorUI.getThreadLocalImplementation().detectMoleculeCandidates(selectedFilterUI.getThreadLocalImplementation().filterImage(fp))));
                 framesProcessed.incrementAndGet();
 
@@ -226,7 +226,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
                 FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
                 fp.setMask(roi.getMask());
                 Thresholder.setCurrentImage(fp);
-                Vector<Molecule> fits = estimator.getThreadLocalImplementation().estimateParameters(fp,
+                List<Molecule> fits = estimator.getThreadLocalImplementation().estimateParameters(fp,
                         Point.applyRoiMask(roi, detector.getThreadLocalImplementation().detectMoleculeCandidates(filter.getThreadLocalImplementation().filterImage(fp))));
                 framesProcessed.incrementAndGet();
 

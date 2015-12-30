@@ -6,6 +6,9 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public abstract class DefocusCalibration {
 
@@ -18,7 +21,7 @@ public abstract class DefocusCalibration {
     public double c1, c2;
     public double d1, d2;
 
-    protected Homography.TransformationMatrix homography;
+    public transient Homography.TransformationMatrix homography;
 
     public DefocusCalibration(String calName) {
         name = calName;
@@ -177,10 +180,10 @@ public abstract class DefocusCalibration {
         try {
             File file = new File(path);
             fw = new FileWriter(file);
-            new Yaml().dump(this, fw);
-            if (homography != null) {
-                new Yaml(new Homography.TransformationMatrix.YamlRepresenter()).dump(homography, fw);
-            }
+            List<Object> objects = new ArrayList<Object>();
+            objects.add(this);
+            if (homography != null) objects.add(homography);
+            new Yaml(new Homography.TransformationMatrix.YamlRepresenter()).dumpAll(objects.iterator(), fw);
             IJ.log("Calibration file saved to: " + file.getAbsolutePath());
             IJ.showStatus("Calibration file saved to " + file.getAbsolutePath());
         } finally {

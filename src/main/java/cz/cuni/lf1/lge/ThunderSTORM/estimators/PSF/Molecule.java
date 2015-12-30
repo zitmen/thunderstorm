@@ -176,7 +176,7 @@ public final class Molecule implements Comparable<Molecule>, IMatchable<Molecule
     public String getParamNameAtColumn(int c) {
         return descriptor.getParamNameAt(c);
     }
-    
+
     public double getX() {
         return getParam(Params.LABEL_X);
     }
@@ -184,11 +184,11 @@ public final class Molecule implements Comparable<Molecule>, IMatchable<Molecule
     public double getX(Units unit) {
         return descriptor.units.get(descriptor.getParamColumn(Params.LABEL_X)).convertTo(unit, getX());
     }
-    
+
     public void setX(double value) {
         setParam(Params.LABEL_X, value);
     }
-    
+
     public double getY() {
         return getParam(Params.LABEL_Y);
     }
@@ -196,11 +196,11 @@ public final class Molecule implements Comparable<Molecule>, IMatchable<Molecule
     public double getY(Units unit) {
         return descriptor.units.get(descriptor.getParamColumn(Params.LABEL_Y)).convertTo(unit, getY());
     }
-    
+
     public void setY(double value) {
         setParam(Params.LABEL_Y, value);
     }
-    
+
     public double getZ() {
         if(hasParam(Params.LABEL_Z)) {
             return getParam(Params.LABEL_Z);
@@ -216,7 +216,7 @@ public final class Molecule implements Comparable<Molecule>, IMatchable<Molecule
             return 0.0;
         }
     }
-    
+
     public void setZ(double value) {
         if(hasParam(Params.LABEL_Z)) {
             setParam(Params.LABEL_Z, value);
@@ -266,17 +266,22 @@ public final class Molecule implements Comparable<Molecule>, IMatchable<Molecule
             return sb.toString();
         }
     }
-    
+
+    /**
+     * Nothing is copied, the clone references the identical data as the source!
+     * For a clone with duplicate data but different references, call `clone(MoleculeDescriptor)`!
+     * Note that `neighbors` are ignored by the cloning operation!
+     */
     @Override
     public Molecule clone() {
-        assert true : "Use clone(MoleculeDescriptor) instead!!!";
-        throw new UnsupportedOperationException("Use `Molecule.clone(MoleculeDescriptor)` instead!!!");
+        return new Molecule(this);
     }
     
     /**
      * Clone the molecule.
      * 
      * Caller has to duplicate the descriptor if it is required!
+     * Note that `neighbors` are ignored by the cloning operation!
      */
     public Molecule clone(MoleculeDescriptor descriptor) {
         double[] vals = new double[values.length];

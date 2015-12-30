@@ -2,8 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.rendering;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import ij.ImagePlus;
-import ij.ImageStack;
-import java.util.Vector;
+
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +43,7 @@ public class RenderingQueue {
         }
     }
 
-    public void renderLater(Vector<Molecule> fits) {
+    public void renderLater(List<Molecule> fits) {
         if(executor != null) {
             executor.execute(new RenTask(fits));
         }
@@ -80,9 +80,9 @@ public class RenderingQueue {
 
     class RenTask implements Runnable {
 
-        Vector<Molecule> fits;
+        List<Molecule> fits;
 
-        public RenTask(Vector<Molecule> fits) {
+        public RenTask(List<Molecule> fits) {
             this.fits = fits;
         }
 

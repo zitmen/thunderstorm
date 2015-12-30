@@ -148,12 +148,9 @@ public class CrowdedFieldEstimatorUI {
         params.resetToDefaults(true);
     }
 
-    OneLocationFitter getMLEImplementation(PSFModel psf, double sigma) {
+    MFA_MLEFitter getMLEImplementation(PSFModel psf, double sigma) {
         loadValues();
-        Range intensityRange = isFixedIntensity() ? getIntensityRange() : null;
-        MFA_MLEFitter fitter = new MFA_MLEFitter(psf, sigma, getMaxMolecules(), getPValue(), isKeepSameIntensity(), intensityRange);
-        return fitter;
-        //return new MultipleLocationsImageFitting(fitradius, fitter);
+        return new MFA_MLEFitter(psf, sigma, getMaxMolecules(), getPValue(), isKeepSameIntensity(), isFixedIntensity() ? getIntensityRange() : null);
     }
 
     private void loadValues() {
@@ -165,11 +162,9 @@ public class CrowdedFieldEstimatorUI {
         mfaEnabled = isEnabled();
     }
 
-    OneLocationFitter getLSQImplementation(PSFModel psf, double sigma) {
-        Range intensityRange = isFixedIntensity() ? getIntensityRange() : null;
-        MFA_LSQFitter fitter = new MFA_LSQFitter(psf, sigma, getMaxMolecules(), getPValue(), isKeepSameIntensity(), intensityRange);
-        return fitter;
-        //return new MultipleLocationsImageFitting(fitradius, fitter);
+    MFA_LSQFitter getLSQImplementation(PSFModel psf, double sigma) {
+        loadValues();
+        return new MFA_LSQFitter(psf, sigma, getMaxMolecules(), getPValue(), isKeepSameIntensity(), isFixedIntensity() ? getIntensityRange() : null);
     }
     
     public boolean isFixedIntensity() {

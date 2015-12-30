@@ -17,7 +17,7 @@ import ij.process.ImageProcessor;
 import ij.process.LUT;
 import java.awt.Color;
 import java.util.Arrays;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * A common abstract superclass implementing RenderingMethod and
@@ -267,7 +267,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
     }
 
     @Override
-    public void addToImage(Vector<Molecule> fits) {
+    public void addToImage(List<Molecule> fits) {
         if(fits.isEmpty()) {
             return;
         }
@@ -276,7 +276,7 @@ public abstract class AbstractRendering implements RenderingMethod, IncrementalR
         boolean useDefaultDZ = forceDefaultDZ || !descriptor.hasParam(LABEL_UNCERTAINTY_Z);
 
         for(int i = 0, im = fits.size(); i < im; i++) {
-            Molecule fit = fits.elementAt(i);
+            Molecule fit = fits.get(i);
             double zVal = fit.getZ();
             double dxVal = useDefaultDX ? defaultDX : fit.getParam(LABEL_UNCERTAINTY_XY, PIXEL);
             double dzVal = useDefaultDZ ? defaultDZ : fit.getParam(LABEL_UNCERTAINTY_Z, NANOMETER);

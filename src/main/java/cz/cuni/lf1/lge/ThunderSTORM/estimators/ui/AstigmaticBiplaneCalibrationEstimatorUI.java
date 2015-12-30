@@ -20,12 +20,12 @@ public class AstigmaticBiplaneCalibrationEstimatorUI extends SymmetricGaussianEs
         super();
         crowdedField = new CrowdedFieldEstimatorUI() {
             @Override
-            OneLocationFitter getLSQImplementation(PSFModel psf, double sigma) {
+            MFA_LSQFitter getLSQImplementation(PSFModel psf, double sigma) {
                 return null;
             }
 
             @Override
-            OneLocationFitter getMLEImplementation(PSFModel psf, double sigma) {
+            MFA_MLEFitter getMLEImplementation(PSFModel psf, double sigma) {
                 return null;
             }
 

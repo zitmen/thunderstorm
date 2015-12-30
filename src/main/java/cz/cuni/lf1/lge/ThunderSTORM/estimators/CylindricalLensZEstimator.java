@@ -4,7 +4,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
-import java.util.Vector;
+
+import java.util.List;
 
 public class CylindricalLensZEstimator implements IEstimator {
 
@@ -15,7 +16,7 @@ public class CylindricalLensZEstimator implements IEstimator {
     }
 
     @Override
-    public Vector<Molecule> estimateParameters(FloatProcessor image, Vector<Point> detections) throws StoppedByUserException {
+    public List<Molecule> estimateParameters(FloatProcessor image, List<Point> detections) throws StoppedByUserException {
         return estimator.estimateParameters(image, detections);
     }
 }

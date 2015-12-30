@@ -11,27 +11,25 @@ import ij.process.FloatProcessor;
 import java.util.List;
 
 /**
- * The interface every estimator has to implement.
+ * The interface every biplane estimator has to implement.
  */
-public interface IEstimator extends IModule {
+public interface IBiplaneEstimator extends IModule {
 
     /**
      * Estimate parameters of individual molecules based on the initial rough
      * guessed positions from a detector and store the list of molecules with
      * their parameters in a vector of PSFs.
      *
-     * @param image an input (raw) image
-     * @param detections list of detections returned by a detector
+     * @param plane1 an input (raw) first plane image
+     * @param plane2 an input (raw) second plane image
+     * @param detections1 list of detections from the first plane returned by a detector
+     * @param detections2 list of detections from the second plane returned by a detector
      * @return a Vector of instances of PSFs that contain parameters of every
-     * single molecule, say ({
-     * @mathjax x,y,\sigma,I,b}). <strong>Note: </strong>
-     * in a future release the PSFModel will be more abstract to allow easily
-     * work with any possible PSFModel out there, but right we use strictly the
-     * symmetric 2D Gaussian model
+     * single molecule.
      *
      * @see PSFModel
      * @see Point
      * @see IDetector
      */
-    List<Molecule> estimateParameters(FloatProcessor image, List<Point> detections) throws StoppedByUserException;
+    public List<Molecule> estimateParameters(FloatProcessor plane1, FloatProcessor plane2, List<Point> detections1, List<Point> detections2) throws StoppedByUserException;
 }

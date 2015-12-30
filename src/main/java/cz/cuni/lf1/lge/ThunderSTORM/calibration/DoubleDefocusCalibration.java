@@ -7,6 +7,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DoubleDefocusCalibration<T extends DefocusCalibration> extends DefocusCalibration {
 
@@ -26,12 +28,11 @@ public class DoubleDefocusCalibration<T extends DefocusCalibration> extends Defo
         try {
             File file = new File(path);
             fw = new FileWriter(file);
-            Yaml yaml = new Yaml();
-            yaml.dump(cal1, fw);
-            yaml.dump(cal2, fw);
-            if (homography != null) {
-                new Yaml(new Homography.TransformationMatrix.YamlRepresenter()).dump(homography, fw);
-            }
+            List<Object> objects = new ArrayList<Object>();
+            objects.add(cal1);
+            objects.add(cal2);
+            if (homography != null) objects.add(homography);
+            new Yaml(new Homography.TransformationMatrix.YamlRepresenter()).dumpAll(objects.iterator(), fw);
             IJ.log("Calibration file saved to: " + file.getAbsolutePath());
             IJ.showStatus("Calibration file saved to " + file.getAbsolutePath());
         } finally {

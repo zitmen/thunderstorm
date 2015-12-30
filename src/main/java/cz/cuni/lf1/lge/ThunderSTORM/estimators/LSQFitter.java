@@ -16,8 +16,9 @@ import org.apache.commons.math3.optim.nonlinear.vector.ModelFunctionJacobian;
 import org.apache.commons.math3.optim.nonlinear.vector.Target;
 import org.apache.commons.math3.optim.nonlinear.vector.Weight;
 import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class LSQFitter implements OneLocationFitter {
+public class LSQFitter implements OneLocationFitter, OneLocationBiplaneFitter {
 
     private double[] weights;
     boolean useWeighting;
@@ -46,16 +47,17 @@ public class LSQFitter implements OneLocationFitter {
     }
 
     @Override
-    public Molecule fit(OneLocationFitter.SubImage subimage) {
+    public Molecule fit(SubImage subimage) {
         computeWeights(subimage);
         
         if((fittedModelValues == null) || (fittedModelValues.length < subimage.values.length)) {
             fittedModelValues = new double[subimage.values.length];
         }
 
-        LevenbergMarquardtOptimizer optimizer = new LevenbergMarquardtOptimizer(new SimplePointChecker(10e-10, 10e-10, maxIter));
-        PointVectorValuePair pv;
+        LevenbergMarquardtOptimizer optimizer = new LevenbergMarquardtOptimizer(
+                new SimplePointChecker<PointVectorValuePair>(10e-10, 10e-10, maxIter));
 
+        PointVectorValuePair pv;
         pv = optimizer.optimize(
                 MaxEval.unlimited(),
                 new MaxIter(MAX_ITERATIONS+1),
@@ -71,6 +73,11 @@ public class LSQFitter implements OneLocationFitter {
             fittedParameters[bkgStdColumn] = VectorMath.stddev(sub(fittedModelValues, subimage.values, psfModel.getValueFunction(subimage.xgrid, subimage.ygrid).value(fittedParameters)));
         }
         return psfModel.newInstanceFromParams(psfModel.transformParameters(fittedParameters), subimage.units, true);
+    }
+
+    @Override
+    public Molecule fit(SubImage plane1, SubImage plane2) {
+        throw new NotImplementedException();
     }
 
     private void computeWeights(SubImage subimage) {
@@ -93,5 +100,4 @@ public class LSQFitter implements OneLocationFitter {
             }
         }
     }
-
 }

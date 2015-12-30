@@ -2,6 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IBiplaneEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
@@ -16,30 +18,37 @@ public class MacroParser {
     private static final String FILTER_KEY = "filter";
     private static final String DETECTOR_KEY = "detector";
     private static final String ESTIMATOR_KEY = "estimator";
+    private static final String ESTIMATOR_BIPLANE_KEY = "estimator.biplane";
     private static final String RENDERER_KEY = "renderer";
     List<IFilterUI> knownFilters;
     List<IEstimatorUI> knownEstimators;
+    List<IBiplaneEstimatorUI> knownBiplaneEstimators;
     List<IDetectorUI> knownDetectors;
     List<IRendererUI> knownRenderers;
     int selectedFilterIndex = -1;
     int selectedDetectorIndex = -1;
     int selectedEstimatorIndex = -1;
+    int selectedBiplaneEstimatorIndex = -1;
     int selectedRendererIndex = -1;
 
-    public MacroParser(List<IFilterUI> knowFilters,
-            List<IEstimatorUI> knowEstimators,
-            List<IDetectorUI> knowDetectors,
-            List<IRendererUI> knowRenderers) {
+    @SuppressWarnings("unchecked")
+    public MacroParser(boolean isBiplane,
+                       List<IFilterUI> knowFilters,
+                       List knowEstimators,
+                       List<IDetectorUI> knowDetectors,
+                       List<IRendererUI> knowRenderers) {
         this.knownFilters = knowFilters;
-        this.knownEstimators = knowEstimators;
+        if (isBiplane) {
+            this.knownEstimators = (List<IEstimatorUI>) knowEstimators;
+        } else {
+            this.knownBiplaneEstimators = (List<IBiplaneEstimatorUI>) knowEstimators;
+        }
         this.knownDetectors = knowDetectors;
         this.knownRenderers = knowRenderers;
         options = Macro.getOptions();
         if(options == null) {
             throw new MacroException("No macro options.");
         }
-
-
     }
 
     public IFilterUI getFilterUI() {
@@ -55,7 +64,6 @@ public class MacroParser {
         } else {
             return selectedFilterIndex;
         }
-
     }
 
     public IEstimatorUI getEstimatorUI() {
@@ -70,6 +78,17 @@ public class MacroParser {
             return index;
         } else {
             return selectedEstimatorIndex;
+        }
+    }
+
+    public int getBiplaneEstimatorIndex() {
+        if(selectedBiplaneEstimatorIndex < 0) {
+            int index = getModuleIndex(knownBiplaneEstimators, ESTIMATOR_BIPLANE_KEY);
+            selectedBiplaneEstimatorIndex = index;
+            knownBiplaneEstimators.get(index).readMacroOptions(options);
+            return index;
+        } else {
+            return selectedBiplaneEstimatorIndex;
         }
     }
 
@@ -130,6 +149,11 @@ public class MacroParser {
     public static void recordEstimatorUI(IEstimatorUI estimator) {
         Recorder.recordOption(ESTIMATOR_KEY, estimator.getName());
         estimator.recordOptions();
+    }
+
+    public static void recordBiplaneEstimatorUI(IBiplaneEstimatorUI biplaneEstimator) {
+        Recorder.recordOption(ESTIMATOR_BIPLANE_KEY, biplaneEstimator.getName());
+        biplaneEstimator.recordOptions();
     }
 
     public static void recordRendererUI(IRendererUI renderer) {

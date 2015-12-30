@@ -5,6 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ArrayIndexComparator;
 import cz.cuni.lf1.lge.ThunderSTORM.util.IMatchable;
+import javafx.geometry.Pos;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_FRAME;
 
@@ -55,6 +56,16 @@ public class PSFSeparator {
         public double centroidY;
         List<Molecule> fits = new ArrayList<Molecule>();
         private List<Position> neighbors;   // just for matching
+
+        public Position() {
+            // empty
+        }
+
+        public Position(double centroidX, double centroidY) {
+            // dummy position with no extra data
+            this.centroidX = centroidX;
+            this.centroidY = centroidY;
+        }
 
         public void sortFitsByFrame() {
             ArrayIndexComparator cmp = new ArrayIndexComparator(getAsArray(LABEL_FRAME, MoleculeDescriptor.Units.UNITLESS));
@@ -207,6 +218,21 @@ public class PSFSeparator {
         }
 
         @Override
+        public void setX(double x) {
+            centroidX = x;
+        }
+
+        @Override
+        public void setY(double y) {
+            centroidY = y;
+        }
+
+        @Override
+        public void setZ(double z) {
+            /*ignore*/
+        }
+
+        @Override
         public double getDist2(IMatchable m) {
             return getDistanceFromCentroid(m.getX(), m.getY());
         }
@@ -214,6 +240,20 @@ public class PSFSeparator {
         @Override
         public List<Position> getNeighbors() {
             return neighbors;
+        }
+
+        /**
+         * Note that `neighbors` are ignored by the cloning operation!
+         */
+        @Override
+        public Position clone() {
+            Position pos = new Position();
+            pos.sumX = sumX;
+            pos.sumY = sumY;
+            pos.centroidX = centroidX;
+            pos.centroidY = centroidY;
+            pos.fits = fits;
+            return pos;
         }
 
         public void addNeighbors(List<Position> nbrs, double dist2thr) {

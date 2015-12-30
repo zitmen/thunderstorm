@@ -272,14 +272,14 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                         new ImagePlus("Filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
                         GUI.checkIJEscapePressed();
                         IDetector detector = allDetectors.get(activeDetectorIndex).getThreadLocalImplementation();
-                        Vector<Point> detections = Point.applyRoiMask(imp.getRoi(), detector.detectMoleculeCandidates(filtered));
+                        List<Point> detections = Point.applyRoiMask(imp.getRoi(), detector.detectMoleculeCandidates(filtered));
                         ij.measure.ResultsTable tbl = ij.measure.ResultsTable.getResultsTable();
                         tbl.reset();
                         tbl.incrementCounter();
                         tbl.addValue("Threshold value for frame " + Integer.toString(imp.getSlice()), detector.getThresholdValue());
                         tbl.show("Results");
                         GUI.checkIJEscapePressed();
-                        Vector<Molecule> results = allEstimators.get(activeEstimatorIndex).getThreadLocalImplementation().estimateParameters(fp, detections);
+                        List<Molecule> results = allEstimators.get(activeEstimatorIndex).getThreadLocalImplementation().estimateParameters(fp, detections);
                         GUI.checkIJEscapePressed();
                         //
                         ImagePlus impPreview = new ImagePlus("Detections in frame " + Integer.toString(imp.getSlice()), processor);
@@ -298,6 +298,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             });
 
         } else if(e.getActionCommand().equals("Defaults")) {
+            //noinspection unchecked
             resetModuleUIs(allDetectors, allEstimators, allFilters, allRenderers);
             resetCardsPanels(detectorsPanel, estimatorsPanel, filtersPanel, renderersPanel);
         } else {
@@ -403,17 +404,16 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
     }
 
     public static void resetModuleUIs(List<? extends IModuleUI>... lists) {
-        for(int i = 0; i < lists.length; i++) {
-            List<? extends IModuleUI> list = lists[i];
-            for(IModuleUI module : list) {
+        for (List<? extends IModuleUI> list : lists) {
+            for (IModuleUI module : list) {
                 module.resetToDefaults();
             }
         }
     }
 
     static void resetCardsPanels(CardsPanel<?>... panels) {
-        for(int i = 0; i < panels.length; i++) {
-            panels[i].setSelectedItemIndex(0);
+        for (CardsPanel<?> panel : panels) {
+            panel.setSelectedItemIndex(0);
         }
     }
 

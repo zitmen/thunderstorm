@@ -1,7 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import java.util.Arrays;
+
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.SubImage;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import static org.apache.commons.math3.util.FastMath.PI;
 import static org.apache.commons.math3.util.FastMath.abs;
@@ -178,7 +179,7 @@ public class IntegratedSymmetricGaussianPSF extends PSFModel {
     }
 
     @Override
-    public double[] getInitialParams(OneLocationFitter.SubImage subImage) {
+    public double[] getInitialParams(SubImage subImage) {
         double[] guess = new double[Params.PARAMS_LENGTH];
         Arrays.fill(guess, 0);
         guess[Params.X] = subImage.detectorX;
