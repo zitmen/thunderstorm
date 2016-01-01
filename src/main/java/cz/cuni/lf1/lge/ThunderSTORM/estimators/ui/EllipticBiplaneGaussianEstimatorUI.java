@@ -118,7 +118,7 @@ public class EllipticBiplaneGaussianEstimatorUI extends IBiplaneEstimatorUI {
         distThrPx = MATCHING_DISTANCE_THRESHOLD.getValue();
         fittingRadius = FITRAD.getValue();
         PSFModel psf = new BiplaneEllipticGaussianPSF(calibration, numericalDerivatives);
-        OneLocationBiplaneFitter fitter;
+        IOneLocationBiplaneFitter fitter;
         if(LSQ.equals(method) || WLSQ.equals(method)) {
             fitter = new LSQFitter(psf, WLSQ.equals(method), PSFModel.Params.BACKGROUND);
         } else if(MLE.equals(method)) {

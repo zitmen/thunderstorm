@@ -76,7 +76,7 @@ public class OneLocationFittersTest {
         assertEquals(0, psf.getY(), 1e-3);
     }
 
-    public void testFitter(OneLocationFitter fitter) {
+    public void testFitter(IOneLocationFitter fitter) {
 
         Molecule fit = fitTestData(fitter);
         System.out.println(fit.toString());
@@ -93,7 +93,7 @@ public class OneLocationFittersTest {
         }
     }
 
-    private Molecule fitTestData(OneLocationFitter fitter) {
+    private Molecule fitTestData(IOneLocationFitter fitter) {
         double[] values = {
             1.4175035112951352E-7, 1.5056067251874795E-6, 1.0387350450247402E-5, 4.6596555689039867E-5, 1.3603475690306496E-4, 2.5864120226361595E-4, 3.203992064538993E-4, 2.5864120226361595E-4, 1.3603475690306496E-4, 4.6596555689039867E-5, 1.0387350450247402E-5,
             9.779516450051282E-7, 1.0387350450247402E-5, 7.166350121265529E-5, 3.2147488824231735E-4, 9.385191163983373E-4, 0.0017843947983501222, 0.002210470228208766, 0.0017843947983501222, 9.385191163983373E-4, 3.2147488824231735E-4, 7.166350121265529E-5,

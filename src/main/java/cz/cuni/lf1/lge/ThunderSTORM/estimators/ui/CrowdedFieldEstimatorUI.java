@@ -2,7 +2,6 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MFA_LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MFA_MLEFitter;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;

@@ -91,7 +91,7 @@ public class CrowdedFieldEstimatorsTest {
         testEstimator(new MFA_MLEFitter(new EllipticGaussianPSF(SIGMA, ANGLE), SIGMA, MAX_N, P_VAL, true, null));
     }
     
-    public void testEstimator(OneLocationFitter fitter) {
+    public void testEstimator(IOneLocationFitter fitter) {
         Molecule fit;
         double [][] tol = new double[][] {
             { 0.001, 0.1, 0.1 },
@@ -120,7 +120,7 @@ public class CrowdedFieldEstimatorsTest {
         }
     }
 
-    private Molecule fitTestData(OneLocationFitter fitter, int dataset) throws FormulaParserException {
+    private Molecule fitTestData(IOneLocationFitter fitter, int dataset) throws FormulaParserException {
         double [][] values = new double[][] { {
             0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0001, 0.0001, 0.0001, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
             0.0000, 0.0000, 0.0000, 0.0001, 0.0002, 0.0004, 0.0005, 0.0004, 0.0002, 0.0001, 0.0000, 0.0000, 0.0000,

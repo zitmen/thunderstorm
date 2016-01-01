@@ -29,10 +29,10 @@ public class MultipleLocationsImageFitting implements IEstimator {
     double[] xgrid;
     double[] ygrid;
     List<Molecule> results;
-    final OneLocationFitter fitter;
+    final IOneLocationFitter fitter;
     MoleculeDescriptor moleculeDescriptor;
 
-    public MultipleLocationsImageFitting(int fittingRadius, OneLocationFitter fitter) {
+    public MultipleLocationsImageFitting(int fittingRadius, IOneLocationFitter fitter) {
         this.subimageSize = fittingRadius;
         this.fitter = fitter;
         bigSubImageSize = 2 * fittingRadius + 1;
@@ -171,7 +171,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
         return extracted;
     }
 
-    public static void appendGoodnessOfFit(Molecule mol, OneLocationFitter fitter, SubImage subimage) {
+    public static void appendGoodnessOfFit(Molecule mol, IOneLocationFitter fitter, SubImage subimage) {
         LSQFitter lsqfit;
         if(fitter instanceof LSQFitter) {
             lsqfit = (LSQFitter)fitter;

@@ -13,11 +13,11 @@ import java.util.List;
  */
 public class FullImageFitting implements IEstimator {
 
-    OneLocationFitter fitter;
+    IOneLocationFitter fitter;
     double[] xgrid;
     double[] ygrid;
 
-    public FullImageFitting(OneLocationFitter fitter) {
+    public FullImageFitting(IOneLocationFitter fitter) {
         this.fitter = fitter;
     }
     

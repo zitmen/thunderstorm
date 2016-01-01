@@ -5,7 +5,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.LSQFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MLEFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.OneLocationFitter;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.IOneLocationFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
@@ -89,7 +89,7 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
         fittingRadius = FITRAD.getValue();
         fullImageFitting = FULL_IMAGE_FITTING.getValue();
         SymmetricGaussianPSF psf = new SymmetricGaussianPSF(initialSigma);
-        OneLocationFitter fitter;
+        IOneLocationFitter fitter;
         if(LSQ.equals(method) || WLSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
                 fitter = crowdedField.getLSQImplementation(psf, initialSigma);

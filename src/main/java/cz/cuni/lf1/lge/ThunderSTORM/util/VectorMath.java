@@ -574,6 +574,17 @@ public class VectorMath {
         return res;
     }
 
+    public static double[] sub(double[] arr1, double[] arr2) {
+        if(arr1.length != arr2.length) {
+            throw new FormulaParserException("When subtracting two vectors, both must be of the same size!");
+        }
+        double[] res = new double[arr1.length];
+        for(int i = 0; i < arr1.length; i++) {
+            res[i] = arr1[i] - arr2[i];
+        }
+        return res;
+    }
+
     public static double[] sub(double[] res, double[] arr1, double[] arr2) {
         if(arr1.length != arr2.length) {
             throw new FormulaParserException("When subtracting two vectors, both must be of the same size!");

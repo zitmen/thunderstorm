@@ -3,11 +3,10 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.abs;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Vector;
 
-abstract public class MFA_AbstractFitter implements OneLocationFitter, OneLocationBiplaneFitter {
+abstract public class MFA_AbstractFitter implements IOneLocationFitter {
 
     double defaultSigma;
     PSFModel basePsfModel;
@@ -47,10 +46,5 @@ abstract public class MFA_AbstractFitter implements OneLocationFitter, OneLocati
             }
         }
         return false;
-    }
-
-    @Override
-    public Molecule fit(SubImage plane1, SubImage plane2) {
-        throw new NotImplementedException();
     }
 }

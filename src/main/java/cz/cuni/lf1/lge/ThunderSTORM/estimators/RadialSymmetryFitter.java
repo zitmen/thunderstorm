@@ -12,7 +12,7 @@ import ij.process.FloatProcessor;
  * by Raghuveer Parthasarathy
  *
  */
-public class RadialSymmetryFitter implements OneLocationFitter {
+public class RadialSymmetryFitter implements IOneLocationFitter {
 
     @Override
     public Molecule fit(SubImage img) {

@@ -32,7 +32,6 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
 
     @Override
     public Molecule fit(SubImage subimage) {
-        Molecule mol;
         double[] fittedParams = null;
         MultiPSF model, modelBest = null;
         double chi2, chi2Best = 0.0, pValue;
@@ -44,12 +43,12 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
                 model.setIntensityRange(expectedIntensity);
                 model.setFixedIntensities(sameI);
                 LSQFitter fitter = new LSQFitter(model, weightedLSQ, MODEL_SELECTION_ITERATIONS, -1);
-                mol = fitter.fit(subimage);
+                fitter.fit(subimage);
                 fittedParams = fitter.fittedParameters;
                 chi2 = model.getChiSquared(subimage.xgrid, subimage.ygrid, subimage.values, fittedParams, weightedLSQ);
                 if(n > 1) {
                     try {
-                        pValue = 1.0 - new FDistribution(model.getDoF() - modelBest.getDoF(), subimage.values.length - model.getDoF()).cumulativeProbability(((chi2Best - chi2) / (model.getDoF() - modelBest.getDoF())) / (chi2 / (double)(subimage.values.length - model.getDoF())));
+                        pValue = 1.0 - new FDistribution(model.getDoF() - modelBest.getDoF(), subimage.values.length - model.getDoF()).cumulativeProbability(((chi2Best - chi2) / (model.getDoF() - modelBest.getDoF())) / (chi2 / (subimage.values.length - model.getDoF())));
                         if(!Double.isNaN(pValue) && (pValue < pValueThr) ) {//&& !isOutOfRegion(mol, ((double)subimage.size) / 2.0)
                             modelBest = model;
                             chi2Best = chi2;
@@ -74,7 +73,7 @@ public class MFA_LSQFitter extends MFA_AbstractFitter {
         }
         // fitting with the selected model
         lastFitter = new LSQFitter(modelBest, weightedLSQ, Params.BACKGROUND);
-        mol = lastFitter.fit(subimage);
+        Molecule mol = lastFitter.fit(subimage);
         assert (mol != null);    // this is implication of `assert(maxN >= 1)`
         if(!mol.isSingleMolecule()) {
             // copy background value to all molecules

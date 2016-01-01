@@ -88,7 +88,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
         fittingRadius = FITRAD.getValue();
         fullImageFitting = FULL_IMAGE_FITTING.getValue();
         PSFModel psf = new EllipticGaussianPSF(calibration);
-        OneLocationFitter fitter;
+        IOneLocationFitter fitter;
         if(LSQ.equals(method) || WLSQ.equals(method)) {
             if(crowdedField.isEnabled()) {
                 fitter = crowdedField.getLSQImplementation(psf, initialSigma);

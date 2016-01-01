@@ -3,7 +3,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 
-public class CentroidFitter implements OneLocationFitter {
+public class CentroidFitter implements IOneLocationFitter {
 
     @Override
     public Molecule fit(SubImage img) {

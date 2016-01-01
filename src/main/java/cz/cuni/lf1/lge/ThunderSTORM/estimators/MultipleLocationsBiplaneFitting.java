@@ -4,7 +4,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.Homography;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.BiplaneEllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
@@ -37,13 +36,13 @@ public class MultipleLocationsBiplaneFitting implements IBiplaneEstimator {
     double[] xgrid2;
     double[] ygrid2;
     Vector<Molecule> results;
-    final OneLocationBiplaneFitter fitter;
+    final IOneLocationBiplaneFitter fitter;
     MoleculeDescriptor moleculeDescriptor;
     Homography.TransformationMatrix homography, homographyInverse;
     PSFSeparator.Position mPos;
     List<PSFSeparator.Position> mPositions;
 
-    public MultipleLocationsBiplaneFitting(int fittingRadius, double distThrPx, Homography.TransformationMatrix homography, OneLocationBiplaneFitter fitter) {
+    public MultipleLocationsBiplaneFitting(int fittingRadius, double distThrPx, Homography.TransformationMatrix homography, IOneLocationBiplaneFitter fitter) {
         this.subimageSize = fittingRadius;
         this.distThrPx = distThrPx;
         this.homography = homography;
@@ -153,7 +152,6 @@ public class MultipleLocationsBiplaneFitting implements IBiplaneEstimator {
                     }
                     if (checkIsInSubimage(posX, posY, psf.getX(), psf.getY())) {
                         psf.setDetections(null);
-                        appendGoodnessOfFit(psf, fitter, subImage1, subImage2);
                         results.add(psf);
                     }
                 } catch (MaxCountExceededException ex) {
@@ -207,17 +205,5 @@ public class MultipleLocationsBiplaneFitting implements IBiplaneEstimator {
             }
         }
         return extracted;
-    }
-
-    public static void appendGoodnessOfFit(Molecule mol, OneLocationBiplaneFitter fitter, SubImage subimage1, SubImage subimage2) {
-        if (!(fitter instanceof LSQFitter)) return;
-        LSQFitter lsqfit = (LSQFitter) fitter;
-        if (!(lsqfit.psfModel instanceof BiplaneEllipticGaussianPSF)) return;
-        BiplaneEllipticGaussianPSF model = (BiplaneEllipticGaussianPSF) lsqfit.psfModel;
-
-        double chi2 = model.getChiSquared(subimage1.xgrid, subimage1.ygrid, subimage1.values,
-                                       subimage2.xgrid, subimage2.ygrid, subimage2.values,
-                                       lsqfit.fittedParameters, lsqfit.useWeighting);
-        mol.addParam(MoleculeDescriptor.Fitting.LABEL_CHI2, MoleculeDescriptor.Units.UNITLESS, chi2);
     }
 }
