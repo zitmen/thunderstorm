@@ -2,27 +2,31 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF;
 
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DaostormCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DoubleDefocusCalibration;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.SubImage;
+import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
+import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateMatrixFunction;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Arrays;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.exp;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.log;
 import static java.lang.Math.abs;
 
-public class BiplaneEllipticGaussianPSF extends BiplaneSymmetricGaussianPSF {
+public class BiplaneEllipticGaussianPSF extends PSFModel implements IBiplanePSFModel {
 
+    private boolean useNumericalDerivatives;
     private DoubleDefocusCalibration<DaostormCalibration> calibration;
     private double fi1, fi2, sinfi1, sinfi2, cosfi1, cosfi2;
 
     public BiplaneEllipticGaussianPSF(DoubleDefocusCalibration<DaostormCalibration> calibration, boolean numericalDerivatives) {
-        super(numericalDerivatives);
         assert(calibration != null);
         assert(calibration.homography != null);
         assert(calibration.cal1 != null);
         assert(calibration.cal2 != null);
+        this.useNumericalDerivatives = numericalDerivatives;
         this.calibration = calibration;
         this.fi1 = calibration.cal1.angle;
         this.sinfi1 = Math.sin(fi1);
@@ -30,6 +34,21 @@ public class BiplaneEllipticGaussianPSF extends BiplaneSymmetricGaussianPSF {
         this.fi2 = calibration.cal2.angle;
         this.sinfi2 = Math.sin(fi2);
         this.cosfi2 = Math.cos(fi2);
+    }
+
+    @Override
+    public double getValue(double[] params, double x, double y) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public double[] getInitialParams(SubImage subImage) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public double getDoF() {
+        return 6;
     }
 
     @Override
@@ -78,6 +97,32 @@ public class BiplaneEllipticGaussianPSF extends BiplaneSymmetricGaussianPSF {
     }
 
     @Override
+    public double[] getInitialSimplex() {
+        double[] steps = new double[Params.PARAMS_LENGTH];
+        Arrays.fill(steps, 0.001);  // cannot be zero!
+        steps[Params.X] = 1;
+        steps[Params.Y] = 1;
+        steps[Params.Z] = 100;
+        steps[Params.INTENSITY] = 3000;
+        steps[Params.OFFSET1] = 10;
+        steps[Params.OFFSET2] = 10;
+        return steps;
+    }
+
+    @Override
+    public double[] getInitialParams(SubImage plane1, SubImage plane2) {
+        double[] guess = new double[Params.PARAMS_LENGTH];
+        Arrays.fill(guess, 0);
+        guess[Params.X] = (plane1.detectorX + plane2.detectorX) / 2.0;
+        guess[Params.Y] = (plane1.detectorY + plane2.detectorY) / 2.0;
+        guess[Params.Z] = 0;
+        guess[Params.INTENSITY] = (plane1.getMax() - plane1.getMin()) + (plane2.getMax() - plane2.getMin());
+        guess[Params.OFFSET1] = plane1.getMin();
+        guess[Params.OFFSET2] = plane2.getMin();
+        return guess;
+    }
+
+    @Override
     public MultivariateVectorFunction getValueFunction(final double[] xgrid1, final double[] ygrid1, final double[] xgrid2, final double[] ygrid2) {
         return new MultivariateVectorFunction() {
             @Override
@@ -111,7 +156,13 @@ public class BiplaneEllipticGaussianPSF extends BiplaneSymmetricGaussianPSF {
     }
 
     @Override
-    protected MultivariateMatrixFunction getAnalyticJacobianFunction(final double[] xgrid1, final double[] ygrid1, final double[] xgrid2, final double[] ygrid2) {
+    public MultivariateMatrixFunction getJacobianFunction(final double[] xgrid1, final double[] ygrid1, final double[] xgrid2, final double[] ygrid2) {
+        return useNumericalDerivatives
+                ? getNumericJacobianFunction(xgrid1, ygrid1, xgrid2, ygrid2)
+                : getAnalyticJacobianFunction(xgrid1, ygrid1, xgrid2, ygrid2);
+    }
+
+    private MultivariateMatrixFunction getAnalyticJacobianFunction(final double[] xgrid1, final double[] ygrid1, final double[] xgrid2, final double[] ygrid2) {
         return new MultivariateMatrixFunction() {
             @Override
             public double[][] value(double[] point) throws IllegalArgumentException {
@@ -179,5 +230,79 @@ public class BiplaneEllipticGaussianPSF extends BiplaneSymmetricGaussianPSF {
                 return retVal;
             }
         };
+    }
+
+    private MultivariateMatrixFunction getNumericJacobianFunction(final double[] xgrid1, final double[] ygrid1, final double[] xgrid2, final double[] ygrid2) {
+        final MultivariateVectorFunction valueFunction = getValueFunction(xgrid1, ygrid1, xgrid2, ygrid2);
+        return new MultivariateMatrixFunction() {
+            static final double step = 0.01;
+
+            @Override
+            public double[][] value(double[] point) throws IllegalArgumentException {
+                double[][] retVal = new double[xgrid1.length + xgrid2.length][point.length];
+
+                for(int i = 0; i < point.length; i++) {
+                    double[] newPoint = point.clone();
+                    newPoint[i] = newPoint[i] + step;
+                    double[] f1 = valueFunction.value(newPoint);
+                    double[] f2 = valueFunction.value(point);
+                    for(int j = 0; j < f1.length; j++) {
+                        retVal[j][i] = (f1[j] - f2[j]) / step;
+                    }
+                }
+                return retVal;
+            }
+        };
+    }
+
+    @Override
+    public MultivariateFunction getLikelihoodFunction(double[] xgrid1, double[] ygrid1, final double[] values1, double[] xgrid2, double[] ygrid2, final double[] values2) {
+        final MultivariateVectorFunction valueFunction = getValueFunction(xgrid1, ygrid1, xgrid2, ygrid2);
+        return new MultivariateFunction() {
+            @Override
+            public double value(double[] point) {
+                double[] expectedValues = valueFunction.value(point);
+                double logLikelihood = 0;
+                int index = 0;
+                for(int i = 0; i < values1.length; i++, index++) {
+                    logLikelihood += values1[i] * Math.max(-1e6, log(expectedValues[index])) - expectedValues[index];
+                }
+                for(int i = 0; i < values2.length; i++, index++) {
+                    logLikelihood += values2[i] * Math.max(-1e6, log(expectedValues[index])) - expectedValues[index];
+                }
+                return logLikelihood;
+            }
+        };
+    }
+
+    @Override
+    public double getChiSquared(double[] xgrid1, double[] ygrid1, double[] values1, double[] xgrid2, double[] ygrid2, double[] values2, double[] params, boolean weighted) {
+        double minWeight = 1.0 / Math.max(VectorMath.max(values1), VectorMath.max(values2));
+        double maxWeight = 1000 * minWeight;
+
+        double[] expectedValues = getValueFunction(xgrid1, ygrid1, xgrid2, ygrid2).value(params);
+        double chi2 = 0;
+        int index = 0;
+        for(int i = 0; i < values1.length; i++, index++) {
+            double weight = 1;
+            if(weighted) {
+                weight = 1 / values1[i];
+                if(Double.isInfinite(weight) || Double.isNaN(weight) || weight > maxWeight) {
+                    weight = maxWeight;
+                }
+            }
+            chi2 += sqr(values1[i] - expectedValues[index]) * weight;
+        }
+        for(int i = 0; i < values2.length; i++, index++) {
+            double weight = 1;
+            if(weighted) {
+                weight = 1 / values2[i];
+                if(Double.isInfinite(weight) || Double.isNaN(weight) || weight > maxWeight) {
+                    weight = maxWeight;
+                }
+            }
+            chi2 += sqr(values2[i] - expectedValues[index]) * weight;
+        }
+        return chi2;
     }
 }
