@@ -15,7 +15,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.log;
 import static java.lang.Math.abs;
 
-public class BiplaneEllipticGaussianPSF extends PSFModel implements IBiplanePSFModel {
+public class BiplaneEllipticGaussianPSF extends PSFModel {
 
     private boolean useNumericalDerivatives;
     private DoubleDefocusCalibration<DaostormCalibration> calibration;
@@ -109,7 +109,6 @@ public class BiplaneEllipticGaussianPSF extends PSFModel implements IBiplanePSFM
         return steps;
     }
 
-    @Override
     public double[] getInitialParams(SubImage plane1, SubImage plane2) {
         double[] guess = new double[Params.PARAMS_LENGTH];
         Arrays.fill(guess, 0);
@@ -122,7 +121,6 @@ public class BiplaneEllipticGaussianPSF extends PSFModel implements IBiplanePSFM
         return guess;
     }
 
-    @Override
     public MultivariateVectorFunction getValueFunction(final double[] xgrid1, final double[] ygrid1, final double[] xgrid2, final double[] ygrid2) {
         return new MultivariateVectorFunction() {
             @Override
@@ -155,7 +153,6 @@ public class BiplaneEllipticGaussianPSF extends PSFModel implements IBiplanePSFM
         };
     }
 
-    @Override
     public MultivariateMatrixFunction getJacobianFunction(final double[] xgrid1, final double[] ygrid1, final double[] xgrid2, final double[] ygrid2) {
         return useNumericalDerivatives
                 ? getNumericJacobianFunction(xgrid1, ygrid1, xgrid2, ygrid2)
@@ -255,7 +252,6 @@ public class BiplaneEllipticGaussianPSF extends PSFModel implements IBiplanePSFM
         };
     }
 
-    @Override
     public MultivariateFunction getLikelihoodFunction(double[] xgrid1, double[] ygrid1, final double[] values1, double[] xgrid2, double[] ygrid2, final double[] values2) {
         final MultivariateVectorFunction valueFunction = getValueFunction(xgrid1, ygrid1, xgrid2, ygrid2);
         return new MultivariateFunction() {
@@ -275,7 +271,6 @@ public class BiplaneEllipticGaussianPSF extends PSFModel implements IBiplanePSFM
         };
     }
 
-    @Override
     public double getChiSquared(double[] xgrid1, double[] ygrid1, double[] values1, double[] xgrid2, double[] ygrid2, double[] values2, double[] params, boolean weighted) {
         double minWeight = 1.0 / Math.max(VectorMath.max(values1), VectorMath.max(values2));
         double maxWeight = 1000 * minWeight;

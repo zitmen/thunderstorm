@@ -4,7 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.Homography;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IBiplanePSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.BiplaneEllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
@@ -212,8 +212,8 @@ public class MultipleLocationsBiplaneFitting implements IBiplaneEstimator {
     public static void appendGoodnessOfFit(Molecule mol, OneLocationBiplaneFitter fitter, SubImage subimage1, SubImage subimage2) {
         if (!(fitter instanceof LSQFitter)) return;
         LSQFitter lsqfit = (LSQFitter) fitter;
-        if (!(lsqfit.psfModel instanceof IBiplanePSFModel)) return;
-        IBiplanePSFModel model = (IBiplanePSFModel) lsqfit.psfModel;
+        if (!(lsqfit.psfModel instanceof BiplaneEllipticGaussianPSF)) return;
+        BiplaneEllipticGaussianPSF model = (BiplaneEllipticGaussianPSF) lsqfit.psfModel;
 
         double chi2 = model.getChiSquared(subimage1.xgrid, subimage1.ygrid, subimage1.values,
                                        subimage2.xgrid, subimage2.ygrid, subimage2.values,

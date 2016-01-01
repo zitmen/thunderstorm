@@ -1,6 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IBiplanePSFModel;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.BiplaneEllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
@@ -112,19 +112,19 @@ public class LSQFitter implements OneLocationFitter, OneLocationBiplaneFitter {
     }
 
     public double[] getInitialParams(SubImage plane1, SubImage plane2) throws Exception {
-        IBiplanePSFModel model = (IBiplanePSFModel) psfModel;
+        BiplaneEllipticGaussianPSF model = (BiplaneEllipticGaussianPSF) psfModel;
         if (model == null) throw new Exception("Unknown PSF model for biplane fitting!");
         return model.getInitialParams(plane1, plane2);
     }
 
     public MultivariateVectorFunction getValueFunction(SubImage plane1, SubImage plane2) throws Exception {
-        IBiplanePSFModel model = (IBiplanePSFModel) psfModel;
+        BiplaneEllipticGaussianPSF model = (BiplaneEllipticGaussianPSF) psfModel;
         if (model == null) throw new Exception("Unknown PSF model for biplane fitting!");
         return model.getValueFunction(plane1.xgrid, plane1.ygrid, plane2.xgrid, plane2.ygrid);
     }
 
     public MultivariateMatrixFunction getJacobianFunction(SubImage plane1, SubImage plane2) throws Exception {
-        IBiplanePSFModel model = (IBiplanePSFModel) psfModel;
+        BiplaneEllipticGaussianPSF model = (BiplaneEllipticGaussianPSF) psfModel;
         if (model == null) throw new Exception("Unknown PSF model for biplane fitting!");
         return model.getJacobianFunction(plane1.xgrid, plane1.ygrid, plane2.xgrid, plane2.ygrid);
     }
