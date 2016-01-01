@@ -393,15 +393,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
         return ret;
     }
 
-    protected static void drawSigmaPlots(Plot plot, SigmaPlotConfig cfg) {
-        // range
-        plot.setLimits(-2*cfg.zRange, +2*cfg.zRange, 0, cfg.stageStep);
-        double[] xVals = new double[(int)(2*cfg.zRange/cfg.stageStep) * 2 + 1];
-        for(int val = -2*(int)cfg.zRange, i = 0; val <= +2*(int)cfg.zRange; val += cfg.stageStep, i++) {
-            xVals[i] = val;
-        }
-        plot.draw();
-
+    protected static void drawSigmaPlots(Plot plot, double[] xVals, SigmaPlotConfig cfg) {
         // add points
         plot.setColor(cfg.allSigma1sColor);
         plot.addPoints(cfg.allFrames, cfg.allSigma1s, Plot.CROSS);
@@ -481,8 +473,6 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
     public void drawSigmaPlots() {
         // config
         SigmaPlotConfig cfg = new SigmaPlotConfig();
-        cfg.zRange = zRange;
-        cfg.stageStep = stageStep;
         cfg.allFrames = allFrames;
         cfg.allSigma1s = allSigma1s;
         cfg.allSigma2s = allSigma2s;
@@ -503,19 +493,24 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
         cfg.legend2Y = 0.9;
         cfg.legend2Label = "sigma2";
 
-        // plot
+        // create and setup plot
         Plot plot = new Plot("Sigma", "z [nm]", "sigma [px]", null, (float[]) null);
         plot.setSize(1024, 768);
-        drawSigmaPlots(plot, cfg);
+        plot.setLimits(-2*zRange, +2*zRange, 0, stageStep);
+        double[] xVals = new double[(int)(2*zRange/stageStep) * 2 + 1];
+        for(int val = -2*(int)zRange, i = 0; val <= +2*(int)zRange; val += stageStep, i++) {
+            xVals[i] = val;
+        }
+        plot.draw();
+
+        // plot
+        drawSigmaPlots(plot, xVals, cfg);
 
         // display
         plot.show();
     }
 
     protected static class SigmaPlotConfig {
-        public double zRange;
-        public double stageStep;
-
         public double[] allFrames;
         public double[] allSigma1s;
         public double[] allSigma2s;

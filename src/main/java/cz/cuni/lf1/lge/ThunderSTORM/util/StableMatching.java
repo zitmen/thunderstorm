@@ -73,7 +73,7 @@ public class StableMatching {
         // Convert internal data structure to mapping
         HashMap<T, T> matches = new HashMap<T, T>();
         for (Map.Entry<T, MTuple<T>> entry : engagements.entrySet())
-            matches.put(entry.getKey(), entry.getValue().suitor);
+            matches.put(entry.getValue().suitor, entry.getKey());
         return matches;
     }
 

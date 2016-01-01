@@ -17,7 +17,6 @@ public class DoubleDefocusCalibration<T extends DefocusCalibration> extends Defo
     public DoubleDefocusCalibration(String calName, Homography.TransformationMatrix homography, T cal1, T cal2) {
         super(calName);
         this.homography = homography;
-        this.isBiplane = (homography == null);
         this.cal1 = cal1;
         this.cal2 = cal2;
     }

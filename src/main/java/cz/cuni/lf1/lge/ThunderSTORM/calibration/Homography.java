@@ -96,8 +96,8 @@ public class Homography {
         List<Pair<Point, Point>> pairs = new ArrayList<Pair<Point, Point>>(map.size());
         int idIndex = descriptor.getParamIndex(MoleculeDescriptor.LABEL_ID);
         for (Map.Entry<Molecule, Molecule> pair : map.entrySet()) {
-            pairs.add(new Pair<Point, Point>(fits1.get((int) pair.getValue().getParamAt(idIndex)),
-                                             fits2.get((int) pair.getKey().getParamAt(idIndex))));
+            pairs.add(new Pair<Point, Point>(fits1.get((int) pair.getKey().getParamAt(idIndex)),
+                                             fits2.get((int) pair.getValue().getParamAt(idIndex))));
         }
         return pairs;
     }
@@ -325,7 +325,7 @@ public class Homography {
         config.thDist = 1;  // precision [px]; usualy the precision is much higher (~1e-6 px)
         config.thInlr = Math.max(config.minPtNum, Math.round(0.5 * Math.min(p1.size(), p2.size())));    // 50%
         config.pairs = true;
-        config.thPairDist = 50;   // mutual distance of paired molecules [px] (should be same as `coef.thDist` set in `findTranslationAndFlip`)
+        config.thPairDist = 3;   // mutual distance of paired molecules [px] (should be same as `coef.thDist` set in `findTranslationAndFlip`)
         config.thAllowedTransformChange = 100.0;    // point [1,1] after applying T can't move further than 100px,
                                                     // otherwise something is wrong, since this step should be just
                                                     // for fine-tuning! (this value is large on purpose, so the test
@@ -351,8 +351,8 @@ public class Homography {
         Pair<List<Position>, List<Position>> pairs = initialPairing(config.thPairDist, initialGuess, p1, p2);
         TransformationMatrix norm1 = TransformationMatrix.getNormalization(pairs.first);
         TransformationMatrix norm2 = TransformationMatrix.getNormalization(pairs.second);
-        TransformationMatrix homography = ransac(applyH(norm1, pairs.first), applyH(norm2, pairs.second), config, functions);
         config.thDist *= norm1.matrix.getEntry(0, 0);   // isotropic scale
+        TransformationMatrix homography = ransac(applyH(norm1, pairs.first), applyH(norm2, pairs.second), config, functions);
         return TransformationMatrix.getDenormalizedHomography(homography, norm1, norm2);
     }
 

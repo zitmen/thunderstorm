@@ -13,7 +13,6 @@ import java.util.List;
 public abstract class DefocusCalibration {
 
     public String name;
-    public boolean isBiplane;
     public double angle;
     public double w01, w02;
     public double a1, a2;
@@ -25,7 +24,6 @@ public abstract class DefocusCalibration {
 
     public DefocusCalibration(String calName) {
         name = calName;
-        isBiplane = false;
         homography = null;
         angle = 0.0;
         w01 = w02 = 0.0;
@@ -38,7 +36,6 @@ public abstract class DefocusCalibration {
     public DefocusCalibration(String calName, double angle, Homography.TransformationMatrix homography, double w01, double a1, double b1, double c1, double d1, double w02, double a2, double b2, double c2, double d2) {
         name = calName;
         this.angle = angle;
-        this.isBiplane = (homography == null);
         this.homography = homography;
         this.w01 = w01;
         this.a1 = a1;
@@ -77,10 +74,6 @@ public abstract class DefocusCalibration {
 
     public double getSigma2Squared(double z) {
         return evalDefocus2(z, w02, a2, b2, c2, d2);
-    }
-
-    public boolean isBiplane() {
-        return isBiplane;
     }
 
     public double getAngle() {

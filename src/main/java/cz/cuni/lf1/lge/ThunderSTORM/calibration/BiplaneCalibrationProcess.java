@@ -42,8 +42,11 @@ public class BiplaneCalibrationProcess extends AbstractCalibrationProcess {
         IJ.log("s2 = " + polynomS2Final.toString());
     }
 
+    @SuppressWarnings("unchecked")
     public DefocusCalibration getCalibration(DefocusFunction defocusModel) {
-        return defocusModel.getCalibration(angle, transformationMatrix, polynomS1Final, polynomS2Final);
+        DefocusCalibration cal1 = defocusModel.getCalibration(angle, null, polynomS1Final, polynomS1Final);
+        DefocusCalibration cal2 = defocusModel.getCalibration(angle, null, polynomS2Final, polynomS2Final);
+        return new DoubleDefocusCalibration(cal1.name, transformationMatrix, cal1, cal2);
     }
 
     public void drawOverlay() {

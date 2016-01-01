@@ -93,8 +93,6 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
     public void drawSigmaPlots() {
         // config plane 1
         SigmaPlotConfig cfg1 = new SigmaPlotConfig();
-        cfg1.zRange = zRange;
-        cfg1.stageStep = stageStep;
         cfg1.allFrames = allFrames1;
         cfg1.allSigma1s = allSigma11s;
         cfg1.allSigma2s = allSigma12s;
@@ -117,8 +115,6 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
 
         // config plane 2
         SigmaPlotConfig cfg2 = new SigmaPlotConfig();
-        cfg2.zRange = zRange;
-        cfg2.stageStep = stageStep;
         cfg2.allFrames = allFrames2;
         cfg2.allSigma1s = allSigma21s;
         cfg2.allSigma2s = allSigma22s;
@@ -139,11 +135,19 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
         cfg2.legend2Y = 0.9;
         cfg2.legend2Label = "sigma22";
 
-        // plot
+        // create and setup plot
         Plot plot = new Plot("Sigma", "z [nm]", "sigma [px]", null, (float[]) null);
         plot.setSize(1024, 768);
-        drawSigmaPlots(plot, cfg1);
-        drawSigmaPlots(plot, cfg2);
+        plot.setLimits(-2*zRange, +2*zRange, 0, stageStep);
+        double[] xVals = new double[(int)(2*zRange/stageStep) * 2 + 1];
+        for(int val = -2*(int)zRange, i = 0; val <= +2*(int)zRange; val += stageStep, i++) {
+            xVals[i] = val;
+        }
+        plot.draw();
+
+        // plot
+        drawSigmaPlots(plot, xVals, cfg1);
+        drawSigmaPlots(plot, xVals, cfg2);
 
         // display
         plot.show();
@@ -151,7 +155,6 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
 
     @Override
     protected double guessZ0(PSFSeparator.Position p) {
-        // TODO: make this more robust...it would certainly fail in case of a hybrid setup!
         double[] sigma1AsArray = p.getAsArray(LABEL_SIGMA1);
         double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
         double[] sigma3AsArray = p.getAsArray(LABEL_SIGMA3);
@@ -181,6 +184,8 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
     protected Map<PSFSeparator.Position, PSFSeparator.Position> fitPositions() {
         angle1 = estimateAngle(imp1, roi1);
         angle2 = estimateAngle(imp2, roi2);
+        if (Double.isNaN(angle1) || Double.isInfinite(angle1)) angle1 = 0.0;
+        if (Double.isNaN(angle2) || Double.isInfinite(angle2)) angle2 = 0.0;
         beadFits1 = fitFixedAngle(angle1, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
         beadFits2 = fitFixedAngle(angle2, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
         List<PSFSeparator.Position> fits1 = filterPositions(beadFits1);
