@@ -69,9 +69,4 @@ public class MFA_MLEFitter extends MFA_AbstractFitter {
         }
         return eliminateBadFits(mol, ((double) subimage.size_x) / 2.0 - defaultSigma / 2.0, ((double) subimage.size_y) / 2.0 - defaultSigma / 2.0);
     }
-
-    @Override
-    public Molecule fit(SubImage plane1, SubImage plane2) {
-        throw new NotImplementedException();
-    }
 }

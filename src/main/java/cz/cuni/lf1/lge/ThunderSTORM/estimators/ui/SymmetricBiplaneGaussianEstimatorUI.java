@@ -2,9 +2,9 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.*;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.*;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.BiplaneSymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.DialogStub;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
@@ -30,25 +30,25 @@ public class SymmetricBiplaneGaussianEstimatorUI extends IBiplaneEstimatorUI {
     protected String name = "PSF: Symmetric Gaussian (3D biplane)";
     protected int fittingRadius;
     protected String method;
-    protected double distThrNm;
-    protected CrowdedFieldEstimatorUI crowdedField;
+    protected boolean numericalDerivatives;
+    protected double distThrPx;
     protected DefocusCalibration calibration;
     protected String calibrationFilePath;
     //params
     protected transient ParameterKey.Integer FITRAD;
     protected transient ParameterKey.String METHOD;
+    protected transient ParameterKey.Boolean NUMERICAL_DERIVATIVES;
     protected transient ParameterKey.Double MATCHING_DISTANCE_THRESHOLD;
     protected transient ParameterKey.String CALIBRATION_PATH;
 
     public SymmetricBiplaneGaussianEstimatorUI() {
-        crowdedField = new CrowdedFieldEstimatorUI();
-
         FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
         METHOD = parameters.createStringField("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), MLE);
+        NUMERICAL_DERIVATIVES = parameters.createBooleanField("numericalDerivatives", null, false);
         CALIBRATION_PATH = parameters.createStringField("calibrationpath", StringValidatorFactory.fileExists(), "");
         // it's better to make the following distance larger and let the matcher do it's job; otherwise,
         // a localization uncertainty would be the way to go, however, it would require an additional round of fitting
-        MATCHING_DISTANCE_THRESHOLD = parameters.createDoubleField("distThrNm", DoubleValidatorFactory.positive(), 50.0);
+        MATCHING_DISTANCE_THRESHOLD = parameters.createDoubleField("distThrPx", DoubleValidatorFactory.positive(), 3);
     }
 
     @Override
@@ -60,16 +60,21 @@ public class SymmetricBiplaneGaussianEstimatorUI extends IBiplaneEstimatorUI {
         return method;
     }
 
+    public boolean useNumericalDerivatives() {
+        return numericalDerivatives;
+    }
+
     @Override
     public JPanel getOptionsPanel() {
         JTextField fitregsizeTextField = new JTextField("", 20);
         JComboBox<String> methodComboBox = new JComboBox<String>(new String[]{LSQ, WLSQ, MLE});
-        JTextField sigmaTextField = new JTextField("");
-        JTextField distThrNmField = new JTextField("");
+        JCheckBox numericalDerivativesCheckBox = new JCheckBox("use numerical derivatives");
+        JTextField distThrPxField = new JTextField("");
         final JTextField calibrationFileTextField = new JTextField(Prefs.get("thunderstorm.estimators.calibrationpath", ""));
         parameters.registerComponent(FITRAD, fitregsizeTextField);
         parameters.registerComponent(METHOD, methodComboBox);
-        parameters.registerComponent(MATCHING_DISTANCE_THRESHOLD, distThrNmField);
+        parameters.registerComponent(NUMERICAL_DERIVATIVES, numericalDerivativesCheckBox);
+        parameters.registerComponent(MATCHING_DISTANCE_THRESHOLD, distThrPxField);
         parameters.registerComponent(CALIBRATION_PATH, calibrationFileTextField);
 
         JPanel panel = new JPanel(new GridBagLayout());
@@ -88,14 +93,13 @@ public class SymmetricBiplaneGaussianEstimatorUI extends IBiplaneEstimatorUI {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(calibrationPanel, gbc);
 
-        panel.add(new JLabel("Maximum biplane matching distance [nm]:"), GridBagHelper.leftCol());
-        panel.add(distThrNmField, GridBagHelper.rightCol());
+        panel.add(new JLabel("Maximum biplane matching distance [px]:"), GridBagHelper.leftCol());
+        panel.add(distThrPxField, GridBagHelper.rightCol());
         panel.add(new JLabel("Fitting radius [px]:"), GridBagHelper.leftCol());
         panel.add(fitregsizeTextField, GridBagHelper.rightCol());
         panel.add(new JLabel("Fitting method:"), GridBagHelper.leftCol());
         panel.add(methodComboBox, GridBagHelper.rightCol());
-
-        crowdedField.getOptionsPanel(panel);
+        panel.add(numericalDerivativesCheckBox, GridBagHelper.rightCol());
 
         parameters.loadPrefs();
         return panel;
@@ -104,58 +108,45 @@ public class SymmetricBiplaneGaussianEstimatorUI extends IBiplaneEstimatorUI {
     @Override
     public void readParameters() {
         super.readParameters();
-        crowdedField.readParameters();
         calibration = loadCalibration(parameters.getString(CALIBRATION_PATH));
     }
 
     @Override
     public IBiplaneEstimator getImplementation() {
-        // TODO: remove the sigma from biplane intefaces! it's not needed in 3D!
-        final double initialSigma = 1.6;    // dummy value, which is not used anyway
         method = METHOD.getValue();
-        distThrNm = MATCHING_DISTANCE_THRESHOLD.getValue();
+        numericalDerivatives = NUMERICAL_DERIVATIVES.getValue();
+        distThrPx = MATCHING_DISTANCE_THRESHOLD.getValue();
         fittingRadius = FITRAD.getValue();
-        PSFModel psf = getPSFModel(initialSigma, calibration);
+        PSFModel psf = getPSFModel(calibration, numericalDerivatives);
         OneLocationBiplaneFitter fitter;
         if(LSQ.equals(method) || WLSQ.equals(method)) {
-            if(crowdedField.isEnabled()) {
-                fitter = crowdedField.getLSQImplementation(psf, initialSigma);
-            } else {
-                fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
-            }
+            fitter = new LSQFitter(psf, WLSQ.equals(method), Params.BACKGROUND);
         } else if(MLE.equals(method)) {
-            if(crowdedField.isEnabled()) {
-                fitter = crowdedField.getMLEImplementation(psf, initialSigma);
-            } else {
-                fitter = new MLEFitter(psf, Params.BACKGROUND);
-            }
+            fitter = new MLEFitter(psf, Params.BACKGROUND);
         } else {
             throw new IllegalArgumentException("Unknown fitting method: " + method);
         }
-        return new MultipleLocationsBiplaneFitting(fittingRadius, distThrNm, calibration.homography, fitter);
+        return new MultipleLocationsBiplaneFitting(fittingRadius, distThrPx, calibration.homography, fitter);
     }
 
-    protected PSFModel getPSFModel(double initialSigma, DefocusCalibration calibration) {
-        return new SymmetricGaussianPSF(initialSigma);
+    protected PSFModel getPSFModel(DefocusCalibration calibration, boolean numericalDerivatives) {
+        return new BiplaneSymmetricGaussianPSF((DaostormCalibration) calibration, numericalDerivatives);
     }
 
     @Override
     public void recordOptions() {
         super.recordOptions();
-        crowdedField.recordOptions();
     }
 
     @Override
     public void readMacroOptions(String options) {
         super.readMacroOptions(options);
-        crowdedField.readMacroOptions(options);
         calibration = loadCalibration(parameters.getString(CALIBRATION_PATH));
     }
 
     @Override
     public void resetToDefaults() {
         super.resetToDefaults();
-        crowdedField.resetToDefaults();
     }
 
     private DefocusCalibration loadCalibration(String calibrationFilePath) {

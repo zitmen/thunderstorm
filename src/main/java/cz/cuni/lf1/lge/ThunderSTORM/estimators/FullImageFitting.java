@@ -14,8 +14,8 @@ import java.util.List;
 public class FullImageFitting implements IEstimator {
 
     OneLocationFitter fitter;
-    int [] xgrid;
-    int [] ygrid;
+    double[] xgrid;
+    double[] ygrid;
 
     public FullImageFitting(OneLocationFitter fitter) {
         this.fitter = fitter;
@@ -66,8 +66,8 @@ public class FullImageFitting implements IEstimator {
     }
     
     private void initializeGrid(int x0, int y0, int w, int h) {
-        xgrid = new int[w * h];
-        ygrid = new int[w * h];
+        xgrid = new double[w * h];
+        ygrid = new double[w * h];
         
         int idx = 0;
         for(int y = 0; y < h; y++) {

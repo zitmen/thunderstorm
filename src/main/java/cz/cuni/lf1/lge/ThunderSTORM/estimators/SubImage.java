@@ -5,8 +5,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 
 public class SubImage {
 
-    public int[] xgrid;
-    public int[] ygrid;
+    public double[] xgrid;
+    public double[] ygrid;
     public double[] values;
     public double detectorX;
     public double detectorY;
@@ -17,11 +17,11 @@ public class SubImage {
     public SubImage() {
     }
 
-    public SubImage(int sizeX, int sizeY, int[] xgrid, int[] ygrid, double[] values, double detectorX, double detectorY) {
+    public SubImage(int sizeX, int sizeY, double[] xgrid, double[] ygrid, double[] values, double detectorX, double detectorY) {
         this(sizeX, sizeY, xgrid, ygrid, values, detectorX, detectorY, MoleculeDescriptor.Units.DIGITAL);
     }
 
-    public SubImage(int sizeX, int sizeY, int[] xgrid, int[] ygrid, double[] values, double detectorX, double detectorY, MoleculeDescriptor.Units units) {
+    public SubImage(int sizeX, int sizeY, double[] xgrid, double[] ygrid, double[] values, double detectorX, double detectorY, MoleculeDescriptor.Units units) {
         this.size_x = sizeX;
         this.size_y = sizeY;
         this.xgrid = xgrid;

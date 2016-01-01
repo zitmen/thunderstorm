@@ -56,7 +56,7 @@ public class EllipticGaussianWAnglePSF extends PSFModel {
     }
 
     @Override
-    public MultivariateMatrixFunction getJacobianFunction(final int[] xgrid, final int[] ygrid) {
+    public MultivariateMatrixFunction getJacobianFunction(final double[] xgrid, final double[] ygrid) {
         return new MultivariateMatrixFunction() {
             @Override
             //derivations by wolfram alpha:

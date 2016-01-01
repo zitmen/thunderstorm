@@ -265,7 +265,7 @@ public class MoleculeDescriptor implements Cloneable {
                 clonedNames[i] = null;
             }
             if(indices.elementAt(i) != null) {
-                clonedIndices[i] = indices.elementAt(i).intValue();
+                clonedIndices[i] = indices.elementAt(i);
             } else {
                 clonedIndices[i] = 0;
             }
@@ -651,8 +651,12 @@ public class MoleculeDescriptor implements Cloneable {
                 allUnits.put(LABEL_SIGMA, Units.PIXEL);
                 allUnits.put(LABEL_SIGMA1, Units.PIXEL);
                 allUnits.put(LABEL_SIGMA2, Units.PIXEL);
+                allUnits.put(LABEL_SIGMA3, Units.PIXEL);
+                allUnits.put(LABEL_SIGMA4, Units.PIXEL);
                 allUnits.put(LABEL_INTENSITY, Units.DIGITAL);
                 allUnits.put(PSFModel.Params.LABEL_OFFSET, Units.DIGITAL);
+                allUnits.put(PSFModel.Params.LABEL_OFFSET1, Units.DIGITAL);
+                allUnits.put(PSFModel.Params.LABEL_OFFSET2, Units.DIGITAL);
                 allUnits.put(LABEL_BACKGROUND, Units.DIGITAL);
                 allUnits.put(PSFModel.Params.LABEL_ANGLE, Units.RADIAN);
                 //
@@ -722,8 +726,12 @@ public class MoleculeDescriptor implements Cloneable {
             allParams.put(LABEL_SIGMA, MergingOperations.MEAN);
             allParams.put(LABEL_SIGMA1, MergingOperations.MEAN);
             allParams.put(LABEL_SIGMA2, MergingOperations.MEAN);
+            allParams.put(LABEL_SIGMA3, MergingOperations.MEAN);
+            allParams.put(LABEL_SIGMA4, MergingOperations.MEAN);
             allParams.put(LABEL_INTENSITY, MergingOperations.SUM);
             allParams.put(PSFModel.Params.LABEL_OFFSET, MergingOperations.MEAN);
+            allParams.put(PSFModel.Params.LABEL_OFFSET1, MergingOperations.MEAN);
+            allParams.put(PSFModel.Params.LABEL_OFFSET2, MergingOperations.MEAN);
             allParams.put(LABEL_BACKGROUND, MergingOperations.SUM);
             allParams.put(PSFModel.Params.LABEL_ANGLE, MergingOperations.MEAN);
             //

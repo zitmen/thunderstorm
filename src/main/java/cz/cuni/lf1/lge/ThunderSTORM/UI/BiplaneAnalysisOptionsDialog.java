@@ -11,7 +11,6 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.DialogStub;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
-import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
 import ij.*;
 import ij.measure.Calibration;
@@ -36,7 +35,6 @@ public class BiplaneAnalysisOptionsDialog extends DialogStub implements ActionLi
     private List<IDetectorUI> detectors;
     private List<IBiplaneEstimatorUI> estimators;
     private List<IRendererUI> renderers;
-    private double matchingDistanceThreshold;
 
     public BiplaneAnalysisOptionsDialog(List<IFilterUI> filters, List<IDetectorUI> detectors,
                                         List<IBiplaneEstimatorUI> estimators, List<IRendererUI> renderers) {
@@ -186,7 +184,7 @@ public class BiplaneAnalysisOptionsDialog extends DialogStub implements ActionLi
             } else if("Defaults".equals(e.getActionCommand())) {
                 params.resetToDefaults(true);
                 //noinspection unchecked
-                AnalysisOptionsDialog.resetModuleUIs(filters, detectors, estimators);
+                AnalysisOptionsDialog.resetModuleUIs(filters, detectors, estimators, renderers);
             }
         } catch(Exception ex) {
             IJ.handleException(ex);

@@ -76,8 +76,10 @@ public final class BiplaneAnalysisPlugIn implements PlugIn {
             selectedEstimatorUI = dialog.getActiveEstimatorUI();
             IRendererUI selectedRendererUI = dialog.getActiveRendererUI();
 
-            if (!isStack(imp1 = dialog.getFirstPlaneStack())) return;
-            if (!isStack(imp2 = dialog.getSecondPlaneStack())) return;
+            if (((imp1 = dialog.getFirstPlaneStack()) == null) || ((imp2 = dialog.getSecondPlaneStack()) == null)) {
+                IJ.error("Couldn't open both images!");
+                return;
+            }
             if (imp1.getImageStackSize() != imp2.getImageStackSize()) {
                 IJ.error("Both stacks must have the same number of frames!");
                 return;
@@ -149,24 +151,15 @@ public final class BiplaneAnalysisPlugIn implements PlugIn {
             IJ.showStatus("ThunderSTORM is generating the results...");
             showResults();
 
+        } catch (ClassCastException ex) {
+            // this is usually caused by incompatibility of calibration file with an estimator
+            IJ.error("Method can't be initiated: " + ex.getMessage());
         } catch(Throwable ex) {
             IJ.handleException(ex);
         }
 
         IJ.showProgress(1.0);
         IJ.showStatus("ThunderSTORM finished.");
-    }
-
-    private boolean isStack(ImagePlus imp) {
-        if(imp == null) {
-            IJ.error("No image open.");
-            return false;
-        }
-        if(imp.getImageStackSize() < 2) {
-            IJ.error("Requires a stack.");
-            return false;
-        }
-        return true;
     }
 
     private FloatProcessor getRoiProcessor(ImagePlus imp, Roi roi, int index) {

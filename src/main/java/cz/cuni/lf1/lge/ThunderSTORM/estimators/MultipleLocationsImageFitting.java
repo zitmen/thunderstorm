@@ -26,8 +26,8 @@ public class MultipleLocationsImageFitting implements IEstimator {
     double[] subimageData;
     int subimageSize;
     int bigSubImageSize;
-    int[] xgrid;
-    int[] ygrid;
+    double[] xgrid;
+    double[] ygrid;
     List<Molecule> results;
     final OneLocationFitter fitter;
     MoleculeDescriptor moleculeDescriptor;
@@ -41,8 +41,8 @@ public class MultipleLocationsImageFitting implements IEstimator {
     }
 
     private void initializeGrid() {
-        xgrid = new int[bigSubImageSize * bigSubImageSize];
-        ygrid = new int[bigSubImageSize * bigSubImageSize];
+        xgrid = new double[bigSubImageSize * bigSubImageSize];
+        ygrid = new double[bigSubImageSize * bigSubImageSize];
 
         int idx = 0;
         for(int i = -subimageSize; i <= subimageSize; i++) {

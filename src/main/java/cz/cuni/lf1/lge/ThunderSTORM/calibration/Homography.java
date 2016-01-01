@@ -66,9 +66,9 @@ public class Homography {
      * are supposed to be in the same frame, but different planes. The only purpose
      * is to match the pairs.
      *
-     * TODO: this is not very effective approach as the number of allocations is large!
+     * TODO: this is not very effective approach as the number of allocations is high!
      */
-    public static List<Pair<Point, Point>> mergePositions(int width, int height, TransformationMatrix transform, List<Point> fits1, List<Point> fits2, double dist2nm) {
+    public static List<Pair<Point, Point>> mergePositions(int width, int height, TransformationMatrix transform, List<Point> fits1, List<Point> fits2, double dist2px) {
         MoleculeDescriptor descriptor = new MoleculeDescriptor(
                 new String[]{ MoleculeDescriptor.LABEL_ID, PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y },
                 new MoleculeDescriptor.Units[] { MoleculeDescriptor.Units.UNITLESS, MoleculeDescriptor.Units.PIXEL, MoleculeDescriptor.Units.PIXEL });
@@ -89,15 +89,15 @@ public class Homography {
         m1 = applyH(transform, moveToCenterXY(m1, width, height));
         m2 = moveToCenterXY(m2, width, height);
         for (Molecule m : m1) {
-            m.addNeighbors(m2, false, dist2nm, MoleculeDescriptor.Units.NANOMETER);
+            m.addNeighbors(m2, false, dist2px, MoleculeDescriptor.Units.PIXEL);
         }
         Map<Molecule, Molecule> map = StableMatching.match(m1);
         // unwrap
         List<Pair<Point, Point>> pairs = new ArrayList<Pair<Point, Point>>(map.size());
         int idIndex = descriptor.getParamIndex(MoleculeDescriptor.LABEL_ID);
         for (Map.Entry<Molecule, Molecule> pair : map.entrySet()) {
-            pairs.add(new Pair<Point, Point>(fits1.get((int) pair.getKey().getParamAt(idIndex)),
-                                             fits2.get((int) pair.getValue().getParamAt(idIndex))));
+            pairs.add(new Pair<Point, Point>(fits1.get((int) pair.getValue().getParamAt(idIndex)),
+                                             fits2.get((int) pair.getKey().getParamAt(idIndex))));
         }
         return pairs;
     }
@@ -136,6 +136,10 @@ public class Homography {
             TransformationMatrix tm = new TransformationMatrix();
             tm.matrix = new Array2DRowRealMatrix(new double[][] {{1,0,0},{0,1,0},{0,0,1}});    // 3x3 identity matrix
             return tm;
+        }
+
+        public TransformationMatrix inverse() {
+            return TransformationMatrix.createFrom(new LUDecomposition(matrix).getSolver().getInverse());
         }
 
         public TransformationMatrix shift(double x, double y) {

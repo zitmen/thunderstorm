@@ -164,9 +164,9 @@ public class CrowdedFieldEstimatorsTest {
             0.0000, 0.0000, 0.0001, 0.0002, 0.0007, 0.0014, 0.0019, 0.0018, 0.0012, 0.0005, 0.0002, 0.0000, 0.0000,
             0.0000, 0.0000, 0.0000, 0.0000, 0.0001, 0.0002, 0.0003, 0.0003, 0.0002, 0.0001, 0.0000, 0.0000, 0.0000
         } };
-        
-        int[] xgrid = new int[(int)sqr(2*FITRADIUS+1)];
-        int[] ygrid = new int[(int)sqr(2*FITRADIUS+1)];
+
+        double[] xgrid = new double[(int)sqr(2*FITRADIUS+1)];
+        double[] ygrid = new double[(int)sqr(2*FITRADIUS+1)];
         int idx = 0;
         for (int i = -FITRADIUS; i <= FITRADIUS; i++) {
             for (int j = -FITRADIUS; j <= FITRADIUS; j++) {

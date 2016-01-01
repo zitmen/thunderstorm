@@ -94,7 +94,7 @@ public class MultiPSF extends PSFModel {
     }
 
     @Override
-    public MultivariateMatrixFunction getJacobianFunction(final int[] xgrid, final int[] ygrid) {
+    public MultivariateMatrixFunction getJacobianFunction(final double[] xgrid, final double[] ygrid) {
         return new MultivariateMatrixFunction() {
             @Override
             public double[][] value(double[] point) throws IllegalArgumentException {
@@ -126,7 +126,7 @@ public class MultiPSF extends PSFModel {
      * @return
      */
     @Override
-    public MultivariateVectorFunction getValueFunction(final int[] xgrid, final int[] ygrid) {
+    public MultivariateVectorFunction getValueFunction(final double[] xgrid, final double[] ygrid) {
         return new MultivariateVectorFunction() {
             @Override
             public double[] value(double[] point) throws IllegalArgumentException {
