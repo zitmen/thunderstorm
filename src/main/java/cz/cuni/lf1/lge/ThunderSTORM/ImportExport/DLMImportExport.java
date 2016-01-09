@@ -64,10 +64,11 @@ abstract public class DLMImportExport implements IImportExport {
             //
             double[] values = new double[colnames.length];
             String[] line;
+            int dataColCount = values.length + (c_id < 0 ? 0 : 1);
             while (sc.hasNextLine()) {
                 line = splitLine(sc.nextLine());
                 if (line.length == 1 && line[0].isEmpty()) continue; // just an empty line...do not report
-                if (line.length != values.length) { // but report when there is a corrupted row
+                if (line.length != dataColCount) { // but report when there is a corrupted row
                     IJ.log("A line has different number of items than the header! Skipping over...");
                     continue;
                 }
