@@ -128,7 +128,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         //cross correlation params
         binsParam = params.createIntField("steps", IntegerValidatorFactory.rangeInclusive(2, Integer.MAX_VALUE), 5, crossCorrCondition);
         magnificationParam = params.createDoubleField("magnification", DoubleValidatorFactory.positiveNonZero(), 5, crossCorrCondition);
-        ccSmoothingBandwidthParam = params.createDoubleField("ccSmoothingBandwidth", DoubleValidatorFactory.rangeInclusive(0, 1), 0.25, fiducialCondition);
+        ccSmoothingBandwidthParam = params.createDoubleField("ccSmoothingBandwidth", DoubleValidatorFactory.rangeInclusive(0, 1), 0.25, crossCorrCondition);
         showCorrelationImagesParam = params.createBooleanField("showCorrelations", null, false, crossCorrCondition);
         //fiducials params
         distanceThresholdParam = params.createDoubleField("distanceThr", DoubleValidatorFactory.positiveNonZero(), 40, fiducialCondition);
@@ -336,7 +336,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
                             molecules,
                             distanceThresholdParam.getValue(),
                             onTimeRatioParam.getValue(),
-                            ccSmoothingBandwidthParam.getValue());
+                            smoothingBandwidthParam.getValue());
                 } else if(action.equals(actions[2])) {
                     try {
                         return loadResultsFromFile(pathParam.getValue());
