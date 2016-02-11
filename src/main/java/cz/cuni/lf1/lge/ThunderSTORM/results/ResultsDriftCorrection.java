@@ -57,6 +57,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
     //fiducials params
     private ParameterKey.Double distanceThresholdParam;
     private ParameterKey.Double onTimeRatioParam;
+    private ParameterKey.Double ccSmoothingBandwidthParam;
     private ParameterKey.Double smoothingBandwidthParam;
     //load save params
     private ParameterKey.Boolean saveParam;
@@ -127,6 +128,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
         //cross correlation params
         binsParam = params.createIntField("steps", IntegerValidatorFactory.rangeInclusive(2, Integer.MAX_VALUE), 5, crossCorrCondition);
         magnificationParam = params.createDoubleField("magnification", DoubleValidatorFactory.positiveNonZero(), 5, crossCorrCondition);
+        ccSmoothingBandwidthParam = params.createDoubleField("ccSmoothingBandwidth", DoubleValidatorFactory.rangeInclusive(0, 1), 0.25, fiducialCondition);
         showCorrelationImagesParam = params.createBooleanField("showCorrelations", null, false, crossCorrCondition);
         //fiducials params
         distanceThresholdParam = params.createDoubleField("distanceThr", DoubleValidatorFactory.positiveNonZero(), 40, fiducialCondition);
@@ -147,18 +149,23 @@ public class ResultsDriftCorrection extends PostProcessingModule {
 
         JTextField numStepsTextField = new JTextField(10);
         JTextField magnificationTextField = new JTextField(10);
+        JTextField ccSmoothingBandwidthTextField = new JTextField(10);
         JCheckBox showCorrelationsCheckBox = new JCheckBox("Show cross correlations", false);
         numStepsTextField.addKeyListener(listener);
         magnificationTextField.addKeyListener(listener);
+        ccSmoothingBandwidthTextField.addActionListener(listener);
 
         binsParam.registerComponent(numStepsTextField);
         magnificationParam.registerComponent(magnificationTextField);
+        ccSmoothingBandwidthParam.registerComponent(ccSmoothingBandwidthTextField);
         showCorrelationImagesParam.registerComponent(showCorrelationsCheckBox);
 
         ccPanel.add(new JLabel("Number of bins:", SwingConstants.TRAILING), GridBagHelper.leftCol());
         ccPanel.add(numStepsTextField, GridBagHelper.rightCol());
         ccPanel.add(new JLabel("Magnification:", SwingConstants.TRAILING), GridBagHelper.leftCol());
         ccPanel.add(magnificationTextField, GridBagHelper.rightCol());
+        ccPanel.add(new JLabel("Trajectory smoothing factor:", SwingConstants.TRAILING), GridBagHelper.leftCol());
+        ccPanel.add(ccSmoothingBandwidthTextField, GridBagHelper.rightCol());
         ccPanel.add(showCorrelationsCheckBox, GridBagHelper.twoCols());
 
         //fiducials options panel
@@ -314,7 +321,13 @@ public class ResultsDriftCorrection extends PostProcessingModule {
                     double[] y = model.getColumnAsDoubles(PSFModel.Params.LABEL_Y, MoleculeDescriptor.Units.PIXEL);
                     double[] frame = model.getColumnAsDoubles(MoleculeDescriptor.LABEL_FRAME, null);
 
-                    results = CorrelationDriftEstimator.estimateDriftFromCoords(x, y, frame, binsParam.getValue(), magnificationParam.getValue(), -1, -1, showCorrelationImagesParam.getValue());
+                    results = CorrelationDriftEstimator.estimateDriftFromCoords(
+                            x, y, frame,
+                            binsParam.getValue(),
+                            magnificationParam.getValue(),
+                            ccSmoothingBandwidthParam.getValue(),
+                            -1, -1,
+                            showCorrelationImagesParam.getValue());
                 } else if(action.equals(actions[1])) {
                     //fiducials
                     List<Molecule> molecules = getClonedMoleculeList();
@@ -323,7 +336,7 @@ public class ResultsDriftCorrection extends PostProcessingModule {
                             molecules,
                             distanceThresholdParam.getValue(),
                             onTimeRatioParam.getValue(),
-                            smoothingBandwidthParam.getValue());
+                            ccSmoothingBandwidthParam.getValue());
                 } else if(action.equals(actions[2])) {
                     try {
                         return loadResultsFromFile(pathParam.getValue());

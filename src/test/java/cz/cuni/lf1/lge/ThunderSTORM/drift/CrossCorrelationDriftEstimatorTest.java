@@ -19,7 +19,7 @@ public class CrossCorrelationDriftEstimatorTest {
 
         int bins = 11;
 
-        CrossCorrelationDriftResults driftCorrection = CorrelationDriftEstimator.estimateDriftFromCoords(x, y, frame, bins, 5, 50, 50, true);
+        CrossCorrelationDriftResults driftCorrection = CorrelationDriftEstimator.estimateDriftFromCoords(x, y, frame, bins, 5, 0.5, 50, 50, true);
 
 //    ResultsDriftCorrection.showDriftPlot(driftCorrection);
 //    new ImagePlus("corr", driftCorrection.getCorrelationImages()).show();

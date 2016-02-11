@@ -7,21 +7,22 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.RadialSymmetryFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.SubImage;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ASHRendering;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingMethod;
-import ij.process.FHT;
-import ij.process.FloatProcessor;
-import java.awt.geom.Point2D;
-import java.util.Arrays;
+import cz.cuni.lf1.lge.ThunderSTORM.results.ModifiedLoess;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
 import ij.ImageStack;
+import ij.process.FHT;
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
-import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 import org.apache.commons.math3.util.MathArrays;
+
+import java.awt.geom.Point2D;
+import java.util.Arrays;
 
 /**
  *
@@ -34,6 +35,7 @@ public class CorrelationDriftEstimator {
      * @param y [px]
      * @param frame
      * @param steps
+     * @param smoothingBandwidth - typically 0.25 - 0.5
      * @param roiWidth - [px] width of the original image or -1 for max(x)
      * @param roiHeight - [px] height of the original image or -1 for max(y)
      */
@@ -41,6 +43,7 @@ public class CorrelationDriftEstimator {
             double[] x, double[] y, double[] frame,
             final int steps,
             final double magnification,
+            final double smoothingBandwidth,
             int roiWidth, int roiHeight,
             boolean saveCorrelationImages) {
 
@@ -117,7 +120,7 @@ public class CorrelationDriftEstimator {
             xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(bins.binCenters, driftXofImage), bins.minFrame, bins.maxFrame);
             yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(bins.binCenters, driftYofImage), bins.minFrame, bins.maxFrame);
         } else {
-            LoessInterpolator interpolator = new LoessInterpolator(0.5, 0);
+            ModifiedLoess interpolator = new ModifiedLoess(smoothingBandwidth, 2);
             xFunction = addLinearExtrapolationToBorders(interpolator.interpolate(bins.binCenters, driftXofImage), bins.minFrame, bins.maxFrame);
             yFunction = addLinearExtrapolationToBorders(interpolator.interpolate(bins.binCenters, driftYofImage), bins.minFrame, bins.maxFrame);
         }
