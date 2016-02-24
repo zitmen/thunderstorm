@@ -102,6 +102,7 @@ public class ResultsFilter extends PostProcessingModule {
 
                 @Override
                 public void finishJob(Void nothing) {
+                    applyButton.setEnabled(true);
                     int filtered = all - model.getRowCount();
                     addOperationToHistory(new DefaultOperation());
                     String be = ((filtered > 1) ? "were" : "was");
