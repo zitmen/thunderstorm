@@ -85,12 +85,17 @@ public class ResultsFilter extends PostProcessingModule {
     @Override
     protected void runImpl() {
         final String filterText = formulaParameter.getValue();
-        if((!applyButton.isEnabled()) || (filterText == null) || ("".equals(filterText))) {
+        if((filterText == null) || ("".equals(filterText))) {
             return;
+        }
+        if(!applyButton.isEnabled() && !MacroParser.isRanFromMacro()) {
+        	return;
         }
         filterTextField.setBackground(Color.WHITE);
         try {
-            applyButton.setEnabled(false);
+        	if (!MacroParser.isRanFromMacro()) {
+        		applyButton.setEnabled(false);
+        	}
             saveStateForUndo();
             final int all = model.getRowCount();
             new WorkerThread<Void>() {
@@ -102,7 +107,6 @@ public class ResultsFilter extends PostProcessingModule {
 
                 @Override
                 public void finishJob(Void nothing) {
-                    applyButton.setEnabled(true);
                     int filtered = all - model.getRowCount();
                     addOperationToHistory(new DefaultOperation());
                     String be = ((filtered > 1) ? "were" : "was");
