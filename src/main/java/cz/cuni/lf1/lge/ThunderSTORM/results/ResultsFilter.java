@@ -6,6 +6,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Node;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.RetVal;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
@@ -85,12 +86,17 @@ public class ResultsFilter extends PostProcessingModule {
     @Override
     protected void runImpl() {
         final String filterText = formulaParameter.getValue();
-        if((!applyButton.isEnabled()) || (filterText == null) || ("".equals(filterText))) {
+        if((filterText == null) || ("".equals(filterText))) {
             return;
+        }
+        if(!applyButton.isEnabled() && !MacroParser.isRanFromMacro()) {
+        	return;
         }
         filterTextField.setBackground(Color.WHITE);
         try {
-            applyButton.setEnabled(false);
+        	if (!MacroParser.isRanFromMacro()) {
+        		applyButton.setEnabled(false);
+        	}
             saveStateForUndo();
             final int all = model.getRowCount();
             new WorkerThread<Void>() {
