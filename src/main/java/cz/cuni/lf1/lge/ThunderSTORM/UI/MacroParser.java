@@ -39,9 +39,9 @@ public class MacroParser {
                        List<IRendererUI> knowRenderers) {
         this.knownFilters = knowFilters;
         if (isBiplane) {
-            this.knownEstimators = (List<IEstimatorUI>) knowEstimators;
-        } else {
             this.knownBiplaneEstimators = (List<IBiplaneEstimatorUI>) knowEstimators;
+        } else {
+            this.knownEstimators = (List<IEstimatorUI>) knowEstimators;
         }
         this.knownDetectors = knowDetectors;
         this.knownRenderers = knowRenderers;
