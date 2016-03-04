@@ -91,7 +91,8 @@ public class CorrelationDriftEstimator {
             }
 
             //find maxima in low res image
-            multiplyImageByGaussianMask(new Point2D.Double(driftXofImage[i - 1] + lowResPaddedSize / 2, driftXofImage[i - 1] + lowResPaddedSize / 2), lowResPaddedSize, lowResCrossCorrelationImage);
+            //multiplyImageByGaussianMask(new Point2D.Double(driftXofImage[i - 1] + lowResPaddedSize / 2, driftXofImage[i - 1] + lowResPaddedSize / 2), lowResPaddedSize, lowResCrossCorrelationImage);
+            multiplyImageByGaussianMask(new Point2D.Double(-driftXofImage[i - 1]/magnification + lowResPaddedSize / 2, -driftYofImage[i - 1]/magnification + lowResPaddedSize / 2), lowResPaddedSize, lowResCrossCorrelationImage);
             Point2D.Double lowResMaximumCoords = CorrelationDriftEstimator.findMaxima(lowResCrossCorrelationImage);
             lowResMaximumCoords = CorrelationDriftEstimator.findMaximaWithSubpixelPrecision(lowResMaximumCoords, 11, lowResCrossCorrelationImage);
 
