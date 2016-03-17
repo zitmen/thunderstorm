@@ -32,18 +32,8 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.*;
 
 abstract class AbstractCalibrationProcess implements ICalibrationProcess {
 
-    // config
-    protected static final int minimumFitsCount = 20;
-    protected static final int polyFitMaxIters = 750;
-    protected static final int finalPolyFitMaxIters = 2000;
-    protected static final int minFitsInZRange = 3;
-    protected static final int movingAverageLag = 5;
-    protected static final boolean checkIfDefocusIsInRange = false;
-    protected static final int inlierFittingMaxIters = 5;
-    protected static final double inlierFittingInlierFraction = 0.9;
-    protected static final boolean showResultsTable = false;
-
     // processing
+    protected CalibrationConfig config;
     protected IFilterUI selectedFilterUI;
     protected IDetectorUI selectedDetectorUI;
     protected ICalibrationEstimatorUI calibrationEstimatorUI;
@@ -63,7 +53,8 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
     protected double[] allSigma1s;
     protected double[] allSigma2s;
 
-    public AbstractCalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, ICalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit) {
+    public AbstractCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, ICalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit) {
+        this.config = config;
         this.selectedFilterUI = selectedFilterUI;
         this.selectedDetectorUI = selectedDetectorUI;
         this.calibrationEstimatorUI = calibrationEstimatorUI;
@@ -134,7 +125,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
 
     protected void fitQuadraticPolynomials(Collection<PSFSeparator.Position> positions) {
         // fit a quadratic polynomial to sigma1 = f(zpos) and sigma1 = f(zpos) for each bead
-        IterativeFitting polynomialFitter = new IterativeFitting(inlierFittingMaxIters, inlierFittingInlierFraction);
+        IterativeFitting polynomialFitter = new IterativeFitting(config.inlierFittingMaxIters, config.inlierFittingInlierFraction);
         allPolynomsS1 = new ArrayList<DefocusFunction>();
         allPolynomsS2 = new ArrayList<DefocusFunction>();
 
@@ -150,7 +141,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
             IJ.showStatus("Fitting polynoms: molecule " + moleculesProcessed + " of " + positions.size() + "...");
 
             try {
-                if(p.getSize() < minimumFitsCount) {
+                if(p.getSize() < config.minimumFitsCount) {
                     continue;
                 }
                 double z0guess = guessZ0(p);
@@ -165,8 +156,8 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
                 DefocusFunction polynomS1;
                 DefocusFunction polynomS2;
                 try {
-                    polynomS1 = polynomialFitter.fitParams(defocusModel, framesArrayOfZ, sigma1Array, polyFitMaxIters);
-                    polynomS2 = polynomialFitter.fitParams(defocusModel, framesArrayOfZ, sigma2Array, polyFitMaxIters);
+                    polynomS1 = polynomialFitter.fitParams(defocusModel, framesArrayOfZ, sigma1Array, config.polyFitMaxIters);
+                    polynomS2 = polynomialFitter.fitParams(defocusModel, framesArrayOfZ, sigma2Array, config.polyFitMaxIters);
                 } catch(TooManyEvaluationsException e) {
                     //discard not converged
                     //IJ.log(e.toString());
@@ -177,12 +168,12 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
                 }
 
                 // defocus out of range?
-                if(checkIfDefocusIsInRange && (!isInZRange(polynomS1.getC()) || !isInZRange(polynomS2.getC()))) {
+                if(config.checkIfDefocusIsInRange && (!isInZRange(polynomS1.getC()) || !isInZRange(polynomS2.getC()))) {
                     continue;
                 }
                 // find the center point between the minima of the two polynomials and shift the origin
                 double intersection = (polynomS1.getC() + polynomS2.getC()) / 2;
-                if(!hasEnoughData(framesArrayOfZ, intersection) || (checkIfDefocusIsInRange && !isInZRange(intersection))) {
+                if(!hasEnoughData(framesArrayOfZ, intersection) || (config.checkIfDefocusIsInRange && !isInZRange(intersection))) {
                     continue;
                 }
                 allPolynomsS1.add(polynomS1);
@@ -203,13 +194,16 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
         allFrames = flattenListOfArrays(framesArrays);
         allSigma1s = flattenListOfArrays(sigma1Arrays);
         allSigma2s = flattenListOfArrays(sigma2Arrays);
-        polynomS1Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma1s, finalPolyFitMaxIters);
-        polynomS2Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma2s, finalPolyFitMaxIters);
+        polynomS1Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma1s, config.finalPolyFitMaxIters);
+        polynomS2Final = polynomialFitter.fitParams(defocusModel, allFrames, allSigma2s, config.finalPolyFitMaxIters);
 
         IJ.showProgress(1);
     }
 
-    protected static PSFSeparator fitFixedAngle(double angle, ImagePlus imp, final Roi roi, final IFilterUI filter, final IDetectorUI detector, final ICalibrationEstimatorUI estimator, DefocusFunction defocusModel) {
+    protected static PSFSeparator fitFixedAngle(double angle, ImagePlus imp, final Roi roi,
+                                                final IFilterUI filter, final IDetectorUI detector,
+                                                final ICalibrationEstimatorUI estimator,
+                                                DefocusFunction defocusModel, final boolean showResultsTable) {
         estimator.setAngle(angle);
         estimator.setDefocusModel(defocusModel);
         estimator.resetThreadLocal(); // angle changed so we need to discard the old threadlocal implementations
@@ -338,7 +332,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
             ratios[i] /= intensityAsArray[i];
         }
 
-        ratios = VectorMath.movingAverage(ratios, movingAverageLag);
+        ratios = VectorMath.movingAverage(ratios, config.movingAverageLag);
 
         int minIdx = 0;
         for(int i = 1; i < ratios.length; i++) {
@@ -378,12 +372,12 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
         }
         int greaterThanCenter = framesArray.length - smallerThanCenter;
 
-        return !(smallerThanCenter < minFitsInZRange
-                || greaterThanCenter < minFitsInZRange
-                || framesArray.length < minimumFitsCount);
+        return !(smallerThanCenter < config.minFitsInZRange
+                || greaterThanCenter < config.minFitsInZRange
+                || framesArray.length < config.minimumFitsCount);
     }
 
-    protected static List<PSFSeparator.Position> filterPositions(PSFSeparator fits) {
+    protected static List<PSFSeparator.Position> filterPositions(PSFSeparator fits, int minimumFitsCount) {
         List<PSFSeparator.Position> ret = new ArrayList<PSFSeparator.Position>();
         for (PSFSeparator.Position fit : fits.getPositions()) {
             if (fit.getSize() >= minimumFitsCount) {

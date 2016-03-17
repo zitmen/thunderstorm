@@ -43,9 +43,10 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
     private double[] allFrames1, allFrames2;
     private double[] allSigma11s, allSigma12s, allSigma21s, allSigma22s;
 
-    public AstigmaticBiplaneCalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, AstigmaticBiplaneCalibrationEstimatorUI calibrationEstimatorUI,
-                                               DefocusFunction defocusModel, double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2) {
-        super(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
+    public AstigmaticBiplaneCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
+                                               AstigmaticBiplaneCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
+                                               double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2) {
+        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
         this.imp1 = imp1;
         this.imp2 = imp2;
         this.roi1 = roi1;
@@ -169,7 +170,7 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
             ratios[i] = (ratio1 + ratio2) / 2.0;
         }
 
-        ratios = VectorMath.movingAverage(ratios, movingAverageLag);
+        ratios = VectorMath.movingAverage(ratios, config.movingAverageLag);
 
         int minIdx = 0;
         for(int i = 1; i < ratios.length; i++) {
@@ -186,13 +187,14 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
         angle2 = estimateAngle(imp2, roi2);
         if (Double.isNaN(angle1) || Double.isInfinite(angle1)) angle1 = 0.0;
         if (Double.isNaN(angle2) || Double.isInfinite(angle2)) angle2 = 0.0;
-        beadFits1 = fitFixedAngle(angle1, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
-        beadFits2 = fitFixedAngle(angle2, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel);
-        List<PSFSeparator.Position> fits1 = filterPositions(beadFits1);
-        List<PSFSeparator.Position> fits2 = filterPositions(beadFits2);
+        beadFits1 = fitFixedAngle(angle1, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable);
+        beadFits2 = fitFixedAngle(angle2, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable);
+        List<PSFSeparator.Position> fits1 = filterPositions(beadFits1, config.minimumFitsCount);
+        List<PSFSeparator.Position> fits2 = filterPositions(beadFits2, config.minimumFitsCount);
 
         IJ.showStatus("Estimating homography between the planes...");
         transformationMatrix = Homography.estimateTransform(
+                config.ransacTranslationAndFlip, config.ransacHomography,
                 (int) roi1.getFloatWidth(), (int) roi1.getFloatHeight(), fits1,
                 (int) roi2.getFloatWidth(), (int) roi2.getFloatHeight(), fits2);
         if (transformationMatrix == null) {
@@ -210,7 +212,8 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
                     pos2.setFromArray(LABEL_SIGMA4, MoleculeDescriptor.Units.PIXEL, pos1.getAsArray(LABEL_SIGMA2, MoleculeDescriptor.Units.PIXEL));
                     pos2.setFromArray(LABEL_INTENSITY2, MoleculeDescriptor.Units.PHOTON, pos1.getAsArray(LABEL_INTENSITY, MoleculeDescriptor.Units.PHOTON));
                 }
-            }, (int) roi1.getFloatWidth(), (int) roi1.getFloatHeight(), fits1, (int) roi2.getFloatWidth(), (int) roi2.getFloatHeight(), fits2);
+            }, config.dist2thrZStackMatching, (int) roi1.getFloatWidth(), (int) roi1.getFloatHeight(),
+                fits1, (int) roi2.getFloatWidth(), (int) roi2.getFloatHeight(), fits2);
     }
 
     public void drawOverlay() {

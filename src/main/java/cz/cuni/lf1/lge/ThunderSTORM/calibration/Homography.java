@@ -22,12 +22,12 @@ import static cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
  */
 public class Homography {
 
-    private static final double dist2thr = 10.0;
-
-    public static TransformationMatrix estimateTransform(int w1, int h1, List<Position> fits1, int w2, int h2, List<Position> fits2) {
+    public static TransformationMatrix estimateTransform(CalibrationConfig.RansacConfig ransacTranslationAndFlipConfig,
+                                                         CalibrationConfig.RansacConfig ransacHomographyConfig,
+                                                         int w1, int h1, List<Position> fits1, int w2, int h2, List<Position> fits2) {
         List<Position> pt1 = moveToCenterXY(fits1, w1, h1);
         List<Position> pt2 = moveToCenterXY(fits2, w2, h2);
-        return findHomography(findTranslationAndFlip(pt1, pt2), pt1, pt2);
+        return findHomography(ransacHomographyConfig, findTranslationAndFlip(ransacTranslationAndFlipConfig, pt1, pt2), pt1, pt2);
     }
 
     /**
@@ -37,7 +37,7 @@ public class Homography {
      * 4) Return the Map of Positions containing the Molecules with sigmas properly set
      *    --> these are used for estimation of calibration curves
      */
-    public static Map<Position, Position> mergePositions(TransformationMatrix transform, IBinaryTransform<Position> mapping, int w1, int h1, List<Position> fits1, int w2, int h2, List<Position> fits2) {
+    public static Map<Position, Position> mergePositions(TransformationMatrix transform, IBinaryTransform<Position> mapping, double dist2thr, int w1, int h1, List<Position> fits1, int w2, int h2, List<Position> fits2) {
         // 1)
         List<Position> p1 = copyInnerFits(applyH(transform, moveToCenterXY(fits1, w1, h1)), fits1);
         List<Position> p2 = copyInnerFits(moveToCenterXY(fits2, w2, h2), fits2);
@@ -284,16 +284,8 @@ public class Homography {
     }
 
     // Find the translation between two planes using a set of corresponding points (RANSAC method is used).
-    private static TransformationMatrix findTranslationAndFlip(List<Position> p1, List<Position> p2) {
+    private static TransformationMatrix findTranslationAndFlip(CalibrationConfig.RansacConfig config, List<Position> p1, List<Position> p2) {
         if (p1 == null || p2 == null) return null;
-
-        RansacConfig config = new RansacConfig();
-        config.minPtNum = 2;
-        config.iterNum = 1000;
-        config.thDist = 15;
-        config.thInlr = Math.max(config.minPtNum, Math.round(0.1 * Math.min(p1.size(), p2.size())));    // 10%
-        config.pairs = false;
-        config.thAllowedTransformChange = Double.POSITIVE_INFINITY;    // don't check, since this is a simple transform
 
         IRansacFunctions functions = new IRansacFunctions() {
             @Override
@@ -316,20 +308,8 @@ public class Homography {
     }
 
     // Find the homography between two planes using a set of corresponding points. RANSAC method is used.
-    private static TransformationMatrix findHomography(final TransformationMatrix initialGuess, List<Position> p1, List<Position> p2) {
+    private static TransformationMatrix findHomography(CalibrationConfig.RansacConfig config, final TransformationMatrix initialGuess, List<Position> p1, List<Position> p2) {
         if (initialGuess == null || p1 == null || p2 == null) return null;
-
-        RansacConfig config = new RansacConfig();
-        config.minPtNum = 4;
-        config.iterNum = 1000;
-        config.thDist = 1;  // precision [px]; usualy the precision is much higher (~1e-6 px)
-        config.thInlr = Math.max(config.minPtNum, Math.round(0.5 * Math.min(p1.size(), p2.size())));    // 50%
-        config.pairs = true;
-        config.thPairDist = 3;   // mutual distance of paired molecules [px] (should be same as `coef.thDist` set in `findTranslationAndFlip`)
-        config.thAllowedTransformChange = 100.0;    // point [1,1] after applying T can't move further than 100px,
-                                                    // otherwise something is wrong, since this step should be just
-                                                    // for fine-tuning! (this value is large on purpose, so the test
-                                                    // does not reject a valid transformation)
 
         IRansacFunctions functions = new IRansacFunctions() {
             @Override
@@ -613,16 +593,6 @@ public class Homography {
         boolean isResultValid(TransformationMatrix t);
     }
 
-    private static class RansacConfig {
-        public int minPtNum;
-        public int iterNum;
-        public double thDist;
-        public double thInlr;
-        public boolean pairs;
-        public double thPairDist;
-        public double thAllowedTransformChange;
-    }
-
     /**
      * Use RANdom SAmple Consensus to find a fit from X to Y.
      * X is M*n matrix including n points with dim M, Y is N*n;
@@ -645,9 +615,10 @@ public class Homography {
      * points [x1;y1]; for homography, it should project x1 to y2 then
      * calculate the dist between y1 and y2.
      */
-    private static TransformationMatrix ransac(List<Position> p1, List<Position> p2, RansacConfig conf, IRansacFunctions functions) {
+    private static TransformationMatrix ransac(List<Position> p1, List<Position> p2, CalibrationConfig.RansacConfig conf, IRansacFunctions functions) {
         int ptNum1 = p1.size();
         int ptNum2 = p2.size();
+        int thInlr = conf.getInlierThreshold(ptNum1, ptNum2);
         if (conf.pairs && ptNum1 != ptNum2) {
             throw new IllegalArgumentException("ransac: `p1` and `p2` must have the same number of items!");
         }
@@ -666,7 +637,7 @@ public class Homography {
             // 2. count the inliers, if more than thInlr, refit; else iterate
             List<Pair<Double, Integer>> distIdx = functions.distance(f1, p1, p2);
             List<Integer> inlier1 = findInliers(distIdx, conf.thDist);
-            if (inlier1.size() < conf.thInlr) continue;
+            if (inlier1.size() < thInlr) continue;
 
             // 3. store the transform made of the inliers
             inlrNum.add(inlier1.size());

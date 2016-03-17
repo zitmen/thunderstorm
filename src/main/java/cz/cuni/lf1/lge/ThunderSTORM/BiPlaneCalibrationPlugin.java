@@ -25,6 +25,7 @@ import java.util.List;
 public class BiPlaneCalibrationPlugin implements PlugIn {
 
     DefocusFunction defocusModel;
+    CalibrationConfig calibrationConfig;
     IFilterUI selectedFilterUI;
     IDetectorUI selectedDetectorUI;
     ICalibrationEstimatorUI calibrationEstimatorUI;
@@ -73,6 +74,7 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
             if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
                 return;
             }
+            calibrationConfig = dialog.getCalibrationConfig();
             selectedFilterUI = dialog.getActiveFilterUI();
             selectedDetectorUI = dialog.getActiveDetectorUI();
             calibrationEstimatorUI = (ICalibrationEstimatorUI) dialog.getActiveEstimatorUI();
@@ -94,6 +96,7 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
 
             // perform the calibration
             final ICalibrationProcess process = CalibrationProcessFactory.create(
+                    calibrationConfig,
                     selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI,
                     defocusModel, stageStep, zRangeLimit, imp1, imp2, roi1, roi2);
 

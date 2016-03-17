@@ -23,9 +23,10 @@ public class BiplaneCalibrationProcess extends AbstractCalibrationProcess {
     ImagePlus imp1, imp2;
     Roi roi1, roi2;
 
-    public BiplaneCalibrationProcess(IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, BiplaneCalibrationEstimatorUI calibrationEstimatorUI,
-                                     DefocusFunction defocusModel, double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2) {
-        super(selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
+    public BiplaneCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
+                                     BiplaneCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
+                                     double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2) {
+        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
         this.imp1 = imp1;
         this.imp2 = imp2;
         this.roi1 = roi1;
@@ -58,11 +59,12 @@ public class BiplaneCalibrationProcess extends AbstractCalibrationProcess {
 
     protected Collection<Position> fitPositions() {
         angle = 0.0;
-        List<Position> fits1 = filterPositions(fitFixedAngle(angle, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel));
-        List<Position> fits2 = filterPositions(fitFixedAngle(angle, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel));
+        List<Position> fits1 = filterPositions(fitFixedAngle(angle, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable), config.minimumFitsCount);
+        List<Position> fits2 = filterPositions(fitFixedAngle(angle, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable), config.minimumFitsCount);
 
         IJ.showStatus("Estimating homography between the planes...");
         transformationMatrix = Homography.estimateTransform(
+                config.ransacTranslationAndFlip, config.ransacHomography,
                 (int) roi1.getFloatWidth(), (int) roi1.getFloatHeight(), fits1,
                 (int) roi2.getFloatWidth(), (int) roi2.getFloatHeight(), fits2);
         if (transformationMatrix == null) {
@@ -78,7 +80,8 @@ public class BiplaneCalibrationProcess extends AbstractCalibrationProcess {
                         pos2.setFromArray(LABEL_SIGMA1, MoleculeDescriptor.Units.PIXEL, sigma1);
                         pos2.setFromArray(LABEL_SIGMA2, MoleculeDescriptor.Units.PIXEL, sigma2);
                     }
-                }, (int) roi1.getFloatWidth(), (int) roi1.getFloatHeight(), fits1, (int) roi2.getFloatWidth(), (int) roi2.getFloatHeight(), fits2)
+                }, config.dist2thrZStackMatching, (int) roi1.getFloatWidth(), (int) roi1.getFloatHeight(),
+                    fits1, (int) roi2.getFloatWidth(), (int) roi2.getFloatHeight(), fits2)
             .keySet();
     }
 }

@@ -2,10 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AstigmatismCalibrationDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.AstigmaticCalibrationProcess;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.CalibrationProcessFactory;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
-import cz.cuni.lf1.lge.ThunderSTORM.calibration.NoMoleculesFittedException;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.*;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AstigmatismCalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
@@ -78,6 +75,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
 
             // perform the calibration
             final AstigmaticCalibrationProcess process = (AstigmaticCalibrationProcess) CalibrationProcessFactory.create(
+                    new CalibrationConfig(),
                     selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI,
                     defocusModel, stageStep, zRangeLimit, imp, roi);
 

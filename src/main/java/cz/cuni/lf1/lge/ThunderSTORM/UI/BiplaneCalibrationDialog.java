@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ModuleLoader;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.CalibrationConfig;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
@@ -11,6 +12,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.DialogStub;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.DoubleValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.IntegerValidatorFactory;
 import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
 import ij.IJ;
 import ij.ImagePlus;
@@ -44,7 +46,27 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
     private List<IDetectorUI> detectors;
     private List<IEstimatorUI> estimators;
     private List<DefocusFunction> defocusing;
-    ExecutorService previewThreadRunner = Executors.newSingleThreadExecutor();
+
+    ParameterKey.Double dist2thrZStackMatching;
+    ParameterKey.Integer minimumFitsCount;
+    ParameterKey.Integer polyFitMaxIters;
+    ParameterKey.Integer finalPolyFitMaxIters;
+    ParameterKey.Integer  minFitsInZRange;
+    ParameterKey.Integer movingAverageLag;
+    ParameterKey.Boolean checkIfDefocusIsInRange;
+    ParameterKey.Integer inlierFittingMaxIters;
+    ParameterKey.Double inlierFittingInlierFraction;
+    ParameterKey.Boolean showResultsTable;
+
+    ParameterKey.Integer rtfIterNum;
+    ParameterKey.Double rtfThDist;
+    ParameterKey.Double rtfThInlr;
+
+    ParameterKey.Integer hIterNum;
+    ParameterKey.Double hThDist;
+    ParameterKey.Double hThInlr;
+    ParameterKey.Double hThPairDist;
+    ParameterKey.Double hThAllowedTransformChange;
 
     public BiplaneCalibrationDialog(List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators, List<DefocusFunction> defocusing) {
         super(new ParameterTracker("thunderstorm.calibration"), IJ.getInstance(), "Calibration options");
@@ -60,6 +82,28 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
         rawImage1Stack = params.createStringField("raw_image1_stack", null, "");
         rawImage2Stack = params.createStringField("raw_image2_stack", null, "");
 
+        CalibrationConfig defaultConfig = new CalibrationConfig();
+        dist2thrZStackMatching = params.createDoubleField("dist2thrZStackMatching", DoubleValidatorFactory.positive(), defaultConfig.dist2thrZStackMatching);
+        minimumFitsCount = params.createIntField("minimumFitsCount", IntegerValidatorFactory.positive(), defaultConfig.minimumFitsCount);
+        polyFitMaxIters = params.createIntField("polyFitMaxIters", IntegerValidatorFactory.positive(), defaultConfig.polyFitMaxIters);
+        finalPolyFitMaxIters = params.createIntField("finalPolyFitMaxIters", IntegerValidatorFactory.positive(), defaultConfig.finalPolyFitMaxIters);
+        minFitsInZRange = params.createIntField("minFitsInZRange", IntegerValidatorFactory.positive(), defaultConfig.minFitsInZRange);
+        movingAverageLag = params.createIntField("movingAverageLag", IntegerValidatorFactory.positive(), defaultConfig.movingAverageLag);
+        checkIfDefocusIsInRange = params.createBooleanField("checkIfDefocusIsInRange", null, defaultConfig.checkIfDefocusIsInRange);
+        inlierFittingMaxIters = params.createIntField("inlierFittingMaxIters", IntegerValidatorFactory.positive(), defaultConfig.inlierFittingMaxIters);
+        inlierFittingInlierFraction = params.createDoubleField("inlierFittingInlierFraction", DoubleValidatorFactory.rangeInclusive(0.0, 1.0), defaultConfig.inlierFittingInlierFraction);
+        showResultsTable = params.createBooleanField("showResultsTable", null, defaultConfig.showResultsTable);
+
+        rtfIterNum = params.createIntField("rtfIterNum", IntegerValidatorFactory.positive(), defaultConfig.ransacTranslationAndFlip.iterNum);
+        rtfThDist = params.createDoubleField("rtfThDist", DoubleValidatorFactory.positive(), defaultConfig.ransacTranslationAndFlip.thDist);
+        rtfThInlr = params.createDoubleField("rtfThInlr", DoubleValidatorFactory.rangeInclusive(0.0, 1.0), defaultConfig.ransacTranslationAndFlip.thInlr);
+
+        hIterNum = params.createIntField("hIterNum", IntegerValidatorFactory.positive(), defaultConfig.ransacHomography.iterNum);
+        hThDist = params.createDoubleField("hThDist", DoubleValidatorFactory.positive(), defaultConfig.ransacHomography.thDist);
+        hThInlr = params.createDoubleField("hThInlr", DoubleValidatorFactory.rangeInclusive(0.0, 1.0), defaultConfig.ransacHomography.thInlr);
+        hThPairDist = params.createDoubleField("hThPairDist", DoubleValidatorFactory.positive(), defaultConfig.ransacHomography.thPairDist);
+        hThAllowedTransformChange = params.createDoubleField("hThAllowedTransformChange", DoubleValidatorFactory.positive(), defaultConfig.ransacHomography.thAllowedTransformChange);
+
         this.filters = filters;
         this.detectors = detectors;
         this.estimators = estimators;
@@ -68,7 +112,7 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
 
     @Override
     protected void layoutComponents() {
-        Container pane = getContentPane();
+        JPanel pane = new JPanel();
         //
         pane.setLayout(new GridBagLayout());
         GridBagConstraints componentConstraints = new GridBagConstraints();
@@ -150,6 +194,91 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
         additionalOptions.add(calibrationPanel, gbc);
         pane.add(additionalOptions, componentConstraints);
 
+        JPanel advancedOptions = new JPanel(new GridBagLayout());
+        advancedOptions.setBorder(BorderFactory.createTitledBorder("Advanced calibration settings"));
+        advancedOptions.add(new JLabel("Squared dist thr for z-stack matching:"), GridBagHelper.leftCol());
+        JTextField dist2thrZStackMatchingTextField = new JTextField("", 20);
+        dist2thrZStackMatching.registerComponent(dist2thrZStackMatchingTextField);
+        advancedOptions.add(dist2thrZStackMatchingTextField, GridBagHelper.rightCol());
+        advancedOptions.add(new JLabel("Minimum fits count:"), GridBagHelper.leftCol());
+        JTextField minimumFitsCountTextField = new JTextField("", 20);
+        minimumFitsCount.registerComponent(minimumFitsCountTextField);
+        advancedOptions.add(minimumFitsCountTextField, GridBagHelper.rightCol());
+        advancedOptions.add(new JLabel("Poly fit max iters:"), GridBagHelper.leftCol());
+        JTextField polyFitMaxItersTextField = new JTextField("", 20);
+        polyFitMaxIters.registerComponent(polyFitMaxItersTextField);
+        advancedOptions.add(polyFitMaxItersTextField, GridBagHelper.rightCol());
+        advancedOptions.add(new JLabel("Final poly fit max iters:"), GridBagHelper.leftCol());
+        JTextField finalPolyFitMaxItersTextField = new JTextField("", 20);
+        finalPolyFitMaxIters.registerComponent(finalPolyFitMaxItersTextField);
+        advancedOptions.add(finalPolyFitMaxItersTextField, GridBagHelper.rightCol());
+        advancedOptions.add(new JLabel("Min fits in z-range:"), GridBagHelper.leftCol());
+        JTextField minFitsInZRangeTextField = new JTextField("", 20);
+        minFitsInZRange.registerComponent(minFitsInZRangeTextField);
+        advancedOptions.add(minFitsInZRangeTextField, GridBagHelper.rightCol());
+        advancedOptions.add(new JLabel("Moving average lag:"), GridBagHelper.leftCol());
+        JTextField movingAverageLagTextField = new JTextField("", 20);
+        movingAverageLag.registerComponent(movingAverageLagTextField);
+        advancedOptions.add(movingAverageLagTextField, GridBagHelper.rightCol());
+        advancedOptions.add(new JLabel("Check if defocus is in range:"), GridBagHelper.leftCol());
+        JCheckBox checkIfDefocusIsInRangeCheckBox = new JCheckBox();
+        checkIfDefocusIsInRange.registerComponent(checkIfDefocusIsInRangeCheckBox);
+        advancedOptions.add(checkIfDefocusIsInRangeCheckBox, GridBagHelper.rightCol());
+        advancedOptions.add(new JLabel("Inlier fitting max iters:"), GridBagHelper.leftCol());
+        JTextField inlierFittingMaxItersTextField = new JTextField("", 20);
+        inlierFittingMaxIters.registerComponent(inlierFittingMaxItersTextField);
+        advancedOptions.add(inlierFittingMaxItersTextField, GridBagHelper.rightCol());
+        advancedOptions.add(new JLabel("Inliers fraction:"), GridBagHelper.leftCol());
+        JTextField inlierFittingInlierFractionTextField = new JTextField("", 20);
+        inlierFittingInlierFraction.registerComponent(inlierFittingInlierFractionTextField);
+        advancedOptions.add(inlierFittingInlierFractionTextField, GridBagHelper.rightCol());
+        advancedOptions.add(new JLabel("Show results table:"), GridBagHelper.leftCol());
+        JCheckBox showResultsTableCheckBox = new JCheckBox();
+        showResultsTable.registerComponent(showResultsTableCheckBox);
+        advancedOptions.add(showResultsTableCheckBox, GridBagHelper.rightCol());
+
+        JPanel rtfRansacOptions = new JPanel(new GridBagLayout());
+        rtfRansacOptions.setBorder(BorderFactory.createTitledBorder("RANSAC: rough translation and flip estimate"));
+        rtfRansacOptions.add(new JLabel("Iterations:"), GridBagHelper.leftCol());
+        JTextField rtfIterNumTextField = new JTextField("", 20);
+        rtfIterNum.registerComponent(rtfIterNumTextField);
+        rtfRansacOptions.add(rtfIterNumTextField, GridBagHelper.rightCol());
+        rtfRansacOptions.add(new JLabel("Inlier distance threshold:"), GridBagHelper.leftCol());
+        JTextField rtfThDistTextField = new JTextField("", 20);
+        rtfThDist.registerComponent(rtfThDistTextField);
+        rtfRansacOptions.add(rtfThDistTextField, GridBagHelper.rightCol());
+        rtfRansacOptions.add(new JLabel("Inliers portion threshold:"), GridBagHelper.leftCol());
+        JTextField rtfThInlrTextField = new JTextField("", 20);
+        rtfThInlr.registerComponent(rtfThInlrTextField);
+        rtfRansacOptions.add(rtfThInlrTextField, GridBagHelper.rightCol());
+        advancedOptions.add(rtfRansacOptions, GridBagHelper.twoCols());
+
+        JPanel hRansacOptions = new JPanel(new GridBagLayout());
+        hRansacOptions.setBorder(BorderFactory.createTitledBorder("RANSAC: fine homography estimate"));
+        hRansacOptions.add(new JLabel("Iterations:"), GridBagHelper.leftCol());
+        JTextField hIterNumTextField = new JTextField("", 20);
+        hIterNum.registerComponent(hIterNumTextField);
+        hRansacOptions.add(hIterNumTextField, GridBagHelper.rightCol());
+        hRansacOptions.add(new JLabel("Inlier distance threshold:"), GridBagHelper.leftCol());
+        JTextField hThDistTextField = new JTextField("", 20);
+        hThDist.registerComponent(hThDistTextField);
+        hRansacOptions.add(hThDistTextField, GridBagHelper.rightCol());
+        hRansacOptions.add(new JLabel("Inliers portion threshold:"), GridBagHelper.leftCol());
+        JTextField hThInlrTextField = new JTextField("", 20);
+        hThInlr.registerComponent(hThInlrTextField);
+        hRansacOptions.add(hThInlrTextField, GridBagHelper.rightCol());
+        hRansacOptions.add(new JLabel("Pair distance threshold:"), GridBagHelper.leftCol());
+        JTextField hThPairDistTextField = new JTextField("", 20);
+        hThPairDist.registerComponent(hThPairDistTextField);
+        hRansacOptions.add(hThPairDistTextField, GridBagHelper.rightCol());
+        hRansacOptions.add(new JLabel("Allowed transform change:"), GridBagHelper.leftCol());
+        JTextField hThAllowedTransformChangeTextField = new JTextField("", 20);
+        hThAllowedTransformChange.registerComponent(hThAllowedTransformChangeTextField);
+        hRansacOptions.add(hThAllowedTransformChangeTextField, GridBagHelper.rightCol());
+        advancedOptions.add(hRansacOptions, GridBagHelper.twoCols());
+
+        pane.add(advancedOptions, componentConstraints);
+
         JButton defaults = new JButton("Defaults");
         JButton ok = new JButton("OK");
         JButton cancel = new JButton("Cancel");
@@ -157,18 +286,23 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
         defaults.addActionListener(this);
         ok.addActionListener(this);
         cancel.addActionListener(this);
-        //
+
         JPanel buttons = new JPanel();
         buttons.add(defaults);
         buttons.add(Box.createHorizontalStrut(30));
         buttons.add(ok);
         buttons.add(cancel);
         pane.add(buttons, componentConstraints);
+        pane.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        setResizable(true);
+        setLayout(new BorderLayout());
+        JScrollPane scrollPane = new JScrollPane(pane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        add(scrollPane);
+
         getRootPane().setDefaultButton(ok);
-        getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        setResizable(false);
         params.loadPrefs();
-        pack();
     }
 
     @Override
@@ -214,7 +348,12 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
 
             return JOptionPane.OK_OPTION;
         } else {
-            return super.showAndGetResult();
+            int result = super.showAndGetResult();
+            int maxScreenHeight = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height;
+            if(getHeight() > maxScreenHeight) {
+                setSize(getWidth(), maxScreenHeight);
+            }
+            return result;
         }
     }
 
@@ -254,11 +393,15 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
         return WindowManager.getImage(rawImage2Stack.getValue());
     }
 
-    @Override
-    public void dispose() {
-        super.dispose();
-        if(previewThreadRunner != null) {
-            previewThreadRunner.shutdownNow();
-        }
+    public CalibrationConfig getCalibrationConfig() {
+        return new CalibrationConfig(dist2thrZStackMatching.getValue(), minimumFitsCount.getValue(),
+                polyFitMaxIters.getValue(), finalPolyFitMaxIters.getValue(), minFitsInZRange.getValue(),
+                movingAverageLag.getValue(), checkIfDefocusIsInRange.getValue(), inlierFittingMaxIters.getValue(),
+                inlierFittingInlierFraction.getValue(), showResultsTable.getValue(),
+                CalibrationConfig.RansacConfig.createTranslationAndFlipConfig(
+                        rtfIterNum.getValue(), rtfThDist.getValue(), rtfThInlr.getValue()),
+                CalibrationConfig.RansacConfig.createHomographyConfig(
+                        hIterNum.getValue(), hThDist.getValue(), hThInlr.getValue(),
+                        hThPairDist.getValue(), hThAllowedTransformChange.getValue()));
     }
 }
