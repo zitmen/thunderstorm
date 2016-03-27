@@ -36,6 +36,7 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
     @Override
     public void run(String command) {
         GUI.setLookAndFeel();
+        Units distUnits = Units.NANOMETER;
         //
         if("showGroundTruthTable".equals(command)) {
             IJGroundTruthTable.getGroundTruthTable().show();
@@ -43,10 +44,6 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
         }
         if(!IJResultsTable.isResultsWindow() || !IJGroundTruthTable.isGroundTruthWindow()) {
             IJ.error("Requires `" + IJResultsTable.IDENTIFIER + "` and `" + IJGroundTruthTable.IDENTIFIER + "` windows open!");
-            return;
-        }
-        if(IJResultsTable.getResultsTable().isEmpty() || IJGroundTruthTable.getGroundTruthTable().isEmpty()) {
-            IJ.error("Neither `" + IJResultsTable.IDENTIFIER + "` or `" + IJGroundTruthTable.IDENTIFIER + "` table can't be empty!");
             return;
         }
         //
@@ -60,7 +57,47 @@ public class PerformanceEvaluationPlugIn implements PlugIn {
                     return;
                 }
             }
-            runEvaluation(dialog.getFrameByFrame(), dialog.getEvaluationSpace().equals("xyz"), sqr(dialog.getToleranceRadius()), Units.NANOMETER);
+
+            if(IJGroundTruthTable.getGroundTruthTable().isEmpty()) {
+                ResultsTable rt = ResultsTable.getResultsTable();
+                rt.incrementCounter();
+                rt.addValue("Distance radius [" + distUnits.getLabel() + "]", dialog.getToleranceRadius());
+                rt.addValue("# of TP", 0);
+                rt.addValue("# of FP", IJResultsTable.getResultsTable().getRowCount());
+                rt.addValue("# of FN", 0);
+                rt.addValue("Jaccard index", 0);
+                rt.addValue("precision", 0);
+                rt.addValue("recall", 0);
+                rt.addValue("F1-measure", 0);
+                rt.addValue("RMSE x [" + distUnits.getLabel() + "]", 0);
+                rt.addValue("RMSE y [" + distUnits.getLabel() + "]", 0);
+                rt.addValue("RMSE lateral [" + distUnits.getLabel() + "]", 0);
+                rt.addValue("RMSE axial [" + distUnits.getLabel() + "]", 0);
+                rt.addValue("RMSE total [" + distUnits.getLabel() + "]", 0);
+                rt.show("Results");
+                return;
+            }
+            if(IJResultsTable.getResultsTable().isEmpty()) {
+                ResultsTable rt = ResultsTable.getResultsTable();
+                rt.incrementCounter();
+                rt.addValue("Distance radius [" + distUnits.getLabel() + "]", dialog.getToleranceRadius());
+                rt.addValue("# of TP", 0);
+                rt.addValue("# of FP", 0);
+                rt.addValue("# of FN", IJGroundTruthTable.getGroundTruthTable().getRowCount());
+                rt.addValue("Jaccard index", 0);
+                rt.addValue("precision", 0);
+                rt.addValue("recall", 0);
+                rt.addValue("F1-measure", 0);
+                rt.addValue("RMSE x [" + distUnits.getLabel() + "]", 0);
+                rt.addValue("RMSE y [" + distUnits.getLabel() + "]", 0);
+                rt.addValue("RMSE lateral [" + distUnits.getLabel() + "]", 0);
+                rt.addValue("RMSE axial [" + distUnits.getLabel() + "]", 0);
+                rt.addValue("RMSE total [" + distUnits.getLabel() + "]", 0);
+                rt.show("Results");
+                return;
+            }
+
+            runEvaluation(dialog.getFrameByFrame(), dialog.getEvaluationSpace().equals("xyz"), sqr(dialog.getToleranceRadius()), distUnits);
         } catch (Exception ex) {
             IJ.handleException(ex);
         }
