@@ -8,9 +8,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
@@ -156,7 +160,7 @@ public class XMLImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, GenericTable table, List<String> columns) throws IOException {
+    public void exportToFile(String fp, int floatPrecision, GenericTable table, List<String> columns) throws IOException {
         assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -198,7 +202,12 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(tab);
             eventWriter.add(eventFactory.createEndElement("", "", UNITS));
             eventWriter.add(end);
-            
+
+            DecimalFormat df = new DecimalFormat();
+            df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
+            df.setRoundingMode(RoundingMode.HALF_EVEN);
+            df.setMaximumFractionDigits(floatPrecision);
+
             // Write molecules
             for(int r = 0; r < nrows; r++) {
                 StartElement moleculeStartElement = eventFactory.createStartElement("", "", ITEM);
@@ -207,7 +216,7 @@ public class XMLImportExport implements IImportExport {
                 eventWriter.add(end);
 
                 for(int c = 0; c < ncols; c++) {
-                    createNode(eventWriter, columns.get(c), Double.toString((Double)table.getValue(r,columns.get(c))));
+                    createNode(eventWriter, columns.get(c), df.format(table.getValue(r,columns.get(c))));
                 }
                 
                 eventWriter.add(tab);

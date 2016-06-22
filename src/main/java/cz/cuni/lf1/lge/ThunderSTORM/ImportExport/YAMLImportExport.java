@@ -9,9 +9,15 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -64,19 +70,24 @@ public class YAMLImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, GenericTable table, List<String> columns) throws IOException {
+    public void exportToFile(String fp, int floatPrecision, GenericTable table, List<String> columns) throws IOException {
         assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
         assert(columns != null);
         
         int ncols = columns.size(), nrows = table.getRowCount();
+
+        DecimalFormat df = new DecimalFormat();
+        df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
+        df.setRoundingMode(RoundingMode.HALF_EVEN);
+        df.setMaximumFractionDigits(floatPrecision);
         
-        ArrayList<HashMap<String, Double>> results = new ArrayList<HashMap<String,Double>>();
+        ArrayList<HashMap<String, BigDecimal>> results = new ArrayList<HashMap<String, BigDecimal>>();
         for(int r = 0; r < nrows; r++) {
-            HashMap<String,Double> molecule = new HashMap<String,Double>();
+            HashMap<String, BigDecimal> molecule = new HashMap<String, BigDecimal>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(table.getColumnLabel(columns.get(c)), table.getValue(r, columns.get(c)));
+                molecule.put(table.getColumnLabel(columns.get(c)), new BigDecimal(table.getValue(r, columns.get(c))).setScale(floatPrecision, BigDecimal.ROUND_HALF_EVEN).stripTrailingZeros());
             results.add(molecule);
             IJ.showProgress((double)r / (double)nrows);
         }

@@ -8,7 +8,11 @@ import ij.IJ;
 import org.apache.commons.io.input.CountingInputStream;
 
 import java.io.*;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -107,7 +111,7 @@ abstract public class DLMImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, GenericTable table, List<String> columns) throws IOException {
+    public void exportToFile(String fp, int floatPrecision, GenericTable table, List<String> columns) throws IOException {
         assert(table != null);
         assert(fp != null);
         assert(!fp.isEmpty());
@@ -118,12 +122,17 @@ abstract public class DLMImportExport implements IImportExport {
             writer.write("\"" + table.getColumnLabel(columns.get(c)) + "\"");
         }
         writer.newLine();
-        
+
+        DecimalFormat df = new DecimalFormat();
+        df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
+        df.setRoundingMode(RoundingMode.HALF_EVEN);
+        df.setMaximumFractionDigits(floatPrecision);
+
         int ncols = columns.size(), nrows = table.getRowCount();
         for(int r = 0; r < nrows; r++) {
             for(int c = 0; c < ncols; c++) {
                 if(c > 0) writer.write(separator);
-                writer.write(Double.toString(table.getValue(r, columns.get(c))));
+                writer.write(df.format(table.getValue(r, columns.get(c))));
             }
             writer.newLine();
             IJ.showProgress((double)r / (double)nrows);

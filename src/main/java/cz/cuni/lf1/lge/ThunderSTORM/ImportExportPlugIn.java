@@ -35,6 +35,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+@SuppressWarnings("Since15")
 public class ImportExportPlugIn implements PlugIn {
 
     public static final String IMPORT = "import";
@@ -174,7 +175,7 @@ public class ImportExportPlugIn implements PlugIn {
 
         //export
         IImportExport exporter = getModuleByName(dialog.getFileFormat());
-        callExporter(exporter, table, path, columns);
+        callExporter(exporter, table, path, dialog.getFloatPrecision(), columns);
     }
 
     private void importMeasurementProtocol() {
@@ -241,11 +242,11 @@ public class ImportExportPlugIn implements PlugIn {
         }
     }
 
-    private void callExporter(IImportExport exporter, GenericTable table, String fpath, List<String> columns) {
+    private void callExporter(IImportExport exporter, GenericTable table, String fpath, int floatPrecision, List<String> columns) {
         IJ.showStatus("ThunderSTORM is exporting your results...");
         IJ.showProgress(0.0);
         try {
-            exporter.exportToFile(fpath, table, columns);
+            exporter.exportToFile(fpath, floatPrecision, table, columns);
             IJ.showStatus("ThunderSTORM has exported your results.");
         } catch(IOException ex) {
             IJ.showStatus("");
@@ -455,6 +456,7 @@ public class ImportExportPlugIn implements PlugIn {
 
         ParameterKey.String fileFormat;
         ParameterKey.String filePath;
+        ParameterKey.Integer floatPrecision;
         ParameterKey.Boolean[] exportColumns;
         ParameterKey.Boolean saveProtocol;
 
@@ -468,6 +470,7 @@ public class ImportExportPlugIn implements PlugIn {
             this.groundTruth = groundTruth;
             fileFormat = fileParams.createStringField("fileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
             filePath = fileParams.createStringField("filePath", null, "");
+            floatPrecision = fileParams.createIntField("floatPrecision", IntegerValidatorFactory.positive(), 5);
             exportColumns = new ParameterKey.Boolean[columnHeaders.length];
             for(int i = 0; i < columnHeaders.length; i++) {
                 exportColumns[i] = params.createBooleanField(columnHeaders[i], null, i != 0);
@@ -497,8 +500,10 @@ public class ImportExportPlugIn implements PlugIn {
             filePathTextField.getDocument().addDocumentListener(createDocListener(filePathTextField, fileFormatCBox));
             fileFormatCBox.addItemListener(createItemListener(filePathTextField, fileFormatCBox));
             JButton browseButton = createBrowseButton(filePathTextField, true, new FileNameExtensionFilter(createFilterString(moduleExtensions), moduleExtensions));
+            JTextField floatPrecisionTextField = new JTextField(5);
             fileFormat.registerComponent(fileFormatCBox);
             filePath.registerComponent(filePathTextField);
+            floatPrecision.registerComponent(floatPrecisionTextField);
             JPanel filePathPanel = new JPanel(new BorderLayout());
             filePathPanel.setPreferredSize(filePathTextField.getPreferredSize());
             filePathPanel.add(filePathTextField);
@@ -507,6 +512,8 @@ public class ImportExportPlugIn implements PlugIn {
             filePanel.add(fileFormatCBox, GridBagHelper.rightCol());
             filePanel.add(new JLabel("File path:"), GridBagHelper.leftCol());
             filePanel.add(filePathPanel, GridBagHelper.rightCol());
+            filePanel.add(new JLabel("Float precision:"), GridBagHelper.leftCol());
+            filePanel.add(floatPrecisionTextField, GridBagHelper.rightCol());
             pane.add(filePanel, componentConstraints);
 
             if(!groundTruth) {
@@ -567,6 +574,10 @@ public class ImportExportPlugIn implements PlugIn {
 
         public String getFileFormat() {
             return fileFormat.getValue();
+        }
+
+        public int getFloatPrecision() {
+            return floatPrecision.getValue();
         }
     }
 

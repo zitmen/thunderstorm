@@ -181,7 +181,7 @@ public class TSFImportExport implements IImportExport {
     }
 
     @Override
-    public void exportToFile(String fp, GenericTable table, List<String> columns) throws FileNotFoundException, IOException {
+    public void exportToFile(String fp, int floatPrecision, GenericTable table, List<String> columns) throws FileNotFoundException, IOException {
         assert (table != null);
         assert (fp != null);
         assert (!fp.isEmpty());
