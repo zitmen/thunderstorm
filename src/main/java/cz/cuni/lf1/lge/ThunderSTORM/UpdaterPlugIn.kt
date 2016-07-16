@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM
 
+import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableSortedSet
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser
@@ -10,12 +11,13 @@ import ij.IJ
 import ij.Menus
 import ij.Prefs
 import ij.plugin.PlugIn
+import rx.Observable
+import rx.Single
 
 import javax.swing.*
 import java.awt.*
 import java.io.*
 import java.net.URL
-import java.util.ArrayList
 
 private const val LOG_TAG = "Updater"
 
@@ -34,15 +36,38 @@ class UpdaterPlugIn : PlugIn {
             return
         }
         IJ.showStatus("Looking for new versions...")
-        val version = askUserForVersion(
-                ImmutableSortedSet.reverseOrder<Version>()
-                        .addAll(getVersionListFromWeb(ThunderSTORM.URL_DAILY + "/list.txt"))
-                        .addAll(getVersionListFromWeb(ThunderSTORM.URL_STABLE + "/list.txt"))
-                        .build()) ?: return
-        downloadAndSaveJar(file, version.url)
-        IJ.showMessage(LOG_TAG, "Please restart ImageJ to complete ThunderSTORM update.")
-        ModuleLoader.setUseCaching(false)
-        Menus.updateImageJMenus()
+
+        getVersionListFromWeb(ThunderSTORM.URL_DAILY + "/list.txt")
+                .concatWith(getVersionListFromWeb(ThunderSTORM.URL_STABLE + "/list.txt"))
+                .toSortedList()
+                .toSingle()
+                .subscribe(/*onSuccess = */{ versions ->
+                    IJ.showStatus("")
+                    askUserForVersion(ImmutableSortedSet.reverseOrder<Version>().addAll(versions).build().asList())?.let { version ->
+                        IJ.showStatus("Downloading Thunder_STORM.jar ...")
+                        downloadJar(version.url)
+                                .subscribe(/*onSuccess = */{ data ->
+                                    IJ.showProgress(1.0)
+                                    IJ.showStatus("Installing Thunder_STORM.jar ...")
+                                    updateJar(file, data)
+                                            .subscribe(/*onSuccess = */{
+                                                IJ.showStatus("Done.")
+                                                IJ.showMessage(LOG_TAG, "Please restart ImageJ to complete ThunderSTORM update.")
+                                                ModuleLoader.setUseCaching(false)
+                                                Menus.updateImageJMenus()
+                                            }, /*onError = */{ ex ->
+                                                IJ.showStatus("Update failed.")
+                                                IJ.handleException(ex)
+                                            })
+                                }, /*onError = */{ ex ->
+                                    IJ.showStatus("Download failed.")
+                                    IJ.handleException(ex)
+                                })
+                    }
+                }, /*onError = */{ ex ->
+                    IJ.showMessage("Error!", "Connection problem! Check you connection to the Internet or your firewall settings.")
+                    IJ.handleException(ex)
+                })
     }
 
     private class Version(val fileName: String) : Comparable<Version> {
@@ -81,15 +106,19 @@ class UpdaterPlugIn : PlugIn {
             val tokens1 = version.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.map { tok -> tok.toInt() }
             val tokens2 = other.version.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.map { tok -> tok.toInt() }
             (tokens1.size - tokens2.size).let  { cmp -> if (cmp != 0) return cmp }
-            for (i in 0..tokens1.size) {
+            for (i in 0..tokens1.size-1) {
                 (tokens1[i].compareTo(tokens2[i])).let  { cmp -> if (cmp != 0) return cmp }
             }
             return 0
         }
+
+        override fun equals(other: Any?) = other is Version && compareTo(other) == 0
+
+        override fun hashCode() = fileName.hashCode()
     }
 
     // GUI
-    private class UpdaterDialog internal constructor(private val mVersions: ImmutableSortedSet<Version>)
+    private class UpdaterDialog internal constructor(private val mVersions: ImmutableList<Version>)
         : DialogStub(ParameterTracker("thunderstorm.updater"), IJ.getInstance(), "ThunderSTORM Updater") {
 
         private val versionsComboBox = JComboBox<Version>(mVersions.toTypedArray())
@@ -145,7 +174,7 @@ class UpdaterPlugIn : PlugIn {
     // Static helpers
     companion object {
 
-        private fun askUserForVersion(versions: ImmutableSortedSet<Version>): Version? {
+        private fun askUserForVersion(versions: ImmutableList<Version>): Version? {
             val dialog = UpdaterDialog(versions)
             if (!MacroParser.isRanFromMacro()) {
                 if (dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
@@ -155,79 +184,76 @@ class UpdaterPlugIn : PlugIn {
             return dialog.selectedVersion
         }
 
-        @Throws(IOException::class)
-        private fun downloadJar(urlAddress: String): ByteArray {
-            IJ.showStatus("Downloading Thunder_STORM.jar ...")
-            URL(urlAddress).openConnection().inputStream.use { `in` ->
-                var n = 0
-                var len = 1024 * 1024    // 1 MiB
-                var data = ByteArray(len)
-                while (true) {
-                    IJ.showStatus("Downloading Thunder_STORM.jar (" + IJ.d2s(n.toDouble() / 1024.0 / 1024.0, 1) + "MB)")
-                    val count = `in`.read(data, n, len - n)
-                    if (count < 0) {
-                        break
-                    }
-                    n += count
-                    if (len - n <= 0) {
+        private fun downloadJar(urlAddress: String) =
+            Single.create<ByteArray> { subscriber ->
+                try {
+                    URL(urlAddress).openConnection().inputStream.use { inStream ->
+                        var n = 0
+                        var len = 1024 * 1024    // 1 MiB
+                        var data = ByteArray(len)
+                        while (true) {
+                            IJ.showStatus("Downloading Thunder_STORM.jar (" + IJ.d2s(n.toDouble() / 1024.0 / 1024.0, 1) + "MB)")
+                            val count = inStream.read(data, n, len - n)
+                            if (count < 0) break
+                            n += count
+                            if (len - n <= 0) {
+                                val tmp = data
+                                len *= 2
+                                data = ByteArray(len)
+                                System.arraycopy(tmp, 0, data, 0, tmp.size)
+                            }
+                        }
+
                         val tmp = data
-                        len *= 2
-                        data = ByteArray(len)
-                        System.arraycopy(tmp, 0, data, 0, tmp.size)
+                        data = ByteArray(n)
+                        System.arraycopy(tmp, 0, data, 0, n)
+
+                        if (!subscriber.isUnsubscribed) {
+                            subscriber.onSuccess(data)
+                        }
+                    }
+                } catch (ex: IOException) {
+                    if (!subscriber.isUnsubscribed) {
+                        subscriber.onError(ex)
                     }
                 }
-                //
-                val tmp = data
-                data = ByteArray(n)
-                System.arraycopy(tmp, 0, data, 0, n)
-                //
-                IJ.showStatus("Done.")
-                IJ.showProgress(1.0)
-                return data
-            }
-        }
-
-        private fun downloadAndSaveJar(f: File, urlAddress: String) {
-            // download the update
-            val data = try {
-                downloadJar(urlAddress)
-            } catch (e: IOException) {
-                IJ.showStatus("Download failed.")
-                IJ.handleException(e)
-                return
-            }
-            // apply the update
-            try {
-                FileOutputStream(f).use { out ->
-                    IJ.showStatus("Installing Thunder_STORM.jar ...")
-                    out.write(data, 0, data.size)
-                    IJ.showStatus("Done.")
-                }
-            } catch (e: IOException) {
-                IJ.showStatus("Update failed.")
-                IJ.handleException(e)
             }
 
-        }
-
-        private fun getVersionListFromWeb(urlAddress: String): List<Version> {
-            val v = ArrayList<Version>()
-            try {
-                BufferedReader(InputStreamReader(URL(urlAddress).openStream())).use { br ->
-                    var line: String?
-                    while (true) {
-                        line = br.readLine()
-                        if (line == null) break
-                        if (line != "") v.add(Version(line))
+        private fun updateJar(f: File, data: ByteArray) =
+            Single.create<Nothing> { subscriber ->
+                try {
+                    FileOutputStream(f).use { out -> out.write(data, 0, data.size) }
+                    if (!subscriber.isUnsubscribed) {
+                        subscriber.onSuccess(null)
+                    }
+                } catch (ex: IOException) {
+                    if (!subscriber.isUnsubscribed) {
+                        subscriber.onError(ex)
                     }
                 }
-            } catch (ex: IOException) {
-                IJ.showMessage("Error!", "Connection problem! Check you connection to the Internet or your firewall settings.")
-                IJ.handleException(ex)
             }
 
-            return v
-        }
+        private fun getVersionListFromWeb(urlAddress: String) =
+            Observable.create<Version> { subscriber ->
+                try {
+                    BufferedReader(InputStreamReader(URL(urlAddress).openStream())).use { br ->
+                        while (true) {
+                            val line = br.readLine()
+                            if (line == null && !subscriber.isUnsubscribed) {
+                                subscriber.onCompleted()
+                                break
+                            }
+                            if (line != "" && !subscriber.isUnsubscribed) {
+                                subscriber.onNext(Version(line))
+                            }
+                        }
+                    }
+                } catch (ex: IOException) {
+                    if (!subscriber.isUnsubscribed) {
+                        subscriber.onError(ex)
+                    }
+                }
+            }
 
     }
 }
