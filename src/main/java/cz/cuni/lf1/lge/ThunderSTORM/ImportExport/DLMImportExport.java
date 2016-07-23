@@ -125,6 +125,7 @@ abstract public class DLMImportExport implements IImportExport {
 
         DecimalFormat df = new DecimalFormat();
         df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
+        df.setGroupingUsed(false);
         df.setRoundingMode(RoundingMode.HALF_EVEN);
         df.setMaximumFractionDigits(floatPrecision);
 

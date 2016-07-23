@@ -46,7 +46,7 @@ public class JSONImportExport implements IImportExport {
                 if(MoleculeDescriptor.LABEL_ID.equals(tmp.first)) continue;
                 colnames[c] = tmp.first;
                 colunits[c] = tmp.second;
-                values[c] = mol.get(label).doubleValue();
+                values[c] = mol.get(label);
                 if(MoleculeDescriptor.LABEL_FRAME.equals(tmp.first)) {
                     values[c] += startingFrame-1;
                 }
@@ -80,7 +80,7 @@ public class JSONImportExport implements IImportExport {
         for(int r = 0; r < nrows; r++) {
             HashMap<String, BigDecimal> molecule = new HashMap<String, BigDecimal>();
             for(int c = 0; c < ncols; c++)
-                molecule.put(table.getColumnLabel(columns.get(c)), new BigDecimal(table.getValue(r ,columns.get(c))).setScale(floatPrecision, BigDecimal.ROUND_HALF_EVEN).stripTrailingZeros());
+                molecule.put(table.getColumnLabel(columns.get(c)), new BigDecimal(table.getValue(r, columns.get(c))).setScale(floatPrecision, BigDecimal.ROUND_HALF_EVEN).stripTrailingZeros());
             results.add(molecule);
             IJ.showProgress((double)r / (double)nrows);
         }
