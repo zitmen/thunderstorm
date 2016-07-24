@@ -40,7 +40,7 @@ public class MeasurementProtocol {
     private boolean isSet3d;
     
     public MeasurementProtocol() {
-        this.version = "ThunderSTORM (" + ThunderSTORM.VERSION + ")";
+        this.version = "ThunderSTORM (" + ThunderSTORM.INSTANCE.getVERSION() + ")";
         this.imageInfo = new HashMap<String, Object>();
         this.cameraSettings = new HashMap<String, Object>();
         this.analysisFilter = new EmptyFilter();
@@ -51,7 +51,7 @@ public class MeasurementProtocol {
     }
     
     public MeasurementProtocol(ImagePlus analyzedImage, IFilterUI filter, IDetectorUI detector, IEstimatorUI estimator) {
-        this.version = "ThunderSTORM (" + ThunderSTORM.VERSION + ")";
+        this.version = "ThunderSTORM (" + ThunderSTORM.INSTANCE.getVERSION() + ")";
         this.imageInfo = getImageInfo(analyzedImage);
         this.cameraSettings = CameraSetupPlugIn.exportSettings();
         this.analysisFilter = filter;
@@ -62,7 +62,7 @@ public class MeasurementProtocol {
     }
 
     public MeasurementProtocol(ImagePlus analyzedPlane1, ImagePlus analyzedPlane2, IFilterUI filter, IDetectorUI detector, IBiplaneEstimatorUI biplaneEstimator) {
-        this.version = "ThunderSTORM (" + ThunderSTORM.VERSION + ")";
+        this.version = "ThunderSTORM (" + ThunderSTORM.INSTANCE.getVERSION() + ")";
         this.imageInfo = getImageInfo(analyzedPlane1);  // TODO: append the second image info!!!
         this.cameraSettings = CameraSetupPlugIn.exportSettings();
         this.analysisFilter = filter;

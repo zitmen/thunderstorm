@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/zitmen/thunderstorm.svg?branch=master)](https://travis-ci.org/zitmen/thunderstorm)
+
 ## Links
   * [Cover page](http://zitmen.github.io/thunderstorm/)
   * [Documentation wiki](https://github.com/zitmen/thunderstorm/wiki)
