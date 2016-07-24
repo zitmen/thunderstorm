@@ -272,7 +272,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                     cameraButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP, null);
+                            MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP.getValue(), null);
                         }
                     });
                     cameraPanel.add(cameraButton);

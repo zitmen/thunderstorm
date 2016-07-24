@@ -2,6 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import ij.process.FloatProcessor;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -67,8 +69,9 @@ public final class MedianFilter implements IFilter {
    * @return a <strong>new instance</strong> of FloatProcessor that contains the
    * filtered image (matrix of medians)
    */
+  @NotNull
   @Override
-  public FloatProcessor filterImage(FloatProcessor image) {
+  public FloatProcessor filterImage(@NotNull FloatProcessor image) {
     input = image;
     result = new FloatProcessor(image.getWidth(), image.getHeight());
     if (pattern == BOX) {
@@ -119,6 +122,7 @@ public final class MedianFilter implements IFilter {
     return "Med";
   }
 
+  @NotNull
   @Override
   public HashMap<String, FloatProcessor> exportVariables(boolean reevaluate) {
     if (export_variables == null) {
@@ -134,6 +138,7 @@ public final class MedianFilter implements IFilter {
     return export_variables;
   }
 
+  @NotNull
   @Override
   public IFilter clone() {
     return new MedianFilter(pattern, size);

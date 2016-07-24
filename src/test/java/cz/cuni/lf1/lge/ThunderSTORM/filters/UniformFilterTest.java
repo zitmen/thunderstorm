@@ -1,6 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import java.util.Arrays;
+
+import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -13,13 +15,11 @@ public class UniformFilterTest {
     public void testUpdateKernel() {
         System.out.println("UniformFilterTest::updateKernel");
         
-        UniformFilter instance = new UniformFilter(3, 3f);
-        cmpKernel(instance, 3, 3f);
-        instance.updateKernel(5, 5f);
-        cmpKernel(instance, 5, 5f);
+        cmpKernel(new BoxFilter(3, 3f, Padding.PADDING_DUPLICATE), 3, 3f);
+        cmpKernel(new BoxFilter(5, 5f, Padding.PADDING_DUPLICATE), 5, 5f);
     }
     
-    private void cmpKernel(UniformFilter instance, int size, float val) {
+    private void cmpKernel(BoxFilter instance, int size, float val) {
         float [][] kernel;
         
         assertEquals("Uniform kernel is separable, thus there must be X and Y components instead of one large kernel!", instance.getKernel(), null);

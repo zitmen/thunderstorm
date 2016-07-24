@@ -94,7 +94,7 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         this.cameraSetup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP, null);
+                MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP.getValue(), null);
             }
         });
         //

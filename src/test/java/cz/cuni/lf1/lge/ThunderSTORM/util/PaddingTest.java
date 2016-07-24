@@ -22,10 +22,10 @@ public class PaddingTest {
         FloatProcessor result;
         float [] expResult;
         
-        result = Padding.addBorder(image, Padding.PADDING_NONE, 0);
+        result = Padding.PADDING_NONE.addBorder(image, 0);
         assertArrayEquals("PADDING_NONE", data, (float[])result.getPixels(), 0.0f);
         
-        result = Padding.addBorder(image, Padding.PADDING_ZERO, 2);
+        result = Padding.PADDING_ZERO.addBorder(image, 2);
         expResult = new float[] {
             0f, 0f, 0f, 0f, 0f, 0f, 0f,
             0f, 0f, 0f, 0f, 0f, 0f, 0f,
@@ -37,7 +37,7 @@ public class PaddingTest {
         };
         assertArrayEquals("PADDING_ZERO", expResult, (float[])result.getPixels(), 0.0f);
         
-        result = Padding.addBorder(image, Padding.PADDING_DUPLICATE, 2);
+        result = Padding.PADDING_DUPLICATE.addBorder(image, 2);
         expResult = new float[] {
             8f, 8f, 8f, 1f, 6f, 6f, 6f,
             8f, 8f, 8f, 1f, 6f, 6f, 6f,
@@ -49,7 +49,7 @@ public class PaddingTest {
         };
         assertArrayEquals("PADDING_DUPLICATE", expResult, (float[])result.getPixels(), 0.0f);
         
-        result = Padding.addBorder(image, Padding.PADDING_CYCLIC, 5);
+        result = Padding.PADDING_CYCLIC.addBorder(image, 5);
         expResult = new float[] {
             5f, 7f, 3f, 5f, 7f, 3f, 5f, 7f, 3f, 5f, 7f, 3f, 5f,
             9f, 2f, 4f, 9f, 2f, 4f, 9f, 2f, 4f, 9f, 2f, 4f, 9f,

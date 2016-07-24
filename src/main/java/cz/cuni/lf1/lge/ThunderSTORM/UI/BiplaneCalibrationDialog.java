@@ -124,7 +124,7 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
         cameraSetup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP, null);
+                MacroParser.runNestedWithRecording(PluginCommands.CAMERA_SETUP.getValue(), null);
             }
         });
         JPanel cameraPanel = new JPanel(new BorderLayout());

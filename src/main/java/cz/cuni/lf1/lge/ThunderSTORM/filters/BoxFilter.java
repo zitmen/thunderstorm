@@ -1,7 +1,12 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -13,48 +18,82 @@ import java.util.HashMap;
  *
  * @see ConvolutionFilter
  */
-public final class BoxFilter extends UniformFilter implements IFilter {
+public final class BoxFilter implements IFilter {
 
-  public BoxFilter() {
-    this(3);
-  }
+    private final int mSize;
+    private final ConvolutionFilter mFilter;
+    private FloatProcessor input;
+    private FloatProcessor result;
 
-  /**
-   * Initialize the filter.
-   *
-   * @param size size of a box (if size is 5, then the box is 5x5 pixels)
-   */
-  public BoxFilter(int size) {
-    super(size, 1.0f / (float) size);
-    export_variables = null;
-  }
+    /**
+     * Generate a new square kernel of specified size and filled with a specified value.
+     *
+     * @param size size of the kernel
+     * @param value value you want the kernel fill with
+     * @return a new 2D square array of specified size and filled with a specified value
+     */
+    private static float[] getKernel(int size, float value) {
+        float[] kernel = new float[size];
+        Arrays.fill(kernel, value);
+        return kernel;
+    }
 
-  private void updateKernel() {
-    super.updateKernel(size, 1.0f / (float) size);
-  }
+    public FloatProcessor getKernel() {
+        return mFilter.getKernel();
+    }
 
-  @Override
-  public String getFilterVarName() {
+    public FloatProcessor getKernelX() {
+        return mFilter.getKernelX();
+    }
+
+    public FloatProcessor getKernelY() {
+        return mFilter.getKernelY();
+    }
+
+    /**
+     * Initialize the filter.
+     *
+     * @param size size of a box (if size is 5, then the box is 5x5 pixels)
+     */
+    public BoxFilter(int size) {
+        this(size, 1.0f/(float)size, Padding.PADDING_DUPLICATE);
+    }
+
+    public BoxFilter(int size, float value, Padding padding) {
+        mSize = size;
+        mFilter = ConvolutionFilter.Companion.createFromSeparableKernel(new FloatProcessor(1, size, getKernel(size, value), null), padding);
+    }
+
+    @Override
+    public String getFilterVarName() {
     return "Box";
   }
 
-  @Override
-  public HashMap<String, FloatProcessor> exportVariables(boolean reevaluate) {
-    if (export_variables == null) {
-      export_variables = new HashMap<String, FloatProcessor>();
-    }
-    //
-    if(reevaluate) {
-      filterImage(Thresholder.getCurrentImage());
-    }
-    //
-    export_variables.put("I", input);
-    export_variables.put("F", result);
-    return export_variables;
-  }
+    @NotNull
+    @Override
+    public HashMap<String, FloatProcessor> exportVariables(boolean reevaluate) {
+        HashMap<String, FloatProcessor> export_variables = new HashMap<>();
 
-  @Override
-  public IFilter clone() {
-    return new BoxFilter(size);
-  }
+        if(reevaluate) {
+            filterImage(Thresholder.getCurrentImage());
+        }
+        //
+        export_variables.put("I", input);
+        export_variables.put("F", result);
+        return export_variables;
+    }
+
+    @Override
+    public FloatProcessor filterImage(@NotNull FloatProcessor image) {
+        GUI.checkIJEscapePressed();
+        input = image;
+        result = mFilter.filterImage(image);
+        return result;
+    }
+
+    @NotNull
+    @Override
+    public IFilter clone() {
+        return new BoxFilter(mSize);
+    }
 }

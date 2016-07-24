@@ -1,10 +1,13 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.subtract;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.crop;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import ij.process.FloatProcessor;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 
 /**
@@ -46,10 +49,13 @@ public final class CompoundWaveletFilter implements IFilter {
         this.spline_scale = spline_scale;
     }
 
+    @NotNull
     @Override
-    public FloatProcessor filterImage(FloatProcessor image) {
+    public FloatProcessor filterImage(@NotNull FloatProcessor image) {
+        GUI.checkIJEscapePressed();
+
         input = image;
-        FloatProcessor padded = Padding.addBorder(image, Padding.PADDING_DUPLICATE, margin);
+        FloatProcessor padded = Padding.PADDING_DUPLICATE.addBorder(image, margin);
         FloatProcessor V1 = w1.filterImage(padded);
         FloatProcessor V2 = w2.filterImage(V1);
 
@@ -65,10 +71,11 @@ public final class CompoundWaveletFilter implements IFilter {
         return "Wave";
     }
 
+    @NotNull
     @Override
     public HashMap<String, FloatProcessor> exportVariables(boolean reevaluate) {
         if(export_variables == null) {
-            export_variables = new HashMap<String, FloatProcessor>();
+            export_variables = new HashMap<>();
         }
         //
         if(reevaluate) {
@@ -82,6 +89,7 @@ public final class CompoundWaveletFilter implements IFilter {
         return export_variables;
     }
 
+    @NotNull
     @Override
     public IFilter clone() {
         return new CompoundWaveletFilter(spline_order, spline_scale, spline_n_samples);

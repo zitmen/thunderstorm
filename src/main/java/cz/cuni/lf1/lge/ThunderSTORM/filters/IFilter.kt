@@ -8,7 +8,7 @@ import java.util.HashMap;
 /**
  * The interface every filter has to implement.
  */
-public interface IFilter extends IModule {
+interface IFilter : IModule {
     
     /**
      * Apply a filter on an input image and return the result.
@@ -17,7 +17,8 @@ public interface IFilter extends IModule {
      * @return a <strong>new instance</strong> of FloatProcessor that contains
      *         the filtered image
      */
-    public FloatProcessor filterImage(FloatProcessor image) throws StoppedByUserException;
+    @Throws(StoppedByUserException::class)
+    fun filterImage(image: FloatProcessor): FloatProcessor
     
     /**
      * Return a name of the filter that will be used when building a thresholding formula.
@@ -26,7 +27,7 @@ public interface IFilter extends IModule {
      * 
      * @return a name of the filter that will be used when building a thresholding formula
      */
-    public String getFilterVarName();
+    fun getFilterVarName(): String
     
     /**
      * Filters can provide variables, typically processed (filtered) images,
@@ -45,8 +46,7 @@ public interface IFilter extends IModule {
      * @return a hash map with a key that represents name of a variable and with
      *         a value that represents a processed image
      */
-    public HashMap<String,FloatProcessor> exportVariables(boolean reevaluate);
+    fun exportVariables(reevaluate: Boolean): HashMap<String,FloatProcessor>
     
-    public IFilter clone();
-    
+    fun clone(): IFilter
 }

@@ -95,19 +95,19 @@ public class ResultsTableWindow extends GenericTableWindow {
         io_import.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MacroParser.runNestedWithRecording(PluginCommands.IMPORT_RESULTS, null);
+                MacroParser.runNestedWithRecording(PluginCommands.IMPORT_RESULTS.getValue(), null);
             }
         });
         io_export.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MacroParser.runNestedWithRecording(PluginCommands.EXPORT_RESULTS, null);
+                MacroParser.runNestedWithRecording(PluginCommands.EXPORT_RESULTS.getValue(), null);
             }
         });
         render.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MacroParser.runNestedWithRecording(PluginCommands.RENDERING, null);
+                MacroParser.runNestedWithRecording(PluginCommands.RENDERING.getValue(), null);
             }
         });
         livePreview = false;

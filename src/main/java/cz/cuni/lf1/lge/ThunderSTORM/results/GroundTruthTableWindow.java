@@ -68,15 +68,15 @@ class GroundTruthTableWindow extends GenericTableWindow implements ActionListene
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == evaluation) {
-            MacroParser.runNestedWithRecording(PluginCommands.PERFORMANCE_EVALUATION, null);
+            MacroParser.runNestedWithRecording(PluginCommands.PERFORMANCE_EVALUATION.getValue(), null);
         } else if(e.getSource() == rendering) {
             new RenderingPlugIn().run(IJGroundTruthTable.IDENTIFIER);
         } else if(e.getSource() == showHist) {
             new IJDistribution().run(IJGroundTruthTable.IDENTIFIER);
         } else if(e.getSource() == io_import) {
-            MacroParser.runNestedWithRecording(PluginCommands.IMPORT_GT, null);
+            MacroParser.runNestedWithRecording(PluginCommands.IMPORT_GT.getValue(), null);
         } else if(e.getSource() == io_export) {
-            MacroParser.runNestedWithRecording(PluginCommands.EXPORT_GT, null);
+            MacroParser.runNestedWithRecording(PluginCommands.EXPORT_GT.getValue(), null);
         }
     }
 

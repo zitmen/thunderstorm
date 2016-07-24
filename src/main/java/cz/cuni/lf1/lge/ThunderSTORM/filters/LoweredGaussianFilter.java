@@ -5,6 +5,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.process.FloatProcessor;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 
 /**
@@ -28,15 +30,16 @@ public final class LoweredGaussianFilter implements IFilter {
     private HashMap<String, FloatProcessor> export_variables;
     
     private GaussianFilter g;
-    private UniformFilter u;
+    private BoxFilter b;
     
-    private int size, padding;
+    private int size;
+    private Padding padding;
     private double sigma;
    
     
     private void updateKernel() {
         g = new GaussianFilter(size, sigma, padding);
-        u = new UniformFilter(size, VectorMath.mean((float []) g.getKernelX().getPixels()), padding);
+        b = new BoxFilter(size, VectorMath.mean((float []) g.getKernelX().getPixels()), padding);
     }
     
     public LoweredGaussianFilter() {
@@ -64,21 +67,22 @@ public final class LoweredGaussianFilter implements IFilter {
      *
      * @param size size of the kernel
      * @param sigma {@mathjax \sigma} of the Gaussian function
-     * @param padding_method a padding method
+     * @param paddingMethod a padding method
      * 
      * @see Padding
      */
-    public LoweredGaussianFilter(int size, double sigma, int padding_method) {
+    public LoweredGaussianFilter(int size, double sigma, Padding paddingMethod) {
         this.size = size;
         this.sigma = sigma;
-        this.padding = padding_method;
+        this.padding = paddingMethod;
         updateKernel();
     }
 
+    @NotNull
     @Override
-    public FloatProcessor filterImage(FloatProcessor image) {
+    public FloatProcessor filterImage(@NotNull FloatProcessor image) {
         input = image;
-        result = ImageMath.subtract(g.filterImage(image), u.filterImage(image));
+        result = ImageMath.subtract(g.filterImage(image), b.filterImage(image));
         return result;
     }
 
@@ -88,9 +92,10 @@ public final class LoweredGaussianFilter implements IFilter {
         return "LowGauss";
     }
     
+    @NotNull
     @Override
     public HashMap<String, FloatProcessor> exportVariables(boolean reevaluate) {
-        if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
+        if(export_variables == null) export_variables = new HashMap<>();
         //
         if(reevaluate) {
           filterImage(Thresholder.getCurrentImage());
@@ -101,6 +106,7 @@ public final class LoweredGaussianFilter implements IFilter {
         return export_variables;
     }
     
+    @NotNull
     @Override
     public IFilter clone() {
       return new LoweredGaussianFilter(size, sigma, padding);

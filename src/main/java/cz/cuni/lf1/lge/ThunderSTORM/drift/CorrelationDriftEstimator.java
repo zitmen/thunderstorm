@@ -131,7 +131,7 @@ public class CorrelationDriftEstimator {
     }
 
     private static FHT createPaddedFFTImage(FloatProcessor nextImage, int paddedSize) {
-        FHT imageFFT = new FHT(Padding.padToBiggerSquare(nextImage, Padding.PADDING_ZERO, paddedSize));
+        FHT imageFFT = new FHT(Padding.PADDING_ZERO.padToBiggerSquare(nextImage, paddedSize));
         imageFFT.setShowProgress(false);
         imageFFT.transform();
         return imageFFT;

@@ -1,8 +1,11 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import ij.process.FloatProcessor;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import javax.swing.JPanel;
 
@@ -18,8 +21,10 @@ public final class EmptyFilter extends IFilterUI implements IFilter {
   transient private FloatProcessor input = null;
   transient private HashMap<String, FloatProcessor> export_variables = null;
 
+  @NotNull
   @Override
-  public FloatProcessor filterImage(FloatProcessor image) {
+  public FloatProcessor filterImage(@NotNull FloatProcessor image) {
+      GUI.checkIJEscapePressed();
       input = image;
       return image;
   }
@@ -29,6 +34,7 @@ public final class EmptyFilter extends IFilterUI implements IFilter {
       return "empty";
   }
 
+  @NotNull
   @Override
   public HashMap<String, FloatProcessor> exportVariables(boolean reevaluate) {
       if(export_variables == null) export_variables = new HashMap<String, FloatProcessor>();
@@ -70,6 +76,7 @@ public final class EmptyFilter extends IFilterUI implements IFilter {
   public void readMacroOptions(String options) {
   }
   
+  @NotNull
   @Override
   public IFilter clone() {
     return new EmptyFilter();

@@ -25,7 +25,9 @@ import java.util.Arrays;
  * @see CompoundWaveletFilter
  * @see ConvolutionFilter
  */
-public class WaveletFilter extends ConvolutionFilter {
+public class WaveletFilter {
+
+    private final ConvolutionFilter mFilter;
 
     /**
      * Initialize the filter with a kernel corresponding to a specific plane.
@@ -36,24 +38,30 @@ public class WaveletFilter extends ConvolutionFilter {
      */
     public WaveletFilter(int plane, int spline_order, double spline_scale, int n_samples) throws IndexOutOfBoundsException {
         double [] kernel = getKernel(plane, spline_order, spline_scale, n_samples);
-        updateKernel(new FloatProcessor(1, kernel.length, kernel), true);
-        updatePaddingMethod(Padding.PADDING_DUPLICATE);
+        mFilter = ConvolutionFilter.Companion.createFromSeparableKernel(new FloatProcessor(1, kernel.length, kernel), Padding.PADDING_DUPLICATE);
     }
     
     /**
      * Initialize the filter with a kernel corresponding to a specific plane and select a padding method.
      *
      * @param plane specifies kernel for what plane the filter will be initialized
-     * @param padding_method a padding method
+     * @param paddingMethod a padding method
      * 
      * @throws UnsupportedOperationException if the requested plane is not in range of supported plane, i.e., it is not in range from 1 to 3
      * 
      * @see Padding
      */
-    public WaveletFilter(int plane, int spline_order, double spline_scale, int n_samples, int padding_method) throws UnsupportedOperationException {
+    public WaveletFilter(int plane, int spline_order, double spline_scale, int n_samples, Padding paddingMethod) throws UnsupportedOperationException {
         double [] kernel = getKernel(plane, spline_order, spline_scale, n_samples);
-        updateKernel(new FloatProcessor(1, kernel.length, kernel), true);
-        updatePaddingMethod(padding_method);
+        mFilter = ConvolutionFilter.Companion.createFromSeparableKernel(new FloatProcessor(1, kernel.length, kernel), paddingMethod);
+    }
+
+    public FloatProcessor filterImage(FloatProcessor image) {
+        return mFilter.filterImage(image);
+    }
+
+    protected FloatProcessor getKernelX() {
+        return mFilter.getKernelX();
     }
 
     private double [] getKernel(int plane, int spline_order, double spline_scale, int n_samples) {
@@ -61,7 +69,7 @@ public class WaveletFilter extends ConvolutionFilter {
         for(int i = 0; i < n_samples; i++) {
             samples[i] = i - n_samples / 2;
         }
-        double [] spline = BSplines.bSplineBlender(spline_order, spline_scale, samples);
+        double [] spline = BSplines.INSTANCE.bSplineBlender(spline_order, spline_scale, samples);
         if(plane == 1) {
             return spline;
         } else {
