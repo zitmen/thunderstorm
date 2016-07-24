@@ -4,7 +4,7 @@
 
     <groupId>cz.cuni.lf1.lge</groupId>
     <artifactId>ThunderSTORM</artifactId>
-    <version>dev-2016-07-20-b1</version>
+    <version>dev-2016-07-24-b1</version>
     <packaging>jar</packaging>
 
     <name>ThunderSTORM</name>
@@ -96,7 +96,7 @@
                 <directory>src/main/resources</directory>
             </resource>
             <resource>
-                <directory></directory>
+                <directory>.</directory>
                 <includes>
                     <include>thunderstorm.properties</include>
                 </includes>
@@ -190,7 +190,12 @@
             </plugin>
         </plugins>
     </build>
-  
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>net.imagej</groupId>
@@ -201,7 +206,7 @@
         <dependency>
             <groupId>net.sf.cssbox</groupId>
             <artifactId>swingbox</artifactId>
-            <version>1.1-SNAPSHOT</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>net.java.balloontip</groupId>
@@ -245,9 +250,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>cz.cuni.lf1.lge.ThunderSTORM.util</groupId>
+            <groupId>org.bitbucket.pepa_borkovec</groupId>
             <artifactId>MacroAwareUI</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>889b2b553e96e8493bf6a103acfe2197eb0733ca</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
