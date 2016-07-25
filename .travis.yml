@@ -4,7 +4,7 @@ jdk:
 script: mvn verify -P no-html-help
 deploy:
   provider: releases
-  api_key: "534b0fc63ba54f030c3150cf7e887d1c16a76ca3"
+  api_key: "$token"
   file: "Thunder_STORM.jar"
   skip_cleanup: true
   on:
