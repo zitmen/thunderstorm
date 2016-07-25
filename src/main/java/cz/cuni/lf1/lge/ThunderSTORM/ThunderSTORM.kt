@@ -5,9 +5,7 @@ import java.io.IOException
 import java.util.*
 
 object ThunderSTORM {
-    const val URL_DAILY = "https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/builds/daily"
-    const val URL_STABLE = "https://googledrive.com/host/0BzOGc-xMFyDYR1JaelZYQmJsaUE/builds/stable"
-    const val FILE_NAME = "Thunder_STORM"
+    const val FILE_NAME = "Thunder_STORM.jar"
 
     val VERSION: String
     init {

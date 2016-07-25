@@ -11,13 +11,20 @@ import ij.IJ
 import ij.Menus
 import ij.Prefs
 import ij.plugin.PlugIn
+import okhttp3.ResponseBody
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Url
 import rx.Observable
 import rx.Single
 
 import javax.swing.*
 import java.awt.*
 import java.io.*
-import java.net.URL
+import java.util.*
 
 private const val LOG_TAG = "Updater"
 
@@ -26,7 +33,7 @@ class UpdaterPlugIn : PlugIn {
     override fun run(arg: String) {
         GUI.setLookAndFeel()
         IJ.showStatus("Checking the file access rights...")
-        val file = File(Menus.getPlugInsPath() + "/" + ThunderSTORM.FILE_NAME + ".jar")
+        val file = File(Menus.getPlugInsPath() + "/" + ThunderSTORM.FILE_NAME)
         if (!file.exists()) {
             IJ.error(LOG_TAG, "File not found: " + file.path)
             return
@@ -37,40 +44,37 @@ class UpdaterPlugIn : PlugIn {
         }
         IJ.showStatus("Looking for new versions...")
 
-        getVersionListFromWeb(ThunderSTORM.URL_DAILY + "/list.txt")
-                .concatWith(getVersionListFromWeb(ThunderSTORM.URL_STABLE + "/list.txt"))
-                .toSortedList()
-                .toSingle()
-                .subscribe(/*onSuccess = */{ versions ->
-                    IJ.showStatus("")
-                    askUserForVersion(ImmutableSortedSet.reverseOrder<Version>().addAll(versions).build().asList())?.let { version ->
-                        IJ.showStatus("Downloading Thunder_STORM.jar ...")
-                        downloadJar(version.url)
-                                .subscribe(/*onSuccess = */{ data ->
-                                    IJ.showProgress(1.0)
-                                    IJ.showStatus("Installing Thunder_STORM.jar ...")
-                                    updateJar(file, data)
-                                            .subscribe(/*onSuccess = */{
-                                                IJ.showStatus("Done.")
-                                                IJ.showMessage(LOG_TAG, "Please restart ImageJ to complete ThunderSTORM update.")
-                                                ModuleLoader.setUseCaching(false)
-                                                Menus.updateImageJMenus()
-                                            }, /*onError = */{ ex ->
-                                                IJ.showStatus("Update failed.")
-                                                IJ.handleException(ex)
-                                            })
-                                }, /*onError = */{ ex ->
-                                    IJ.showStatus("Download failed.")
-                                    IJ.handleException(ex)
-                                })
-                    }
-                }, /*onError = */{ ex ->
-                    IJ.showMessage("Error!", "Connection problem! Check you connection to the Internet or your firewall settings.")
-                    IJ.handleException(ex)
-                })
+        getVersionListFromWeb().map { r -> r.map { release -> releaseToVersion(release) }.filterNotNull() }.toSingle()
+            .subscribe(/*onSuccess = */{ versions ->
+                IJ.showStatus("")
+                askUserForVersion(ImmutableSortedSet.reverseOrder<Version>().addAll(versions).build().asList())?.let { version ->
+                    IJ.showStatus("Downloading ${ThunderSTORM.FILE_NAME} ...")
+                    downloadJar(version.downloadUrl!!)
+                            .subscribe(/*onSuccess = */{ data ->
+                                IJ.showProgress(1.0)
+                                IJ.showStatus("Installing ${ThunderSTORM.FILE_NAME} ...")
+                                updateJar(file, data)
+                                        .subscribe(/*onSuccess = */{
+                                            IJ.showStatus("Done.")
+                                            IJ.showMessage(LOG_TAG, "Please restart ImageJ to complete ThunderSTORM update.")
+                                            ModuleLoader.setUseCaching(false)
+                                            Menus.updateImageJMenus()
+                                        }, /*onError = */{ ex ->
+                                            IJ.showStatus("Update failed.")
+                                            IJ.handleException(ex)
+                                        })
+                            }, /*onError = */{ ex ->
+                                IJ.showStatus("Download failed.")
+                                IJ.handleException(ex)
+                            })
+                }
+            }, /*onError = */{ ex ->
+                IJ.showMessage("Error!", "Connection problem! Check you connection to the Internet or your firewall settings.")
+                IJ.handleException(ex)
+            })
     }
 
-    private class Version(val fileName: String) : Comparable<Version> {
+    private class Version(val tagName: String, val downloadUrl: String? = null) : Comparable<Version> {
         val version: String
         val year: Int
         val month: Int
@@ -78,7 +82,7 @@ class UpdaterPlugIn : PlugIn {
         val buildOfTheDay: Int
 
         init {
-            val tokens = fileName.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            val tokens = tagName.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             this.version = tokens[0]
             this.year = Integer.parseInt(tokens[1])
             this.month = Integer.parseInt(tokens[2])
@@ -86,13 +90,10 @@ class UpdaterPlugIn : PlugIn {
             this.buildOfTheDay = if (tokens.size > 4) Integer.parseInt(tokens[4].substring(1)) else 0
         }
 
-        override fun toString() = if (version == "dev") fileName else "$version ($year-$month-$day)"
+        override fun toString() = if (version == "dev") tagName else "%s (%04d-%02d-%02d)".format(version, year, month, day)
 
         val isStable: Boolean
             get() = "dev" != version
-
-        val url: String
-            get() = (if (isStable) ThunderSTORM.URL_STABLE else ThunderSTORM.URL_DAILY) + "/" + fileName + ".jar"
 
         override fun compareTo(other: Version): Int {
             (year - other.year).let { cmp -> if (cmp != 0) return cmp }
@@ -114,7 +115,7 @@ class UpdaterPlugIn : PlugIn {
 
         override fun equals(other: Any?) = other is Version && compareTo(other) == 0
 
-        override fun hashCode() = fileName.hashCode()
+        override fun hashCode() = tagName.hashCode()
     }
 
     // GUI
@@ -184,76 +185,121 @@ class UpdaterPlugIn : PlugIn {
             return dialog.selectedVersion
         }
 
-        private fun downloadJar(urlAddress: String) =
-            Single.create<ByteArray> { subscriber ->
-                try {
-                    URL(urlAddress).openConnection().inputStream.use { inStream ->
-                        var n = 0
-                        var len = 1024 * 1024    // 1 MiB
-                        var data = ByteArray(len)
-                        while (true) {
-                            IJ.showStatus("Downloading Thunder_STORM.jar (" + IJ.d2s(n.toDouble() / 1024.0 / 1024.0, 1) + "MB)")
-                            val count = inStream.read(data, n, len - n)
-                            if (count < 0) break
-                            n += count
-                            if (len - n <= 0) {
-                                val tmp = data
-                                len *= 2
-                                data = ByteArray(len)
-                                System.arraycopy(tmp, 0, data, 0, tmp.size)
-                            }
-                        }
-
-                        val tmp = data
-                        data = ByteArray(n)
-                        System.arraycopy(tmp, 0, data, 0, n)
-
-                        if (!subscriber.isUnsubscribed) {
-                            subscriber.onSuccess(data)
-                        }
-                    }
-                } catch (ex: IOException) {
-                    if (!subscriber.isUnsubscribed) {
-                        subscriber.onError(ex)
-                    }
-                }
-            }
+        private fun downloadJar(url: String) =
+                Retrofit.Builder()
+                        .baseUrl("https://github.com/")
+                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                        .build()
+                        .create(GitHubService::class.java)
+                        .downloadRelease(url)
+                        .map { resp -> resp.bytes() }
+                        .asObservable()
 
         private fun updateJar(f: File, data: ByteArray) =
-            Single.create<Nothing> { subscriber ->
-                try {
-                    FileOutputStream(f).use { out -> out.write(data, 0, data.size) }
-                    if (!subscriber.isUnsubscribed) {
-                        subscriber.onSuccess(null)
-                    }
-                } catch (ex: IOException) {
-                    if (!subscriber.isUnsubscribed) {
-                        subscriber.onError(ex)
-                    }
-                }
-            }
-
-        private fun getVersionListFromWeb(urlAddress: String) =
-            Observable.create<Version> { subscriber ->
-                try {
-                    BufferedReader(InputStreamReader(URL(urlAddress).openStream())).use { br ->
-                        while (true) {
-                            val line = br.readLine()
-                            if (line == null && !subscriber.isUnsubscribed) {
-                                subscriber.onCompleted()
-                                break
-                            }
-                            if (line != "" && !subscriber.isUnsubscribed) {
-                                subscriber.onNext(Version(line))
-                            }
+                Single.create<Nothing> { subscriber ->
+                    try {
+                        FileOutputStream(f).use { out -> out.write(data, 0, data.size) }
+                        if (!subscriber.isUnsubscribed) {
+                            subscriber.onSuccess(null)
+                        }
+                    } catch (ex: IOException) {
+                        if (!subscriber.isUnsubscribed) {
+                            subscriber.onError(ex)
                         }
                     }
-                } catch (ex: IOException) {
-                    if (!subscriber.isUnsubscribed) {
-                        subscriber.onError(ex)
-                    }
                 }
-            }
 
+        private fun getVersionListFromWeb() =
+                Retrofit.Builder()
+                        .baseUrl("https://api.github.com/")
+                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                        .create(GitHubService::class.java)
+                        .listReleases("zitmen", "thunderstorm")
+                        .asObservable()
+
+        private fun releaseToVersion(release: Release): Version? {
+            val tagName = release.tag_name
+            val downloadUrl = release.assets?.firstOrNull { a -> a.name == ThunderSTORM.FILE_NAME }?.browser_download_url
+            if (tagName != null && downloadUrl != null) {
+                val version =
+                    if (tagName.startsWith("v")) {
+                        // assumming full release
+                        val ver = tagName.trimStart {  c -> c.isLetter() }.trimEnd { c -> c.isLetter() };
+                        val cal = Calendar.getInstance()
+                        cal.time = release.created_at
+                        "%s-%04d-%02d-%02d".format(ver, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH))
+                    } else {
+                        tagName
+                    }
+                return Version(version, downloadUrl)
+            } else {
+                return null
+            }
+        }
     }
+}
+
+private interface GitHubService {
+    @GET("repos/{user}/{repo}/releases")
+    fun listReleases(@Path("user") user: String, @Path("repo") repo: String): Observable<List<Release>>
+
+    @GET
+    fun downloadRelease(@Url url: String): Observable<ResponseBody>
+}
+
+private class User {
+    var login: String? = null
+    var id: Int? = null
+    var avatar_url: String? = null
+    var gravatar_id: String? = null
+    var url: String? = null
+    var html_url: String? = null
+    var followers_url: String? = null
+    var following_url: String? = null
+    var gists_url: String? = null
+    var starred_url: String? = null
+    var subscriptions_url: String? = null
+    var organizations_url: String? = null
+    var repos_url: String? = null
+    var events_url: String? = null
+    var received_events_url: String? = null
+    var type: String? = null
+    var site_admin: Boolean? = null
+}
+
+private class Asset {
+    var url: String? = null
+    var browser_download_url: String? = null
+    var id: Int? = null
+    var name: String? = null
+    var label: String? = null
+    var state: String? = null
+    var content_type: String? = null
+    var size: Int? = null
+    var download_count: Int? = null
+    var created_at: Date? = null
+    var updated_at: Date? = null
+    var uploader: User? = null
+}
+
+private class Release {
+    var url: String? = null
+    var html_url: String? = null
+    var assets_url: String? = null
+    var upload_url: String? = null
+    var tarball_url: String? = null
+    var zipball_url: String? = null
+    var id: Int? = null
+    var tag_name: String? = null
+    var target_commitish: String? = null
+    var name: String? = null
+    var body: String? = null
+    var draft: Boolean? = null
+    var prerelease: Boolean? = null
+    var created_at: Date? = null
+    var published_at: Date? = null
+    var author: User? = null
+    var assets: List<Asset>? = null
 }
