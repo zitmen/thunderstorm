@@ -53,14 +53,13 @@ public class DensityRendering extends AbstractRendering implements IncrementalRe
         //3D gaussian blob integrated in over voxel 
         //mathematica function for definite integral:
         //Integrate[1/(Sqrt[(2*Pi)^3*s1^2*s2^2*s3^2]*E^((1/2)*((x - x0)^2/s1^2 + (y - y0)^2/s2^2 + (z - z0)^2/s3^2))), {z, a, b}, {x, ax, ax + 1}, {y, ay , ay + 1}]
-        final int MAXRADIUS = (int) (defaultDX / resolution * 5);
         if(isInBounds(x, y)) {
             x = (x - xmin) / resolution;
             y = (y - ymin) / resolution;
             dx = dx / resolution;
             int u = (int) x;
             int v = (int) y;
-            int actualRadius = (this.radius < 0) ? (int) Math.min(ceil(dx * 3), MAXRADIUS) : this.radius;
+            int actualRadius = (this.radius < 0) ? (int) ceil(dx * 3) : this.radius;
             double sqrt2dx = Math.sqrt(2) * dx;
 
             int w = threeDimensions ? ((int) ((z - zFrom) / zStep)) : 0;
@@ -100,9 +99,5 @@ public class DensityRendering extends AbstractRendering implements IncrementalRe
             }
 
         }
-    }
-
-    private double squareDist(double x1, double y1, double x2, double y2) {
-        return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
     }
 }
