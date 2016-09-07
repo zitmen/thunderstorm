@@ -132,7 +132,9 @@ public class ProtoImportExport implements IImportExport {
                         units.setThompsonCcd(unit);
                     }
                 } else {
-                    throw new IllegalArgumentException("Parameter `" + columns.get(c) + "` is not supported in the current version of protocol buffer!");
+                    // skipping...the same as TSF does
+                    IJ.log("\\Update:Parameter `" + columns.get(c) + "` is not supported in the current version of protocol buffer! Exporting without it...");
+                    //throw new IllegalArgumentException("Parameter `" + columns.get(c) + "` is not supported in the current version of protocol buffer!");
                 }
             }
         }
@@ -175,7 +177,9 @@ public class ProtoImportExport implements IImportExport {
                         mol.setThompsonCcd(value);
                     }
                 } else {
-                    throw new IllegalArgumentException("Parameter `" + columns.get(c) + "` is not supported in the current version of protocol buffer!");
+                    // skipping...the same as TSF does
+                    IJ.log("\\Update:Parameter `" + columns.get(c) + "` is not supported in the current version of protocol buffer! Exporting without it...");
+                    //throw new IllegalArgumentException("Parameter `" + columns.get(c) + "` is not supported in the current version of protocol buffer!");
                 }
             }
             results.addMolecule(mol);

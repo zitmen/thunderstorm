@@ -3,30 +3,21 @@ package cz.cuni.lf1.lge.ThunderSTORM.ImportExport;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
+import cz.cuni.lf1.lge.ThunderSTORM.util.StringFormatting;
 import ij.IJ;
+
+import javax.xml.stream.*;
+import javax.xml.stream.events.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map.Entry;
-import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Characters;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartDocument;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
 
 public class XMLImportExport implements IImportExport {
     
@@ -46,6 +37,8 @@ public class XMLImportExport implements IImportExport {
         boolean filling_units = false;
         ArrayList<HashMap<String,Double>> molecules = null;
         HashMap<String,Double> molecule = null;
+        DecimalFormat df = StringFormatting.getDecimalFormat();
+        boolean skipMolecule = false;
         try {
             // First create a new XMLInputFactory
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
@@ -60,20 +53,20 @@ public class XMLImportExport implements IImportExport {
 
                     // the root element?
                     if (startElement.getName().getLocalPart().equals(ROOT)) {
-                        molecules = new ArrayList<HashMap<String,Double>>();
+                        molecules = new ArrayList<>();
                         continue;
                     }
                     
                     // the units element?
                     if (startElement.getName().getLocalPart().equals(UNITS)) {
-                        units = new HashMap<String, String>();
+                        units = new HashMap<>();
                         filling_units = true;
                         continue;
                     }
                     
                     // an item element?
                     if (startElement.getName().getLocalPart().equals(ITEM)) {
-                        molecule = new HashMap<String, Double>();
+                        molecule = new HashMap<>();
                         continue;
                     }
 
@@ -84,7 +77,11 @@ public class XMLImportExport implements IImportExport {
                         if(filling_units) { // units
                             units.put(name, value);
                         } else {    // molecule
-                            molecule.put(name, Double.parseDouble(value));
+                            try {
+                                molecule.put(name, df.parse(value).doubleValue());
+                            } catch (ParseException e) {
+                                skipMolecule = true;
+                            }
                         }
                         continue;
                     }
@@ -99,7 +96,12 @@ public class XMLImportExport implements IImportExport {
                     
                     // an item element?
                     if (endElement.getName().getLocalPart().equals(ITEM)) {
-                        molecules.add(molecule);
+                        if (skipMolecule) {
+                            IJ.log("\\Update:Invalid number format! Skipping over...");
+                            skipMolecule = false;
+                        } else {
+                            molecules.add(molecule);
+                        }
                         continue;
                     }
                 }
@@ -193,21 +195,17 @@ public class XMLImportExport implements IImportExport {
             eventWriter.add(tab);
             eventWriter.add(unitsStartElement);
             eventWriter.add(end);
-            for(int c = 0; c < ncols; c++) {
-                String units = table.getColumnUnits(columns.get(c)).toString();
-                if((units != null) && !units.trim().isEmpty()) {
-                    createNode(eventWriter, columns.get(c), units);
+            for (String column1 : columns) {
+                String units = table.getColumnUnits(column1).toString();
+                if ((units != null) && !units.trim().isEmpty()) {
+                    createNode(eventWriter, column1, units);
                 }
             }
             eventWriter.add(tab);
             eventWriter.add(eventFactory.createEndElement("", "", UNITS));
             eventWriter.add(end);
 
-            DecimalFormat df = new DecimalFormat();
-            df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
-            df.setGroupingUsed(false);
-            df.setRoundingMode(RoundingMode.HALF_EVEN);
-            df.setMaximumFractionDigits(floatPrecision);
+            DecimalFormat df = StringFormatting.getDecimalFormat(floatPrecision);
 
             // Write molecules
             for(int r = 0; r < nrows; r++) {
@@ -216,8 +214,8 @@ public class XMLImportExport implements IImportExport {
                 eventWriter.add(moleculeStartElement);
                 eventWriter.add(end);
 
-                for(int c = 0; c < ncols; c++) {
-                    createNode(eventWriter, columns.get(c), df.format(table.getValue(r,columns.get(c))));
+                for (String column : columns) {
+                    createNode(eventWriter, column, df.format(table.getValue(r, column)));
                 }
                 
                 eventWriter.add(tab);

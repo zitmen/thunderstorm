@@ -4,15 +4,14 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
+import cz.cuni.lf1.lge.ThunderSTORM.util.StringFormatting;
 import ij.IJ;
 import org.apache.commons.io.input.CountingInputStream;
 
 import java.io.*;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -66,6 +65,8 @@ abstract public class DLMImportExport implements IImportExport {
                 table.setDescriptor(new MoleculeDescriptor(colnames, colunits));
             }
             //
+            DecimalFormat df = StringFormatting.getDecimalFormat();
+
             double[] values = new double[colnames.length];
             String[] line;
             int dataColCount = values.length + (c_id < 0 ? 0 : 1);
@@ -73,18 +74,22 @@ abstract public class DLMImportExport implements IImportExport {
                 line = splitLine(sc.nextLine());
                 if (line.length == 1 && line[0].isEmpty()) continue; // just an empty line...do not report
                 if (line.length != dataColCount) { // but report when there is a corrupted row
-                    IJ.log("A line has different number of items than the header! Skipping over...");
+                    IJ.log("\\Update:A line has different number of items than the header! Skipping over...");
                     continue;
                 }
-                for(int c = 0, ci = 0, cm = line.length; c < cm; c++) {
-                    if(c == c_id) continue;
-                    values[ci] = Double.parseDouble(line[c]);
-                    if(MoleculeDescriptor.LABEL_FRAME.equals(colnames[ci])) {
-                        values[ci] += startingFrame - 1;
+                try {
+                    for (int c = 0, ci = 0, cm = line.length; c < cm; c++) {
+                        if (c == c_id) continue;
+                        values[ci] = df.parse(line[c]).doubleValue();
+                        if (MoleculeDescriptor.LABEL_FRAME.equals(colnames[ci])) {
+                            values[ci] += startingFrame - 1;
+                        }
+                        ci++;
                     }
-                    ci++;
+                    table.addRow(values);
+                } catch (ParseException ex) {
+                    IJ.log("\\Update:Invalid number format! Skipping over...");
                 }
-                table.addRow(values);
 
                 IJ.showProgress((double) countingInputStream.getByteCount() / (double)fileSize);
             }
@@ -123,11 +128,7 @@ abstract public class DLMImportExport implements IImportExport {
         }
         writer.newLine();
 
-        DecimalFormat df = new DecimalFormat();
-        df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
-        df.setGroupingUsed(false);
-        df.setRoundingMode(RoundingMode.HALF_EVEN);
-        df.setMaximumFractionDigits(floatPrecision);
+        DecimalFormat df = StringFormatting.getDecimalFormat(floatPrecision);
 
         int ncols = columns.size(), nrows = table.getRowCount();
         for(int r = 0; r < nrows; r++) {
