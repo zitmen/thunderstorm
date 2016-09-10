@@ -35,7 +35,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-@SuppressWarnings("Since15")
 public class ImportExportPlugIn implements PlugIn {
 
     public static final String IMPORT = "import";
@@ -119,7 +118,7 @@ public class ImportExportPlugIn implements PlugIn {
                     ijrt.setAnalyzedImage(null);
                 }
             }
-            importMeasurementProtocol();
+            setupMeasurementProtocol(dialog.detectMeasurementProtocol.getValue());
             callImporter(importer, table, path, startingFrame);
             AnalysisPlugIn.setDefaultColumnsWidth(ijrt);
             ijrt.setLivePreview(dialog.showPreview.getValue());
@@ -178,18 +177,15 @@ public class ImportExportPlugIn implements PlugIn {
         callExporter(exporter, table, path, dialog.getFloatPrecision(), columns);
     }
 
-    private void importMeasurementProtocol() {
+    private void setupMeasurementProtocol(boolean detectMeasurementProtocolFile) {
         // Create an empty protocol first
         IJResultsTable.getResultsTable().setMeasurementProtocol(new MeasurementProtocol());
-        //
-        // Automatically load protocol, if available -> this allows for (re)calculation of
-        // fitting uncertainties and other values that depend on the data about analysis.
-        File protoFile = new File(getProtocolFilePath(path));
-        if(protoFile.exists() && protoFile.isFile()) {
-            int dialogResult = JOptionPane.showConfirmDialog(null,
-                    "We detected a measurement protocol for the selected data.\nDo you with to load the information?",
-                    "Measurement protocol", JOptionPane.YES_NO_OPTION);
-            if (dialogResult == JOptionPane.YES_OPTION) {
+
+        if (detectMeasurementProtocolFile) {
+            // Automatically load protocol, if available -> this allows for (re)calculation of
+            // fitting uncertainties and other values that depend on the data about analysis.
+            File protoFile = new File(getProtocolFilePath(path));
+            if (protoFile.exists() && protoFile.isFile()) {
                 // Parse the protocol and attach it to the results table.
                 MeasurementProtocol protocol = MeasurementProtocol.importFromFile(getProtocolFilePath(path));
                 IJResultsTable.getResultsTable().setMeasurementProtocol(protocol);
@@ -197,28 +193,30 @@ public class ImportExportPlugIn implements PlugIn {
                 if (!protocol.cameraSettings.isEmpty()) {
                     CameraSetupPlugIn.params.setNoGuiParametersAllowed(true);   // allow setting parameters even before UI is initialized
                     if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.EM_GAIN_ENABLED)) {
-                        CameraSetupPlugIn.setIsEmGain(((Boolean) protocol.cameraSettings.get(CameraSetupPlugIn.EM_GAIN_ENABLED)).booleanValue());
+                        CameraSetupPlugIn.setIsEmGain((Boolean) protocol.cameraSettings.get(CameraSetupPlugIn.EM_GAIN_ENABLED));
                     }
                     if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.EM_GAIN)) {
-                        CameraSetupPlugIn.setGain(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.EM_GAIN)).doubleValue());
+                        CameraSetupPlugIn.setGain((Double) protocol.cameraSettings.get(CameraSetupPlugIn.EM_GAIN));
                     }
                     if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.BASELINE_OFFSET)) {
-                        CameraSetupPlugIn.setOffset(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.BASELINE_OFFSET)).doubleValue());
+                        CameraSetupPlugIn.setOffset((Double) protocol.cameraSettings.get(CameraSetupPlugIn.BASELINE_OFFSET));
                     }
                     if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.READOUT_NOISE)) {
-                        CameraSetupPlugIn.setReadoutNoise(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.READOUT_NOISE)).doubleValue());
+                        CameraSetupPlugIn.setReadoutNoise((Double) protocol.cameraSettings.get(CameraSetupPlugIn.READOUT_NOISE));
                     }
                     if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.PHOTONS_TO_ADU)) {
-                        CameraSetupPlugIn.setPhotons2ADU(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.PHOTONS_TO_ADU)).doubleValue());
+                        CameraSetupPlugIn.setPhotons2ADU((Double) protocol.cameraSettings.get(CameraSetupPlugIn.PHOTONS_TO_ADU));
                     }
                     if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.PIXEL_SIZE)) {
-                        CameraSetupPlugIn.setPixelSize(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.PIXEL_SIZE)).doubleValue());
+                        CameraSetupPlugIn.setPixelSize((Double) protocol.cameraSettings.get(CameraSetupPlugIn.PIXEL_SIZE));
                     }
                     if (protocol.cameraSettings.containsKey(CameraSetupPlugIn.QUANTUM_EFFICIENCY)) {
-                        CameraSetupPlugIn.setQuantumEfficiency(((Double) protocol.cameraSettings.get(CameraSetupPlugIn.QUANTUM_EFFICIENCY)).doubleValue());
+                        CameraSetupPlugIn.setQuantumEfficiency((Double) protocol.cameraSettings.get(CameraSetupPlugIn.QUANTUM_EFFICIENCY));
                     }
                     CameraSetupPlugIn.params.setNoGuiParametersAllowed(false);   // back to the default setting
                 }
+            } else {
+                IJ.log("Measurement protocol was not found (we will not be able to recalculate fitting uncertainties if requested).");
             }
         }
     }
@@ -342,6 +340,7 @@ public class ImportExportPlugIn implements PlugIn {
 
         ParameterKey.String fileFormat;
         ParameterKey.String filePath;
+        ParameterKey.Boolean detectMeasurementProtocol;
         ParameterKey.Integer startingFrame;
         ParameterKey.Boolean showPreview;
         ParameterKey.Boolean append;
@@ -354,6 +353,7 @@ public class ImportExportPlugIn implements PlugIn {
             assert moduleNames != null && moduleNames.length > 0;
             fileFormat = fileParams.createStringField("fileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
             filePath = fileParams.createStringField("filePath", StringValidatorFactory.fileExists(), "");
+            detectMeasurementProtocol = fileParams.createBooleanField("detectMeasurementProtocol", null, true);
             startingFrame = params.createIntField("startingFrame", IntegerValidatorFactory.positiveNonZero(), 1);
             append = params.createBooleanField("append", null, false);
             this.groundTruth = groundTruth;
@@ -400,6 +400,12 @@ public class ImportExportPlugIn implements PlugIn {
             filePanel.add(fileFormatCBox, GridBagHelper.rightCol());
             filePanel.add(new JLabel("File path:"), GridBagHelper.leftCol());
             filePanel.add(filePathPanel, GridBagHelper.rightCol());
+            if(!groundTruth) {
+                JCheckBox detectMeasurementProtocolCheckBox = new JCheckBox();
+                detectMeasurementProtocol.registerComponent(detectMeasurementProtocolCheckBox);
+                filePanel.add(new JLabel("Try to load measurement protocol:"), GridBagHelper.leftCol());
+                filePanel.add(detectMeasurementProtocolCheckBox, GridBagHelper.rightCol());
+            }
             add(filePanel, GridBagHelper.twoCols());
 
             JPanel concatenationPanel = new JPanel(new GridBagLayout());
