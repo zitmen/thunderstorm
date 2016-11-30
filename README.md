@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/zitmen/thunderstorm.svg?branch=master)](https://travis-ci.org/zitmen/thunderstorm)
 
 ## Links
+
+[![Join the chat at https://gitter.im/thunder-storm/Lobby](https://badges.gitter.im/thunder-storm/Lobby.svg)](https://gitter.im/thunder-storm/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
   * [Cover page](http://zitmen.github.io/thunderstorm/)
   * [Documentation wiki](https://github.com/zitmen/thunderstorm/wiki)
   * [Discussion group](http://groups.google.com/group/thunderstorm-users)
