@@ -14,6 +14,7 @@ import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import java.awt.GridBagLayout;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -82,7 +83,7 @@ public final class CentroidOfConnectedComponentsDetector extends IDetectorUI imp
      * detected molecules
      */
     @Override
-    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException {
+    public List<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException {
 
         //keep a local threshold value so the method remains thread safe
         float localThresholdValue = Thresholder.getThreshold(threshold);

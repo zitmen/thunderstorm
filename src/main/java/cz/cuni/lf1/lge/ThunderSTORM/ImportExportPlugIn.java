@@ -353,11 +353,11 @@ public class ImportExportPlugIn implements PlugIn {
             assert moduleNames != null && moduleNames.length > 0;
             fileFormat = fileParams.createStringField("fileFormat", StringValidatorFactory.isMember(moduleNames), moduleNames[0]);
             filePath = fileParams.createStringField("filePath", StringValidatorFactory.fileExists(), "");
-            detectMeasurementProtocol = fileParams.createBooleanField("detectMeasurementProtocol", null, true);
             startingFrame = params.createIntField("startingFrame", IntegerValidatorFactory.positiveNonZero(), 1);
             append = params.createBooleanField("append", null, false);
             this.groundTruth = groundTruth;
             if(!groundTruth) {
+                detectMeasurementProtocol = fileParams.createBooleanField("detectMeasurementProtocol", null, true);
                 showPreview = params.createBooleanField("livePreview", null, true);
                 rawImageStack = params.createStringField("rawImageStack", StringValidatorFactory.openImages(true), "");
             }

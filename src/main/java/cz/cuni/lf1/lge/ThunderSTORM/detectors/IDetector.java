@@ -5,6 +5,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
+
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -21,7 +23,7 @@ public interface IDetector extends IModule{
      * 
      * @see Point
      */
-    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException, StoppedByUserException;
+    public List<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException, StoppedByUserException;
     
     public String getThresholdFormula();
     

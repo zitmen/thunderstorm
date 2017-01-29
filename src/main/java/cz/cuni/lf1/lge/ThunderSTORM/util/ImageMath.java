@@ -16,22 +16,6 @@ public class ImageMath {
         Arrays.fill(matrix, 1f);
         return new FloatProcessor(width, height, matrix, null);
     }
-    
-    public static FloatProcessor zeros(int width, int height) {
-        float [] matrix = new float[height*width];
-        Arrays.fill(matrix, 0f);
-        return new FloatProcessor(width, height, matrix, null);
-    }
-    
-    public static ByteProcessor convertFloatToByte(FloatProcessor fp) {
-        ImageStatistics stats = fp.getStatistics();
-        FloatProcessor tmp = subtract(fp, (float)stats.min);
-        if((stats.max - stats.min) > 0.0) {
-            tmp = divide(tmp, (float)(stats.max - stats.min));
-        }
-        ByteProcessor bp = (ByteProcessor)tmp.convertToByte(true);
-        return (ByteProcessor)tmp.convertToByte(true);
-    }
 
     /**
      * Add two images.
@@ -244,25 +228,6 @@ public class ImageMath {
         }
 
         return out;
-    }
-    
-    /**
-     * Crop an input image to a specified region of interest (ROI).
-     * 
-     * @param im an input image
-     * @param left X coordinate of the left side of a ROI
-     * @param top Y coordinate of the top side of a ROI
-     * @param width width of a ROI
-     * @param height height of a ROI
-     * @return a <strong>new instance</strong> of FloatProcessor that contains the cropped image
-     */
-    public static FloatProcessor crop(FloatProcessor im, int left, int top, int width, int height) {
-        assert(im != null);
-        assert((width > 0) && (height > 0));
-        assert((left >= 0) && (top >= 0) && ((left+width) <= im.getWidth()) && ((top+height) <= im.getHeight()));
-        
-        im.setRoi(left, top, width, height);
-        return (FloatProcessor) im.crop();
     }
 
     /**

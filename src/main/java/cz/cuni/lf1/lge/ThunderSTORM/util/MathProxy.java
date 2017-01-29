@@ -124,34 +124,10 @@ public class MathProxy {
         return x * x;
     }
 
-    /**
-     * Evaluates the 1D Gaussian function at a given point {@code x} and with a
-     * given width {@code sigma}.
-     *
-     * @param x a point where the function will get evaluated
-     * @param sigma {@mathjax \sigma} is a width of the Gaussian function
-     * @param normalized decides wheter the Gaussian should be normalized to
-     * have its integral equal to 1
-     * @return if {@code normalized} is {@code true} then the function returns
-     * {@mathjax \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{x^2}{2 \sigma^2}}}, else
-     * the function returns {@mathjax e^{-\frac{x^2}{2 \sigma^2}}}.
-     */
-    public static double gauss(double x, double sigma, boolean normalized) {
-        return exp(-0.5 * sqr(x / sigma)) / ((normalized) ? (sigma * sqrt(2 * PI)) : 1);
-    }
-
     public static Double abs(double val) { return java.lang.Math.abs(val); }
 
     public static Double abs(Double val) {
         return new Double(java.lang.Math.abs(val.doubleValue()));
-    }
-
-    public static double toRadians(Double get) {
-        return FastMath.toRadians(PI);
-    }
-
-    public static double toDegrees(double x) {
-        return FastMath.toDegrees(x);
     }
 
     public static double sin(double radians) {
@@ -164,14 +140,6 @@ public class MathProxy {
 
     public static double atan2(double y, double x) {
         return FastMath.atan2(y, x);
-    }
-    
-    public static double atan(double x) {
-        return FastMath.atan(x);
-    }
-    
-    public static double tan(double x) {
-        return FastMath.tan(x);
     }
 
     public static int min(int a, int b) {

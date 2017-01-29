@@ -247,7 +247,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             Thresholder.setCurrentImage(fp);
             FloatProcessor filtered = allFilters.get(selectedFilter).getThreadLocalImplementation().filterImage(fp);
             IDetector detector = allDetectors.get(selectedDetector).getThreadLocalImplementation();
-            Vector<Point> detections = detector.detectMoleculeCandidates(filtered);
+            List<Point> detections = detector.detectMoleculeCandidates(filtered);
             List<Molecule> fits = allEstimators.get(selectedEstimator).getThreadLocalImplementation().estimateParameters(fp, Point.applyRoiMask(roi, detections));
             storeFits(fits, ip.getSliceNumber());
             nProcessed.incrementAndGet();

@@ -76,7 +76,7 @@ public class EstimatorsTest {
         String basePath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
         FloatProcessor image = (FloatProcessor) IJ.openImage(basePath + "tubulins1_00020.tif").getProcessor().convertToFloat();
         FloatProcessor filtered = (new CompoundWaveletFilter()).filterImage(image);
-        Vector<Point> detections = (new CentroidOfConnectedComponentsDetector("16", true)).detectMoleculeCandidates(filtered);
+        List<Point> detections = (new CentroidOfConnectedComponentsDetector("16", true)).detectMoleculeCandidates(filtered);
         List<Molecule> fits = estimator.estimateParameters(image, detections);
         for(Molecule fit : fits) {
             convertXYToNanoMeters(fit, 150.0);
@@ -114,7 +114,7 @@ public class EstimatorsTest {
         }
     }
 
-    static Vector<Pair> pairFitsAndDetections2GroundTruths(Vector<Point> detections, List<Molecule> fits, Vector<Molecule> ground_truth) {
+    static Vector<Pair> pairFitsAndDetections2GroundTruths(List<Point> detections, List<Molecule> fits, Vector<Molecule> ground_truth) {
         assertNotNull(fits);
         assertNotNull(detections);
         assertNotNull(ground_truth);
@@ -136,7 +136,7 @@ public class EstimatorsTest {
                     best_fit = j;
                 }
             }
-            pairs.add(new Pair(detections.elementAt(i), fits.get(i), ground_truth.elementAt(best_fit)));
+            pairs.add(new Pair(detections.get(i), fits.get(i), ground_truth.elementAt(best_fit)));
         }
 
         return pairs;

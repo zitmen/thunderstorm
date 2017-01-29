@@ -4,12 +4,14 @@ import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.IJ;
 import ij.process.FloatProcessor;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
 import org.apache.commons.math3.util.MathUtils;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CentroidOfConnectedComponentsDetectorTest {
     
@@ -20,7 +22,7 @@ public class CentroidOfConnectedComponentsDetectorTest {
     public void testDetectMoleculeCandidates() throws FormulaParserException {
         System.out.println("CentroidOfConnectedComponentsDetector::detectMoleculeCandidates");
         
-        Vector<Point> result, expResult;
+        List<Point> result, expResult;
         CentroidOfConnectedComponentsDetector instance;
         FloatProcessor image = new FloatProcessor(new float [][] {  // transposed
             { 9f, 4f, 3f, 7f, 4f },
@@ -30,11 +32,11 @@ public class CentroidOfConnectedComponentsDetectorTest {
             { 2f, 3f, 3f, 3f, 2f }
         });
         instance = new CentroidOfConnectedComponentsDetector("5.0", false);
-        expResult = new Vector<Point>();
-        expResult.add(new Point(0.5,1.5,7.0));
-        expResult.add(new Point(3.0,3.0,6.0));
+        expResult = new ArrayList<Point>();
+        expResult.add(new Point<Double>(0.5,1.5,7.0));
+        expResult.add(new Point<Double>(3.0,3.0,6.0));
         result = instance.detectMoleculeCandidates(image);
-        Collections.sort(result, new Point.XYComparator());
+        result.sort(new Point.XYComparator());
         assertEquals(expResult, result);
         
         
@@ -44,11 +46,11 @@ public class CentroidOfConnectedComponentsDetectorTest {
             { 3f, 5f, 3f, 1f, 3f, 5f, 3f }
         });
         instance = new CentroidOfConnectedComponentsDetector("3.0", true);
-        expResult = new Vector<Point>();
-        expResult.add(new Point(1.0,1.0,8.0));
-        expResult.add(new Point(1.0,5.0,8.0));
+        expResult = new ArrayList<Point>();
+        expResult.add(new Point<Double>(1.0,1.0,8.0));
+        expResult.add(new Point<Double>(1.0,5.0,8.0));
         result = instance.detectMoleculeCandidates(image);
-        Collections.sort(result, new Point.XYComparator());
+        result.sort(new Point.XYComparator());
         assertEquals(expResult, result);
         
 
@@ -57,10 +59,10 @@ public class CentroidOfConnectedComponentsDetectorTest {
             { 1f, 5f }
         });
         instance = new CentroidOfConnectedComponentsDetector("3.0", true);
-        expResult = new Vector<Point>();
-        expResult.add(new Point(0.5,0.5,5.0));
+        expResult = new ArrayList<Point>();
+        expResult.add(new Point<Double>(0.5,0.5,5.0));
         result = instance.detectMoleculeCandidates(image);
-        Collections.sort(result, new Point.XYComparator());
+        result.sort(new Point.XYComparator());
         assertEquals(expResult, result);
         
         /* Let's skip this test, because I dont know where are the real results from Matlab...in the CSV is ground-truth.

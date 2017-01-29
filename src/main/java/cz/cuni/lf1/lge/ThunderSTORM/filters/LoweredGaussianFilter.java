@@ -1,9 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GrayScaleImageImpl;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
-import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
+import cz.cuni.lf1.thunderstorm.algorithms.padding.DuplicatePadding;
 import ij.process.FloatProcessor;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,27 +21,19 @@ import java.util.HashMap;
  * and the other one is an uniform filter.
  *
  * @see DifferenceOfGaussiansFilter
- * @see ConvolutionFilter
  *
  */
 public final class LoweredGaussianFilter implements IFilter {
     
     private FloatProcessor input = null, result = null;
     private HashMap<String, FloatProcessor> export_variables;
-    
-    private GaussianFilter g;
-    private BoxFilter b;
-    
+
+    private cz.cuni.lf1.thunderstorm.algorithms.filters.LoweredGaussianFilter filter;
+
     private int size;
     private Padding padding;
     private double sigma;
    
-    
-    private void updateKernel() {
-        g = new GaussianFilter(size, sigma, padding);
-        b = new BoxFilter(size, VectorMath.mean((float []) g.getKernelX().getPixels()), padding);
-    }
-    
     public LoweredGaussianFilter() {
         this(11, 1.6);
     }
@@ -54,35 +46,14 @@ public final class LoweredGaussianFilter implements IFilter {
      * @param sigma {@mathjax \sigma} of the Gaussian function
      */
     public LoweredGaussianFilter(int size, double sigma) {
-        this.size = size;
-        this.sigma = sigma;
-        this.padding = Padding.PADDING_DUPLICATE;
-        updateKernel();
+        filter = new cz.cuni.lf1.thunderstorm.algorithms.filters.LoweredGaussianFilter(size, sigma, DuplicatePadding::new);
     }
     
-    /**
-     * Initialize the filter using the Gaussian kernel with specified size and
-     * {@mathjax \sigma} normalized to 0 as described above. And also select one of
-     * the padding methods.
-     *
-     * @param size size of the kernel
-     * @param sigma {@mathjax \sigma} of the Gaussian function
-     * @param paddingMethod a padding method
-     * 
-     * @see Padding
-     */
-    public LoweredGaussianFilter(int size, double sigma, Padding paddingMethod) {
-        this.size = size;
-        this.sigma = sigma;
-        this.padding = paddingMethod;
-        updateKernel();
-    }
-
     @NotNull
     @Override
     public FloatProcessor filterImage(@NotNull FloatProcessor image) {
         input = image;
-        result = ImageMath.subtract(g.filterImage(image), b.filterImage(image));
+        result = GrayScaleImageImpl.convertToFloatProcessor(filter.filter(new GrayScaleImageImpl(image)));
         return result;
     }
 
@@ -105,11 +76,4 @@ public final class LoweredGaussianFilter implements IFilter {
         export_variables.put("F", result);
         return export_variables;
     }
-    
-    @NotNull
-    @Override
-    public IFilter clone() {
-      return new LoweredGaussianFilter(size, sigma, padding);
-    }
-
 }

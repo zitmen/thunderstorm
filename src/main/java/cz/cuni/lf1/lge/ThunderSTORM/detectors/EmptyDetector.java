@@ -7,8 +7,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import ij.process.FloatProcessor;
 
 import javax.swing.*;
-import java.util.Vector;
-
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is actually never used. The only purpose is for MeasurementProtocol, when no protocol is loaded.
@@ -18,8 +18,8 @@ public class EmptyDetector extends IDetectorUI implements IDetector {
     private final String name = "No detector";
 
     @Override
-    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException, StoppedByUserException {
-        return new Vector<Point>();
+    public List<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException, StoppedByUserException {
+        return new ArrayList<Point>();
     }
 
     @Override

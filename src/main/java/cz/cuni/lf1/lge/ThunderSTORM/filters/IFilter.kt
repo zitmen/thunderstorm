@@ -47,6 +47,4 @@ interface IFilter : IModule {
      *         a value that represents a processed image
      */
     fun exportVariables(reevaluate: Boolean): HashMap<String,FloatProcessor>
-    
-    fun clone(): IFilter
 }

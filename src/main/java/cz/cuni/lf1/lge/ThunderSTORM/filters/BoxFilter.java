@@ -2,11 +2,11 @@ package cz.cuni.lf1.lge.ThunderSTORM.filters;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Padding;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GrayScaleImageImpl;
+import cz.cuni.lf1.thunderstorm.algorithms.padding.DuplicatePadding;
 import ij.process.FloatProcessor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -15,40 +15,12 @@ import java.util.HashMap;
  * surrounding pixels.
  *
  * This filter uses the separable kernel feature.
- *
- * @see ConvolutionFilter
  */
 public final class BoxFilter implements IFilter {
 
-    private final int mSize;
-    private final ConvolutionFilter mFilter;
     private FloatProcessor input;
     private FloatProcessor result;
-
-    /**
-     * Generate a new square kernel of specified size and filled with a specified value.
-     *
-     * @param size size of the kernel
-     * @param value value you want the kernel fill with
-     * @return a new 2D square array of specified size and filled with a specified value
-     */
-    private static float[] getKernel(int size, float value) {
-        float[] kernel = new float[size];
-        Arrays.fill(kernel, value);
-        return kernel;
-    }
-
-    public FloatProcessor getKernel() {
-        return mFilter.getKernel();
-    }
-
-    public FloatProcessor getKernelX() {
-        return mFilter.getKernelX();
-    }
-
-    public FloatProcessor getKernelY() {
-        return mFilter.getKernelY();
-    }
+    private cz.cuni.lf1.thunderstorm.algorithms.filters.BoxFilter mFilter;
 
     /**
      * Initialize the filter.
@@ -56,12 +28,7 @@ public final class BoxFilter implements IFilter {
      * @param size size of a box (if size is 5, then the box is 5x5 pixels)
      */
     public BoxFilter(int size) {
-        this(size, 1.0f/(float)size, Padding.PADDING_DUPLICATE);
-    }
-
-    public BoxFilter(int size, float value, Padding padding) {
-        mSize = size;
-        mFilter = ConvolutionFilter.Companion.createFromSeparableKernel(new FloatProcessor(1, size, getKernel(size, value), null), padding);
+        mFilter = new cz.cuni.lf1.thunderstorm.algorithms.filters.BoxFilter(size, DuplicatePadding::new);
     }
 
     @Override
@@ -83,17 +50,13 @@ public final class BoxFilter implements IFilter {
         return export_variables;
     }
 
+    @NotNull
     @Override
     public FloatProcessor filterImage(@NotNull FloatProcessor image) {
         GUI.checkIJEscapePressed();
-        input = image;
-        result = mFilter.filterImage(image);
-        return result;
-    }
 
-    @NotNull
-    @Override
-    public IFilter clone() {
-        return new BoxFilter(mSize);
+        input = image;
+        result = GrayScaleImageImpl.convertToFloatProcessor(mFilter.filter(new GrayScaleImageImpl(image)));
+        return result;
     }
 }

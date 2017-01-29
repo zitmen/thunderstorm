@@ -4,7 +4,7 @@
 
     <groupId>cz.cuni.lf1.lge</groupId>
     <artifactId>ThunderSTORM</artifactId>
-    <version>dev-2016-09-10-b1</version>
+    <version>dev-2017-01-28-b1</version>
     <packaging>jar</packaging>
 
     <name>ThunderSTORM</name>
@@ -14,7 +14,7 @@
     <properties>
         <skipTests>true</skipTests>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.0.3</kotlin.version>
+        <kotlin.version>1.0.6</kotlin.version>
         <imagej.path>C:\Program Files\ImageJ</imagej.path>
         <imagej1.version>1.49s</imagej1.version>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -315,6 +315,11 @@
             <groupId>org.bitbucket.pepa_borkovec</groupId>
             <artifactId>MacroAwareUI</artifactId>
             <version>889b2b553e96e8493bf6a103acfe2197eb0733ca</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.zitmen</groupId>
+            <artifactId>thunderstorm-algorithms</artifactId>
+            <version>257978741c</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

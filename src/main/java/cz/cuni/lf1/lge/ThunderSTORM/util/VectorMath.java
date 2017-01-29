@@ -415,24 +415,6 @@ public class VectorMath {
         return MathProxy.sqrt(var(arr));
     }
 
-    /**
-     * Compute the standard deviation of an array of floats.
-     *
-     * @param arr an array of floats
-     * @return {
-     * @mathjax \sqrt{\frac{1}{arr.length} \sum_{i=0}^{arr.length}{\left(arr[i]
-     * - \mu\right)}}}, where {
-     * @mathjax \mu} = {@code mean(arr)}.
-     */
-    public static float stddev(float[] arr) {
-        float sumdev = 0.0F;
-        float mean = mean(arr);
-        for(int i = 0; i < arr.length; i++) {
-            sumdev += MathProxy.sqr(arr[i] - mean);
-        }
-        return (float) MathProxy.sqrt(sumdev / (float) arr.length);
-    }
-
     public static Double stddev(Number[] arr) {
         double sumdev = 0.0;
         double mean = mean(arr);
@@ -535,17 +517,6 @@ public class VectorMath {
         return sum(arr) / (double) arr.length;
     }
 
-    /**
-     * Compute the mean value of an array of floats.
-     *
-     * @param arr an array of floats
-     * @return {
-     * @mathjax \frac{1}{arr.length} \sum_{i=0}^{arr.length}{arr[i]}}
-     */
-    public static float mean(float[] arr) {
-        return sum(arr) / (float) arr.length;
-    }
-
     public static Double mean(Number[] arr) {
         return new Double(sum(arr).doubleValue() / (double) arr.length);
     }
@@ -596,18 +567,6 @@ public class VectorMath {
             res[i] = arr1[i] - arr2[i];
         }
         return res;
-    }
-    
-    public static double[] addScalar(double[] arr, double scalar){
-        double[] ret = arr.clone();
-        return addScalarInPlace(ret, scalar);
-    }
-    
-    public static double[] addScalarInPlace(double[] arr, double scalar){
-        for(int i = 0; i < arr.length; i++) {
-            arr[i] = arr[i] + scalar;
-        }
-        return arr;
     }
 
     public static double[] movingAverage(double[] values, int lag) {

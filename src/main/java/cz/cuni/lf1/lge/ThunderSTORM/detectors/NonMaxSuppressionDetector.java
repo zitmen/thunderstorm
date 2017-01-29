@@ -1,19 +1,20 @@
 package cz.cuni.lf1.lge.ThunderSTORM.detectors;
 
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GrayScaleImageImpl;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Morphology;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.IntegerValidatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.thunderstorm.algorithms.detectors.MaxFilterDetector;
 import ij.process.FloatProcessor;
-import java.awt.GridBagLayout;
-import java.util.Vector;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Detect pixels with its intensity equal or greater then a threshold and also
@@ -21,10 +22,7 @@ import javax.swing.JTextField;
  */
 public final class NonMaxSuppressionDetector extends IDetectorUI implements IDetector {
 
-    private final String name = "Non-maximum suppression";
-    private int radius;
-    private String threshold;
-    private transient float thresholdValue;
+    private final String name = "Maximum filter";
     private transient final static String DEFAULT_THRESHOLD = "std(Wave.F1)";
     private transient final static int DEFAULT_RADIUS = 1;
     private transient ParameterKey.Integer RADIUS;
@@ -43,8 +41,6 @@ public final class NonMaxSuppressionDetector extends IDetectorUI implements IDet
     public NonMaxSuppressionDetector(int radius, String threshold) throws FormulaParserException {
         THRESHOLD = parameters.createStringField("threshold", null, DEFAULT_THRESHOLD);
         RADIUS = parameters.createIntField("radius", IntegerValidatorFactory.positiveNonZero(), DEFAULT_RADIUS);
-        this.radius = radius;
-        this.threshold = threshold;
     }
 
     @Override
@@ -63,23 +59,16 @@ public final class NonMaxSuppressionDetector extends IDetectorUI implements IDet
      * detected molecules
      */
     @Override
-    public Vector<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException {
-        Vector<Point> detections = new Vector<Point>();
-        FloatProcessor mx = Morphology.dilateBox(image, 2*radius+1);
-
-        float imval, mxval;
-        thresholdValue = Thresholder.getThreshold(threshold);
-        for(int x = radius, xm = image.getWidth() - radius; x < xm; x++) {
-            for(int y = radius, ym = image.getHeight() - radius; y < ym; y++) {
-                imval = image.getf(x, y);
-                mxval = mx.getf(x, y);
-                if((mxval == imval) && (imval >= thresholdValue)) {
-                    detections.add(new Point(x, y, imval));
-                }
-            }
-        }
-
-        return detections;
+    public List<Point> detectMoleculeCandidates(FloatProcessor image) throws FormulaParserException {
+        MaxFilterDetector detector = new MaxFilterDetector(RADIUS.getValue(), Thresholder.getThreshold(THRESHOLD.getValue()));
+        return detector
+                .detect(new GrayScaleImageImpl(image))
+                .stream()
+                .map(point2D ->
+                        new Point<Double>(
+                                point2D.getX(), point2D.getY(),
+                                (double) image.getPixelValue((int) point2D.getX(), (int) point2D.getY())))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -111,11 +100,11 @@ public final class NonMaxSuppressionDetector extends IDetectorUI implements IDet
 
     @Override
     public String getThresholdFormula() {
-        return threshold;
+        return THRESHOLD.getValue();
     }
 
     @Override
     public float getThresholdValue() {
-        return thresholdValue;
+        return Thresholder.getThreshold(THRESHOLD.getValue());
     }
 }
