@@ -2,10 +2,9 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.thunderstorm.datastructures.Point2D;
 import ij.process.FloatProcessor;
 
 import java.util.List;
@@ -28,8 +27,6 @@ public interface IBiplaneEstimator extends IModule {
      * single molecule.
      *
      * @see PSFModel
-     * @see Point
-     * @see IDetector
      */
-    public List<Molecule> estimateParameters(FloatProcessor plane1, FloatProcessor plane2, List<Point> detections1, List<Point> detections2) throws StoppedByUserException;
+    public List<Molecule> estimateParameters(FloatProcessor plane1, FloatProcessor plane2, List<Point2D> detections1, List<Point2D> detections2) throws StoppedByUserException;
 }

@@ -1,9 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParser;
-import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
-import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Node;
-import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.RetVal;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
@@ -135,7 +131,7 @@ public class ResultsFilter extends PostProcessingModule {
     }
 
     public void restrictToROIFilter() {
-        double mag = new EmptyRendererUI().magnification.getValue();
+        double mag = new EmptyRendererUI().getMagnification().getValue();
         IJResultsTable rt = IJResultsTable.getResultsTable();
         ImagePlus preview = rt.getPreviewImage();
         Roi roi2 = null;
@@ -229,6 +225,8 @@ public class ResultsFilter extends PostProcessingModule {
         if(text.isEmpty()) {
             Arrays.fill(results, true);
         } else {
+// TODO: create symbol table for results filtering!!! this requires API to be extended as the Thresholder is not applicable for this!
+/*
             Node tree = new FormulaParser(text, FormulaParser.FORMULA_RESULTS_FILTER).parse();
             tree.semanticScan();
             RetVal retval = tree.eval(null);
@@ -236,6 +234,8 @@ public class ResultsFilter extends PostProcessingModule {
                 throw new FormulaParserException("Semantic error: result of filtering formula must be a vector of boolean values!");
             }
             Double[] res = (Double[]) retval.get();
+*/
+            Double[] res = new Double[0];
             for(int i = 0; i < res.length; i++) {
                 results[i] = (res[i].doubleValue() != 0.0);
             }

@@ -3,11 +3,12 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AstigmatismCalibrationDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.*;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AstigmatismCalibrationEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.UI;
 import ij.IJ;
 import ij.ImagePlus;
@@ -22,8 +23,8 @@ import java.util.List;
 public class CylindricalLensCalibrationPlugin implements PlugIn {
 
     DefocusFunction defocusModel;
-    IFilterUI selectedFilterUI;
-    IDetectorUI selectedDetectorUI;
+    FilterUI selectedFilterUI;
+    DetectorUI selectedDetectorUI;
     AstigmatismCalibrationEstimatorUI calibrationEstimatorUI;
     String savePath;
     double stageStep;
@@ -47,11 +48,10 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
         try {
             //load modules
             calibrationEstimatorUI = new AstigmatismCalibrationEstimatorUI();
-            List<IFilterUI> filters = ModuleLoader.getUIModules(IFilterUI.class);
-            List<IDetectorUI> detectors = ModuleLoader.getUIModules(IDetectorUI.class);
-            List<IEstimatorUI> estimators = Arrays.asList(new IEstimatorUI[]{calibrationEstimatorUI}); // only one estimator can be used
-            List<DefocusFunction> defocusFunctions = ModuleLoader.getUIModules(DefocusFunction.class);
-            Thresholder.loadFilters(filters);
+            FilterUI[] filters = FilterFactory.createAllFiltersUI();
+            DetectorUI[] detectors = DetectorFactory.createAllDetectorsUI();
+            EstimatorUI[] estimators = new EstimatorUI[] { calibrationEstimatorUI };
+            DefocusFunction[] defocusFunctions = DefocusFunctionFactory.createAllDefocusFunctions();
 
             // get user options
             try {
@@ -77,7 +77,8 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             final AstigmaticCalibrationProcess process = (AstigmaticCalibrationProcess) CalibrationProcessFactory.create(
                     new CalibrationConfig(),
                     selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI,
-                    defocusModel, stageStep, zRangeLimit, imp, roi);
+                    defocusModel, stageStep, zRangeLimit, imp, roi,
+                    filters, dialog.getActiveFilterUIIndex());
 
             try {
                 process.runCalibration();

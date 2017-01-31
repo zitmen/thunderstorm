@@ -1,42 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.util;
 
-import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import java.util.Arrays;
 
 public class VectorMath {
-
-    public static Double[] relEq(Double[] vec, Double val) {
-        return relEq(val, vec);
-    }
-
-    public static Double[] relEq(Double val, Double[] vec) {
-        Double[] res = new Double[vec.length];
-        double v = val.doubleValue();
-        for(int i = 0; i < vec.length; i++) {
-            res[i] = ((v == vec[i].doubleValue()) ? 1.0 : 0.0);
-        }
-        return res;
-    }
-
-    public static Double[] relEq(Double[] a, Double[] b) {
-        int len1;
-        int len2;
-        if(a.length < b.length) {
-            len1 = a.length;
-            len2 = b.length;
-        } else {
-            len1 = b.length;
-            len2 = a.length;
-        }
-        Double[] res = new Double[len2];
-        for(int i = 0; i < len1; i++) {
-            res[i] = ((a[i].doubleValue() == b[i].doubleValue()) ? 1.0 : 0.0);
-        }
-        for(int i = len1; i < len2; i++) {
-            res[i] = 0.0;
-        }
-        return res;
-    }
 
     /**
      * Compute the sum of an array of doubles.
@@ -81,52 +47,6 @@ public class VectorMath {
                 arr[i] = sum;
             }
         }
-    }
-
-    public static Double sum(Number[] arr) {
-        double sum = 0.0;
-        for(int i = 0; i < arr.length; i++) {
-            sum += arr[i].doubleValue();
-        }
-        return new Double(sum);
-    }
-
-    public static Double[] relLt(Double[] vec, Double val) {
-        Double[] res = new Double[vec.length];
-        double v = val.doubleValue();
-        for(int i = 0; i < vec.length; i++) {
-            res[i] = ((vec[i].doubleValue() < v) ? 1.0 : 0.0);
-        }
-        return res;
-    }
-
-    public static Double[] relLt(Double val, Double[] vec) {
-        Double[] res = new Double[vec.length];
-        double v = val.doubleValue();
-        for(int i = 0; i < vec.length; i++) {
-            res[i] = ((v < vec[i].doubleValue()) ? 1.0 : 0.0);
-        }
-        return res;
-    }
-
-    public static Double[] relLt(Double[] a, Double[] b) {
-        int len1;
-        int len2;
-        if(a.length < b.length) {
-            len1 = a.length;
-            len2 = b.length;
-        } else {
-            len1 = b.length;
-            len2 = a.length;
-        }
-        Double[] res = new Double[len2];
-        for(int i = 0; i < len1; i++) {
-            res[i] = ((a[i].doubleValue() < b[i].doubleValue()) ? 1.0 : 0.0);
-        }
-        for(int i = len1; i < len2; i++) {
-            res[i] = 0.0;
-        }
-        return res;
     }
 
     /**
@@ -189,74 +109,6 @@ public class VectorMath {
         return max;
     }
 
-    public static Double[] relNeq(Double[] vec, Double val) {
-        return relNeq(val, vec);
-    }
-
-    public static Double[] relNeq(Double val, Double[] vec) {
-        Double[] res = new Double[vec.length];
-        double v = val.doubleValue();
-        for(int i = 0; i < vec.length; i++) {
-            res[i] = ((v != vec[i].doubleValue()) ? 1.0 : 0.0);
-        }
-        return res;
-    }
-
-    public static Double[] relNeq(Double[] a, Double[] b) {
-        int len1;
-        int len2;
-        if(a.length < b.length) {
-            len1 = a.length;
-            len2 = b.length;
-        } else {
-            len1 = b.length;
-            len2 = a.length;
-        }
-        Double[] res = new Double[len2];
-        for(int i = 0; i < len1; i++) {
-            res[i] = ((a[i].doubleValue() != b[i].doubleValue()) ? 1.0 : 0.0);
-        }
-        for(int i = len1; i < len2; i++) {
-            res[i] = 0.0;
-        }
-        return res;
-    }
-
-    public static Double[] mod(Number val, Number[] arr) {
-        Double[] res = new Double[arr.length];
-        double tmp;
-        double v = val.doubleValue();
-        for(int i = 0; i < arr.length; i++) {
-            tmp = v / arr[i].doubleValue();
-            res[i] = v - (((double) ((int) tmp)) * arr[i].doubleValue());
-        }
-        return res;
-    }
-
-    public static Double[] mod(Number[] arr, Number val) {
-        Double[] res = new Double[arr.length];
-        double tmp;
-        double v = val.doubleValue();
-        for(int i = 0; i < arr.length; i++) {
-            tmp = arr[i].doubleValue() / v;
-            res[i] = arr[i].doubleValue() - (((double) ((int) tmp)) * v);
-        }
-        return res;
-    }
-
-    public static Double[] mod(Number[] arr1, Number[] arr2) {
-        if(arr1.length != arr2.length) {
-            throw new FormulaParserException("When performing modulo operation of two vectors (item-by-item), both must be of the same size!");
-        }
-        Double[] res = new Double[arr1.length];
-        double tmp;
-        for(int i = 0; i < arr1.length; i++) {
-            tmp = arr1[i].doubleValue() / arr2[i].doubleValue();
-            res[i] = arr1[i].doubleValue() - (((double) ((int) tmp)) * arr2[i].doubleValue());
-        }
-        return res;
-    }
-
     /**
      * Compute the variance of an array of doubles.
      *
@@ -293,26 +145,6 @@ public class VectorMath {
         return mul(new Double(1.0 / val.doubleValue()), arr);
     }
 
-    public static Double[] div(Number[] arr1, Number[] arr2) {
-        if(arr1.length != arr2.length) {
-            throw new FormulaParserException("When dividing two vectors (item-by-item), both must be of the same size!");
-        }
-        Double[] res = new Double[arr1.length];
-        for(int i = 0; i < arr1.length; i++) {
-            res[i] = new Double(arr1[i].doubleValue() / arr2[i].doubleValue());
-        }
-        return res;
-    }
-
-    public static Double[] pow(Number[] arr, Number val) {
-        Double[] res = new Double[arr.length];
-        double v = val.doubleValue();
-        for(int i = 0; i < arr.length; i++) {
-            res[i] = new Double(MathProxy.pow(arr[i].doubleValue(), v));
-        }
-        return res;
-    }
-
     public static float min(float[] array) {
         float min = array[0];
         for(int i = 0; i < array.length; i++) {
@@ -343,29 +175,6 @@ public class VectorMath {
         return min;
     }
 
-    public static Double[] logOr(Double[] a, Double[] b) {
-        int len1;
-        int len2;
-        Double[] larger;
-        if(a.length < b.length) {
-            len1 = a.length;
-            len2 = b.length;
-            larger = b;
-        } else {
-            len1 = b.length;
-            len2 = a.length;
-            larger = a;
-        }
-        Double[] res = new Double[len2];
-        for(int i = 0; i < len1; i++) {
-            res[i] = (((a[i].doubleValue() != 0.0) || (b[i].doubleValue() != 0.0)) ? 1.0 : 0.0);
-        }
-        for(int i = len1; i < len2; i++) {
-            res[i] = larger[i];
-        }
-        return res;
-    }
-
     public static double[] add(double[] arr, double scalar) {
         if(scalar != 0) {
             for(int i = 0; i < arr.length; i++) {
@@ -379,17 +188,6 @@ public class VectorMath {
         Double[] res = new Double[arr.length];
         for(int i = 0; i < arr.length; i++) {
             res[i] = new Double(arr[i].doubleValue() + val.doubleValue());
-        }
-        return res;
-    }
-
-    public static Double[] add(Number[] arr1, Number[] arr2) {
-        if(arr1.length != arr2.length) {
-            throw new FormulaParserException("When adding two vectors, both must be of the same size!");
-        }
-        Double[] res = new Double[arr1.length];
-        for(int i = 0; i < arr1.length; i++) {
-            res[i] = new Double(arr1[i].doubleValue() + arr2[i].doubleValue());
         }
         return res;
     }
@@ -415,93 +213,11 @@ public class VectorMath {
         return MathProxy.sqrt(var(arr));
     }
 
-    public static Double stddev(Number[] arr) {
-        double sumdev = 0.0;
-        double mean = mean(arr);
-        for(int i = 0; i < arr.length; i++) {
-            sumdev += MathProxy.sqr(arr[i].doubleValue() - mean);
-        }
-        return new Double(MathProxy.sqrt(sumdev / (double) arr.length));
-    }
-
     public static Double[] mul(Number val, Number[] arr) {
         Double[] res = new Double[arr.length];
         double v = val.doubleValue();
         for(int i = 0; i < arr.length; i++) {
             res[i] = new Double(v * arr[i].doubleValue());
-        }
-        return res;
-    }
-
-    public static Double[] mul(Number[] arr, Number val) {
-        return mul(val, arr);
-    }
-
-    public static Double[] mul(Number[] arr1, Number[] arr2) {
-        if(arr1.length != arr2.length) {
-            throw new FormulaParserException("When multiplying two vectors, both must be of the same size!");
-        }
-        Double[] res = new Double[arr1.length];
-        for(int i = 0; i < arr1.length; i++) {
-            res[i] = new Double(arr1[i].doubleValue() * arr2[i].doubleValue());
-        }
-        return res;
-    }
-
-    public static Double[] relGt(Double[] vec, Double val) {
-        Double[] res = new Double[vec.length];
-        double v = val.doubleValue();
-        for(int i = 0; i < vec.length; i++) {
-            res[i] = ((vec[i].doubleValue() > v) ? 1.0 : 0.0);
-        }
-        return res;
-    }
-
-    public static Double[] relGt(Double val, Double[] vec) {
-        Double[] res = new Double[vec.length];
-        double v = val.doubleValue();
-        for(int i = 0; i < vec.length; i++) {
-            res[i] = ((v > vec[i].doubleValue()) ? 1.0 : 0.0);
-        }
-        return res;
-    }
-
-    public static Double[] relGt(Double[] a, Double[] b) {
-        int len1;
-        int len2;
-        if(a.length < b.length) {
-            len1 = a.length;
-            len2 = b.length;
-        } else {
-            len1 = b.length;
-            len2 = a.length;
-        }
-        Double[] res = new Double[len2];
-        for(int i = 0; i < len1; i++) {
-            res[i] = ((a[i].doubleValue() > b[i].doubleValue()) ? 1.0 : 0.0);
-        }
-        for(int i = len1; i < len2; i++) {
-            res[i] = 0.0;
-        }
-        return res;
-    }
-
-    public static Double[] logAnd(Double[] a, Double[] b) {
-        int len1;
-        int len2;
-        if(a.length < b.length) {
-            len1 = a.length;
-            len2 = b.length;
-        } else {
-            len1 = b.length;
-            len2 = a.length;
-        }
-        Double[] res = new Double[len2];
-        for(int i = 0; i < len1; i++) {
-            res[i] = (((a[i].doubleValue() != 0.0) && (b[i].doubleValue() != 0.0)) ? 1.0 : 0.0);
-        }
-        for(int i = len1; i < len2; i++) {
-            res[i] = 0.0;
         }
         return res;
     }
@@ -517,10 +233,6 @@ public class VectorMath {
         return sum(arr) / (double) arr.length;
     }
 
-    public static Double mean(Number[] arr) {
-        return new Double(sum(arr).doubleValue() / (double) arr.length);
-    }
-
     public static Double[] sub(Number val, Number[] arr) {
         Double[] res = new Double[arr.length];
         double v = val.doubleValue();
@@ -534,35 +246,11 @@ public class VectorMath {
         return add(arr, new Double(-val.doubleValue()));
     }
 
-    public static Double[] sub(Number[] arr1, Number[] arr2) {
-        if(arr1.length != arr2.length) {
-            throw new FormulaParserException("When subtracting two vectors, both must be of the same size!");
-        }
-        Double[] res = new Double[arr1.length];
-        for(int i = 0; i < arr1.length; i++) {
-            res[i] = new Double(arr1[i].doubleValue() - arr2[i].doubleValue());
-        }
-        return res;
-    }
-
     public static double[] sub(double[] arr1, double[] arr2) {
         if(arr1.length != arr2.length) {
-            throw new FormulaParserException("When subtracting two vectors, both must be of the same size!");
+            throw new IllegalArgumentException("When subtracting two vectors, both must be of the same size!");
         }
         double[] res = new double[arr1.length];
-        for(int i = 0; i < arr1.length; i++) {
-            res[i] = arr1[i] - arr2[i];
-        }
-        return res;
-    }
-
-    public static double[] sub(double[] res, double[] arr1, double[] arr2) {
-        if(arr1.length != arr2.length) {
-            throw new FormulaParserException("When subtracting two vectors, both must be of the same size!");
-        }
-        if((res == null) || (res.length < arr1.length)) {
-            res = new double[arr1.length];
-        }
         for(int i = 0; i < arr1.length; i++) {
             res[i] = arr1[i] - arr2[i];
         }

@@ -1,23 +1,19 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_X;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Y;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_Z;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.CardsPanel;
-import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
-import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.AbstractRenderingUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.EmptyRendererUI;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.RendererFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.RendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.GenericTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
+import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
@@ -27,17 +23,18 @@ import ij.Prefs;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.Recorder;
 
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.TitledBorder;
+
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.PIXEL;
+import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.*;
 
 public class RenderingPlugIn implements PlugIn {
 
@@ -107,17 +104,17 @@ public class RenderingPlugIn implements PlugIn {
             dz = table.getColumnAsDoubles(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z, MoleculeDescriptor.Units.NANOMETER);
         }
 
-        List<IRendererUI> knownRenderers = ModuleLoader.getUIModules(IRendererUI.class);
+        RendererUI[] knownRenderers = RendererFactory.createAllRenderers();
         //do not show EmptyRenderer
-        for(Iterator<IRendererUI> it = knownRenderers.iterator(); it.hasNext();) {
-            IRendererUI rendererUI = it.next();
+        for(Iterator<RendererUI> it = Arrays.asList(knownRenderers).iterator(); it.hasNext();) {
+            RendererUI rendererUI = it.next();
             if(rendererUI instanceof EmptyRendererUI) {
                 it.remove();
             } else if(rendererUI instanceof AbstractRenderingUI) {
                 ((AbstractRenderingUI) rendererUI).setShowRepaintFrequency(false);
             }
         }
-        IRendererUI selectedRendererUI;
+        RendererUI selectedRendererUI;
         double sizeX, sizeY, left, top;
         boolean setAsPreview = false;
         ImagePlus im;
@@ -133,7 +130,7 @@ public class RenderingPlugIn implements PlugIn {
                 sizeX = im.getWidth();
                 sizeY = im.getHeight();
             } else if (autosize.equals(AutoSize.RESULTS.getValue())) {
-                Rectangle rect = resizeByResults(xpos, ypos, new EmptyRendererUI().magnification.getValue());
+                Rectangle rect = resizeByResults(xpos, ypos, new EmptyRendererUI().getMagnification().getValue());
                 left   = rect.getX();
                 top    = rect.getY();
                 sizeX  = rect.getWidth();
@@ -152,7 +149,7 @@ public class RenderingPlugIn implements PlugIn {
                 guessedWidth = im.getWidth();
                 guessedHeight = im.getHeight();
             } else {
-                Rectangle rect = resizeByResults(xpos, ypos, new EmptyRendererUI().magnification.getValue());
+                Rectangle rect = resizeByResults(xpos, ypos, new EmptyRendererUI().getMagnification().getValue());
                 guessedLeft   = rect.getX();
                 guessedTop    = rect.getY();
                 guessedWidth  = rect.getWidth();
@@ -198,7 +195,7 @@ public class RenderingPlugIn implements PlugIn {
 
 class RenderingDialog extends JDialog {
 
-    CardsPanel<IRendererUI> renderingMethods;
+    CardsPanel<RendererUI> renderingMethods;
     JButton sizeResultsButton;
     JButton sizeAnalyzedImageButton;
     JButton previewButton;
@@ -218,10 +215,10 @@ class RenderingDialog extends JDialog {
         CANCELLED, OK, PREVIEW;
     }
 
-    public RenderingDialog(boolean preview, List<IRendererUI> knownRenderers, double left, double top, double sizeX, double sizeY) {
+    public RenderingDialog(boolean preview, RendererUI[] knownRenderers, double left, double top, double sizeX, double sizeY) {
         super(IJ.getInstance(), "Visualization", true);
         this.activeRendererIndex = Integer.parseInt(Prefs.get("thunderstorm.rendering.index", "0"));
-        this.renderingMethods = new CardsPanel<IRendererUI>(knownRenderers, activeRendererIndex);
+        this.renderingMethods = new CardsPanel<RendererUI>(knownRenderers, activeRendererIndex);
         this.enablePreview = preview;
         this.sizeX = Prefs.get("thunderstorm.rendering.imwidth", sizeX);
         this.sizeY = Prefs.get("thunderstorm.rendering.imheight", sizeY);
@@ -235,7 +232,7 @@ class RenderingDialog extends JDialog {
         super.setVisible(b);
     }
 
-    public IRendererUI getSelectedRendererUI() {
+    public RendererUI getSelectedRendererUI() {
         return renderingMethods.getActiveComboBoxItem();
     }
 
@@ -269,7 +266,7 @@ class RenderingDialog extends JDialog {
                 IJResultsTable rt = IJResultsTable.getResultsTable();
                 Rectangle rect = RenderingPlugIn.resizeByResults(rt.getColumnAsDoubles(LABEL_X, PIXEL),
                                                                  rt.getColumnAsDoubles(LABEL_Y, PIXEL),
-                                                                 new EmptyRendererUI().magnification.getValue());
+                                                                 new EmptyRendererUI().getMagnification().getValue());
                 left   = rect.getX();
                 top    = rect.getY();
                 sizeX  = rect.getWidth();
@@ -341,7 +338,7 @@ class RenderingDialog extends JDialog {
                 sizeXTextField.setText(sizeX + "");
                 sizeYTextField.setText(sizeY + "");
                 renderingMethods.setSelectedItemIndex(activeRendererIndex = 0);
-                AnalysisOptionsDialog.resetModuleUIs(renderingMethods.getItems());
+                AnalysisOptionsDialog.resetModuleUI(renderingMethods.getItems());
             }
         });
         buttonsPanel.add(defaultsButton);

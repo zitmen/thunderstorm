@@ -11,14 +11,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class CenterOfMassEstimatorUI extends IEstimatorUI {
+public class CenterOfMassEstimatorUI extends EstimatorUI {
 
     private final String name = "Centroid of local neighborhood";
     private int fittingRadius;
     private transient ParameterKey.Integer FITRAD;
 
     public CenterOfMassEstimatorUI() {
-        FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
+        FITRAD = getParameters().createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
     }
 
     @Override
@@ -29,13 +29,13 @@ public class CenterOfMassEstimatorUI extends IEstimatorUI {
     @Override
     public JPanel getOptionsPanel() {
         JTextField fitregsizeTextField = new JTextField("", 20);
-        parameters.registerComponent(FITRAD, fitregsizeTextField);
+        getParameters().registerComponent(FITRAD, fitregsizeTextField);
 
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Estimation radius [px]:"), GridBagHelper.leftCol());
         panel.add(fitregsizeTextField, GridBagHelper.rightCol());
 
-        parameters.loadPrefs();
+        getParameters().loadPrefs();
         return panel;
     }
 

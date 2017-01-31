@@ -57,7 +57,6 @@ class UpdaterPlugIn : PlugIn {
                                         .subscribe(/*onSuccess = */{
                                             IJ.showStatus("Done.")
                                             IJ.showMessage(LOG_TAG, "Please restart ImageJ to complete ThunderSTORM update.")
-                                            ModuleLoader.setUseCaching(false)
                                             Menus.updateImageJMenus()
                                         }, /*onError = */{ ex ->
                                             IJ.showStatus("Update failed.")

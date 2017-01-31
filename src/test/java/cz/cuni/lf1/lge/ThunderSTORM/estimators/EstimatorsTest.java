@@ -1,5 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
-
+/*
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.CentroidOfConnectedComponentsDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
@@ -150,3 +150,4 @@ public class EstimatorsTest {
         return sqr(fit.getX() - ground_truth.getY()) + sqr(fit.getX() - ground_truth.getY());
     }
 }
+*/

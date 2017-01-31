@@ -1,6 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.EllipticGaussianWAnglePSF;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.IntegratedSymmetricGaussianPSF;
@@ -16,6 +15,9 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.MoleculeXYZComparator;
 import java.util.Collections;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
+
+import cz.cuni.lf1.thunderstorm.parser.FormulaParserException;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -120,7 +122,7 @@ public class CrowdedFieldEstimatorsTest {
         }
     }
 
-    private Molecule fitTestData(IOneLocationFitter fitter, int dataset) throws FormulaParserException {
+    private Molecule fitTestData(IOneLocationFitter fitter, int dataset) {
         double [][] values = new double[][] { {
             0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0001, 0.0001, 0.0001, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
             0.0000, 0.0000, 0.0000, 0.0001, 0.0002, 0.0004, 0.0005, 0.0004, 0.0002, 0.0001, 0.0000, 0.0000, 0.0000,

@@ -9,6 +9,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.thunderstorm.datastructures.Point2D;
 import ij.IJ;
 import ij.process.FloatProcessor;
 import org.apache.commons.math3.exception.ConvergenceException;
@@ -21,7 +22,7 @@ import java.util.Vector;
 public class MultipleLocationsBiplaneFitting implements IBiplaneEstimator {
 
     FloatProcessor plane1, plane2;
-    List<Pair<Point, Point>> locations;
+    List<Pair<Point2D, Point2D>> locations;
     double distThrPx;
     double[] subxgrid1;
     double[] subygrid1;
@@ -119,14 +120,14 @@ public class MultipleLocationsBiplaneFitting implements IBiplaneEstimator {
 
     public void run() throws StoppedByUserException {
 
-        for (Pair<Point, Point> location : locations) {
+        for (Pair<Point2D, Point2D> location : locations) {
             GUI.checkIJEscapePressed();
 
             PSFSeparator.Position pos = transformPos(homographyInverse,
-                    location.second.getX().doubleValue() + 0.5,
-                    location.second.getY().doubleValue() + 0.5);
-            double posX = (pos.getX() + location.first.getX().doubleValue() + 0.5) / 2.0;
-            double posY = (pos.getY() + location.first.getY().doubleValue() + 0.5) / 2.0;
+                    location.second.getX() + 0.5,
+                    location.second.getY() + 0.5);
+            double posX = (pos.getX() + location.first.getX() + 0.5) / 2.0;
+            double posY = (pos.getY() + location.first.getY() + 0.5) / 2.0;
 
             if (!isCloseToBorder(plane1, location.first) && !isCloseToBorder(plane2, location.second)
                 && extractSubGrid(subxgrid1, subygrid1, subimageData1, xgrid1, ygrid1, plane1, posX, posY)
@@ -172,8 +173,8 @@ public class MultipleLocationsBiplaneFitting implements IBiplaneEstimator {
         }
     }
 
-    private boolean isCloseToBorder(FloatProcessor image, Point pos) {
-        double x = pos.getX().doubleValue(), y = pos.getY().doubleValue();
+    private boolean isCloseToBorder(FloatProcessor image, Point2D pos) {
+        double x = pos.getX(), y = pos.getY();
         return x < (double)subimageSize || x > (double)(image.getWidth() - subimageSize)
             || y < (double)subimageSize || y > (double)(image.getHeight() - subimageSize);
     }
@@ -184,7 +185,7 @@ public class MultipleLocationsBiplaneFitting implements IBiplaneEstimator {
 
     @Override
     public Vector<Molecule> estimateParameters(FloatProcessor plane1, FloatProcessor plane2,
-                                               List<Point> detections1, List<Point> detections2) throws StoppedByUserException{
+                                               List<Point2D> detections1, List<Point2D> detections2) throws StoppedByUserException{
         this.plane1 = plane1;
         this.plane2 = plane2;
         this.locations = Homography.mergePositions(plane1.getWidth(), plane1.getHeight(),

@@ -76,7 +76,7 @@ public class AstigmaticBiplaneCalibrationEstimatorUI extends SymmetricGaussianEs
     }
 
     public int getFitradius() {
-        return parameters.getInt(FITRAD);
+        return getParameters().getInt(FITRAD);
     }
 
     @Override

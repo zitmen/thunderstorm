@@ -1,5 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators.ui;
 
+import cz.cuni.lf1.lge.ThunderSTORM.IModule;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.*;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.*;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.BiplaneEllipticGaussianPSF;
@@ -20,7 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class EllipticBiplaneGaussianEstimatorUI extends IBiplaneEstimatorUI {
+public class EllipticBiplaneGaussianEstimatorUI extends BiplaneEstimatorUI {
 
     public transient static final String MLE = "Maximum likelihood";
     public transient static final String LSQ = "Least squares";
@@ -41,13 +42,13 @@ public class EllipticBiplaneGaussianEstimatorUI extends IBiplaneEstimatorUI {
     protected transient ParameterKey.String CALIBRATION_PATH;
 
     public EllipticBiplaneGaussianEstimatorUI() {
-        FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
-        METHOD = parameters.createStringField("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), MLE);
-        NUMERICAL_DERIVATIVES = parameters.createBooleanField("numericalDerivatives", null, false);
-        CALIBRATION_PATH = parameters.createStringField("calibrationpath", StringValidatorFactory.fileExists(), "");
+        FITRAD = getParameters().createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
+        METHOD = getParameters().createStringField("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), MLE);
+        NUMERICAL_DERIVATIVES = getParameters().createBooleanField("numericalDerivatives", null, false);
+        CALIBRATION_PATH = getParameters().createStringField("calibrationpath", StringValidatorFactory.fileExists(), "");
         // it's better to make the following distance larger and let the matcher do it's job; otherwise,
         // a localization uncertainty would be the way to go, however, it would require an additional round of fitting
-        MATCHING_DISTANCE_THRESHOLD = parameters.createDoubleField("distThrPx", DoubleValidatorFactory.positive(), 3);
+        MATCHING_DISTANCE_THRESHOLD = getParameters().createDoubleField("distThrPx", DoubleValidatorFactory.positive(), 3);
     }
 
     @Override
@@ -70,11 +71,11 @@ public class EllipticBiplaneGaussianEstimatorUI extends IBiplaneEstimatorUI {
         JCheckBox numericalDerivativesCheckBox = new JCheckBox("use numerical derivatives");
         JTextField distThrPxField = new JTextField("");
         final JTextField calibrationFileTextField = new JTextField(Prefs.get("thunderstorm.estimators.calibrationpath", ""));
-        parameters.registerComponent(FITRAD, fitregsizeTextField);
-        parameters.registerComponent(METHOD, methodComboBox);
-        parameters.registerComponent(NUMERICAL_DERIVATIVES, numericalDerivativesCheckBox);
-        parameters.registerComponent(MATCHING_DISTANCE_THRESHOLD, distThrPxField);
-        parameters.registerComponent(CALIBRATION_PATH, calibrationFileTextField);
+        getParameters().registerComponent(FITRAD, fitregsizeTextField);
+        getParameters().registerComponent(METHOD, methodComboBox);
+        getParameters().registerComponent(NUMERICAL_DERIVATIVES, numericalDerivativesCheckBox);
+        getParameters().registerComponent(MATCHING_DISTANCE_THRESHOLD, distThrPxField);
+        getParameters().registerComponent(CALIBRATION_PATH, calibrationFileTextField);
 
         JPanel panel = new JPanel(new GridBagLayout());
 
@@ -83,7 +84,7 @@ public class EllipticBiplaneGaussianEstimatorUI extends IBiplaneEstimatorUI {
         JPanel calibrationPanel = new JPanel(new BorderLayout()) {
             @Override
             public Dimension getPreferredSize() {
-                return ((JTextField) parameters.getRegisteredComponent(FITRAD)).getPreferredSize();
+                return ((JTextField) getParameters().getRegisteredComponent(FITRAD)).getPreferredSize();
             }
         };
         calibrationPanel.add(calibrationFileTextField, BorderLayout.CENTER);
@@ -100,19 +101,19 @@ public class EllipticBiplaneGaussianEstimatorUI extends IBiplaneEstimatorUI {
         panel.add(methodComboBox, GridBagHelper.rightCol());
         panel.add(numericalDerivativesCheckBox, GridBagHelper.rightCol());
 
-        parameters.loadPrefs();
+        getParameters().loadPrefs();
         return panel;
     }
 
     @Override
     public void readParameters() {
         super.readParameters();
-        calibrationFilePath = parameters.getString(CALIBRATION_PATH);
+        calibrationFilePath = getParameters().getString(CALIBRATION_PATH);
         calibration = loadCalibration(calibrationFilePath);
     }
 
     @Override
-    public IBiplaneEstimator getImplementation() {
+    public IModule getImplementation() {
         method = METHOD.getValue();
         numericalDerivatives = NUMERICAL_DERIVATIVES.getValue();
         distThrPx = MATCHING_DISTANCE_THRESHOLD.getValue();
@@ -137,7 +138,7 @@ public class EllipticBiplaneGaussianEstimatorUI extends IBiplaneEstimatorUI {
     @Override
     public void readMacroOptions(String options) {
         super.readMacroOptions(options);
-        calibrationFilePath = parameters.getString(CALIBRATION_PATH);
+        calibrationFilePath = getParameters().getString(CALIBRATION_PATH);
         calibration = loadCalibration(calibrationFilePath);
     }
 

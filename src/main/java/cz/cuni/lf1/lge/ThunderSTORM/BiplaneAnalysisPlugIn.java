@@ -1,23 +1,30 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.*;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.IBiplaneEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IBiplaneEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.BiplaneEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.RendererFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.RendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.MeasurementProtocol;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
 import cz.cuni.lf1.lge.ThunderSTORM.util.*;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.Utils;
+import cz.cuni.lf1.thunderstorm.algorithms.detectors.Detector;
+import cz.cuni.lf1.thunderstorm.algorithms.filters.Filter;
+import cz.cuni.lf1.thunderstorm.datastructures.GrayScaleImage;
+import cz.cuni.lf1.thunderstorm.datastructures.Point2D;
+import cz.cuni.lf1.thunderstorm.parser.FormulaParserException;
+import cz.cuni.lf1.thunderstorm.parser.thresholding.Thresholder;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -43,9 +50,10 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.subtract;
  */
 public final class BiplaneAnalysisPlugIn implements PlugIn {
 
-    private IFilterUI selectedFilterUI;
-    private IBiplaneEstimatorUI selectedEstimatorUI;
-    private IDetectorUI selectedDetectorUI;
+    private int selectedFilterIndex;
+    private FilterUI selectedFilterUI;
+    private BiplaneEstimatorUI selectedEstimatorUI;
+    private DetectorUI selectedDetectorUI;
     private ImagePlus imp1, imp2;
     private Roi roi1, roi2;
     private RenderingQueue renderingQueue;
@@ -61,20 +69,21 @@ public final class BiplaneAnalysisPlugIn implements PlugIn {
 
         try {
             // load modules
-            List<IFilterUI> allFilters = ModuleLoader.getUIModules(IFilterUI.class);
-            List<IDetectorUI> allDetectors = ModuleLoader.getUIModules(IDetectorUI.class);
-            List<IBiplaneEstimatorUI> allEstimators = ModuleLoader.getUIModules(IBiplaneEstimatorUI.class);
-            List<IRendererUI> allRenderers = ModuleLoader.getUIModules(IRendererUI.class);
+            FilterUI[] allFilters = FilterFactory.createAllFiltersUI();
+            DetectorUI[] allDetectors = DetectorFactory.createAllDetectorsUI();
+            BiplaneEstimatorUI[] allEstimators = EstimatorFactory.createAllBiPlaneEstimatorsUI();
+            RendererUI[] allRenderers = RendererFactory.createAllRenderers();
 
             // Create and show the dialog
             BiplaneAnalysisOptionsDialog dialog = new BiplaneAnalysisOptionsDialog(allFilters, allDetectors, allEstimators, allRenderers);
             if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
                 return;
             }
+            selectedFilterIndex = dialog.getActiveDetectorUIIndex();
             selectedFilterUI = dialog.getActiveFilterUI();
             selectedDetectorUI = dialog.getActiveDetectorUI();
             selectedEstimatorUI = dialog.getActiveEstimatorUI();
-            IRendererUI selectedRendererUI = dialog.getActiveRendererUI();
+            RendererUI selectedRendererUI = dialog.getActiveRendererUI();
 
             if (((imp1 = dialog.getFirstPlaneStack()) == null) || ((imp2 = dialog.getSecondPlaneStack()) == null)) {
                 IJ.error("Couldn't open both images!");
@@ -106,10 +115,11 @@ public final class BiplaneAnalysisPlugIn implements PlugIn {
                 MacroParser.recordRendererUI(dialog.getActiveRendererUI());
             }
 
+            // try to parse the thresholding formula before the processing starts (fail fast)
             try {
-                Thresholder.loadFilters(allFilters);
-                Thresholder.setActiveFilter(dialog.getActiveFilterUIIndex());   // !! must be called before any threshold is evaluated !!
-                Thresholder.parseThreshold(selectedDetectorUI.getThreadLocalImplementation().getThresholdFormula());
+                new Thresholder(
+                        allDetectors[dialog.getActiveDetectorUIIndex()].getThresholdFormula(),
+                        FilterFactory.createThresholderSymbolTable(allFilters, dialog.getActiveFilterUIIndex()));
             } catch(Exception ex) {
                 IJ.error("Error parsing threshold formula! " + ex.toString());
                 return;
@@ -129,7 +139,7 @@ public final class BiplaneAnalysisPlugIn implements PlugIn {
                 @Override
                 public void run(int frame) {
                     try {
-                        analyzeFrame(frame, getRoiProcessor(imp1, roi1, frame), getRoiProcessor(imp2, roi2, frame));
+                        analyzeFrame(frame, getRoiProcessor(imp1, roi1, frame), getRoiProcessor(imp2, roi2, frame), allFilters);
                         framesProcessed.incrementAndGet();
                         IJ.showProgress((double) framesProcessed.intValue() / (double) stackSize);
                         IJ.showStatus("ThunderSTORM processing frame " + framesProcessed + " of " + stackSize + "...");
@@ -141,7 +151,7 @@ public final class BiplaneAnalysisPlugIn implements PlugIn {
                                 showResults();
                             }
                         }
-                    } catch (StoppedDueToErrorException ex) {
+                    } catch (StoppedDueToErrorException | FormulaParserException ex) {
                         IJ.error(ex.getMessage());
                     }
                 }
@@ -175,18 +185,22 @@ public final class BiplaneAnalysisPlugIn implements PlugIn {
         return fp;
     }
 
-    private void analyzeFrame(int frame, FloatProcessor fp1, FloatProcessor fp2) {
+    private void analyzeFrame(int frame, FloatProcessor fp1, FloatProcessor fp2, FilterUI[] allFilters) throws FormulaParserException {
         // init
-        IFilter filter = selectedFilterUI.getThreadLocalImplementation();
-        IDetector detector = selectedDetectorUI.getThreadLocalImplementation();
-        IBiplaneEstimator estimator = selectedEstimatorUI.getThreadLocalImplementation();
+        Filter filter = selectedFilterUI.getImplementation();
+        Detector detector = selectedDetectorUI.getImplementation();
+        IBiplaneEstimator estimator = (IBiplaneEstimator) selectedEstimatorUI.getImplementation();
+
+        Thresholder thresholder = new Thresholder(
+                selectedDetectorUI.getThresholdFormula(),
+                FilterFactory.createThresholderSymbolTable(allFilters, selectedFilterIndex));
 
         // detection in first plane
-        Thresholder.setCurrentImage(fp1);
-        List<Point> det1 = detector.detectMoleculeCandidates(filter.filterImage(fp1));
+        GrayScaleImage input1 = new GrayScaleImageImpl(fp1);
+        List<Point2D> det1 = detector.detect(filter.filter(input1), thresholder.evaluate(input1));
         // detection in second plane
-        Thresholder.setCurrentImage(fp2);
-        List<Point> det2 = detector.detectMoleculeCandidates(filter.filterImage(fp2));
+        GrayScaleImage input2 = new GrayScaleImageImpl(fp2);
+        List<Point2D> det2 = detector.detect(filter.filter(input2), thresholder.evaluate(input2));
 
         // run fitting on the pairs
         List<Molecule> fits = estimator.estimateParameters(fp1, fp2, Point.applyRoiMask(roi1, det1), Point.applyRoiMask(roi2, det2));

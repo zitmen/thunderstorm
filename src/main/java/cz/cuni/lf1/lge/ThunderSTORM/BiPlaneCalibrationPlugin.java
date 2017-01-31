@@ -3,13 +3,14 @@ package cz.cuni.lf1.lge.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.BiplaneCalibrationDialog;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.*;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AstigmaticBiplaneCalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.BiplaneCalibrationEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.ICalibrationEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.Utils;
 import cz.cuni.lf1.lge.ThunderSTORM.util.UI;
 import ij.IJ;
@@ -26,8 +27,10 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
 
     DefocusFunction defocusModel;
     CalibrationConfig calibrationConfig;
-    IFilterUI selectedFilterUI;
-    IDetectorUI selectedDetectorUI;
+    FilterUI[] allFiltersUI;
+    int selectedFilterIndex;
+    FilterUI selectedFilterUI;
+    DetectorUI selectedDetectorUI;
     ICalibrationEstimatorUI calibrationEstimatorUI;
     String savePath;
     double stageStep;
@@ -58,11 +61,10 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
         //
         try {
             //load modules
-            List<IFilterUI> filters = ModuleLoader.getUIModules(IFilterUI.class);
-            List<IDetectorUI> detectors = ModuleLoader.getUIModules(IDetectorUI.class);
-            List<IEstimatorUI> estimators = Arrays.asList(new IEstimatorUI[]{new BiplaneCalibrationEstimatorUI(), new AstigmaticBiplaneCalibrationEstimatorUI()}); // only certain estimators can be used
-            List<DefocusFunction> defocusFunctions = ModuleLoader.getUIModules(DefocusFunction.class);
-            Thresholder.loadFilters(filters);
+            allFiltersUI = FilterFactory.createAllFiltersUI();
+            DetectorUI[] detectors = DetectorFactory.createAllDetectorsUI();
+            EstimatorUI[] estimators = new EstimatorUI[] { new BiplaneCalibrationEstimatorUI(), new AstigmaticBiplaneCalibrationEstimatorUI() };
+            DefocusFunction[] defocusFunctions = DefocusFunctionFactory.createAllDefocusFunctions();
 
             // get user options
             try {
@@ -70,11 +72,12 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
             } catch(Exception e) {
                 IJ.handleException(e);
             }
-            BiplaneCalibrationDialog dialog = new BiplaneCalibrationDialog(filters, detectors, estimators, defocusFunctions);
+            BiplaneCalibrationDialog dialog = new BiplaneCalibrationDialog(allFiltersUI, detectors, estimators, defocusFunctions);
             if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
                 return;
             }
             calibrationConfig = dialog.getCalibrationConfig();
+            selectedFilterIndex = dialog.getActiveFilterUIIndex();
             selectedFilterUI = dialog.getActiveFilterUI();
             selectedDetectorUI = dialog.getActiveDetectorUI();
             calibrationEstimatorUI = (ICalibrationEstimatorUI) dialog.getActiveEstimatorUI();
@@ -98,7 +101,8 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
             final ICalibrationProcess process = CalibrationProcessFactory.create(
                     calibrationConfig,
                     selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI,
-                    defocusModel, stageStep, zRangeLimit, imp1, imp2, roi1, roi2);
+                    defocusModel, stageStep, zRangeLimit, imp1, imp2, roi1, roi2,
+                    allFiltersUI, selectedFilterIndex);
 
             try {
                 process.runCalibration();

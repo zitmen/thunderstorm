@@ -5,13 +5,17 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui.IPsfUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.BoxFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.IFilter;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui.PsfUI;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GrayScaleImageImpl;
 import cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.ceil;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Range;
+import cz.cuni.lf1.thunderstorm.algorithms.filters.BoxFilter;
+import cz.cuni.lf1.thunderstorm.algorithms.filters.Filter;
+import cz.cuni.lf1.thunderstorm.algorithms.padding.DuplicatePadding;
+import cz.cuni.lf1.thunderstorm.algorithms.padding.Padding;
 import ij.process.FloatProcessor;
+import kotlin.jvm.functions.Function1;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqr;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.sqrt;
@@ -66,11 +70,11 @@ public class DataGenerator {
         for(int x = 0, w = img.getWidth(); x < w; x++)
             for(int y = 0, h = img.getHeight(); y < h; y++)
                 img.setf(x, y, (float)getNextUniform(bkg.from, bkg.to));
-        IFilter filter = new BoxFilter(1+2*(int)(((double)Math.min(width, width))/8.0));
-        return filter.filterImage(img);
+        Filter filter = new BoxFilter(1 + 2 * (int) (((double) Math.min(width, width)) / 8.0), DuplicatePadding::new);
+        return GrayScaleImageImpl.convertToFloatProcessor(filter.filter(new GrayScaleImageImpl(img)));
     }
 
-    public Vector<EmitterModel> generateMolecules(int width, int height, FloatProcessor mask, double density, Range intensity_photons, IPsfUI psf) {
+    public Vector<EmitterModel> generateMolecules(int width, int height, FloatProcessor mask, double density, Range intensity_photons, PsfUI psf) {
         MoleculeDescriptor descriptor = null;
         double[] params = new double[PSFModel.Params.PARAMS_LENGTH];
         Vector<EmitterModel> molist = new Vector<EmitterModel>();
@@ -108,7 +112,7 @@ public class DataGenerator {
         return molist;
     }
     
-    public Vector<EmitterModel> generateSingleFixedMolecule(int width, int height, double xOffset, double yOffset, Range intensity_photons, IPsfUI psf) {
+    public Vector<EmitterModel> generateSingleFixedMolecule(int width, int height, double xOffset, double yOffset, Range intensity_photons, PsfUI psf) {
         double[] params = new double[PSFModel.Params.PARAMS_LENGTH];
         Vector<EmitterModel> molist = new Vector<EmitterModel>();
         double z = getNextUniform(psf.getZRange().from, psf.getZRange().to);

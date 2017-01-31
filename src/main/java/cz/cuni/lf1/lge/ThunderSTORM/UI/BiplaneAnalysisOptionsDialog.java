@@ -1,12 +1,14 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
-import cz.cuni.lf1.lge.ThunderSTORM.ModuleLoader;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IBiplaneEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.BiplaneEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.RendererFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.RendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.DialogStub;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
@@ -20,7 +22,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 public class BiplaneAnalysisOptionsDialog extends DialogStub implements ActionListener {
 
@@ -31,20 +32,20 @@ public class BiplaneAnalysisOptionsDialog extends DialogStub implements ActionLi
     private ParameterKey.String rawImage1Stack;
     private ParameterKey.String rawImage2Stack;
 
-    private List<IFilterUI> filters;
-    private List<IDetectorUI> detectors;
-    private List<IBiplaneEstimatorUI> estimators;
-    private List<IRendererUI> renderers;
+    private FilterUI[] filters;
+    private DetectorUI[] detectors;
+    private BiplaneEstimatorUI[] estimators;
+    private RendererUI[] renderers;
 
-    public BiplaneAnalysisOptionsDialog(List<IFilterUI> filters, List<IDetectorUI> detectors,
-                                        List<IBiplaneEstimatorUI> estimators, List<IRendererUI> renderers) {
+    public BiplaneAnalysisOptionsDialog(FilterUI[] filters, DetectorUI[] detectors,
+                                        BiplaneEstimatorUI[] estimators, RendererUI[] renderers) {
         super(new ParameterTracker("thunderstorm.analysis.biplane"), IJ.getInstance(), "Run biplane analysis");
         params.getComponentHandlers().addForStringParameters(CardsPanel.class, new CardsPanelMacroUIHandler());
 
-        filterName = params.createStringField("filter", null, filters.get(0).getName());
-        detectorName = params.createStringField("detector", null, detectors.get(0).getName());
-        estimatorName = params.createStringField("estimator", null, estimators.get(0).getName());
-        rendererName = params.createStringField("renderer", null, renderers.get(0).getName());
+        filterName = params.createStringField("filter", null, filters[0].getName());
+        detectorName = params.createStringField("detector", null, detectors[0].getName());
+        estimatorName = params.createStringField("estimator", null, estimators[0].getName());
+        rendererName = params.createStringField("renderer", null, renderers[0].getName());
         rawImage1Stack = params.createStringField("raw_image1_stack", null, "");
         rawImage2Stack = params.createStringField("raw_image2_stack", null, "");
 
@@ -95,25 +96,25 @@ public class BiplaneAnalysisOptionsDialog extends DialogStub implements ActionLi
         dataPanel.setBorder(BorderFactory.createTitledBorder("Source data"));
         pane.add(dataPanel, componentConstraints);
 
-        CardsPanel<IFilterUI> filtersPanel = new CardsPanel<IFilterUI>(filters, 0);
+        CardsPanel<FilterUI> filtersPanel = new CardsPanel<FilterUI>(filters, 0);
         filterName.registerComponent(filtersPanel);
         JPanel p = filtersPanel.getPanel("Filter:");
         p.setBorder(BorderFactory.createTitledBorder("Image filtering"));
         pane.add(p, componentConstraints);
 
-        CardsPanel<IDetectorUI> detectorsPanel = new CardsPanel<IDetectorUI>(detectors, 0);
+        CardsPanel<DetectorUI> detectorsPanel = new CardsPanel<DetectorUI>(detectors, 0);
         detectorName.registerComponent(detectorsPanel);
         p = detectorsPanel.getPanel("Method:");
         p.setBorder(BorderFactory.createTitledBorder("Approximate localization of molecules"));
         pane.add(p, componentConstraints);
 
-        CardsPanel<IBiplaneEstimatorUI> estimatorsPanel = new CardsPanel<IBiplaneEstimatorUI>(estimators, 0);
+        CardsPanel<BiplaneEstimatorUI> estimatorsPanel = new CardsPanel<BiplaneEstimatorUI>(estimators, 0);
         estimatorName.registerComponent(estimatorsPanel);
         p = estimatorsPanel.getPanel("Method:");
         p.setBorder(BorderFactory.createTitledBorder("Sub-pixel localization of molecules"));
         pane.add(p, componentConstraints);
 
-        CardsPanel<IRendererUI> renderersPanel = new CardsPanel<IRendererUI>(renderers, 0);
+        CardsPanel<RendererUI> renderersPanel = new CardsPanel<RendererUI>(renderers, 0);
         rendererName.registerComponent(renderersPanel);
         p = renderersPanel.getPanel("Method:");
         p.setBorder(BorderFactory.createTitledBorder("Visualisation of the results"));
@@ -152,7 +153,6 @@ public class BiplaneAnalysisOptionsDialog extends DialogStub implements ActionLi
         try {
             if("Ok".equals(e.getActionCommand())) {
                 params.readDialogOptions();
-                Thresholder.setActiveFilter(getActiveFilterUIIndex());
                 try {
                     getActiveFilterUI().readParameters();
                     getActiveDetectorUI().readParameters();
@@ -184,7 +184,10 @@ public class BiplaneAnalysisOptionsDialog extends DialogStub implements ActionLi
             } else if("Defaults".equals(e.getActionCommand())) {
                 params.resetToDefaults(true);
                 //noinspection unchecked
-                AnalysisOptionsDialog.resetModuleUIs(filters, detectors, estimators, renderers);
+                AnalysisOptionsDialog.resetModuleUI(filters);
+                AnalysisOptionsDialog.resetModuleUI(detectors);
+                AnalysisOptionsDialog.resetModuleUI(estimators);
+                AnalysisOptionsDialog.resetModuleUI(renderers);
             }
         } catch(Exception ex) {
             IJ.handleException(ex);
@@ -207,21 +210,25 @@ public class BiplaneAnalysisOptionsDialog extends DialogStub implements ActionLi
         }
     }
 
-    public IFilterUI getActiveFilterUI() {
-        return ModuleLoader.moduleByName(filters, filterName.getValue());
+    public FilterUI getActiveFilterUI() {
+        return FilterFactory.getFilterByName(filterName.getValue());
     }
 
     public int getActiveFilterUIIndex() {
-        return ModuleLoader.moduleIndexByName(filters, filterName.getValue());
+        return FilterFactory.getFilterIndexByName(filterName.getValue());
     }
 
-    public IDetectorUI getActiveDetectorUI() {
-        return ModuleLoader.moduleByName(detectors, detectorName.getValue());
+    public int getActiveDetectorUIIndex() {
+        return DetectorFactory.getDetectorIndexByName(detectorName.getValue());
     }
 
-    public IBiplaneEstimatorUI getActiveEstimatorUI() { return ModuleLoader.moduleByName(estimators, estimatorName.getValue()); }
+    public DetectorUI getActiveDetectorUI() {
+        return DetectorFactory.getDetectorByName(detectorName.getValue());
+    }
 
-    public IRendererUI getActiveRendererUI() { return ModuleLoader.moduleByName(renderers, rendererName.getValue()); }
+    public BiplaneEstimatorUI getActiveEstimatorUI() { return EstimatorFactory.getBiPlaneEstimatorByName(estimatorName.getValue()); }
+
+    public RendererUI getActiveRendererUI() { return RendererFactory.getRendererByName(rendererName.getValue()); }
 
     public ImagePlus getFirstPlaneStack() {
         return WindowManager.getImage(rawImage1Stack.getValue());

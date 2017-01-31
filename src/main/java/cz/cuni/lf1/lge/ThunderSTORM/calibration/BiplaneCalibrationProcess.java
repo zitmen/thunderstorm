@@ -1,10 +1,10 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.PSFSeparator.Position;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.BiplaneCalibrationEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.IBinaryTransform;
 import ij.IJ;
 import ij.ImagePlus;
@@ -23,10 +23,11 @@ public class BiplaneCalibrationProcess extends AbstractCalibrationProcess {
     ImagePlus imp1, imp2;
     Roi roi1, roi2;
 
-    public BiplaneCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
+    public BiplaneCalibrationProcess(CalibrationConfig config, FilterUI selectedFilterUI, DetectorUI selectedDetectorUI,
                                      BiplaneCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
-                                     double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2) {
-        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
+                                     double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2,
+                                     FilterUI[] allFilters, int selectedFilterIndex) {
+        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, allFilters, selectedFilterIndex);
         this.imp1 = imp1;
         this.imp2 = imp2;
         this.roi1 = roi1;
@@ -59,8 +60,8 @@ public class BiplaneCalibrationProcess extends AbstractCalibrationProcess {
 
     protected Collection<Position> fitPositions() {
         angle = 0.0;
-        List<Position> fits1 = filterPositions(fitFixedAngle(angle, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable), config.minimumFitsCount);
-        List<Position> fits2 = filterPositions(fitFixedAngle(angle, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable), config.minimumFitsCount);
+        List<Position> fits1 = filterPositions(fitFixedAngle(angle, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable, allFilters, selectedFilterIndex), config.minimumFitsCount);
+        List<Position> fits2 = filterPositions(fitFixedAngle(angle, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable, allFilters, selectedFilterIndex), config.minimumFitsCount);
 
         IJ.showStatus("Estimating homography between the planes...");
         transformationMatrix = Homography.estimateTransform(

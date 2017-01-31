@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
-import cz.cuni.lf1.lge.ThunderSTORM.IModule;
-import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
+import cz.cuni.lf1.lge.ThunderSTORM.ModuleUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
 import java.awt.BorderLayout;
@@ -22,16 +21,14 @@ import javax.swing.JPanel;
  *
  * When a module is selected from the combo box, its options panel gets shown
  * underneath the combo box.
- *
- * @see IModule
  */
-public class CardsPanel<T extends IModuleUI> implements ItemListener {
+public class CardsPanel<T extends ModuleUI> implements ItemListener {
 
     private JPanel cardsPanel;
     private JPanel helpButtonsCardsPanel;
     private JComboBox cb;
     private ParameterTracker params;
-    private List<T> items;
+    private T[] items;
 
     /**
      * Initialize the panel.
@@ -43,7 +40,7 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
      * @param items Vector of modules you want to insert into the combo box
      * @param index_default index of an item you want to be selected
      */
-    public CardsPanel(List<T> items, int index_default) {
+    public CardsPanel(T[] items, int index_default) {
         this.items = items;
         createCardsPanel();
         if(index_default < cb.getItemCount()) {
@@ -61,7 +58,7 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
      * @return the module selected in the combo box
      */
     public T getActiveComboBoxItem() {
-        return items.get(cb.getSelectedIndex());
+        return items[cb.getSelectedIndex()];
     }
 
     /**
@@ -74,18 +71,18 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
     }
 
     private JPanel createCardsPanel() {
-        String comboBoxItems[] = new String[items.size()];
-        for(int i = 0; i < items.size(); i++) {
-            comboBoxItems[i] = items.get(i).getName();
+        String comboBoxItems[] = new String[items.length];
+        for(int i = 0; i < items.length; i++) {
+            comboBoxItems[i] = items[i].getName();
         }
         cb = new JComboBox(comboBoxItems);
         cb.setEditable(false);
         cb.addItemListener(this);
 
         // Create the cards
-        JPanel[] cards = new JPanel[items.size()];
-        for(int i = 0; i < items.size(); i++) {
-            cards[i] = items.get(i).getOptionsPanel();
+        JPanel[] cards = new JPanel[items.length];
+        for(int i = 0; i < items.length; i++) {
+            cards[i] = items[i].getOptionsPanel();
             if(cards[i] == null) {
                 cards[i] = new JPanel();
             }
@@ -94,12 +91,12 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
         // Create the panel that contains the cards
         cardsPanel = new JPanel(new CardLayout());
         helpButtonsCardsPanel = new JPanel(new CardLayout());
-        for(int i = 0; i < items.size(); i++) {
+        for(int i = 0; i < items.length; i++) {
             cardsPanel.add(cards[i], comboBoxItems[i]);
 
             JPanel singleButtonContainer = new JPanel(new BorderLayout());
-            if(Help.existsHelpForClass(items.get(i).getClass())) {
-                singleButtonContainer.add(Help.createHelpButton(items.get(i).getClass()));
+            if(Help.existsHelpForClass(items[i].getClass())) {
+                singleButtonContainer.add(Help.createHelpButton(items[i].getClass()));
             }
             helpButtonsCardsPanel.add(singleButtonContainer, comboBoxItems[i]);
 
@@ -145,7 +142,7 @@ public class CardsPanel<T extends IModuleUI> implements ItemListener {
         ((CardLayout) (helpButtonsCardsPanel.getLayout())).show(helpButtonsCardsPanel, (String) evt.getItem());
     }
 
-    public List<T> getItems() {
+    public T[] getItems() {
         return items;
     }
 

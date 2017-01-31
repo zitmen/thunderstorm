@@ -5,20 +5,21 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.MultipleLocationsImageFitting;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.RadialSymmetryFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.IntegerValidatorFactory;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class RadialSymmetryEstimatorUI extends IEstimatorUI {
+public class RadialSymmetryEstimatorUI extends EstimatorUI {
 
     private final String name = "Radial symmetry";
     private int fittingRadius;
     private transient ParameterKey.Integer FITRAD;
 
     public RadialSymmetryEstimatorUI() {
-        FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 5);
+        FITRAD = getParameters().createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 5);
     }
 
     @Override
@@ -29,13 +30,13 @@ public class RadialSymmetryEstimatorUI extends IEstimatorUI {
     @Override
     public JPanel getOptionsPanel() {
         JTextField fitregsizeTextField = new JTextField("", 20);
-        parameters.registerComponent(FITRAD, fitregsizeTextField);
+        getParameters().registerComponent(FITRAD, fitregsizeTextField);
 
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Estimation radius [px]:"), GridBagHelper.leftCol());
         panel.add(fitregsizeTextField, GridBagHelper.rightCol());
 
-        parameters.loadPrefs();
+        getParameters().loadPrefs();
         return panel;
     }
 

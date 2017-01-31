@@ -1,8 +1,8 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AstigmatismCalibrationEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -16,10 +16,11 @@ public class AstigmaticCalibrationProcess extends AbstractCalibrationProcess {
     // results
     private PSFSeparator beadFits;
 
-    public AstigmaticCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
+    public AstigmaticCalibrationProcess(CalibrationConfig config, FilterUI selectedFilterUI, DetectorUI selectedDetectorUI,
                                         AstigmatismCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
-                                        double stageStep, double zRangeLimit, ImagePlus imp, Roi roi) {
-        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
+                                        double stageStep, double zRangeLimit, ImagePlus imp, Roi roi,
+                                        FilterUI[] allFilters, int selectedFilterIndex) {
+        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, allFilters, selectedFilterIndex);
         this.imp = imp;
         this.roi = roi;
     }
@@ -29,7 +30,7 @@ public class AstigmaticCalibrationProcess extends AbstractCalibrationProcess {
         angle = estimateAngle(imp, roi);
         IJ.log("angle = " + angle);
 
-        beadFits = fitFixedAngle(angle, imp, roi, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable);
+        beadFits = fitFixedAngle(angle, imp, roi, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable, allFilters, selectedFilterIndex);
         fitQuadraticPolynomials(beadFits.getPositions());
         IJ.log("s1 = " + polynomS1Final.toString());
         IJ.log("s2 = " + polynomS2Final.toString());

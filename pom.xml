@@ -319,7 +319,7 @@
         <dependency>
             <groupId>com.github.zitmen</groupId>
             <artifactId>thunderstorm-algorithms</artifactId>
-            <version>257978741c</version>
+            <version>3dabd5dd1a</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

@@ -10,7 +10,8 @@ import cz.cuni.lf1.lge.ThunderSTORM.datagen.EmitterModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui.IPsfUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui.PsfFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.ui.PsfUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJGroundTruthTable;
 import cz.cuni.lf1.lge.ThunderSTORM.util.*;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.DialogStub;
@@ -42,7 +43,7 @@ public class DataGeneratorPlugIn implements PlugIn {
     private double density;
     private Drift drift;
     private Range intensity_range;
-    private IPsfUI psf;
+    private PsfUI psf;
     private double add_poisson_var;
     private FloatProcessor densityMask;
     private FloatProcessor backgroundMask;
@@ -245,13 +246,13 @@ public class DataGeneratorPlugIn implements PlugIn {
         final ParameterKey.String maskPathParam = params.createStringField("maskPath", null, Defaults.MASK_PATH);
         final ParameterKey.String backgroundMaskPathParam = params.createStringField("maskPathBg", null, Defaults.BG_MASK_PATH);
         ParameterKey.Boolean singleFixedMoleculeParam = params.createBooleanField("singleFixed", null, false);
-        final CardsPanel psfPanel = new CardsPanel(ModuleLoader.getUIModules(IPsfUI.class), 0);
+        final CardsPanel psfPanel = new CardsPanel(PsfFactory.createAllPsfUI(), 0);
         //
         String macroOptions = Macro.getOptions();
         if(macroOptions != null) {
             params.readMacroOptions();
-            List<IPsfUI> allPSFs = ModuleLoader.getUIModules(IPsfUI.class);
-            for(IPsfUI psfUi : allPSFs) {
+            PsfUI[] allPSFs = PsfFactory.createAllPsfUI();
+            for(PsfUI psfUi : allPSFs) {
                 if(psfUi.getName().equalsIgnoreCase(psfParam.getValue())) {
                     psfUi.readMacroOptions(macroOptions);
                     psf = psfUi;
@@ -377,11 +378,11 @@ public class DataGeneratorPlugIn implements PlugIn {
                     okButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent ae) {
-                            IPsfUI psfui = (IPsfUI) psfPanel.getActiveComboBoxItem();
-                            psfui.parameters.readDialogOptions();
-                            psfui.parameters.recordMacroOptions();
-                            if(psfui.parameters.isPrefsSavingEnabled()) {
-                                psfui.parameters.savePrefs();
+                            PsfUI psfui = (PsfUI) psfPanel.getActiveComboBoxItem();
+                            psfui.getParameters().readDialogOptions();
+                            psfui.getParameters().recordMacroOptions();
+                            if(psfui.getParameters().isPrefsSavingEnabled()) {
+                                psfui.getParameters().savePrefs();
                             }
                         }
                     });
@@ -411,7 +412,7 @@ public class DataGeneratorPlugIn implements PlugIn {
                 return false;
             }
 
-            psf = (IPsfUI) psfPanel.getActiveComboBoxItem();
+            psf = (PsfUI) psfPanel.getActiveComboBoxItem();
         }
         width = widthParam.getValue();
         height = heightParam.getValue();
@@ -446,8 +447,8 @@ public class DataGeneratorPlugIn implements PlugIn {
 
         @Override
         public void validate(String input) throws ValidatorException {
-            List<IPsfUI> allPSFs = ModuleLoader.getUIModules(IPsfUI.class);
-            for(IPsfUI psf : allPSFs) {
+            PsfUI[] allPSFs = PsfFactory.createAllPsfUI();
+            for(PsfUI psf : allPSFs) {
                 if(psf.getName().equals(input)) {
                     return; // ok
                 }

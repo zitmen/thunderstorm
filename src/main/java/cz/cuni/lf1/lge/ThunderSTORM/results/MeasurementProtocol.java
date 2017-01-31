@@ -2,18 +2,18 @@ package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import com.google.gson.*;
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
-import cz.cuni.lf1.lge.ThunderSTORM.ModuleLoader;
 import cz.cuni.lf1.lge.ThunderSTORM.ThunderSTORM;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.EmptyDetector;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.EmptyEstimator;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunctionFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EllipticGaussianEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IBiplaneEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.EmptyFilter;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.BiplaneEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.OperationsHistoryPanel.Operation;
 import cz.cuni.lf1.lge.ThunderSTORM.results.PostProcessingModule.DefaultOperation;
 import ij.IJ;
@@ -30,10 +30,10 @@ public class MeasurementProtocol {
     public String version;
     public HashMap<String, Object> imageInfo;
     public HashMap<String, Object> cameraSettings;
-    public IFilterUI analysisFilter;
-    public IDetectorUI analysisDetector;
-    public IEstimatorUI analysisEstimator;
-    public IBiplaneEstimatorUI analysisBiplaneEstimator;
+    public FilterUI analysisFilter;
+    public DetectorUI analysisDetector;
+    public EstimatorUI analysisEstimator;
+    public BiplaneEstimatorUI analysisBiplaneEstimator;
     public List<Operation> postProcessing;
 
     private boolean is3d;
@@ -43,14 +43,14 @@ public class MeasurementProtocol {
         this.version = "ThunderSTORM (" + ThunderSTORM.INSTANCE.getVERSION() + ")";
         this.imageInfo = new HashMap<String, Object>();
         this.cameraSettings = new HashMap<String, Object>();
-        this.analysisFilter = new EmptyFilter();
-        this.analysisDetector = new EmptyDetector();
-        this.analysisEstimator = new EmptyEstimator();
+        this.analysisFilter = null;
+        this.analysisDetector = null;
+        this.analysisEstimator = null;
         this.postProcessing = IJResultsTable.getResultsTable().getOperationHistoryPanel().getHistory();
         this.isSet3d = false;
     }
     
-    public MeasurementProtocol(ImagePlus analyzedImage, IFilterUI filter, IDetectorUI detector, IEstimatorUI estimator) {
+    public MeasurementProtocol(ImagePlus analyzedImage, FilterUI filter, DetectorUI detector, EstimatorUI estimator) {
         this.version = "ThunderSTORM (" + ThunderSTORM.INSTANCE.getVERSION() + ")";
         this.imageInfo = getImageInfo(analyzedImage);
         this.cameraSettings = CameraSetupPlugIn.exportSettings();
@@ -61,7 +61,7 @@ public class MeasurementProtocol {
         this.isSet3d = false;
     }
 
-    public MeasurementProtocol(ImagePlus analyzedPlane1, ImagePlus analyzedPlane2, IFilterUI filter, IDetectorUI detector, IBiplaneEstimatorUI biplaneEstimator) {
+    public MeasurementProtocol(ImagePlus analyzedPlane1, ImagePlus analyzedPlane2, FilterUI filter, DetectorUI detector, BiplaneEstimatorUI biplaneEstimator) {
         this.version = "ThunderSTORM (" + ThunderSTORM.INSTANCE.getVERSION() + ")";
         this.imageInfo = getImageInfo(analyzedPlane1);  // TODO: append the second image info!!!
         this.cameraSettings = CameraSetupPlugIn.exportSettings();
@@ -108,10 +108,10 @@ public class MeasurementProtocol {
 
     public static MeasurementProtocol importFromFile(String fpath) {
         GsonBuilder gson = new GsonBuilder();
-        gson.registerTypeAdapter(IFilterUI.class, new FilterAdapter());
-        gson.registerTypeAdapter(IDetectorUI.class, new DetectorAdapter());
-        gson.registerTypeAdapter(IEstimatorUI.class, new EstimatorAdapter());
-        gson.registerTypeAdapter(IBiplaneEstimatorUI.class, new BiplaneEstimatorAdapter());
+        gson.registerTypeAdapter(FilterUI.class, new FilterAdapter());
+        gson.registerTypeAdapter(DetectorUI.class, new DetectorAdapter());
+        gson.registerTypeAdapter(EstimatorUI.class, new EstimatorAdapter());
+        gson.registerTypeAdapter(BiplaneEstimatorUI.class, new BiplaneEstimatorAdapter());
         gson.registerTypeAdapter(DefocusCalibration.class, new CylindricalLensCalibrationAdapter());
         gson.registerTypeAdapter(Operation.class, new OperationAdapter());
         BufferedReader reader = null;
@@ -155,11 +155,11 @@ public class MeasurementProtocol {
         }
     }
 
-    private static class FilterAdapter implements JsonDeserializer<IFilterUI> {
+    private static class FilterAdapter implements JsonDeserializer<FilterUI> {
         @Override
-        public IFilterUI deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public FilterUI deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String name = json.getAsJsonObject().get("name").getAsString();
-            for (IFilterUI filter : ModuleLoader.getUIModules(IFilterUI.class)) {
+            for (FilterUI filter : FilterFactory.createAllFiltersUI()) {
                 if (name.equals(filter.getName())) {
                     return context.deserialize(json, filter.getClass());
                 }
@@ -168,11 +168,11 @@ public class MeasurementProtocol {
         }
     }
 
-    private static class DetectorAdapter implements JsonDeserializer<IDetectorUI> {
+    private static class DetectorAdapter implements JsonDeserializer<DetectorUI> {
         @Override
-        public IDetectorUI deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public DetectorUI deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String name = json.getAsJsonObject().get("name").getAsString();
-            for (IDetectorUI detector : ModuleLoader.getUIModules(IDetectorUI.class)) {
+            for (DetectorUI detector : DetectorFactory.createAllDetectorsUI()) {
                 if (name.equals(detector.getName())) {
                     return context.deserialize(json, detector.getClass());
                 }
@@ -181,11 +181,11 @@ public class MeasurementProtocol {
         }
     }
 
-    private static class EstimatorAdapter implements JsonDeserializer<IEstimatorUI> {
+    private static class EstimatorAdapter implements JsonDeserializer<EstimatorUI> {
         @Override
-        public IEstimatorUI deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public EstimatorUI deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String name = json.getAsJsonObject().get("name").getAsString();
-            for (IEstimatorUI estimator : ModuleLoader.getUIModules(IEstimatorUI.class)) {
+            for (EstimatorUI estimator : EstimatorFactory.createAllEstimatorsUI()) {
                 if (name.equals(estimator.getName())) {
                     return context.deserialize(json, estimator.getClass());
                 }
@@ -194,11 +194,11 @@ public class MeasurementProtocol {
         }
     }
 
-    private static class BiplaneEstimatorAdapter implements JsonDeserializer<IBiplaneEstimatorUI> {
+    private static class BiplaneEstimatorAdapter implements JsonDeserializer<BiplaneEstimatorUI> {
         @Override
-        public IBiplaneEstimatorUI deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public BiplaneEstimatorUI deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String name = json.getAsJsonObject().get("name").getAsString();
-            for (IBiplaneEstimatorUI biplaneEstimator : ModuleLoader.getUIModules(IBiplaneEstimatorUI.class)) {
+            for (BiplaneEstimatorUI biplaneEstimator : EstimatorFactory.createAllBiPlaneEstimatorsUI()) {
                 if (name.equals(biplaneEstimator.getName())) {
                     return context.deserialize(json, biplaneEstimator.getClass());
                 }
@@ -211,7 +211,7 @@ public class MeasurementProtocol {
         @Override
         public DefocusCalibration deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String name = json.getAsJsonObject().get("name").getAsString();
-            for (DefocusFunction defocusFn : ModuleLoader.getUIModules(DefocusFunction.class)) {
+            for (DefocusFunction defocusFn : DefocusFunctionFactory.createAllDefocusFunctions()) {
                 if (name.equals(defocusFn.getName())) {
                     return context.deserialize(json, defocusFn.getCalibration().getClass());
                 }

@@ -29,7 +29,7 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
 
     public EllipticGaussianEstimatorUI() {
         this.name = "PSF: Elliptical Gaussian (3D astigmatism)";
-        CALIBRATION_PATH = parameters.createStringField("calibrationpath", StringValidatorFactory.fileExists(), "");
+        CALIBRATION_PATH = getParameters().createStringField("calibrationpath", StringValidatorFactory.fileExists(), "");
         daoCalibration = null;
     }
 
@@ -51,12 +51,12 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
 
         parentPanel.add(new JLabel("Calibration file:"), GridBagHelper.leftCol());
         final JTextField calibrationFileTextField = new JTextField(Prefs.get("thunderstorm.estimators.calibrationpath", ""));
-        parameters.registerComponent(CALIBRATION_PATH, calibrationFileTextField);
+        getParameters().registerComponent(CALIBRATION_PATH, calibrationFileTextField);
         JButton findCalibrationButton = DialogStub.createBrowseButton(calibrationFileTextField, true, new FileNameExtensionFilter("Yaml file", "yaml"));
         JPanel calibrationPanel = new JPanel(new BorderLayout()) {
             @Override
             public Dimension getPreferredSize() {
-                return ((JTextField) parameters.getRegisteredComponent(SIGMA)).getPreferredSize();
+                return ((JTextField) getParameters().getRegisteredComponent(SIGMA)).getPreferredSize();
             }
         };
         calibrationPanel.add(calibrationFileTextField, BorderLayout.CENTER);
@@ -65,20 +65,20 @@ public class EllipticGaussianEstimatorUI extends SymmetricGaussianEstimatorUI {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         parentPanel.add(calibrationPanel, gbc);
 
-        parameters.loadPrefs();
+        getParameters().loadPrefs();
         return parentPanel;
     }
 
     @Override
     public void readParameters() {
         super.readParameters();
-        calibration = loadCalibration(parameters.getString(CALIBRATION_PATH));
+        calibration = loadCalibration(getParameters().getString(CALIBRATION_PATH));
     }
 
     @Override
     public void readMacroOptions(String options) {
         super.readMacroOptions(options);
-        calibration = loadCalibration(parameters.getString(CALIBRATION_PATH));
+        calibration = loadCalibration(getParameters().getString(CALIBRATION_PATH));
     }
 
     @Override

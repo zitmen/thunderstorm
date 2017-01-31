@@ -2,7 +2,7 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.thunderstorm.datastructures.Point2D;
 import ij.process.FloatProcessor;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class FullImageFitting implements IEstimator {
     }
     
     @Override
-    public List<Molecule> estimateParameters(FloatProcessor image, List<Point> detections) throws StoppedByUserException {
+    public List<Molecule> estimateParameters(FloatProcessor image, List<Point2D> detections) throws StoppedByUserException {
         List<Molecule> results = new ArrayList<Molecule>();
         try {
             int w = image.getWidth();
@@ -30,12 +30,12 @@ public class FullImageFitting implements IEstimator {
             int x0 = w / 2;
             int y0 = h / 2;
             initializeGrid(x0, y0, w, h);
-            int maxI = getBestDetection(detections);
+            int maxI = getBestDetection(detections, image);
             SubImage subImage = new SubImage(
                     image.getWidth(), image.getHeight(),
                     xgrid, ygrid, getImageData(image),
-                    detections.get(maxI).x.doubleValue() - x0,
-                    detections.get(maxI).y.doubleValue() - y0);
+                    detections.get(maxI).getX() - x0,
+                    detections.get(maxI).getY() - y0);
 
             Molecule psf = fitter.fit(subImage);
             if(psf.isSingleMolecule()) {
@@ -92,11 +92,14 @@ public class FullImageFitting implements IEstimator {
         return imgData;
     }
 
-    private int getBestDetection(List<Point> detections) {
+    private int getBestDetection(List<Point2D> detections, FloatProcessor image) {
         int maxI = 0;
+        double maxVal = image.getPixelValue((int)Math.round(detections.get(maxI).getX()), (int)Math.round(detections.get(maxI).getY()));
         for(int i = 1, im = detections.size(); i < im; i++) {
-            if(detections.get(i).val.doubleValue() > detections.get(maxI).val.doubleValue()) {
+            double val = image.getPixelValue((int)Math.round(detections.get(i).getX()), (int)Math.round(detections.get(i).getY()));
+            if(val > maxVal) {
                 maxI = i;
+                maxVal = val;
             }
         }
         return maxI;

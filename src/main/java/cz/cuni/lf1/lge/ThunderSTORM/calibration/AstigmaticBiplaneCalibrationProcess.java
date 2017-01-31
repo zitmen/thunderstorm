@@ -1,9 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.AstigmaticBiplaneCalibrationEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.IBinaryTransform;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
@@ -43,10 +43,11 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
     private double[] allFrames1, allFrames2;
     private double[] allSigma11s, allSigma12s, allSigma21s, allSigma22s;
 
-    public AstigmaticBiplaneCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
+    public AstigmaticBiplaneCalibrationProcess(CalibrationConfig config, FilterUI selectedFilterUI, DetectorUI selectedDetectorUI,
                                                AstigmaticBiplaneCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
-                                               double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2) {
-        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
+                                               double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2,
+                                               FilterUI[] allFilters, int selectedFilterIndex) {
+        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, allFilters, selectedFilterIndex);
         this.imp1 = imp1;
         this.imp2 = imp2;
         this.roi1 = roi1;
@@ -187,8 +188,8 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
         angle2 = estimateAngle(imp2, roi2);
         if (Double.isNaN(angle1) || Double.isInfinite(angle1)) angle1 = 0.0;
         if (Double.isNaN(angle2) || Double.isInfinite(angle2)) angle2 = 0.0;
-        beadFits1 = fitFixedAngle(angle1, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable);
-        beadFits2 = fitFixedAngle(angle2, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable);
+        beadFits1 = fitFixedAngle(angle1, imp1, roi1, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable, allFilters, selectedFilterIndex);
+        beadFits2 = fitFixedAngle(angle2, imp2, roi2, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable, allFilters, selectedFilterIndex);
         List<PSFSeparator.Position> fits1 = filterPositions(beadFits1, config.minimumFitsCount);
         List<PSFSeparator.Position> fits2 = filterPositions(beadFits2, config.minimumFitsCount);
 

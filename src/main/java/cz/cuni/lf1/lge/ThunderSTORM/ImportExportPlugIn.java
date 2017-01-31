@@ -1,6 +1,7 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.IImportExport;
+import cz.cuni.lf1.lge.ThunderSTORM.ImportExport.ImportExportFactory;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
@@ -39,7 +40,7 @@ public class ImportExportPlugIn implements PlugIn {
 
     public static final String IMPORT = "import";
     public static final String EXPORT = "export";
-    private List<IImportExport> modules = null;
+    private IImportExport[] modules = null;
     private String[] moduleNames = null;
     private String[] moduleExtensions = null;
 
@@ -222,12 +223,12 @@ public class ImportExportPlugIn implements PlugIn {
     }
 
     private void setupModules() {
-        modules = ModuleLoader.getModules(IImportExport.class);
-        moduleNames = new String[modules.size()];
-        moduleExtensions = new String[modules.size()];
+        modules = ImportExportFactory.createAllImportExportModules();
+        moduleNames = new String[modules.length];
+        moduleExtensions = new String[modules.length];
         for(int i = 0; i < moduleNames.length; i++) {
-            moduleNames[i] = modules.get(i).getName();
-            moduleExtensions[i] = modules.get(i).getSuffix();
+            moduleNames[i] = modules[i].getName();
+            moduleExtensions[i] = modules[i].getSuffix();
         }
     }
 
@@ -277,7 +278,7 @@ public class ImportExportPlugIn implements PlugIn {
     public IImportExport getModuleByName(String name) {
         for(int i = 0; i < moduleNames.length; i++) {
             if(moduleNames[i].equals(name)) {
-                return modules.get(i);
+                return modules[i];
             }
         }
         throw new RuntimeException("No module found for name " + name + ".");

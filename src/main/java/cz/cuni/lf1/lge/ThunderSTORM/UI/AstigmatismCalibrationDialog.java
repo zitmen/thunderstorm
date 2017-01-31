@@ -1,11 +1,14 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
-import cz.cuni.lf1.lge.ThunderSTORM.ModuleLoader;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunctionFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GrayScaleImageImpl;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.DialogStub;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
@@ -13,6 +16,9 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.thunderstorm.datastructures.GrayScaleImage;
+import cz.cuni.lf1.thunderstorm.datastructures.Point2D;
+import cz.cuni.lf1.thunderstorm.parser.thresholding.Thresholder;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Macro;
@@ -41,25 +47,25 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
     ParameterKey.String estimatorName;
     ParameterKey.String defocusName;
 
-    private List<IFilterUI> filters;
-    private List<IDetectorUI> detectors;
-    private List<IEstimatorUI> estimators;
-    private List<DefocusFunction> defocusing;
+    private FilterUI[] filters;
+    private DetectorUI[] detectors;
+    private EstimatorUI[] estimators;
+    private DefocusFunction[] defocusing;
     private ImagePlus imp;
     ExecutorService previewThreadRunner = Executors.newSingleThreadExecutor();
     Future<?> previewFuture = null;
 
-    public AstigmatismCalibrationDialog(ImagePlus imp, List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators, List<DefocusFunction> defocusing) {
+    public AstigmatismCalibrationDialog(ImagePlus imp, FilterUI[] filters, DetectorUI[] detectors, EstimatorUI[] estimators, DefocusFunction[] defocusing) {
         super(new ParameterTracker("thunderstorm.calibration"), IJ.getInstance(), "Calibration options");
         params.getComponentHandlers().addForStringParameters(CardsPanel.class, new CardsPanelMacroUIHandler());
 
         stageStep = params.createDoubleField("stage", DoubleValidatorFactory.positiveNonZero(), 10);
         zRangeLimit = params.createDoubleField("zRange", DoubleValidatorFactory.positiveNonZero(), 400);
         calibrationFilePath = params.createStringField("saveto", null, "");
-        filterName = params.createStringField("filter", null, filters.get(0).getName());
-        detectorName = params.createStringField("detector", null, detectors.get(0).getName());
-        estimatorName = params.createStringField("estimator", null, estimators.get(0).getName());
-        defocusName = params.createStringField("defocusing", null, defocusing.get(0).getName());
+        filterName = params.createStringField("filter", null, filters[0].getName());
+        detectorName = params.createStringField("detector", null, detectors[0].getName());
+        estimatorName = params.createStringField("estimator", null, estimators[0].getName());
+        defocusName = params.createStringField("defocusing", null, defocusing[0].getName());
 
         this.filters = filters;
         this.detectors = detectors;
@@ -89,17 +95,17 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
         cameraPanel.add(cameraSetup);
         cameraPanel.setBorder(BorderFactory.createTitledBorder("Camera"));
         pane.add(cameraPanel, componentConstraints);
-        CardsPanel<IFilterUI> filterCards = new CardsPanel<IFilterUI>(filters, 0);
+        CardsPanel<FilterUI> filterCards = new CardsPanel<FilterUI>(filters, 0);
         filterName.registerComponent(filterCards);
         JPanel p = filterCards.getPanel("Filter:");
         p.setBorder(BorderFactory.createTitledBorder("Image filtering"));
         pane.add(p, componentConstraints);
-        CardsPanel<IDetectorUI> detectorCards = new CardsPanel<IDetectorUI>(detectors, 0);
+        CardsPanel<DetectorUI> detectorCards = new CardsPanel<DetectorUI>(detectors, 0);
         detectorName.registerComponent(detectorCards);
         p = detectorCards.getPanel("Method:");
         p.setBorder(BorderFactory.createTitledBorder("Approximate localization of molecules"));
         pane.add(p, componentConstraints);
-        CardsPanel<IEstimatorUI> estimatorCards = new CardsPanel<IEstimatorUI>(estimators, 0);
+        CardsPanel<EstimatorUI> estimatorCards = new CardsPanel<EstimatorUI>(estimators, 0);
         estimatorName.registerComponent(estimatorCards);
         p = estimatorCards.getPanel("Method:");
         p.setBorder(BorderFactory.createTitledBorder("Sub-pixel localization of molecules"));
@@ -159,7 +165,6 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
     public void actionPerformed(ActionEvent e) {
         try {
             if("Preview".equals(e.getActionCommand())) {
-                Thresholder.setActiveFilter(getActiveFilterUIIndex());
                 // parse parameters
 
                 params.readDialogOptions();
@@ -167,10 +172,6 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
                 getActiveDetectorUI().readParameters();
                 getActiveEstimatorUI().readParameters();
                 getActiveDefocusFunction().readParameters();
-                getActiveFilterUI().resetThreadLocal();
-                getActiveDetectorUI().resetThreadLocal();
-                getActiveEstimatorUI().resetThreadLocal();
-                getActiveDefocusFunction().resetThreadLocal();
 
                 params.savePrefs();
 
@@ -198,18 +199,21 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
                             if(roi != null) {
                                 fp.setMask(roi.getMask());
                             }
-                            Thresholder.setCurrentImage(fp);
-                            FloatProcessor filtered = getActiveFilterUI().getThreadLocalImplementation().filterImage(fp);
-                            new ImagePlus("Filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
+                            GrayScaleImage input = new GrayScaleImageImpl(fp);
+                            GrayScaleImage filtered = getActiveFilterUI().getImplementation().filter(input);
+                            new ImagePlus("Filtered frame " + Integer.toString(imp.getSlice()), GrayScaleImageImpl.convertToFloatProcessor(filtered)).show();
                             GUI.checkIJEscapePressed();
-                            List<Point> detections = Point.applyRoiMask(imp.getRoi(), getActiveDetectorUI().getThreadLocalImplementation().detectMoleculeCandidates(filtered));
+                            Thresholder thresholder = new Thresholder(
+                                    getActiveDetectorUI().getThresholdFormula(),
+                                    FilterFactory.createThresholderSymbolTable(filters, getActiveFilterUIIndex()));
+                            List<Point2D> detections = Point.applyRoiMask(imp.getRoi(), getActiveDetectorUI().getImplementation().detect(filtered, thresholder.evaluate(input)));
                             GUI.checkIJEscapePressed();
                             //
                             double[] xCoord = new double[detections.size()];
                             double[] yCoord = new double[detections.size()];
                             for(int i = 0; i < detections.size(); i++) {
-                                xCoord[i] = detections.get(i).getX().doubleValue();
-                                yCoord[i] = detections.get(i).getY().doubleValue();
+                                xCoord[i] = detections.get(i).getX();
+                                yCoord[i] = detections.get(i).getY();
                             }
                             //
                             ImagePlus impPreview = new ImagePlus("Preview for frame " + Integer.toString(imp.getSlice()), processor);
@@ -225,7 +229,6 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
                 });
             } else if("OK".equals(e.getActionCommand())) {
                 params.readDialogOptions();
-                Thresholder.setActiveFilter(getActiveFilterUIIndex());
                 getActiveFilterUI().readParameters();
                 getActiveDetectorUI().readParameters();
                 getActiveEstimatorUI().readParameters();
@@ -244,7 +247,9 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
                 dispose();
             } else if("Defaults".equals(e.getActionCommand())) {
                 params.resetToDefaults(true);
-                AnalysisOptionsDialog.resetModuleUIs(filters, detectors, estimators);
+                AnalysisOptionsDialog.resetModuleUI(filters);
+                AnalysisOptionsDialog.resetModuleUI(detectors);
+                AnalysisOptionsDialog.resetModuleUI(estimators);
             }
         } catch(Exception ex) {
             IJ.handleException(ex);
@@ -267,21 +272,21 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
         }
     }
 
-    public IFilterUI getActiveFilterUI() {
-        return ModuleLoader.moduleByName(filters, filterName.getValue());
+    public FilterUI getActiveFilterUI() {
+        return FilterFactory.getFilterByName(filterName.getValue());
     }
 
     public int getActiveFilterUIIndex() {
-        return ModuleLoader.moduleIndexByName(filters, filterName.getValue());
+        return FilterFactory.getFilterIndexByName(filterName.getValue());
     }
 
-    public IDetectorUI getActiveDetectorUI() {
-        return ModuleLoader.moduleByName(detectors, detectorName.getValue());
+    public DetectorUI getActiveDetectorUI() {
+        return DetectorFactory.getDetectorByName(detectorName.getValue());
     }
 
-    public IEstimatorUI getActiveEstimatorUI() { return ModuleLoader.moduleByName(estimators, estimatorName.getValue()); }
+    public EstimatorUI getActiveEstimatorUI() { return EstimatorFactory.getEstimatorByName(estimatorName.getValue()); }
 
-    public DefocusFunction getActiveDefocusFunction() { return ModuleLoader.moduleByName(defocusing, defocusName.getValue()); }
+    public DefocusFunction getActiveDefocusFunction() { return DefocusFunctionFactory.getDefocusFunctionByName(defocusName.getValue()); }
 
     public String getSavePath() {
         return calibrationFilePath.getValue();

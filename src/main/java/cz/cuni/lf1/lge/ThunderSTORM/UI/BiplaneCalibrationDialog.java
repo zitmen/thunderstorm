@@ -1,12 +1,14 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
-import cz.cuni.lf1.lge.ThunderSTORM.ModuleLoader;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.CalibrationConfig;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunctionFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.DialogStub;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
@@ -19,7 +21,6 @@ import ij.ImagePlus;
 import ij.Macro;
 import ij.WindowManager;
 import ij.plugin.frame.Recorder;
-import org.apache.commons.lang3.ObjectUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -27,8 +28,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class BiplaneCalibrationDialog extends DialogStub implements ActionListener {
 
@@ -42,10 +41,10 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
     ParameterKey.String rawImage1Stack;
     ParameterKey.String rawImage2Stack;
 
-    private List<IFilterUI> filters;
-    private List<IDetectorUI> detectors;
-    private List<IEstimatorUI> estimators;
-    private List<DefocusFunction> defocusing;
+    private FilterUI[] filters;
+    private DetectorUI[] detectors;
+    private EstimatorUI[] estimators;
+    private DefocusFunction[] defocusing;
 
     ParameterKey.Double dist2thrZStackMatching;
     ParameterKey.Integer minimumFitsCount;
@@ -68,17 +67,17 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
     ParameterKey.Double hThPairDist;
     ParameterKey.Double hThAllowedTransformChange;
 
-    public BiplaneCalibrationDialog(List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators, List<DefocusFunction> defocusing) {
+    public BiplaneCalibrationDialog(FilterUI[] filters, DetectorUI[] detectors, EstimatorUI[] estimators, DefocusFunction[] defocusing) {
         super(new ParameterTracker("thunderstorm.calibration"), IJ.getInstance(), "Calibration options");
         params.getComponentHandlers().addForStringParameters(CardsPanel.class, new CardsPanelMacroUIHandler());
 
         stageStep = params.createDoubleField("stage", DoubleValidatorFactory.positiveNonZero(), 10);
         zRangeLimit = params.createDoubleField("zRange", DoubleValidatorFactory.positiveNonZero(), 400);
         calibrationFilePath = params.createStringField("saveto", null, "");
-        filterName = params.createStringField("filter", null, filters.get(0).getName());
-        detectorName = params.createStringField("detector", null, detectors.get(0).getName());
-        estimatorName = params.createStringField("estimator", null, estimators.get(0).getName());
-        defocusName = params.createStringField("defocusing", null, defocusing.get(0).getName());
+        filterName = params.createStringField("filter", null, filters[0].getName());
+        detectorName = params.createStringField("detector", null, detectors[0].getName());
+        estimatorName = params.createStringField("estimator", null, estimators[0].getName());
+        defocusName = params.createStringField("defocusing", null, defocusing[0].getName());
         rawImage1Stack = params.createStringField("raw_image1_stack", null, "");
         rawImage2Stack = params.createStringField("raw_image2_stack", null, "");
 
@@ -149,19 +148,19 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
         dataPanel.setBorder(BorderFactory.createTitledBorder("Source data"));
         pane.add(dataPanel, componentConstraints);
 
-        CardsPanel<IFilterUI> filterCards = new CardsPanel<IFilterUI>(filters, 0);
+        CardsPanel<FilterUI> filterCards = new CardsPanel<FilterUI>(filters, 0);
         filterName.registerComponent(filterCards);
         JPanel p = filterCards.getPanel("Filter:");
         p.setBorder(BorderFactory.createTitledBorder("Image filtering"));
         pane.add(p, componentConstraints);
 
-        CardsPanel<IDetectorUI> detectorCards = new CardsPanel<IDetectorUI>(detectors, 0);
+        CardsPanel<DetectorUI> detectorCards = new CardsPanel<DetectorUI>(detectors, 0);
         detectorName.registerComponent(detectorCards);
         p = detectorCards.getPanel("Method:");
         p.setBorder(BorderFactory.createTitledBorder("Approximate localization of molecules"));
         pane.add(p, componentConstraints);
 
-        CardsPanel<IEstimatorUI> estimatorCards = new CardsPanel<IEstimatorUI>(estimators, 0);
+        CardsPanel<EstimatorUI> estimatorCards = new CardsPanel<EstimatorUI>(estimators, 0);
         estimatorName.registerComponent(estimatorCards);
         p = estimatorCards.getPanel("Method:");
         p.setBorder(BorderFactory.createTitledBorder("Sub-pixel localization of molecules"));
@@ -310,7 +309,6 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
         try {
             if("OK".equals(e.getActionCommand())) {
                 params.readDialogOptions();
-                Thresholder.setActiveFilter(getActiveFilterUIIndex());
                 getActiveFilterUI().readParameters();
                 getActiveDetectorUI().readParameters();
                 getActiveEstimatorUI().readParameters();
@@ -329,7 +327,9 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
                 dispose();
             } else if("Defaults".equals(e.getActionCommand())) {
                 params.resetToDefaults(true);
-                AnalysisOptionsDialog.resetModuleUIs(filters, detectors, estimators);
+                AnalysisOptionsDialog.resetModuleUI(filters);
+                AnalysisOptionsDialog.resetModuleUI(detectors);
+                AnalysisOptionsDialog.resetModuleUI(estimators);
             }
         } catch(Exception ex) {
             IJ.handleException(ex);
@@ -357,21 +357,21 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
         }
     }
 
-    public IFilterUI getActiveFilterUI() {
-        return ModuleLoader.moduleByName(filters, filterName.getValue());
+    public FilterUI getActiveFilterUI() {
+        return FilterFactory.getFilterByName(filterName.getValue());
     }
 
     public int getActiveFilterUIIndex() {
-        return ModuleLoader.moduleIndexByName(filters, filterName.getValue());
+        return FilterFactory.getFilterIndexByName(filterName.getValue());
     }
 
-    public IDetectorUI getActiveDetectorUI() {
-        return ModuleLoader.moduleByName(detectors, detectorName.getValue());
+    public DetectorUI getActiveDetectorUI() {
+        return DetectorFactory.getDetectorByName(detectorName.getValue());
     }
 
-    public IEstimatorUI getActiveEstimatorUI() { return ModuleLoader.moduleByName(estimators, estimatorName.getValue()); }
+    public EstimatorUI getActiveEstimatorUI() { return EstimatorFactory.getEstimatorByName(estimatorName.getValue()); }
 
-    public DefocusFunction getActiveDefocusFunction() { return ModuleLoader.moduleByName(defocusing, defocusName.getValue()); }
+    public DefocusFunction getActiveDefocusFunction() { return DefocusFunctionFactory.getDefocusFunctionByName(defocusName.getValue()); }
 
     public String getSavePath() {
         return calibrationFilePath.getValue();

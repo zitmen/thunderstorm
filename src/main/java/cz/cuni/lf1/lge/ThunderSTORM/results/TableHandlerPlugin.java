@@ -64,7 +64,7 @@ public class TableHandlerPlugin implements PlugIn {
                     resultsTable.convertAllColumnsToDigitalUnits();
                 }
             } else {
-                List<? extends PostProcessingModule> modules = resultsTable.getPostProcessingModules();
+                PostProcessingModule[] modules = resultsTable.getPostProcessingModules();
 
                 PostProcessingModule selectedModule = null;
                 for(PostProcessingModule module : modules) {

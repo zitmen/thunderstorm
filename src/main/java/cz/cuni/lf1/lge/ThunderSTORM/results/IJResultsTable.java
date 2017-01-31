@@ -127,7 +127,7 @@ public class IJResultsTable extends GenericTable<ResultsTableWindow> {
         tableWindow.setStatus(text);
     }
 
-    public List<? extends PostProcessingModule> getPostProcessingModules() {
+    public PostProcessingModule[] getPostProcessingModules() {
         return tableWindow.getPostProcessingModules();
     }
 

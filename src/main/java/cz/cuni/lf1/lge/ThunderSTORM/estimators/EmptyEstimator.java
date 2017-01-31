@@ -2,8 +2,9 @@ package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.thunderstorm.datastructures.Point2D;
 import ij.process.FloatProcessor;
 
 import java.util.ArrayList;
@@ -17,17 +18,17 @@ import javax.swing.JPanel;
  * This is suitable for quick preview of filtering/detection or for some basic
  * molecule counting applications where the pixel precision is not an issue.
  */
-public class EmptyEstimator extends IEstimatorUI implements IEstimator  {
+public class EmptyEstimator extends EstimatorUI implements IEstimator  {
 
     private final String name = "No estimator";
 
     @Override
-    public List<Molecule> estimateParameters(FloatProcessor fp, List<Point> detections) {
+    public List<Molecule> estimateParameters(FloatProcessor fp, List<Point2D> detections) {
         List<Molecule> locations = new ArrayList<Molecule>();
 
-        for (Point detection : detections) {
+        for (Point2D detection : detections) {
             locations.add(new Molecule(new PSFModel.Params(new int[]{PSFModel.Params.X, PSFModel.Params.Y},
-                    new double[]{detection.x.doubleValue()+0.5, detection.y.doubleValue()+0.5}, false)));
+                    new double[]{detection.getX()+0.5, detection.getY()+0.5}, false)));
         }
         return locations;
     }

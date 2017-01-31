@@ -4,6 +4,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.util.*;
+import cz.cuni.lf1.thunderstorm.datastructures.Point2D;
 import org.apache.commons.math3.linear.*;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -68,7 +69,7 @@ public class Homography {
      *
      * TODO: this is not very effective approach as the number of allocations is high!
      */
-    public static List<Pair<Point, Point>> mergePositions(int width, int height, TransformationMatrix transform, List<Point> fits1, List<Point> fits2, double dist2px) {
+    public static List<Pair<Point2D, Point2D>> mergePositions(int width, int height, TransformationMatrix transform, List<Point2D> fits1, List<Point2D> fits2, double dist2px) {
         MoleculeDescriptor descriptor = new MoleculeDescriptor(
                 new String[]{ MoleculeDescriptor.LABEL_ID, PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y },
                 new MoleculeDescriptor.Units[] { MoleculeDescriptor.Units.UNITLESS, MoleculeDescriptor.Units.PIXEL, MoleculeDescriptor.Units.PIXEL });
@@ -76,14 +77,14 @@ public class Homography {
         List<Molecule> m1 = new ArrayList<Molecule>(fits1.size());
         List<Molecule> m2 = new ArrayList<Molecule>(fits2.size());
         for (int i = 0; i < fits1.size(); i++) {
-            Point p = fits1.get(i);
+            Point2D p = fits1.get(i);
             m1.add(new Molecule(descriptor, new double[] {
-                    i, p.getX().doubleValue(), p.getY().doubleValue() }));
+                    i, p.getX(), p.getY() }));
         }
         for (int i = 0; i < fits2.size(); i++) {
-            Point p = fits2.get(i);
+            Point2D p = fits2.get(i);
             m2.add(new Molecule(descriptor, new double[] {
-                    i, p.getX().doubleValue(), p.getY().doubleValue() }));
+                    i, p.getX(), p.getY() }));
         }
         // pair up the molecules
         m1 = applyH(transform, moveToCenterXY(m1, width, height));
@@ -93,11 +94,12 @@ public class Homography {
         }
         Map<Molecule, Molecule> map = StableMatching.match(m1);
         // unwrap
-        List<Pair<Point, Point>> pairs = new ArrayList<Pair<Point, Point>>(map.size());
+        List<Pair<Point2D, Point2D>> pairs = new ArrayList<Pair<Point2D, Point2D>>(map.size());
         int idIndex = descriptor.getParamIndex(MoleculeDescriptor.LABEL_ID);
         for (Map.Entry<Molecule, Molecule> pair : map.entrySet()) {
-            pairs.add(new Pair<Point, Point>(fits1.get((int) pair.getKey().getParamAt(idIndex)),
-                                             fits2.get((int) pair.getValue().getParamAt(idIndex))));
+            Point2D pt1 = fits1.get((int) pair.getKey().getParamAt(idIndex));
+            Point2D pt2 = fits2.get((int) pair.getValue().getParamAt(idIndex));
+            pairs.add(new Pair<Point2D, Point2D>(pt1, pt2));
         }
         return pairs;
     }

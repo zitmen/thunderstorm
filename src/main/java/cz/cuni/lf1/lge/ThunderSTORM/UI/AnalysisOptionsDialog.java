@@ -1,18 +1,24 @@
 package cz.cuni.lf1.lge.ThunderSTORM.UI;
 
 import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
-import cz.cuni.lf1.lge.ThunderSTORM.IModuleUI;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.ModuleUI;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.RendererUI;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.subtract;
+
+import cz.cuni.lf1.lge.ThunderSTORM.util.GrayScaleImageImpl;
 import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.thunderstorm.algorithms.detectors.Detector;
+import cz.cuni.lf1.thunderstorm.datastructures.GrayScaleImage;
+import cz.cuni.lf1.thunderstorm.datastructures.Point2D;
+import cz.cuni.lf1.thunderstorm.parser.thresholding.Thresholder;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Prefs;
@@ -28,7 +34,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -47,14 +52,14 @@ import javax.swing.JScrollPane;
  */
 public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 
-    private CardsPanel<IFilterUI> filtersPanel;
-    private CardsPanel<IDetectorUI> detectorsPanel;
-    private CardsPanel<IEstimatorUI> estimatorsPanel;
-    private CardsPanel<IRendererUI> renderersPanel;
-    private List<IFilterUI> allFilters;
-    private List<IDetectorUI> allDetectors;
-    private List<IEstimatorUI> allEstimators;
-    private List<IRendererUI> allRenderers;
+    private CardsPanel<FilterUI> filtersPanel;
+    private CardsPanel<DetectorUI> detectorsPanel;
+    private CardsPanel<EstimatorUI> estimatorsPanel;
+    private CardsPanel<RendererUI> renderersPanel;
+    private FilterUI[] allFilters;
+    private DetectorUI[] allDetectors;
+    private EstimatorUI[] allEstimators;
+    private RendererUI[] allRenderers;
     private JButton cameraSetup, defaults, preview, ok, cancel;
     private ImagePlus imp;
     private boolean canceled;
@@ -79,10 +84,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
      * {@code IEstimator} interface)
      */
     public AnalysisOptionsDialog(final ImagePlus imp, String title,
-            List<IFilterUI> filters,
-            List<IDetectorUI> detectors,
-            List<IEstimatorUI> estimators,
-            List<IRendererUI> renderers) {
+            FilterUI[] filters,
+            DetectorUI[] detectors,
+            EstimatorUI[] estimators,
+            RendererUI[] renderers) {
         //
         super(IJ.getInstance(), title);
         //
@@ -108,10 +113,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         this.activeEstimatorIndex = Integer.parseInt(Prefs.get("thunderstorm.estimators.index", "0"));
         this.activeRendererIndex = Integer.parseInt(Prefs.get("thunderstorm.rendering.index", "0"));
         //
-        this.filtersPanel = new CardsPanel<IFilterUI>(filters, activeFilterIndex);
-        this.detectorsPanel = new CardsPanel<IDetectorUI>(detectors, activeDetectorIndex);
-        this.estimatorsPanel = new CardsPanel<IEstimatorUI>(estimators, activeEstimatorIndex);
-        this.renderersPanel = new CardsPanel<IRendererUI>(renderers, activeRendererIndex);
+        this.filtersPanel = new CardsPanel<FilterUI>(filters, activeFilterIndex);
+        this.detectorsPanel = new CardsPanel<DetectorUI>(detectors, activeDetectorIndex);
+        this.estimatorsPanel = new CardsPanel<EstimatorUI>(estimators, activeEstimatorIndex);
+        this.renderersPanel = new CardsPanel<RendererUI>(renderers, activeRendererIndex);
         //
         this.defaults = new JButton("Defaults");
         this.preview = new JButton("Preview");
@@ -204,10 +209,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             activeRendererIndex = renderersPanel.getActiveComboBoxItemIndex();
             //
             try {
-                allFilters.get(activeFilterIndex).readParameters();
-                allDetectors.get(activeDetectorIndex).readParameters();
-                allEstimators.get(activeEstimatorIndex).readParameters();
-                allRenderers.get(activeRendererIndex).readParameters();
+                allFilters[activeFilterIndex].readParameters();
+                allDetectors[activeDetectorIndex].readParameters();
+                allEstimators[activeEstimatorIndex].readParameters();
+                allRenderers[activeRendererIndex].readParameters();
 
                 saveSelectedModuleIndexesToPrefs(activeFilterIndex, activeDetectorIndex, activeEstimatorIndex, activeRendererIndex);
             } catch(Exception ex) {
@@ -223,27 +228,24 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
             activeRendererIndex = renderersPanel.getActiveComboBoxItemIndex();
             //
             try {
-                allFilters.get(activeFilterIndex).readParameters();
-                allDetectors.get(activeDetectorIndex).readParameters();
-                allEstimators.get(activeEstimatorIndex).readParameters();
-                allRenderers.get(activeRendererIndex).readParameters();
-                allFilters.get(activeFilterIndex).resetThreadLocal();
-                allDetectors.get(activeDetectorIndex).resetThreadLocal();
-                allEstimators.get(activeEstimatorIndex).resetThreadLocal();
-                allRenderers.get(activeRendererIndex).resetThreadLocal();
+                allFilters[activeFilterIndex].readParameters();
+                allDetectors[activeDetectorIndex].readParameters();
+                allEstimators[activeEstimatorIndex].readParameters();
+                allRenderers[activeRendererIndex].readParameters();
 
                 saveSelectedModuleIndexesToPrefs(activeFilterIndex, activeDetectorIndex, activeEstimatorIndex, activeRendererIndex);
             } catch(Exception ex) {
                 IJ.error("Error parsing parameters: " + ex.toString());
                 return;
             }
-            //
+            // try to parse the thresholding formula before the processing starts (fail fast)
             try {
-                Thresholder.loadFilters(allFilters);
-                Thresholder.setActiveFilter(activeFilterIndex);   // !! must be called before any threshold is evaluated !!
-                Thresholder.parseThreshold(allDetectors.get(activeDetectorIndex).getThreadLocalImplementation().getThresholdFormula());
+                new Thresholder(
+                        allDetectors[activeDetectorIndex].getThresholdFormula(),
+                        FilterFactory.createThresholderSymbolTable(allFilters, activeFilterIndex));
             } catch(Exception ex) {
                 IJ.error("Error parsing threshold formula! " + ex.toString());
+                return;
             }
             //
             if(previewFuture != null) {
@@ -266,20 +268,21 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
                         if(roi != null) {
                             fp.setMask(roi.getMask());
                         }
-                        
-                        Thresholder.setCurrentImage(fp);
-                        FloatProcessor filtered = allFilters.get(activeFilterIndex).getThreadLocalImplementation().filterImage(fp);
-                        new ImagePlus("Filtered frame " + Integer.toString(imp.getSlice()), filtered).show();
+
+                        GrayScaleImage input = new GrayScaleImageImpl(fp);
+                        GrayScaleImage filtered = allFilters[activeFilterIndex].getImplementation().filter(input);
+                        new ImagePlus("Filtered frame " + Integer.toString(imp.getSlice()), GrayScaleImageImpl.convertToFloatProcessor(filtered)).show();
                         GUI.checkIJEscapePressed();
-                        IDetector detector = allDetectors.get(activeDetectorIndex).getThreadLocalImplementation();
-                        List<Point> detections = Point.applyRoiMask(imp.getRoi(), detector.detectMoleculeCandidates(filtered));
+                        Detector detector = allDetectors[activeDetectorIndex].getImplementation();
+                        double thresholdValue = new Thresholder(allDetectors[activeDetectorIndex].getThresholdFormula(), FilterFactory.createThresholderSymbolTable(allFilters, activeFilterIndex)).evaluate(input);
+                        List<Point2D> detections = Point.applyRoiMask(imp.getRoi(), detector.detect(filtered, thresholdValue));
                         ij.measure.ResultsTable tbl = ij.measure.ResultsTable.getResultsTable();
                         tbl.reset();
                         tbl.incrementCounter();
-                        tbl.addValue("Threshold value for frame " + Integer.toString(imp.getSlice()), detector.getThresholdValue());
+                        tbl.addValue("Threshold value for frame " + Integer.toString(imp.getSlice()), thresholdValue);
                         tbl.show("Results");
                         GUI.checkIJEscapePressed();
-                        List<Molecule> results = allEstimators.get(activeEstimatorIndex).getThreadLocalImplementation().estimateParameters(fp, detections);
+                        List<Molecule> results = ((IEstimator)allEstimators[activeEstimatorIndex].getImplementation()).estimateParameters(fp, detections);
                         GUI.checkIJEscapePressed();
                         //
                         ImagePlus impPreview = new ImagePlus("Detections in frame " + Integer.toString(imp.getSlice()), processor);
@@ -299,7 +302,10 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
 
         } else if(e.getActionCommand().equals("Defaults")) {
             //noinspection unchecked
-            resetModuleUIs(allDetectors, allEstimators, allFilters, allRenderers);
+            resetModuleUI(allDetectors);
+            resetModuleUI(allEstimators);
+            resetModuleUI(allFilters);
+            resetModuleUI(allRenderers);
             resetCardsPanels(detectorsPanel, estimatorsPanel, filtersPanel, renderersPanel);
         } else {
             throw new UnsupportedOperationException("Command '" + e.getActionCommand() + "' is not supported!");
@@ -361,8 +367,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
      *
      * @return selected filter
      */
-    public IFilterUI getFilter() {
-        return allFilters.get(activeFilterIndex);
+    public FilterUI getFilter() {
+        return allFilters[activeFilterIndex];
     }
 
     /**
@@ -370,8 +376,8 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
      *
      * @return selected detector
      */
-    public IDetectorUI getDetector() {
-        return allDetectors.get(activeDetectorIndex);
+    public DetectorUI getDetector() {
+        return allDetectors[activeDetectorIndex];
     }
 
     /**
@@ -379,12 +385,12 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
      *
      * @return selected estimator
      */
-    public IEstimatorUI getEstimator() {
-        return allEstimators.get(activeEstimatorIndex);
+    public EstimatorUI getEstimator() {
+        return allEstimators[activeEstimatorIndex];
     }
 
-    public IRendererUI getRenderer() {
-        return allRenderers.get(activeRendererIndex);
+    public RendererUI getRenderer() {
+        return allRenderers[activeRendererIndex];
     }
 
     public int getFilterIndex() {
@@ -403,11 +409,9 @@ public class AnalysisOptionsDialog extends JDialog implements ActionListener {
         return activeRendererIndex;
     }
 
-    public static void resetModuleUIs(List<? extends IModuleUI>... lists) {
-        for (List<? extends IModuleUI> list : lists) {
-            for (IModuleUI module : list) {
-                module.resetToDefaults();
-            }
+    public static <T extends ModuleUI> void resetModuleUI(T[] list) {
+        for (ModuleUI module : list) {
+            module.resetToDefaults();
         }
     }
 

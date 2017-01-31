@@ -1,7 +1,6 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
 import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
-import cz.cuni.lf1.lge.ThunderSTORM.ModuleLoader;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
@@ -11,7 +10,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.LABEL_
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.ASHRenderingUI;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.RendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.util.PluginCommands;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
 import ij.IJ;
@@ -57,7 +56,7 @@ public class ResultsTableWindow extends GenericTableWindow {
     private JButton resetButton;
     private JTabbedPane tabbedPane;
     private OperationsHistoryPanel operationsStackPanel;
-    List<? extends PostProcessingModule> postProcessingModules;
+    private PostProcessingModule[] postProcessingModules;
 
     public ResultsTableWindow(String frameTitle) {
         super(frameTitle);
@@ -131,7 +130,7 @@ public class ResultsTableWindow extends GenericTableWindow {
         buttons.add(Box.createHorizontalStrut(3));
         buttons.add(io_export);
         //
-        postProcessingModules = ModuleLoader.getPostProcessingModules();
+        postProcessingModules = PostProcessingModulesFactory.createAllPostProcessingModules();
 
         //fill tabbed pane
         tabbedPane = new JTabbedPane();
@@ -190,7 +189,7 @@ public class ResultsTableWindow extends GenericTableWindow {
                 return;
             }
             if(previewRenderer == null) {
-                IRendererUI renderer = new ASHRenderingUI();
+                RendererUI renderer = new ASHRenderingUI(0.0, 0.0);
                 ImagePlus analyzedImage = rt.getAnalyzedImage();
                 if(analyzedImage != null) {
                     renderer.setSize(analyzedImage.getWidth(), analyzedImage.getHeight());
@@ -251,7 +250,7 @@ public class ResultsTableWindow extends GenericTableWindow {
         return operationsStackPanel;
     }
 
-    public List<? extends PostProcessingModule> getPostProcessingModules() {
+    public PostProcessingModule[] getPostProcessingModules() {
         return postProcessingModules;
     }
 

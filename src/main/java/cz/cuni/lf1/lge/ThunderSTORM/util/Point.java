@@ -2,6 +2,8 @@ package cz.cuni.lf1.lge.ThunderSTORM.util;
 
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.round;
 import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.ceil;
+
+import cz.cuni.lf1.thunderstorm.datastructures.Point2D;
 import ij.gui.Roi;
 import java.util.Comparator;
 import java.util.List;
@@ -399,13 +401,13 @@ public class Point<T extends Number> {
         }
     }
 
-    public static List<Point> applyRoiMask(Roi roi, List<Point> detections) {
+    public static List<Point2D> applyRoiMask(Roi roi, List<Point2D> detections) {
         if(roi == null) {
             return detections;
         } else {
             for(int i = 0; i < detections.size();) {
-                Point pt = detections.get(i);
-                if(!roi.contains(pt.x.intValue() + roi.getBounds().x, pt.y.intValue() + roi.getBounds().y)) {
+                Point2D pt = detections.get(i);
+                if(!roi.contains((int)(pt.getX()) + roi.getBounds().x, (int)(pt.getY()) + roi.getBounds().y)) {
                     detections.remove(i);
                 } else {
                     i++;

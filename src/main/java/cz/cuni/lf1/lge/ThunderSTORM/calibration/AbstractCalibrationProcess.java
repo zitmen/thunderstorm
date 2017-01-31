@@ -1,17 +1,18 @@
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
 import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.ICalibrationEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
-import cz.cuni.lf1.lge.ThunderSTORM.util.Loop;
-import cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy;
+import cz.cuni.lf1.lge.ThunderSTORM.util.*;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
-import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
+import cz.cuni.lf1.thunderstorm.datastructures.GrayScaleImage;
+import cz.cuni.lf1.thunderstorm.parser.FormulaParserException;
+import cz.cuni.lf1.thunderstorm.parser.thresholding.Thresholder;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -34,8 +35,10 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
 
     // processing
     protected CalibrationConfig config;
-    protected IFilterUI selectedFilterUI;
-    protected IDetectorUI selectedDetectorUI;
+    protected FilterUI[] allFilters;
+    protected int selectedFilterIndex;
+    protected FilterUI selectedFilterUI;
+    protected DetectorUI selectedDetectorUI;
     protected ICalibrationEstimatorUI calibrationEstimatorUI;
     protected DefocusFunction defocusModel;
     protected double stageStep;
@@ -53,8 +56,10 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
     protected double[] allSigma1s;
     protected double[] allSigma2s;
 
-    public AbstractCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, ICalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit) {
+    public AbstractCalibrationProcess(CalibrationConfig config, FilterUI selectedFilterUI, DetectorUI selectedDetectorUI, ICalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit, FilterUI[] allFilters, int selectedFilterIndex) {
         this.config = config;
+        this.allFilters = allFilters;
+        this.selectedFilterIndex = selectedFilterIndex;
         this.selectedFilterUI = selectedFilterUI;
         this.selectedDetectorUI = selectedDetectorUI;
         this.calibrationEstimatorUI = calibrationEstimatorUI;
@@ -80,9 +85,19 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
                 ip.setRoi(roi.getBounds());
                 FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
                 fp.setMask(roi.getMask());
-                Thresholder.setCurrentImage(fp);
-                List<Molecule> fits = threadLocalEstimatorUI.getThreadLocalImplementation().estimateParameters(fp,
-                        Point.applyRoiMask(roi, selectedDetectorUI.getThreadLocalImplementation().detectMoleculeCandidates(selectedFilterUI.getThreadLocalImplementation().filterImage(fp))));
+                GrayScaleImage input = new GrayScaleImageImpl(fp);
+                double thr = 0;
+                try {
+                    thr = new Thresholder(
+                                selectedDetectorUI.getThresholdFormula(),
+                                FilterFactory.createThresholderSymbolTable(allFilters, selectedFilterIndex))
+                            .evaluate(input);
+                } catch (FormulaParserException e) {
+                    IJ.error(e.getMessage());
+                    return;
+                }
+                List<Molecule> fits = threadLocalEstimatorUI.getImplementation().estimateParameters(fp,
+                        Point.applyRoiMask(roi, selectedDetectorUI.getImplementation().detect(selectedFilterUI.getImplementation().filter(input), thr)));
                 framesProcessed.incrementAndGet();
 
                 for (Molecule psf : fits) {
@@ -201,12 +216,12 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
     }
 
     protected static PSFSeparator fitFixedAngle(double angle, ImagePlus imp, final Roi roi,
-                                                final IFilterUI filter, final IDetectorUI detector,
+                                                final FilterUI filter, final DetectorUI detector,
                                                 final ICalibrationEstimatorUI estimator,
-                                                DefocusFunction defocusModel, final boolean showResultsTable) {
+                                                DefocusFunction defocusModel, final boolean showResultsTable,
+                                                final FilterUI[] allFilters, final int selectedFilterIndex) {
         estimator.setAngle(angle);
         estimator.setDefocusModel(defocusModel);
-        estimator.resetThreadLocal(); // angle changed so we need to discard the old threadlocal implementations
         // fit stack again with fixed angle
         final PSFSeparator separator = new PSFSeparator(estimator.getFitradius());
         final ImageStack stack = imp.getStack();
@@ -219,9 +234,19 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
                 ip.setRoi(roi.getBounds());
                 FloatProcessor fp = (FloatProcessor) ip.crop().convertToFloat();
                 fp.setMask(roi.getMask());
-                Thresholder.setCurrentImage(fp);
-                List<Molecule> fits = estimator.getThreadLocalImplementation().estimateParameters(fp,
-                        Point.applyRoiMask(roi, detector.getThreadLocalImplementation().detectMoleculeCandidates(filter.getThreadLocalImplementation().filterImage(fp))));
+                GrayScaleImage input = new GrayScaleImageImpl(fp);
+                double thr = 0;
+                try {
+                    thr = new Thresholder(
+                            detector.getThresholdFormula(),
+                            FilterFactory.createThresholderSymbolTable(allFilters, selectedFilterIndex))
+                            .evaluate(input);
+                } catch (FormulaParserException e) {
+                    IJ.error(e.getMessage());
+                    return;
+                }
+                List<Molecule> fits = estimator.getImplementation().estimateParameters(fp,
+                        Point.applyRoiMask(roi, detector.getImplementation().detect(filter.getImplementation().filter(input), thr)));
                 framesProcessed.incrementAndGet();
 
                 for(Molecule fit : fits) {

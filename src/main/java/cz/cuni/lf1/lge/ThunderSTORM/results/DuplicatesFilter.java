@@ -1,9 +1,5 @@
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParser;
-import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.FormulaParserException;
-import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.Node;
-import cz.cuni.lf1.lge.ThunderSTORM.FormulaParser.SyntaxTree.RetVal;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
 import cz.cuni.lf1.lge.ThunderSTORM.UI.Help;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units.NANOMETER;
@@ -129,6 +125,8 @@ public class DuplicatesFilter extends PostProcessingModule {
         if(!model.columnExists(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY)) {
             throw new RuntimeException(String.format("Fitting uncertainty not found in Results table. Looking for: %s. Found: %s.", MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY, model.getColumnNames()));
         }
+        Double[] dist = new Double[0];  // TODO: create symbol table for results filtering!!! this requires API to be extended as the Thresholder is not applicable for this!
+        /*
         Node tree = new FormulaParser(formula, FormulaParser.FORMULA_RESULTS_FILTER).parse();
         tree.semanticScan();
         RetVal retval = tree.eval(Units.NANOMETER);
@@ -143,6 +141,7 @@ public class DuplicatesFilter extends PostProcessingModule {
             dist = new Double[model.getRowCount()];
             Arrays.fill(dist, (Double) retval.get());
         }
+        */
         //
         FrameSequence frames = new FrameSequence();
         for(int i = 0, im = model.getRowCount(); i < im; i++) {

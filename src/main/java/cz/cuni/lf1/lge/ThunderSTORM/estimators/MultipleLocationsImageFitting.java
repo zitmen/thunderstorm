@@ -8,6 +8,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fitting.Un
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.MeasurementProtocol;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
+import cz.cuni.lf1.thunderstorm.datastructures.Point2D;
 import ij.IJ;
 import ij.process.FloatProcessor;
 import org.apache.commons.math3.exception.ConvergenceException;
@@ -22,7 +23,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Fit
 public class MultipleLocationsImageFitting implements IEstimator {
 
     FloatProcessor image;
-    List<Point> locations;
+    List<Point2D> locations;
     double[] subimageData;
     int subimageSize;
     int bigSubImageSize;
@@ -72,8 +73,8 @@ public class MultipleLocationsImageFitting implements IEstimator {
 
         for(int i = 0; i < locations.size(); i++) {
             GUI.checkIJEscapePressed();
-            int xInt = locations.get(i).x.intValue();
-            int yInt = locations.get(i).y.intValue();
+            int xInt = (int)(locations.get(i).getX());
+            int yInt = (int)(locations.get(i).getY());
 
             if(!isCloseToBorder(xInt, yInt)) {
                 try {
@@ -85,8 +86,8 @@ public class MultipleLocationsImageFitting implements IEstimator {
                             xgrid,
                             ygrid,
                             subimageData,
-                            locations.get(i).getX().doubleValue() - xInt,
-                            locations.get(i).getY().doubleValue() - yInt);
+                            locations.get(i).getX() - xInt,
+                            locations.get(i).getY() - yInt);
 
                     Molecule psf = fitter.fit(subImage);
                     //replace molecule descriptor to a common one for all molecules
@@ -144,7 +145,7 @@ public class MultipleLocationsImageFitting implements IEstimator {
     }
 
     @Override
-    public List<Molecule> estimateParameters(ij.process.FloatProcessor image, List<Point> detections) throws StoppedByUserException{
+    public List<Molecule> estimateParameters(ij.process.FloatProcessor image, List<Point2D> detections) throws StoppedByUserException{
         this.image = image;
         this.locations = detections;
         results = new ArrayList<Molecule>();

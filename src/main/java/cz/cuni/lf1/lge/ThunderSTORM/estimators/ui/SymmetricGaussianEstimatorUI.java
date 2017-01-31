@@ -10,6 +10,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.SymmetricGaussianPSF;
 import cz.cuni.lf1.lge.ThunderSTORM.util.GridBagHelper;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
+import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.IntegerValidatorFactory;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.StringValidatorFactory;
@@ -19,7 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
+public class SymmetricGaussianEstimatorUI extends EstimatorUI {
 
     public transient static final String MLE = "Maximum likelihood";
     public transient static final String LSQ = "Least squares";
@@ -39,10 +40,10 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
 
     public SymmetricGaussianEstimatorUI() {
         crowdedField = new CrowdedFieldEstimatorUI();
-        FITRAD = parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
-        METHOD = parameters.createStringField("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), MLE);
-        SIGMA = parameters.createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
-        FULL_IMAGE_FITTING = parameters.createBooleanField("full_image_fitting", null, false);
+        FITRAD = getParameters().createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 3);
+        METHOD = getParameters().createStringField("method", StringValidatorFactory.isMember(new String[]{MLE, LSQ, WLSQ}), MLE);
+        SIGMA = getParameters().createDoubleField("sigma", DoubleValidatorFactory.positiveNonZero(), 1.6);
+        FULL_IMAGE_FITTING = getParameters().createBooleanField("full_image_fitting", null, false);
     }
 
     @Override
@@ -59,9 +60,9 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
         JTextField fitregsizeTextField = new JTextField("", 20);
         JComboBox<String> methodComboBox = new JComboBox<String>(new String[]{LSQ, WLSQ, MLE});
         JTextField sigmaTextField = new JTextField("");
-        parameters.registerComponent(FITRAD, fitregsizeTextField);
-        parameters.registerComponent(METHOD, methodComboBox);
-        parameters.registerComponent(SIGMA, sigmaTextField);
+        getParameters().registerComponent(FITRAD, fitregsizeTextField);
+        getParameters().registerComponent(METHOD, methodComboBox);
+        getParameters().registerComponent(SIGMA, sigmaTextField);
 
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Fitting radius [px]:"), GridBagHelper.leftCol());
@@ -72,7 +73,7 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
         panel.add(sigmaTextField, GridBagHelper.rightCol());
         crowdedField.getOptionsPanel(panel);
 
-        parameters.loadPrefs();
+        getParameters().loadPrefs();
         return panel;
     }
 

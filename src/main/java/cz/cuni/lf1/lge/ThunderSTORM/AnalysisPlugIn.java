@@ -1,28 +1,29 @@
 package cz.cuni.lf1.lge.ThunderSTORM;
 
-import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.subtract;
-import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.add;
-import cz.cuni.lf1.lge.ThunderSTORM.UI.AnalysisOptionsDialog;
-import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
-import cz.cuni.lf1.lge.ThunderSTORM.UI.MacroParser;
-import cz.cuni.lf1.lge.ThunderSTORM.UI.RenderingOverlay;
-import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedByUserException;
-import cz.cuni.lf1.lge.ThunderSTORM.UI.StoppedDueToErrorException;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.IDetector;
-import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.*;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.DetectorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.IEstimator;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
-import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.FilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import cz.cuni.lf1.lge.ThunderSTORM.rendering.RenderingQueue;
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.IRendererUI;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.RendererFactory;
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.ui.RendererUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.MeasurementProtocol;
-import cz.cuni.lf1.lge.ThunderSTORM.thresholding.Thresholder;
+import cz.cuni.lf1.lge.ThunderSTORM.util.GrayScaleImageImpl;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Point;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
+import cz.cuni.lf1.thunderstorm.datastructures.GrayScaleImage;
+import cz.cuni.lf1.thunderstorm.datastructures.Point2D;
+import cz.cuni.lf1.thunderstorm.parser.FormulaParserException;
+import cz.cuni.lf1.thunderstorm.parser.thresholding.Thresholder;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -31,12 +32,15 @@ import ij.plugin.filter.PlugInFilterRunner;
 import ij.plugin.frame.Recorder;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import java.awt.Color;
+
+import javax.swing.*;
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.swing.SwingUtilities;
+
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.add;
+import static cz.cuni.lf1.lge.ThunderSTORM.util.ImageMath.subtract;
 
 /**
  * ThunderSTORM Analysis plugin.
@@ -52,10 +56,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
     private final AtomicInteger nProcessed = new AtomicInteger(0);
     private final int pluginFlags = DOES_8G | DOES_16 | DOES_32 | NO_CHANGES
             | NO_UNDO | DOES_STACKS | PARALLELIZE_STACKS | FINAL_PROCESSING | SUPPORTS_MASKING;
-    private List<IFilterUI> allFilters;
-    private List<IDetectorUI> allDetectors;
-    private List<IEstimatorUI> allEstimators;
-    private List<IRendererUI> allRenderers;
+    private FilterUI[] allFilters;
+    private DetectorUI[] allDetectors;
+    private EstimatorUI[] allEstimators;
+    private RendererUI[] allRenderers;
     private int selectedFilter;
     private int selectedEstimator;
     private int selectedDetector;
@@ -120,10 +124,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         MeasurementProtocol measurementProtocol;
         try {
             // load modules
-            allFilters = ModuleLoader.getUIModules(IFilterUI.class);
-            allDetectors = ModuleLoader.getUIModules(IDetectorUI.class);
-            allEstimators = ModuleLoader.getUIModules(IEstimatorUI.class);
-            allRenderers = ModuleLoader.getUIModules(IRendererUI.class);
+            allFilters = FilterFactory.createAllFiltersUI();
+            allDetectors = DetectorFactory.createAllDetectorsUI();
+            allEstimators = EstimatorFactory.createAllEstimatorsUI();
+            allRenderers = RendererFactory.createAllRenderers();
 
             ImagePlus renderedImage;
             if(MacroParser.isRanFromMacro()) {
@@ -134,13 +138,13 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 selectedEstimator = parser.getEstimatorIndex();
 
                 roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
-                IRendererUI rendererPanel = parser.getRendererUI();
+                RendererUI rendererPanel = parser.getRendererUI();
                 rendererPanel.setSize(roi.getBounds().width, roi.getBounds().height);
                 IncrementalRenderingMethod method = rendererPanel.getImplementation();
                 renderedImage = (method != null) ? method.getRenderedImage() : null;
                 renderingQueue = new RenderingQueue(method, new RenderingQueue.DefaultRepaintTask(renderedImage), rendererPanel.getRepaintFrequency());
 
-                measurementProtocol = new MeasurementProtocol(imp, allFilters.get(selectedFilter), allDetectors.get(selectedDetector), allEstimators.get(selectedEstimator));
+                measurementProtocol = new MeasurementProtocol(imp, allFilters[selectedFilter], allDetectors[selectedDetector], allEstimators[selectedEstimator]);
             } else {
                 // Create and show the dialog
                 try {
@@ -165,7 +169,7 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
                 selectedRenderer = dialog.getRendererIndex();
 
                 roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
-                IRendererUI renderer = allRenderers.get(selectedRenderer);
+                RendererUI renderer = allRenderers[selectedRenderer];
                 renderer.setSize(roi.getBounds().width, roi.getBounds().height);
                 IncrementalRenderingMethod method = renderer.getImplementation();
                 renderedImage = (method != null) ? method.getRenderedImage() : null;
@@ -185,11 +189,11 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
             IJ.handleException(ex);
             return DONE;
         }
-        //
+        // try to parse the thresholding formula before the processing starts (fail fast)
         try {
-            Thresholder.loadFilters(allFilters);
-            Thresholder.setActiveFilter(selectedFilter);   // !! must be called before any threshold is evaluated !!
-            Thresholder.parseThreshold(allDetectors.get(selectedDetector).getThreadLocalImplementation().getThresholdFormula());
+            new Thresholder(
+                    allDetectors[selectedDetector].getThresholdFormula(),
+                    FilterFactory.createThresholderSymbolTable(allFilters, selectedFilter));
         } catch(Exception ex) {
             IJ.error("Error parsing threshold formula! " + ex.toString());
             return DONE;
@@ -229,10 +233,10 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
      */
     @Override
     public void run(ImageProcessor ip) {
-        assert (selectedFilter >= 0 && selectedFilter < allFilters.size()) : "Index out of bounds: selectedFilter!";
-        assert (selectedDetector >= 0 && selectedDetector < allDetectors.size()) : "Index out of bounds: selectedDetector!";
-        assert (selectedEstimator >= 0 && selectedEstimator < allEstimators.size()) : "Index out of bounds: selectedEstimator!";
-        assert (selectedRenderer >= 0 && selectedRenderer < allRenderers.size()) : "Index out of bounds: selectedRenderer!";
+        assert (selectedFilter >= 0 && selectedFilter < allFilters.length) : "Index out of bounds: selectedFilter!";
+        assert (selectedDetector >= 0 && selectedDetector < allDetectors.length) : "Index out of bounds: selectedDetector!";
+        assert (selectedEstimator >= 0 && selectedEstimator < allEstimators.length) : "Index out of bounds: selectedEstimator!";
+        assert (selectedRenderer >= 0 && selectedRenderer < allRenderers.length) : "Index out of bounds: selectedRenderer!";
         assert (renderingQueue != null) : "Renderer was not selected!";
         //
         ip.setRoi(roi.getBounds());
@@ -244,27 +248,27 @@ public final class AnalysisPlugIn implements ExtendedPlugInFilter {
         }
         fp.setMask(roi.getMask());    
         try {
-            Thresholder.setCurrentImage(fp);
-            FloatProcessor filtered = allFilters.get(selectedFilter).getThreadLocalImplementation().filterImage(fp);
-            IDetector detector = allDetectors.get(selectedDetector).getThreadLocalImplementation();
-            List<Point> detections = detector.detectMoleculeCandidates(filtered);
-            List<Molecule> fits = allEstimators.get(selectedEstimator).getThreadLocalImplementation().estimateParameters(fp, Point.applyRoiMask(roi, detections));
+            GrayScaleImage input = new GrayScaleImageImpl(fp);
+            GrayScaleImage filtered = allFilters[selectedFilter].getImplementation().filter(input);
+            Thresholder thr = new Thresholder(allDetectors[selectedDetector].getThresholdFormula(), FilterFactory.createThresholderSymbolTable(allFilters, selectedFilter));
+            List<Point2D> detections = allDetectors[selectedDetector].getImplementation().detect(filtered, thr.evaluate(input));
+            List<Molecule> fits = ((IEstimator)allEstimators[selectedEstimator].getImplementation()).estimateParameters(fp, Point.applyRoiMask(roi, detections));
             storeFits(fits, ip.getSliceNumber());
             nProcessed.incrementAndGet();
-            if(fits.size() > 0) {
+            if (fits.size() > 0) {
                 renderingQueue.renderLater(fits);
             }
             IJ.showProgress((double) nProcessed.intValue() / (double) stackSize);
             IJ.showStatus("ThunderSTORM processing frame " + nProcessed + " of " + stackSize + "...");
             GUI.checkIJEscapePressed();
-        } catch (StoppedByUserException ie){
+        } catch (StoppedByUserException ie) {
             IJResultsTable rt = IJResultsTable.getResultsTable();
             synchronized(rt) {
                 if(rt.isForceHidden()) {
                     showResults();
                 }
             }
-        } catch (StoppedDueToErrorException ex) {
+        } catch (FormulaParserException | StoppedDueToErrorException ex) {
             IJ.error(ex.getMessage());
         }
     }
