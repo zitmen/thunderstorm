@@ -1,4 +1,6 @@
 ## Links
+
+[![Join the chat at https://gitter.im/thunder-storm/Lobby](https://badges.gitter.im/thunder-storm/Lobby.svg)](https://gitter.im/thunder-storm/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
   * [Cover page](http://zitmen.github.io/thunderstorm/)
   * [Documentation wiki](https://github.com/zitmen/thunderstorm/wiki)
   * My Ph.D. thesis [Computational methods in single molecule localization microscopy](https://www.researchgate.net/publication/311426573_Computational_methods_in_single_molecule_localization_microscopy) now available.
