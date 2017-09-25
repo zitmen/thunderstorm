@@ -186,7 +186,21 @@ href{RadialSymmetryEstimatorUI.html}{Radial symmetry}
 
 
 \end_layout
+\begin_layout Itemize
+\begin_inset ERT
+status open
 
+\begin_layout Plain Layout
+
+
+\backslash
+href{PhasorFitterUI.html}{Phasor localization}
+\end_layout
+
+\end_inset
+
+
+\end_layout
 \begin_layout Itemize
 \begin_inset ERT
 status open

@@ -18,7 +18,7 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.pow;
  *       I am not sure how to do it in a simple way using the Apache Commons Math library
  */
 public class DefocusFunctionPoly extends DefocusFunction {
-
+    
     public static final String name = "ThunderSTORM";
 
     public DefocusFunctionPoly() {

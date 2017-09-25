@@ -49,6 +49,9 @@ public class IterativeFitting {
                 } else {
                     throw ex;
                 }
+            } //KM - Adding debugging for catching negative values
+            catch(org.apache.commons.math3.exception.NotStrictlyPositiveException ex) {
+                return parameters;
             }
         }
         return parameters;

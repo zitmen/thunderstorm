@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+           "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title></title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../../../../LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="../../../../../../../ltx-article.css" type="text/css">
+<link rel="stylesheet" href="../../../../../../../customRules.css" type="text/css">
+</head>
+
+<div class="p"><!----></div>
+
+<h2>Phasor</h2>
+
+<div class="p">
+The phasor algorithm is a simple, model-free and non-iterative localization
+algorithm, described in [1]. It is based on the principle that
+the first Fourier coefficient of a Fourier transform of a 1D or 2D
+image will provide information about the major constituent in the
+image. In case of single molecule localization, the major constituent
+is the PSF of an emitter. The first Fourier coefficient will directly provide
+information about the position and the FWHM of the PSF in the
+horizontal and vertical directions. As phasor localization is a model-free
+localization algorithm, it performs much faster than traditional Gaussian-based
+methods, with equal localization accuracies in all dimensions.
+<!----></div>
+<div class="p">&nbsp;</div>
+<div class="p">
+Phasor localization perfoms best at relatively small
+ROI sizes compared to gaussian-based models. It is recommended to use a radius of  300nm (a
+total ROI size of 700x700nm). Astigmatic localization could
+benefit from slightly larger sub-image size if high signal-to-noise
+levels are achieved. The small ROI sizes are caused
+by the fact that the presence of high amounts of background
+in the ROI introduces errors in the phasor localization. 
+<!----></div>
+<div class="p">&nbsp;</div>
+<div class="p">
+As phasor localization provides information about the width of the
+PSF in X and Y, it can be used for astigmatic 3D positioning. This
+requires a calibration curve (see <a href="../estimators/ui/CalibrationEstimatorUI.html">Calibration of the imaging system</a>).
+<b>Be aware that the calibration curve is dependent on the size
+of the sub-image chosen for phasor! </b>Use the same sub-image size for
+calibration and localization. As the ratio of the phasor magnitude is
+consistent amongst background levels, the calibration series can have
+a different background-to-noise ratio than the actual measurement.
+<!----></div>
+<div class="p">&nbsp;</div>
+<div class="p">
+The basic principle behind the technique consists of the following
+steps:
+
+<ol type="1">
+<li> From the ROI around an approximate localization, perform a partial Fourier transformation and isolate
+the first Fourier coefficient in both X and Y direction.
+<div class="p"><!----></div>
+</li>
+
+<li> Plot the real and imaginary parts of the 2 coefficients in a phasor diagram
+- a 2D plotting tool with real and imaginary axis.
+<div class="p"><!----></div>
+</li>
+
+<li> Calculate the phase angles corresponding to the 2 coefficients. This
+is a direct value for the normalized position of the emitter in the
+ROI.
+<div class="p"><!----></div>
+</li>
+
+<li> Calculate the phasor magnitudes. This is a value for the
+PSF width in X and Y.
+<div class="p"><!----></div>
+</li>
+
+<li> Calculate the Z-position based on two defocus curves
+as described in [1,2], if applicable.
+<div class="p"><!----></div>
+</li>
+</ol>
+
+<!----></div>
+<h3>See also</h3>
+
+<ul>
+<li> <a href="FittingRegion.html">Definition of the ROI</a>
+<div class="p"><!----></div>
+</li>
+<li> <a href="Estimators.html">Sub-pixel 2D localization of molecules</a>
+<div class="p"><!----></div>
+</li>
+<li> 
+<a href="../../calibration/DefocusModels.html" title="" class="ltx_ref">Defocusing models</a>
+<div class="p"><!----></div>
+</li>
+<li> 
+<a href="CalibrationEstimatorUI.html" title="" class="ltx_ref">Calibration of the imaging system for the astigmatism method</a>
+<div class="p"><!----></div>
+</li>
+<li> 
+<a href="PSF.html" title="" class="ltx_ref">Point-spread function (PSF)</a>
+<div class="p"><!----></div>
+</li>
+<li> 
+<a href="LocalizationUncertainty.html" title="" class="ltx_ref">Localization uncertainty</a>
+<div class="p"><!----></div>
+</li>
+</ul>
+
+<div class="p"><!----></div>
+<h2>References</h2>
+
+<dl>
+ <dt>[1] Martens, K.J.A., Bader, A.N., Baas, S., Rieger, B.&amp; Hohlbein, J. (2017).
+ Phasor based single-molecule localization microscopy in 3D (pSMLM-3D): an algorithm for MHz localization rates using standard CPUs. https://doi.org/10.1101/191957 </dt><dd></dd>
+ <dt>[2] Huang, B., Wang, W., Bates, M., &amp; Zhuang, X. (2008).
+Three-dimensional super-resolution imaging by stochastic optical reconstruction
+microscopy. Science, 319(5864), 810-813.</dt>
+</dl>
+
+</html>

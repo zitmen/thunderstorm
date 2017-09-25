@@ -13,6 +13,7 @@ import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterKey;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.DoubleValidatorFactory;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.IntegerValidatorFactory;
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.validators.StringValidatorFactory;
+import ij.IJ;
 import java.awt.GridBagLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -62,7 +63,6 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
         parameters.registerComponent(FITRAD, fitregsizeTextField);
         parameters.registerComponent(METHOD, methodComboBox);
         parameters.registerComponent(SIGMA, sigmaTextField);
-
         JPanel panel = new JPanel(new GridBagLayout());
         panel.add(new JLabel("Fitting radius [px]:"), GridBagHelper.leftCol());
         panel.add(fitregsizeTextField, GridBagHelper.rightCol());
@@ -76,6 +76,7 @@ public class SymmetricGaussianEstimatorUI extends IEstimatorUI {
         return panel;
     }
 
+    
     @Override
     public void readParameters() {
         super.readParameters();

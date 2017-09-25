@@ -45,8 +45,8 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
 
     public AstigmaticBiplaneCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
                                                AstigmaticBiplaneCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
-                                               double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2) {
-        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
+                                               double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2, double zzeropos) {
+        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, zzeropos);
         this.imp1 = imp1;
         this.imp2 = imp2;
         this.roi1 = roi1;
@@ -60,7 +60,7 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
         IJ.log("angle2 = " + angle2);
         IJ.log("Homography transformation matrix: " + transformationMatrix.toString());
 
-        fitQuadraticPolynomials(pos12.keySet());
+        fitQuadraticPolynomials(imp1, pos12.keySet());
         polyS11 = polynomS1Final;
         polyS12 = polynomS2Final;
         allPolyS11 = allPolynomsS1;
@@ -71,7 +71,7 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
         IJ.log("s11 = " + polynomS1Final.toString());
         IJ.log("s12 = " + polynomS2Final.toString());
 
-        fitQuadraticPolynomials(pos12.values());
+        fitQuadraticPolynomials(imp1, pos12.values());
         polyS21 = polynomS1Final;
         polyS22 = polynomS2Final;
         allPolyS21 = allPolynomsS1;
@@ -155,7 +155,7 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
     }
 
     @Override
-    protected double guessZ0(PSFSeparator.Position p) {
+    protected double guessZ0(ImagePlus imp, PSFSeparator.Position p) {
         double[] sigma1AsArray = p.getAsArray(LABEL_SIGMA1);
         double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
         double[] sigma3AsArray = p.getAsArray(LABEL_SIGMA3);

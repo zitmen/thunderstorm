@@ -25,8 +25,8 @@ public class BiplaneCalibrationProcess extends AbstractCalibrationProcess {
 
     public BiplaneCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
                                      BiplaneCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
-                                     double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2) {
-        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
+                                     double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2, double zzeropos) {
+        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, zzeropos);
         this.imp1 = imp1;
         this.imp2 = imp2;
         this.roi1 = roi1;
@@ -38,7 +38,7 @@ public class BiplaneCalibrationProcess extends AbstractCalibrationProcess {
         Collection<Position> positions = fitPositions();
         IJ.log("Homography transformation matrix: " + transformationMatrix.toString());
 
-        fitQuadraticPolynomials(positions);
+        fitQuadraticPolynomials(imp1, positions);
         IJ.log("s1 = " + polynomS1Final.toString());
         IJ.log("s2 = " + polynomS2Final.toString());
     }

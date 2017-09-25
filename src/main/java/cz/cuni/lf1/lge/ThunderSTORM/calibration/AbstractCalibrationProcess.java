@@ -40,6 +40,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
     protected DefocusFunction defocusModel;
     protected double stageStep;
     protected double zRange;
+    protected double zzeropos;
 
     // results
     protected double angle = 0.0;
@@ -53,7 +54,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
     protected double[] allSigma1s;
     protected double[] allSigma2s;
 
-    public AbstractCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, ICalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit) {
+    public AbstractCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, ICalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit, double zzeropos) {
         this.config = config;
         this.selectedFilterUI = selectedFilterUI;
         this.selectedDetectorUI = selectedDetectorUI;
@@ -61,6 +62,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
         this.defocusModel = defocusModel;
         this.stageStep = stageStep;
         this.zRange = zRangeLimit;
+        this.zzeropos = zzeropos;
     }
 
     /**
@@ -123,7 +125,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
         return MathProxy.atan2(sin, cos) / 4;
     }
 
-    protected void fitQuadraticPolynomials(Collection<PSFSeparator.Position> positions) {
+    protected void fitQuadraticPolynomials(ImagePlus imp, Collection<PSFSeparator.Position> positions) {
         // fit a quadratic polynomial to sigma1 = f(zpos) and sigma1 = f(zpos) for each bead
         IterativeFitting polynomialFitter = new IterativeFitting(config.inlierFittingMaxIters, config.inlierFittingInlierFraction);
         allPolynomsS1 = new ArrayList<DefocusFunction>();
@@ -144,7 +146,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
                 if(p.getSize() < config.minimumFitsCount) {
                     continue;
                 }
-                double z0guess = guessZ0(p);
+                double z0guess = guessZ0(imp, p);
                 p.discardFitsByFrameRange(z0guess - zRange/stageStep, z0guess + zRange/stageStep);
 
                 // retrieve values again after filtering out fits not in range
@@ -321,7 +323,8 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
     /**
      * guess z0 of molecule
      */
-    protected double guessZ0(PSFSeparator.Position p) {
+    protected double guessZ0(ImagePlus imp, PSFSeparator.Position p) {
+        final ImageStack stack = imp.getStack();
         double[] sigma1AsArray = p.getAsArray(LABEL_SIGMA1);
         double[] sigma2AsArray = p.getAsArray(LABEL_SIGMA2);
         double[] intensityAsArray = p.getAsArray(LABEL_INTENSITY);
@@ -341,7 +344,11 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
             }
         }
 
-        return p.fits.get(minIdx).getParam(LABEL_FRAME);
+        double stackSize = stack.getSize();
+        if (zzeropos==1){//If zero is at middle of image stack -KM
+            return (stackSize/2);
+        }else{//If zero is a polynomial crossover -KM
+            return p.fits.get(minIdx).getParam(LABEL_FRAME);}
     }
 
     private static double[] flattenListOfArrays(List<double[]> list) {

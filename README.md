@@ -19,3 +19,6 @@ Install [ImageJ](http://imagej.nih.gov/ij/index.html) and download the latest ve
 ## How to cite ThunderSTORM
 If you use ThunderSTORM to process your data, please, cite our [paper](http://dx.doi.org/10.1093/bioinformatics/btu202):
   * M. Ovesný, P. Křížek, J. Borkovec, Z. Švindrych, G. M. Hagen. _ThunderSTORM: a comprehensive ImageJ plugin for PALM and STORM data analysis and super-resolution imaging._ Bioinformatics 30(16):2389-2390, 2014.
+
+If you use the phasor sub-pixel estimator, please cite this paper in addition (https://doi.org/10.1101/191957):
+  * K.J.A. Martens, A.N. Bader, S. Baas, B. Rieger, J. Hohlbein. _Phasor based single-molecule localization microscopy in 3D (pSMLM-3D): an algorithm for MHz localization rates using standard CPUs_ bioRxiv, 2017.

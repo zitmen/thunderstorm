@@ -18,8 +18,8 @@ public class AstigmaticCalibrationProcess extends AbstractCalibrationProcess {
 
     public AstigmaticCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
                                         AstigmatismCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
-                                        double stageStep, double zRangeLimit, ImagePlus imp, Roi roi) {
-        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
+                                        double stageStep, double zRangeLimit, ImagePlus imp, Roi roi, double zzeropos) {
+        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, zzeropos);
         this.imp = imp;
         this.roi = roi;
     }
@@ -30,7 +30,7 @@ public class AstigmaticCalibrationProcess extends AbstractCalibrationProcess {
         IJ.log("angle = " + angle);
 
         beadFits = fitFixedAngle(angle, imp, roi, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable);
-        fitQuadraticPolynomials(beadFits.getPositions());
+        fitQuadraticPolynomials(imp, beadFits.getPositions());
         IJ.log("s1 = " + polynomS1Final.toString());
         IJ.log("s2 = " + polynomS2Final.toString());
     }

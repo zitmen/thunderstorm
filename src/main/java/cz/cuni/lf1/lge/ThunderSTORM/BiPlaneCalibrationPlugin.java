@@ -32,6 +32,7 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
     String savePath;
     double stageStep;
     double zRangeLimit;//in nm
+    double zzeropos;//in nm
     ImagePlus imp1, imp2;
     Roi roi1, roi2;
 
@@ -81,6 +82,7 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
             savePath = dialog.getSavePath();
             stageStep = dialog.getStageStep();
             zRangeLimit = dialog.getZRangeLimit();
+            zzeropos = 0;
             defocusModel = dialog.getActiveDefocusFunction();
 
             if (!isStack(imp1 = dialog.getFirstPlaneStack())) return;
@@ -98,7 +100,7 @@ public class BiPlaneCalibrationPlugin implements PlugIn {
             final ICalibrationProcess process = CalibrationProcessFactory.create(
                     calibrationConfig,
                     selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI,
-                    defocusModel, stageStep, zRangeLimit, imp1, imp2, roi1, roi2);
+                    defocusModel, stageStep, zRangeLimit, imp1, imp2, roi1, roi2, zzeropos);
 
             try {
                 process.runCalibration();
