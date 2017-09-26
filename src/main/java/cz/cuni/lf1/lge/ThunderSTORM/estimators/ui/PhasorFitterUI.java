@@ -44,7 +44,7 @@ public class PhasorFitterUI extends IEstimatorUI {
     public PhasorFitterUI() {
         FITRADPhasor= parameters.createIntField("fitradius", IntegerValidatorFactory.positiveNonZero(), 2);
         USE_ASTIGMATISM = parameters.createBooleanField("astigmatism", null, false);
-        CALIBRATION_PATH = parameters.createStringField("calibrationpath", StringValidatorFactory.fileExists(), "");
+        CALIBRATION_PATH = parameters.createStringField("calibrationpath", null, "");
     }
 
     @Override
