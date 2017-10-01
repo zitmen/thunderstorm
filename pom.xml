@@ -4,10 +4,10 @@
 
     <groupId>cz.cuni.lf1.lge</groupId>
     <artifactId>ThunderSTORM</artifactId>
-    <version>dev-2016-09-10-b1</version>
+    <version>dev-2017-10-01-b1</version>
     <packaging>jar</packaging>
 
-    <name>ThunderSTORM-Phasor_KM</name>
+    <name>ThunderSTORM</name>
     <description>ThunderSTORM: a comprehensive ImageJ plugin for PALM and STORM data analysis and super-resolution imaging</description>
     <url>https://github.com/zitmen/thunderstorm</url>
     
@@ -15,7 +15,7 @@
         <skipTests>true</skipTests>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.0.3</kotlin.version>
-        <imagej.path>C:\Users\Koen Martens\Desktop\Fiji.app</imagej.path>
+        <imagej.path>C:\Program Files\ImageJ</imagej.path>
         <imagej1.version>1.49s</imagej1.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -270,14 +270,6 @@
             <artifactId>swingbox</artifactId>
             <version>1.1</version>
         </dependency>
-        <!--Added by KM-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
-            <scope>provided</scope>
-        </dependency>
-        <!--End Added by KM-->
         <dependency>
             <groupId>net.java.balloontip</groupId>
             <artifactId>balloontip</artifactId>
@@ -320,15 +312,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.bitbucket.pepa_borkovec</groupId>
+            <artifactId>MacroAwareUI</artifactId>
+            <version>889b2b553e96e8493bf6a103acfe2197eb0733ca</version>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
             <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.bitbucket.pepa_borkovec</groupId>
-            <artifactId>MacroAwareUI</artifactId>
-            <version>889b2b553e96e8493bf6a103acfe2197eb0733ca</version>
         </dependency>
     </dependencies>
 </project>
