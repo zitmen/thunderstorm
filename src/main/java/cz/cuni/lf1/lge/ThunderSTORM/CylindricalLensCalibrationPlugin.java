@@ -31,7 +31,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
     String savePath;
     double stageStep;
     double zRangeLimit;//in nm
-    double zzeropos;
+    boolean z0InMiddleOfStack;
     ImagePlus imp;
     Roi roi;
 
@@ -76,47 +76,15 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             stageStep = dialog.getStageStep();
             zRangeLimit = dialog.getZRangeLimit();
             defocusModel = dialog.getActiveDefocusFunction();
-			//zzeropos is  boolean indicator for setting z=0 at intersection of defocus curves, or at middle of calibration stack - KM
-            zzeropos = dialog.getZZeroPos();
-          
-            String activeEstimator = ""+selectedEstimatorUI;
-            String subStringGauss = "ui.AstigmatismCalibrationEstimatorUI";
-            String subStringPhasor = "ui.PhasorAstigmatismCalibrationEstimatorUI";
-            //IJ.log(activeEstimator);
+			z0InMiddleOfStack = dialog.getZ0InMiddleOfStack();
+
             roi = imp.getRoi() != null ? imp.getRoi() : new Roi(0, 0, imp.getWidth(), imp.getHeight());
 
             // perform the calibration
-			//if Phasor is selected - KM
-            if (activeEstimator.toLowerCase().contains(subStringPhasor.toLowerCase())){
-            final PhasorAstigmaticCalibrationProcess process = (PhasorAstigmaticCalibrationProcess) PhasorCalibrationProcessFactory.create(
+            final AbstractCalibrationProcess process = CalibrationProcessFactory.create(
                     new CalibrationConfig(),
                     selectedFilterUI, selectedDetectorUI, phasorCalibrationEstimatorUI,
-                    defocusModel, stageStep, zRangeLimit, imp, roi, zzeropos);
-            
-            try {
-                process.runCalibration();
-            } catch(NoMoleculesFittedException ex) {
-                // if no beads were succesfully fitted, draw localizations anyway
-                process.drawOverlay();
-                IJ.handleException(ex);
-                return;
-            }
-            process.drawOverlay();
-            process.drawSigmaPlots();
-
-            try {
-                process.getCalibration(defocusModel).saveToFile(savePath);
-            } catch(IOException ex) {
-                UI.showAnotherLocationDialog(ex, process.getCalibration(defocusModel));
-            }
-            } else 
-			//If Gauss is selected, do the standard calibration -KM
-			{
-			//The boolean zzeropos is added to differentiate between zero at intersection or middle of calibration stack -KM
-            final AstigmaticCalibrationProcess process = (AstigmaticCalibrationProcess) CalibrationProcessFactory.create(
-                    new CalibrationConfig(),
-                    selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI,
-                    defocusModel, stageStep, zRangeLimit, imp, roi, zzeropos);
+                    defocusModel, stageStep, zRangeLimit, imp, roi, z0InMiddleOfStack);
 
             try {
                 process.runCalibration();
@@ -134,7 +102,6 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
             } catch(IOException ex) {
                 UI.showAnotherLocationDialog(ex, process.getCalibration(defocusModel));
             }
-			}
         } catch(Exception ex) {
             IJ.handleException(ex);
         }

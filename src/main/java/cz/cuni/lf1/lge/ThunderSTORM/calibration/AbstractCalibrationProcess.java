@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.LABEL_FRAME;
 import static cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params.*;
 
-abstract class AbstractCalibrationProcess implements ICalibrationProcess {
+public abstract class AbstractCalibrationProcess implements ICalibrationProcess {
 
     // processing
     protected CalibrationConfig config;
@@ -40,7 +40,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
     protected DefocusFunction defocusModel;
     protected double stageStep;
     protected double zRange;
-    protected double zzeropos;
+    protected boolean z0InMiddleOfStack;
 
     // results
     protected double angle = 0.0;
@@ -54,7 +54,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
     protected double[] allSigma1s;
     protected double[] allSigma2s;
 
-    public AbstractCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, ICalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit, double zzeropos) {
+    public AbstractCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI, ICalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel, double stageStep, double zRangeLimit, boolean z0InMiddleOfStack) {
         this.config = config;
         this.selectedFilterUI = selectedFilterUI;
         this.selectedDetectorUI = selectedDetectorUI;
@@ -62,7 +62,7 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
         this.defocusModel = defocusModel;
         this.stageStep = stageStep;
         this.zRange = zRangeLimit;
-        this.zzeropos = zzeropos;
+        this.z0InMiddleOfStack = z0InMiddleOfStack;
     }
 
     /**
@@ -345,10 +345,11 @@ abstract class AbstractCalibrationProcess implements ICalibrationProcess {
         }
 
         double stackSize = stack.getSize();
-        if (zzeropos==1){//If zero is at middle of image stack -KM
+        if (z0InMiddleOfStack) {
             return (stackSize/2);
-        }else{//If zero is a polynomial crossover -KM
-            return p.fits.get(minIdx).getParam(LABEL_FRAME);}
+        } else {
+            return p.fits.get(minIdx).getParam(LABEL_FRAME);
+        }
     }
 
     private static double[] flattenListOfArrays(List<double[]> list) {

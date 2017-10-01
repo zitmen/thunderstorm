@@ -45,8 +45,8 @@ public class AstigmaticBiplaneCalibrationProcess extends AbstractCalibrationProc
 
     public AstigmaticBiplaneCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
                                                AstigmaticBiplaneCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
-                                               double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2, double zzeropos) {
-        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, zzeropos);
+                                               double stageStep, double zRangeLimit, ImagePlus imp1, ImagePlus imp2, Roi roi1, Roi roi2, boolean z0InMiddleOfStack) {
+        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, z0InMiddleOfStack);
         this.imp1 = imp1;
         this.imp2 = imp2;
         this.roi1 = roi1;

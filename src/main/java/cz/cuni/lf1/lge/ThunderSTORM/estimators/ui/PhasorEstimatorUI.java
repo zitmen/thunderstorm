@@ -26,8 +26,6 @@ public class PhasorEstimatorUI extends IEstimatorUI {
 
     //
     protected String name = "Phasor";
-    protected int fittingRadius;
-    protected boolean fullImageFitting;
     protected CrowdedFieldEstimatorUI crowdedField;
     //params
     protected transient ParameterKey.Integer FITRAD;

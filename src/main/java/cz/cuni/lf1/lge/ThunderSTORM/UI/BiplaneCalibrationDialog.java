@@ -19,7 +19,6 @@ import ij.ImagePlus;
 import ij.Macro;
 import ij.WindowManager;
 import ij.plugin.frame.Recorder;
-import org.apache.commons.lang3.ObjectUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -27,46 +26,48 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class BiplaneCalibrationDialog extends DialogStub implements ActionListener {
 
-    ParameterKey.Double stageStep;
-    ParameterKey.Double zRangeLimit;
-    ParameterKey.String calibrationFilePath;
-    ParameterKey.String filterName;
-    ParameterKey.String detectorName;
-    ParameterKey.String estimatorName;
-    ParameterKey.String defocusName;
-    ParameterKey.String rawImage1Stack;
-    ParameterKey.String rawImage2Stack;
+    private ParameterKey.Double stageStep;
+    private ParameterKey.Double zRangeLimit;
+    private ParameterKey.String calibrationFilePath;
+    private ParameterKey.String filterName;
+    private ParameterKey.String detectorName;
+    private ParameterKey.String estimatorName;
+    private ParameterKey.String defocusName;
+    private ParameterKey.String z0InMiddleOfStack;
+    private ParameterKey.String rawImage1Stack;
+    private ParameterKey.String rawImage2Stack;
 
     private List<IFilterUI> filters;
     private List<IDetectorUI> detectors;
     private List<IEstimatorUI> estimators;
     private List<DefocusFunction> defocusing;
 
-    ParameterKey.Double dist2thrZStackMatching;
-    ParameterKey.Integer minimumFitsCount;
-    ParameterKey.Integer polyFitMaxIters;
-    ParameterKey.Integer finalPolyFitMaxIters;
-    ParameterKey.Integer  minFitsInZRange;
-    ParameterKey.Integer movingAverageLag;
-    ParameterKey.Boolean checkIfDefocusIsInRange;
-    ParameterKey.Integer inlierFittingMaxIters;
-    ParameterKey.Double inlierFittingInlierFraction;
-    ParameterKey.Boolean showResultsTable;
+    private ParameterKey.Double dist2thrZStackMatching;
+    private ParameterKey.Integer minimumFitsCount;
+    private ParameterKey.Integer polyFitMaxIters;
+    private ParameterKey.Integer finalPolyFitMaxIters;
+    private ParameterKey.Integer  minFitsInZRange;
+    private ParameterKey.Integer movingAverageLag;
+    private ParameterKey.Boolean checkIfDefocusIsInRange;
+    private ParameterKey.Integer inlierFittingMaxIters;
+    private ParameterKey.Double inlierFittingInlierFraction;
+    private ParameterKey.Boolean showResultsTable;
 
-    ParameterKey.Integer rtfIterNum;
-    ParameterKey.Double rtfThDist;
-    ParameterKey.Double rtfThInlr;
+    private ParameterKey.Integer rtfIterNum;
+    private ParameterKey.Double rtfThDist;
+    private ParameterKey.Double rtfThInlr;
 
-    ParameterKey.Integer hIterNum;
-    ParameterKey.Double hThDist;
-    ParameterKey.Double hThInlr;
-    ParameterKey.Double hThPairDist;
-    ParameterKey.Double hThAllowedTransformChange;
+    private ParameterKey.Integer hIterNum;
+    private ParameterKey.Double hThDist;
+    private ParameterKey.Double hThInlr;
+    private ParameterKey.Double hThPairDist;
+    private ParameterKey.Double hThAllowedTransformChange;
+
+    private final String z0Intersection = "Z=0 at intersection of polynomials";
+    private final String z0Middle = "Z=0 at middle of image stack";
 
     public BiplaneCalibrationDialog(List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators, List<DefocusFunction> defocusing) {
         super(new ParameterTracker("thunderstorm.calibration"), IJ.getInstance(), "Calibration options");
@@ -79,6 +80,7 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
         detectorName = params.createStringField("detector", null, detectors.get(0).getName());
         estimatorName = params.createStringField("estimator", null, estimators.get(0).getName());
         defocusName = params.createStringField("defocusing", null, defocusing.get(0).getName());
+        z0InMiddleOfStack = params.createStringField("z0position", null, z0Intersection);
         rawImage1Stack = params.createStringField("raw_image1_stack", null, "");
         rawImage2Stack = params.createStringField("raw_image2_stack", null, "");
 
@@ -173,6 +175,13 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
         p.setBorder(BorderFactory.createTitledBorder("3D defocusing curve"));
         pane.add(p, componentConstraints);
 
+        ButtonGroup btnGroup = new ButtonGroup();
+        JRadioButton intersectionRadioButton = new JRadioButton(z0Intersection);
+        JRadioButton middleStackRadioButton = new JRadioButton(z0Middle);
+        btnGroup.add(intersectionRadioButton);
+        btnGroup.add(middleStackRadioButton);
+        z0InMiddleOfStack.registerComponent(btnGroup);
+
         JPanel additionalOptions = new JPanel(new GridBagLayout());
         additionalOptions.setBorder(BorderFactory.createTitledBorder("Additional options"));
         additionalOptions.add(new JLabel("Z stage step [nm]:"), GridBagHelper.leftCol());
@@ -192,6 +201,9 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
         GridBagConstraints gbc = GridBagHelper.rightCol();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         additionalOptions.add(calibrationPanel, gbc);
+        additionalOptions.add(new JLabel("Z calibration: "), GridBagHelper.leftCol());
+        additionalOptions.add(intersectionRadioButton, GridBagHelper.rightCol());
+        additionalOptions.add(middleStackRadioButton, GridBagHelper.rightCol());
         pane.add(additionalOptions, componentConstraints);
 
         JPanel advancedOptions = new JPanel(new GridBagLayout());
@@ -383,6 +395,10 @@ public class BiplaneCalibrationDialog extends DialogStub implements ActionListen
 
     public double getZRangeLimit() {
         return zRangeLimit.getValue();
+    }
+
+    public boolean getZ0InMiddleOfStack() {
+        return z0InMiddleOfStack.getValue().equals(z0Middle);
     }
 
     public ImagePlus getFirstPlaneStack() {

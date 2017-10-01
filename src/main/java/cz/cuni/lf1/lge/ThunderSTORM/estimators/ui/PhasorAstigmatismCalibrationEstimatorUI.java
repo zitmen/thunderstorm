@@ -15,9 +15,6 @@ import javax.swing.*;
 public class PhasorAstigmatismCalibrationEstimatorUI extends PhasorEstimatorUI implements ICalibrationEstimatorUI {
 
     private final String name = "Phasor Astigmatism";
-    private double angle;
-    private boolean angleWasSet = false;
-    private DefocusFunction defocus = null;
 
     public PhasorAstigmatismCalibrationEstimatorUI() {
         super();
@@ -66,16 +63,10 @@ public class PhasorAstigmatismCalibrationEstimatorUI extends PhasorEstimatorUI i
     }
 
     public void setAngle(double fixedAngle) {
-        this.angle = fixedAngle;
-        angleWasSet = true;
+        double angle = fixedAngle;
     }
 
     public void setDefocusModel(DefocusFunction defocus) {
-        this.defocus = defocus;
-    }
-
-    public void unsetAngle() {
-        angleWasSet = false;
     }
 
     public int getFitradius() {
@@ -84,11 +75,7 @@ public class PhasorAstigmatismCalibrationEstimatorUI extends PhasorEstimatorUI i
     
     @Override
     public IEstimator getImplementation() {
-        //String method = METHOD.getValue();
-        //double sigma = SIGMA.getValue();
         int fitradius = FITRAD.getValue();
-        //PSFModel psf = angleWasSet ? new EllipticGaussianPSF(sigma, angle) : new EllipticGaussianWAnglePSF(sigma, 0);
         return new MultipleLocationsImageFitting(fitradius, new PhasorFitter(fitradius));
-        //throw new IllegalArgumentException("Unknown fitting method: " + method);
     }
 }

@@ -8,7 +8,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
 
-public class PhasorAstigmaticCalibrationProcess extends PhasorAbstractCalibrationProcess {
+public class PhasorAstigmaticCalibrationProcess extends AbstractCalibrationProcess {
 
     // processing
     ImagePlus imp;
@@ -19,8 +19,8 @@ public class PhasorAstigmaticCalibrationProcess extends PhasorAbstractCalibratio
 
     public PhasorAstigmaticCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
                                         PhasorAstigmatismCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
-                                        double stageStep, double zRangeLimit, ImagePlus imp, Roi roi, double zzeropos) {
-        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, zzeropos);
+                                        double stageStep, double zRangeLimit, ImagePlus imp, Roi roi, boolean z0InMiddleOfStack) {
+        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, z0InMiddleOfStack);
         this.imp = imp;
         this.roi = roi;
     }

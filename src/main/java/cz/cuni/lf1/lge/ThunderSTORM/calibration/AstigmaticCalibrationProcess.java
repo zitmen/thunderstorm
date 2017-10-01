@@ -18,8 +18,8 @@ public class AstigmaticCalibrationProcess extends AbstractCalibrationProcess {
 
     public AstigmaticCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
                                         AstigmatismCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
-                                        double stageStep, double zRangeLimit, ImagePlus imp, Roi roi, double zzeropos) {
-        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, zzeropos);
+                                        double stageStep, double zRangeLimit, ImagePlus imp, Roi roi, boolean z0InMiddleOfStack) {
+        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit, z0InMiddleOfStack);
         this.imp = imp;
         this.roi = roi;
     }

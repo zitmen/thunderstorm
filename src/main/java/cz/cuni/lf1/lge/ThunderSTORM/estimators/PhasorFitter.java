@@ -1,13 +1,9 @@
 package cz.cuni.lf1.lge.ThunderSTORM.estimators;
 
-//import cz.cuni.lf1.lge.ThunderSTORM.CameraSetupPlugIn;
 import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusCalibration;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel.Params;
-//import net.imagej.ops.filter.fft.CreateOutputFFTMethods;
-//import ij.IJ;
-//import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 
 /**
  * Rewritten to java from the matlab implementation 
@@ -65,8 +61,6 @@ public class PhasorFitter implements IOneLocationFitter {
     //Fitting below
     @Override
     public Molecule fit(SubImage img) {
-    //long startTime = System.nanoTime();
-        
         //Variable initiation
         double totResult[] = new double[6];   
         double omega = 2.0 * Math.PI / img.size_x;
@@ -78,12 +72,12 @@ public class PhasorFitter implements IOneLocationFitter {
             for (int x = 0; x < img.size_x; x++) {
                 totalint += img.values[x+y*img.size_x];
             }
-	}
+	    }
         for (int y = 0; y < img.size_x; y++) {
             for (int x = 0; x < img.size_x; x++) {
                 axy[x][y] = img.values[x+y*img.size_x]/totalint;
             }
-	}
+	    }
         //Do the partial Fourier transformation (only acquiring first order harmonics)
         totResult = twoDfft(axy,fitcos,fitsin);
         //Re-assign variables to something readable
@@ -151,6 +145,7 @@ public class PhasorFitter implements IOneLocationFitter {
         
         return new Molecule(new Params(new int[]{PSFModel.Params.X, PSFModel.Params.Y, PSFModel.Params.Z, PSFModel.Params.SIGMA1, PSFModel.Params.SIGMA2}, parameters,  false));
     }
+
     public static double[] twoDfft(double[][] inputData, double[] cos, double[] sin) 
     {
         //Initialize variables

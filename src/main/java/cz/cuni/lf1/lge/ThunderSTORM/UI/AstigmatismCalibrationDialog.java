@@ -33,24 +33,25 @@ import java.util.concurrent.Future;
 
 public class AstigmatismCalibrationDialog extends DialogStub implements ActionListener {
 
-    ParameterKey.Double stageStep;
-    ParameterKey.Double zRangeLimit;
-    ParameterKey.String calibrationFilePath;
-    ParameterKey.String filterName;
-    ParameterKey.String detectorName;
-    ParameterKey.String estimatorName;
-    ParameterKey.String defocusName;
-    ParameterKey.String zzeropos;
+    private ParameterKey.Double stageStep;
+    private ParameterKey.Double zRangeLimit;
+    private ParameterKey.String calibrationFilePath;
+    private ParameterKey.String filterName;
+    private ParameterKey.String detectorName;
+    private ParameterKey.String estimatorName;
+    private ParameterKey.String defocusName;
+    private ParameterKey.String z0InMiddleOfStack;
 
-    protected transient ParameterKey.String ZZEROPOS;
-    
+    private final String z0Intersection = "Z=0 at intersection of polynomials";
+    private final String z0Middle = "Z=0 at middle of image stack";
+
     private List<IFilterUI> filters;
     private List<IDetectorUI> detectors;
     private List<IEstimatorUI> estimators;
     private List<DefocusFunction> defocusing;
     private ImagePlus imp;
-    ExecutorService previewThreadRunner = Executors.newSingleThreadExecutor();
-    Future<?> previewFuture = null;
+    private ExecutorService previewThreadRunner = Executors.newSingleThreadExecutor();
+    private Future<?> previewFuture = null;
 
     public AstigmatismCalibrationDialog(ImagePlus imp, List<IFilterUI> filters, List<IDetectorUI> detectors, List<IEstimatorUI> estimators, List<DefocusFunction> defocusing) {
         super(new ParameterTracker("thunderstorm.calibration"), IJ.getInstance(), "Calibration options");
@@ -63,8 +64,8 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
         detectorName = params.createStringField("detector", null, detectors.get(0).getName());
         estimatorName = params.createStringField("estimator", null, estimators.get(0).getName());
         defocusName = params.createStringField("defocusing", null, defocusing.get(0).getName());
-        
-        zzeropos = params.createStringField("ZzeroPosition", null, "Z=0 at intersection of polynomials");
+
+        z0InMiddleOfStack = params.createStringField("z0position", null, z0Intersection);
 
         this.filters = filters;
         this.detectors = detectors;
@@ -115,26 +116,25 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
         p.setBorder(BorderFactory.createTitledBorder("3D defocusing curve"));
         pane.add(p, componentConstraints);
 
-        JPanel aditionalOptions = new JPanel(new GridBagLayout());
-        aditionalOptions.setBorder(BorderFactory.createTitledBorder("Additional options"));
-        
+        JPanel additionalOptions = new JPanel(new GridBagLayout());
+        additionalOptions.setBorder(BorderFactory.createTitledBorder("Additional options"));
         
         ButtonGroup btnGroup = new ButtonGroup();
-        JRadioButton intersectionRadioButton = new JRadioButton("Z=0 at intersection of polynomials");
-        JRadioButton middleStackRadioButton = new JRadioButton("Z=0 at middle of image stack");
+        JRadioButton intersectionRadioButton = new JRadioButton(z0Intersection);
+        JRadioButton middleStackRadioButton = new JRadioButton(z0Middle);
         btnGroup.add(intersectionRadioButton);
         btnGroup.add(middleStackRadioButton);
-        zzeropos.registerComponent(btnGroup);
+        z0InMiddleOfStack.registerComponent(btnGroup);
                        
-        aditionalOptions.add(new JLabel("Z stage step [nm]:"), GridBagHelper.leftCol());
+        additionalOptions.add(new JLabel("Z stage step [nm]:"), GridBagHelper.leftCol());
         JTextField stageStepTextField = new JTextField("", 20);
         stageStep.registerComponent(stageStepTextField);
-        aditionalOptions.add(stageStepTextField, GridBagHelper.rightCol());
-        aditionalOptions.add(new JLabel("Z range limit [nm]:"), GridBagHelper.leftCol());
+        additionalOptions.add(stageStepTextField, GridBagHelper.rightCol());
+        additionalOptions.add(new JLabel("Z range limit [nm]:"), GridBagHelper.leftCol());
         JTextField zRangeTextField = new JTextField("", 20);
         zRangeLimit.registerComponent(zRangeTextField);
-        aditionalOptions.add(zRangeTextField, GridBagHelper.rightCol());
-        aditionalOptions.add(new JLabel("Save to file: "), GridBagHelper.leftCol());
+        additionalOptions.add(zRangeTextField, GridBagHelper.rightCol());
+        additionalOptions.add(new JLabel("Save to file: "), GridBagHelper.leftCol());
         JPanel calibrationPanel = new JPanel(new BorderLayout());
         JTextField calibrationFileTextField = new JTextField(15);
         calibrationFilePath.registerComponent(calibrationFileTextField);
@@ -142,11 +142,11 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
         calibrationPanel.add(createBrowseButton(calibrationFileTextField, true, new FileNameExtensionFilter("Yaml file", "yaml")), BorderLayout.EAST);
         GridBagConstraints gbc = GridBagHelper.rightCol();
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        aditionalOptions.add(calibrationPanel, gbc);
-        pane.add(aditionalOptions, componentConstraints);
-        aditionalOptions.add(new JLabel("Z calibration: "), GridBagHelper.leftCol());
-        aditionalOptions.add(intersectionRadioButton, GridBagHelper.rightCol());
-        aditionalOptions.add(middleStackRadioButton, GridBagHelper.rightCol());
+        additionalOptions.add(calibrationPanel, gbc);
+        additionalOptions.add(new JLabel("Z calibration: "), GridBagHelper.leftCol());
+        additionalOptions.add(intersectionRadioButton, GridBagHelper.rightCol());
+        additionalOptions.add(middleStackRadioButton, GridBagHelper.rightCol());
+        pane.add(additionalOptions, componentConstraints);
         
         JButton defaults = new JButton("Defaults");
         JButton preview = new JButton("Preview");
@@ -312,9 +312,8 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
         return zRangeLimit.getValue();
     }
 
-    public double getZZeroPos() {
-        if (zzeropos.getValue()=="Z=0 at middle of image stack"){return 1;}
-        else {return 0;}
+    public boolean getZ0InMiddleOfStack() {
+        return z0InMiddleOfStack.getValue().equals(z0Middle);
     }
     
     @Override
