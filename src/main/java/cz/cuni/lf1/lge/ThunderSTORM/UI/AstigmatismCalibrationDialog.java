@@ -82,7 +82,6 @@ public class AstigmatismCalibrationDialog extends DialogStub implements ActionLi
         componentConstraints.gridx = 0;
         componentConstraints.fill = GridBagConstraints.BOTH;
         componentConstraints.weightx = 1;
-
         JButton cameraSetup = new JButton("Camera setup");
         cameraSetup.addActionListener(new ActionListener() {
             @Override

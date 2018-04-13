@@ -3,5 +3,6 @@ cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI
 cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EllipticGaussianEstimatorUI
 cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.RadialSymmetryEstimatorUI
 cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.CenterOfMassEstimatorUI
-cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.PhasorFitterUI
+cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.PhasorFitterUI2D
+cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.PhasorFitterUI3D
 cz.cuni.lf1.lge.ThunderSTORM.estimators.EmptyEstimator

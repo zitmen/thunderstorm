@@ -24,8 +24,9 @@ import javax.swing.JTextField;
 
 public class PhasorEstimatorUI extends IEstimatorUI {
 
+    public transient static final String name = "Phasor";
     //
-    protected String name = "Phasor";
+    //protected String name = "Phasor";
     protected int fittingRadius;
     protected boolean fullImageFitting;
     protected CrowdedFieldEstimatorUI crowdedField;

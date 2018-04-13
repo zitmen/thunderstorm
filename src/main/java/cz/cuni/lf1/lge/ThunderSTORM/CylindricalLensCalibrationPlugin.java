@@ -65,6 +65,7 @@ public class CylindricalLensCalibrationPlugin implements PlugIn {
                 IJ.handleException(e);
             }
             AstigmatismCalibrationDialog dialog;
+            
             dialog = new AstigmatismCalibrationDialog(imp, filters, detectors, estimators, defocusFunctions);
             if(dialog.showAndGetResult() != JOptionPane.OK_OPTION) {
                 return;

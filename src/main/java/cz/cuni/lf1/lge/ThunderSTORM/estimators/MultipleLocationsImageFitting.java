@@ -101,8 +101,13 @@ public class MultipleLocationsImageFitting implements IEstimator {
                             psf.setX(psf.getX() + xInt + 0.5);
                             psf.setY(psf.getY() + yInt + 0.5);
                             psf.setDetections(null);
-                            appendGoodnessOfFit(psf, fitter, subImage);
-                            appendCalculatedUncertainty(psf);
+                            if (fitter instanceof PhasorFitter){
+                                //appendGoodnessOfFit(psf, fitter, subImage);
+                                //appendCalculatedUncertainty(psf);
+                            }else{
+                                appendGoodnessOfFit(psf, fitter, subImage);
+                                appendCalculatedUncertainty(psf);
+                            }
                             results.add(psf);
                         }
                     } else {

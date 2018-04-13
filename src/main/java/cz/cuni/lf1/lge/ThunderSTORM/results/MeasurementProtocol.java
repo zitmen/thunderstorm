@@ -9,9 +9,11 @@ import cz.cuni.lf1.lge.ThunderSTORM.calibration.DefocusFunction;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.EmptyDetector;
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.EmptyEstimator;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PhasorFitter;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EllipticGaussianEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IBiplaneEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.IEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.PhasorFitterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.EmptyFilter;
 import cz.cuni.lf1.lge.ThunderSTORM.filters.ui.IFilterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.OperationsHistoryPanel.Operation;
@@ -78,6 +80,11 @@ public class MeasurementProtocol {
         // tru only for astigmatism
         if (!this.isSet3d) {
             this.is3d = ((analysisEstimator != null) && (analysisEstimator instanceof EllipticGaussianEstimatorUI));
+            if (analysisEstimator instanceof PhasorFitterUI){
+                if (((PhasorFitterUI) analysisEstimator).getMethod() == "PhasorAstig"){
+                    this.is3d = true;
+                }
+            }
             this.isSet3d = true;
         }
         return this.is3d;

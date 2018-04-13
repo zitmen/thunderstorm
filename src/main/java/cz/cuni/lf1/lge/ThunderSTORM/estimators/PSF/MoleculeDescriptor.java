@@ -9,10 +9,13 @@ import static cz.cuni.lf1.lge.ThunderSTORM.util.MathProxy.*;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.EllipticGaussianEstimatorUI;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.SymmetricGaussianEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.PhasorEstimatorUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.ui.PhasorFitterUI;
 import cz.cuni.lf1.lge.ThunderSTORM.results.IJResultsTable;
 import cz.cuni.lf1.lge.ThunderSTORM.results.MeasurementProtocol;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
 import cz.cuni.lf1.lge.ThunderSTORM.util.VectorMath;
+import ij.IJ;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -336,11 +339,23 @@ public class MoleculeDescriptor implements Cloneable {
             } else if (protocol.analysisEstimator instanceof SymmetricGaussianEstimatorUI) {    // 2D? Gauss or IntGauss
                 fittingMethod = ((SymmetricGaussianEstimatorUI) protocol.analysisEstimator).getMethod();
                 tau = 2.0 * PI * bkgStd*bkgStd * (psfSigma2 + pixelSize*pixelSize/12.0) / (psfPhotons * pixelSize*pixelSize);
+            } else if (protocol.analysisEstimator instanceof PhasorFitterUI){//Phasor fitting - 2D or 3D
+                //For now, phasor gives uncertainly just like MLE/WLSQ - This is most definitely wrong, but still gives some relative value hopefully
+                fittingMethod = ((PhasorFitterUI) protocol.analysisEstimator).getMethod(); //Give either Phasor or PhasorAstig
+                if (fittingMethod == "PhasorAstig"){
+                    DaostormCalibration cal = ((PhasorFitterUI) protocol.analysisEstimator).getDaoCalibration();
+                    double l2 = abs(cal.getC1() * cal.getC2());
+                    double d2 = abs(cal.getD1() * cal.getD2());
+                    tau = 2.0 * PI * bkgStd*bkgStd * (psfSigma2*(1.0 + l2/d2) + pixelSize*pixelSize/12.0) / (psfPhotons * pixelSize*pixelSize);
+                }else{
+                    tau = 2.0 * PI * bkgStd*bkgStd * (psfSigma2 + pixelSize*pixelSize/12.0) / (psfPhotons * pixelSize*pixelSize);
+                }
             }
 
             if (fittingMethod != null) {
                 if (fittingMethod.equals(SymmetricGaussianEstimatorUI.MLE)
-                 || fittingMethod.equals(SymmetricGaussianEstimatorUI.WLSQ)) {
+                 || fittingMethod.equals(SymmetricGaussianEstimatorUI.WLSQ)
+                        || fittingMethod == "Phasor" || fittingMethod == "PhasorAstig") {
                     // Note: here we don't distinguish between MLE and WLSQ, however, there is a difference!
                     //       For details, see supplementary note for Mortensen 2010, Eq. (46), which shows an extra offset-dependent term!
                     return sqrt((gain * psfSigma2 + pixelSize*pixelSize/12.0) / psfPhotons * (1.0 + 4.0*tau + sqrt(2.0*tau/(1 + 4.0*tau))));
@@ -362,7 +377,14 @@ public class MoleculeDescriptor implements Cloneable {
             MeasurementProtocol protocol = IJResultsTable.getResultsTable().getMeasurementProtocol();
             if (!(protocol.analysisEstimator instanceof EllipticGaussianEstimatorUI)
                     || !(molecule.hasParam(LABEL_SIGMA1) && molecule.hasParam(LABEL_SIGMA2))) {
+                //Add mention of PhasorAstig - if it's astig, go on, else, throw error
+                if (protocol.analysisEstimator instanceof PhasorFitterUI){
+                    if (((PhasorFitterUI) protocol.analysisEstimator).getMethod() != "PhasorAstig"){
+                        throw new UncertaintyNotApplicableException("Axial uncertainty cannot be calculated for 2D estimate (missing sigma1, sigma2)!");
+                    }
+                }else{
                 throw new UncertaintyNotApplicableException("Axial uncertainty cannot be calculated for 2D estimate (missing sigma1, sigma2)!");
+                }
             }
 
             double gain, readout;
@@ -381,10 +403,19 @@ public class MoleculeDescriptor implements Cloneable {
             double zCoord = molecule.hasParam(LABEL_Z_REL)
                     ? molecule.getParam(LABEL_Z_REL, Units.NANOMETER)
                     : molecule.getParam(LABEL_Z, Units.NANOMETER);
-
-            DaostormCalibration cal = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).getDaoCalibration();
-            double l2 = abs(cal.getC1() * cal.getC2());
-            double d2 = abs(cal.getD1() * cal.getD2());
+            
+            double l2 = 0.0;
+            double d2 = 0.0;
+            if (protocol.analysisEstimator instanceof EllipticGaussianEstimatorUI){
+                DaostormCalibration cal = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).getDaoCalibration();
+                l2 = abs(cal.getC1() * cal.getC2());
+                d2 = abs(cal.getD1() * cal.getD2());
+            }
+            else if (protocol.analysisEstimator instanceof PhasorFitterUI){
+                DaostormCalibration cal = ((PhasorFitterUI) protocol.analysisEstimator).getDaoCalibration();
+                l2 = abs(cal.getC1() * cal.getC2());
+                d2 = abs(cal.getD1() * cal.getD2());
+            }
             double tau = 2.0 * PI * bkgStd*bkgStd * (psfSigma1*psfSigma2*(1.0 + l2/d2) + pixelSize*pixelSize/12.0) / (psfPhotons * pixelSize*pixelSize);
             double zLimit = sqrt(l2 + d2);  // singularity in CRLB - do not evaluate at positions beyond
             if (abs(zCoord) >= zLimit) return Double.POSITIVE_INFINITY;
@@ -394,10 +425,16 @@ public class MoleculeDescriptor implements Cloneable {
                                 / 2.0;  // finite pixel size and em gain compensation
             //
             double stdSigma;  // method-dependent parameter
-            String fittingMethod = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).getMethod();
+            String fittingMethod = "";
+            if (protocol.analysisEstimator instanceof EllipticGaussianEstimatorUI){
+                fittingMethod = ((EllipticGaussianEstimatorUI) protocol.analysisEstimator).getMethod();
+            } else if (protocol.analysisEstimator instanceof PhasorFitterUI){
+                fittingMethod = ((PhasorFitterUI) protocol.analysisEstimator).getMethod();
+            }
             if (fittingMethod != null) {
                 if (fittingMethod.equals(SymmetricGaussianEstimatorUI.MLE)
-                        || fittingMethod.equals(SymmetricGaussianEstimatorUI.WLSQ)) {
+                        || fittingMethod.equals(SymmetricGaussianEstimatorUI.WLSQ)
+                        || fittingMethod == "PhasorAstig") {
                     // Note: here we don't distinguish between MLE and WLSQ, however, there is a difference!
                     //       For details, see supplementary note for Mortensen 2010, Eq. (46), which shows an extra offset-dependent term!
                     stdSigma = sqrt(1 + 8.0 * tau + sqrt(9.0 * tau / (1.0 + 4.0 * tau))) * compensation / sqrt(psfPhotons);

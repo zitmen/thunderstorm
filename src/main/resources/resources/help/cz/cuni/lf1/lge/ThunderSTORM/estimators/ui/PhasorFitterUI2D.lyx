@@ -1,0 +1,266 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage[unicode=true] {hyperref}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Phasor
+\end_layout
+
+\begin_layout Standard
+The phasor algorithm is a simple, model-free and non-iterative localization
+algorithm, described in [1]. It is based on the principle that
+the first Fourier coefficient of a Fourier transform of a 1D or 2D
+image will provide information about the major constituent in the
+image. In case of single molecule localization, the major constituent
+is the PSF of an emitter. The first Fourier coefficient will directly provide
+information about the position and the FWHM of the PSF in the
+horizontal and vertical directions. As phasor localization is a model-free
+localization algorithm, it performs much faster than traditional Gaussian-based
+methods, with equal localization accuracies in all dimensions.
+\end_layout
+
+\begin_layout Standard
+Phasor localization perfoms best at relatively small
+ROI sizes compared to gaussian-based models. It is recommended to use a radius of  300nm (a
+total ROI size of 700x700nm). Astigmatic localization could
+benefit from slightly larger sub-image size if high signal-to-noise
+levels are achieved. The small ROI sizes are caused
+by the fact that the presence of high amounts of background
+in the ROI introduces errors in the phasor localization. 
+\end_layout
+
+\begin_layout Standard
+As phasor localization provides information about the width of the PSF in
+ X and Y, it can be used for astigmatic 3D positioning.
+ This requires a calibration curve (see 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{../estimators/ui/CalibrationEstimatorUI.html}{Calibration of the imaging
+ system}
+\end_layout
+
+\end_inset
+
+).
+ 
+\series bold
+Be aware that the calibration curve is dependent on the size of the sub-image
+ chosen for phasor! 
+\series default
+Use the same sub-image size for
+calibration and localization. As the ratio of the phasor magnitude is
+consistent amongst background levels, the calibration series can have
+a different background-to-noise ratio than the actual measurement.
+\end_layout
+
+\begin_layout Standard
+The basic principle behind the technique consists of the following steps:
+\end_layout
+
+\begin_layout Enumerate
+From the ROI around an approximate localization, perform a partial Fourier transformation and isolate
+the first Fourier coefficient in both X and Y direction.
+\end_layout
+
+\begin_layout Enumerate
+Plot the real and imaginary parts of the 2 coefficients in a phasor diagram
+- a 2D plotting tool with real and imaginary axis.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Calculate the phase angles corresponding to the 2 coefficients. This
+is a direct value for the normalized position of the emitter in the
+ROI.
+\end_layout
+
+\begin_layout Enumerate
+Calculate the phasor magnitudes. This is a value for the
+PSF width in X and Y.
+\end_layout
+
+\begin_layout Enumerate
+If applicable, calculate the Z-position based on two defocus curves
+as described in [2].
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+href{Estimators.html}{Sub-pixel 2D localization of molecules}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+\begin_layout Plain Layout
+\backslash
+href{FittingRegion.html}{Definition of the fitting region}
+\end_layout
+\end_inset
+\end_layout
+
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+\begin_layout Plain Layout
+\backslash
+href{../../calibration/DefocusModels.html}{Defocusing models}
+\end_layout
+\end_inset
+\end_layout
+
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+\begin_layout Plain Layout
+\backslash
+href{CalibrationEstimatorUI.html}{Calibration of the imaging system for the astigmatism method}
+\end_layout
+\end_inset
+\end_layout
+
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+\begin_layout Plain Layout
+\backslash
+href{PSF.html}{Point-spread function (PSF)}
+\end_layout
+\end_inset
+\end_layout
+
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+\begin_layout Plain Layout
+\backslash
+href{LocalizationUncertainty.html}{Localization uncertainty}
+\end_layout
+\end_inset
+\end_layout
+
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-6"
+
+\end_inset
+ Martens, K.J.A., Bader, A.N., Baas, S., Rieger, B.&amp; Hohlbein, J. (2017).
+ Phasor based single-molecule localization microscopy in 3D (pSMLM-3D): an algorithm for MHz localization rates using standard CPUs. 
+ https://doi.org/10.1101/191957
+Huang, B., Wang, W., Bates, M., & Zhuang, X.
+ (2008).
+ Three-dimensional super-resolution imaging by stochastic optical reconstruction
+ microscopy.
+ Science, 319(5864), 810-813.
+\end_layout
+
+\end_body
+\end_document
