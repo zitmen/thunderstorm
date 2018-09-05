@@ -1,3 +1,5 @@
+[![](https://travis-ci.com/zitmen/thunderstorm.svg?branch=master)](https://travis-ci.com/zitmen/thunderstorm)
+
 ## Links
   * [Cover page](http://zitmen.github.io/thunderstorm/)
   * [Documentation wiki](https://github.com/zitmen/thunderstorm/wiki)
