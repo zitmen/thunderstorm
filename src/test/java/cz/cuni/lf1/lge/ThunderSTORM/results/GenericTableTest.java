@@ -24,7 +24,7 @@ public class GenericTableTest {
     /**
      * Test of columnNamesEqual method, of class GenericTable.
      */
-    @Test
+/*    @Test
     public void testColumnNamesEqual() {
         System.out.println("columnNamesEqual");
         //
@@ -35,7 +35,7 @@ public class GenericTableTest {
         assertFalse(table.columnNamesEqual(new String[]{PSFModel.Params.LABEL_X}));
         assertFalse(table.columnNamesEqual(new String[]{PSFModel.Params.LABEL_Y}));
         assertFalse(table.columnNamesEqual(new String[]{PSFModel.Params.LABEL_X, PSFModel.Params.LABEL_Y, PSFModel.Params.LABEL_Z}));
-    }
+    }*/
     
     private class GenericTableImpl extends GenericTable<GenericTableWindow> {
 

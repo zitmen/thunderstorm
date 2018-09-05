@@ -36,7 +36,7 @@ public class IntegratedSymmetricGaussianPSFTest {
             values[i] = psf.getValue(params, xgrid[i], ygrid[i]);
         }
 
-        new ImagePlus("vals", new FloatProcessor(bigSubImageSize, bigSubImageSize, values)).show();
+        //new ImagePlus("vals", new FloatProcessor(bigSubImageSize, bigSubImageSize, values)).show();
         //Thread.sleep(20000);
     }
 

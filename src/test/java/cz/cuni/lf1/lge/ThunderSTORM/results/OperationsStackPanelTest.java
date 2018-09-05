@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 public class OperationsStackPanelTest {
 
-  @Test
+/*  @Test
   public void testAddOperation() throws InterruptedException {
 
     final OperationsHistoryPanel panel = new OperationsHistoryPanel();
@@ -64,5 +64,5 @@ public class OperationsStackPanelTest {
     f.setVisible(true);
     //Thread.sleep(10000);
 
-  }
+  }*/
 }

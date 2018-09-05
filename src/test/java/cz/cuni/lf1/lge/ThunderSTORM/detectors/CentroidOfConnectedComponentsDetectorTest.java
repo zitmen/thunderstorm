@@ -99,7 +99,7 @@ public class CentroidOfConnectedComponentsDetectorTest {
         */
     }
  
-    @Test
+/*    @Test
     public void testDetectMoleculeCandidates2() {
         // seven molecules close together that needs watershed segmentation to resolve them
         String basePath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -116,5 +116,5 @@ public class CentroidOfConnectedComponentsDetectorTest {
             assertTrue("in range", x >=0 && x <= fp.getWidth());
             assertTrue("in range", y >=0 && y <= fp.getWidth());
         }
-    }
+    }*/
 }
