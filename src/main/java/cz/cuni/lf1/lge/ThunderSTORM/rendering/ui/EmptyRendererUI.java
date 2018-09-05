@@ -1,57 +1,54 @@
+
 package cz.cuni.lf1.lge.ThunderSTORM.rendering.ui;
 
-import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
 import javax.swing.JPanel;
 
+import cz.cuni.lf1.lge.ThunderSTORM.rendering.IncrementalRenderingMethod;
+
 public class EmptyRendererUI extends AbstractRenderingUI {
-    
-    public EmptyRendererUI() {
-        super();
-        parameters.loadPrefs();
-    }
 
-    @Override
-    public String getName() {
-        return "No Renderer";
-    }
+	public EmptyRendererUI() {
+		super();
+		parameters.loadPrefs();
+	}
 
-    @Override
-    public JPanel getOptionsPanel() {
-        return null;
-    }
+	@Override
+	public String getName() {
+		return "No Renderer";
+	}
 
-    @Override
-    public void readParameters() {
-    }
+	@Override
+	public JPanel getOptionsPanel() {
+		return null;
+	}
 
-    @Override
-    public void setSize(double width, double height) {
-    }
+	@Override
+	public void readParameters() {}
 
-    @Override
-    public void recordOptions() {
-    }
+	@Override
+	public void setSize(double width, double height) {}
 
-    @Override
-    public void readMacroOptions(String options) {
-    }
+	@Override
+	public void recordOptions() {}
 
-    @Override
-    public int getRepaintFrequency() {
-        return 0;
-    }
+	@Override
+	public void readMacroOptions(String options) {}
 
-    @Override
-    public IncrementalRenderingMethod getImplementation() {
-        return null;
-    }
+	@Override
+	public int getRepaintFrequency() {
+		return 0;
+	}
 
-    @Override
-    public void resetToDefaults() {
-    }
+	@Override
+	public IncrementalRenderingMethod getImplementation() {
+		return null;
+	}
 
-    @Override
-    protected IncrementalRenderingMethod getMethod() {
-        return null;
-    }
+	@Override
+	public void resetToDefaults() {}
+
+	@Override
+	protected IncrementalRenderingMethod getMethod() {
+		return null;
+	}
 }

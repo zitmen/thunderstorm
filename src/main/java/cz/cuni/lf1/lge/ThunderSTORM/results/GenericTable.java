@@ -1,317 +1,333 @@
+
 package cz.cuni.lf1.lge.ThunderSTORM.results;
+
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
 
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
 import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
 import cz.cuni.lf1.lge.ThunderSTORM.util.Pair;
-import java.util.Vector;
-import javax.swing.JOptionPane;
 
 public abstract class GenericTable<TW extends GenericTableWindow> {
-    
-    public static final int COLUMN_NOT_FOUND = -1;
-    public static final int COLUMN_IN_USE = -2;
-    
-    public boolean forceHidden = false;
 
-    TW tableWindow;
-    TripleStateTableModel model;
+	public static final int COLUMN_NOT_FOUND = -1;
+	public static final int COLUMN_IN_USE = -2;
 
-    public TW getTableWindow() {
-        return tableWindow;
-    }
+	public boolean forceHidden = false;
 
-    public TripleStateTableModel getModel() {
-        return model;
-    }
-    
-    /**
-     * Constructs an empty ResultsTable with the counter=0 and no columns.
-     */
-    public GenericTable(TW tableWindow) {
-        this.tableWindow = tableWindow;
-        this.model = tableWindow.getModel();
-        this.tableWindow.packFrame();
-    }
-    
-    public void setColumnPreferredWidth(String columnName, int width) {
-        int col = findColumn(columnName);
-        if(col != COLUMN_NOT_FOUND) {
-            setColumnPreferredWidth(col, width);
-        }
-    }
-    
-    public void setColumnPreferredWidth(int columnIndex, int width) {
-        tableWindow.getView().getColumnModel().getColumn(columnIndex).setPreferredWidth(width);
-    }
-    
-    public boolean isForceHidden() {
-        return forceHidden;
-    }
-    
-    public void forceShow() {
-        forceHidden = false;
-        tableWindow.show();
-    }
-    
-    public void forceHide() {
-        forceHidden = true;
-        tableWindow.hide();
-    }
+	TW tableWindow;
+	TripleStateTableModel model;
 
-    /**
-     * Displays the contents of this ResultsTable in a window with the default
-     * title "ThunderSTORM: Results", or updates an existing results window.
-     * Opens a new window if there is no open results window.
-     */
-    public void show() {
-        if(!forceHidden) {
-            tableWindow.show();
-        } else {
-            JOptionPane.showMessageDialog(null,
-                    "ResultsTable is locked for processing now. Please wait until the processing is finished.",
-                    "Warning", JOptionPane.WARNING_MESSAGE);
-        }
-    }
+	public TW getTableWindow() {
+		return tableWindow;
+	}
 
-    /**
-     * Displays the contents of this ResultsTable in a window with the specified
-     * title, or updates an existing results window. Opens a new window if there
-     * is no open results window.
-     */
-    public void show(String windowTitle) {
-        if(!forceHidden) {
-            tableWindow.show(windowTitle);
-        } else {
-            JOptionPane.showMessageDialog(null,
-                    "ResultsTable is locked for processing now. Please wait until the processing is finished.",
-                    "Warning", JOptionPane.WARNING_MESSAGE);
-        }
-    }
+	public TripleStateTableModel getModel() {
+		return model;
+	}
 
-    public synchronized void reset() {
-        model.resetAll();
-    }
-    
-    //delegated methods from model
-    public void resetSelectedState() {
-        model.reset();
-    }
+	/**
+	 * Constructs an empty ResultsTable with the counter=0 and no columns.
+	 */
+	public GenericTable(TW tableWindow) {
+		this.tableWindow = tableWindow;
+		this.model = tableWindow.getModel();
+		this.tableWindow.packFrame();
+	}
 
-    public TripleStateTableModel.StateName getSelectedState() {
-        return model.getSelectedState();
-    }
+	public void setColumnPreferredWidth(String columnName, int width) {
+		int col = findColumn(columnName);
+		if (col != COLUMN_NOT_FOUND) {
+			setColumnPreferredWidth(col, width);
+		}
+	}
 
-    public void copyActualToUndo() {
-        model.copyActualToUndo();
-    }
+	public void setColumnPreferredWidth(int columnIndex, int width) {
+		tableWindow.getView().getColumnModel().getColumn(columnIndex).setPreferredWidth(width);
+	}
 
-    public void copyUndoToActual() {
-        model.copyUndoToActual();
-    }
+	public boolean isForceHidden() {
+		return forceHidden;
+	}
 
-    public void copyOriginalToActual() {
-        model.copyOriginalToActual();
-    }
+	public void forceShow() {
+		forceHidden = false;
+		tableWindow.show();
+	}
 
-    public void swapUndoAndActual() {
-        model.swapUndoAndActual();
-    }
+	public void forceHide() {
+		forceHidden = true;
+		tableWindow.hide();
+	}
 
-    public void setOriginalState() {
-        model.setOriginalState();
-    }
+	/**
+	 * Displays the contents of this ResultsTable in a window with the default
+	 * title "ThunderSTORM: Results", or updates an existing results window. Opens
+	 * a new window if there is no open results window.
+	 */
+	public void show() {
+		if (!forceHidden) {
+			tableWindow.show();
+		}
+		else {
+			JOptionPane.showMessageDialog(null,
+				"ResultsTable is locked for processing now. Please wait until the processing is finished.",
+				"Warning", JOptionPane.WARNING_MESSAGE);
+		}
+	}
 
-    public void setActualState() {
-        model.setActualState();
-    }
+	/**
+	 * Displays the contents of this ResultsTable in a window with the specified
+	 * title, or updates an existing results window. Opens a new window if there
+	 * is no open results window.
+	 */
+	public void show(String windowTitle) {
+		if (!forceHidden) {
+			tableWindow.show(windowTitle);
+		}
+		else {
+			JOptionPane.showMessageDialog(null,
+				"ResultsTable is locked for processing now. Please wait until the processing is finished.",
+				"Warning", JOptionPane.WARNING_MESSAGE);
+		}
+	}
 
-    public static Pair<String,MoleculeDescriptor.Units> parseColumnLabel(String columnLabel) {
-        return GenericTableModel.parseColumnLabel(columnLabel);
-    }
+	public synchronized void reset() {
+		model.resetAll();
+	}
 
-    public Double[] getColumnAsDoubleObjects(String columnName) {
-        return model.getColumnAsDoubleObjects(columnName, null);
-    }
-    
-    public Double[] getColumnAsDoubleObjects(String columnName, MoleculeDescriptor.Units units) {
-        return model.getColumnAsDoubleObjects(columnName, units);
-    }
+	// delegated methods from model
+	public void resetSelectedState() {
+		model.reset();
+	}
 
-    public double[] getColumnAsDoubles(String columnName) {
-        return model.getColumnAsDoubles(columnName, null);
-    }
-    
-    public double[] getColumnAsDoubles(String columnName, MoleculeDescriptor.Units units) {
-        return model.getColumnAsDoubles(columnName, units);
-    }
-    
-    // we usually work with model indices, but for example for row sorting
-    // we still need to do the conversion
-    public int convertViewRowIndexToModel(int viewRowIndex) {
-        return tableWindow.getView().convertRowIndexToModel(viewRowIndex);
-    }
-    
-    public int convertModelRowIndexToView(int modelRowIndex) {
-        return tableWindow.getView().convertRowIndexToView(modelRowIndex);
-    }
-    
-    public int convertViewColumnIndexToModel(int viewColumnIndex) {
-        return tableWindow.getView().convertColumnIndexToModel(viewColumnIndex);
-    }
-    
-    public int convertModelColumnIndexToView(int modelColumnIndex) {
-        return tableWindow.getView().convertColumnIndexToView(modelColumnIndex);
-    }
-    
-    public Molecule getRow(int index) {
-        return model.getRow(index);
-    }
-    
-    public int getNewId() {
-        return model.getNewId();
-    }
-    
-    public void insertIdColumn() {
-        model.insertIdColumn();
-    }
+	public TripleStateTableModel.StateName getSelectedState() {
+		return model.getSelectedState();
+	}
 
-    public int getRowCount() {
-        return model.getRowCount();
-    }
+	public void copyActualToUndo() {
+		model.copyActualToUndo();
+	}
 
-    public int getColumnCount() {
-        return model.getColumnCount();
-    }
+	public void copyUndoToActual() {
+		model.copyUndoToActual();
+	}
 
-    public String getColumnName(int columnIndex) {
-        return model.getColumnRealName(columnIndex);
-    }
-    
-    public String getColumnLabel(String columnName) {
-        return model.getColumnLabel(columnName);
-    }
-    
-    public Double getValue(int rowIndex, int columnIndex) {
-        return model.getValueAt(rowIndex, columnIndex);
-    }
+	public void copyOriginalToActual() {
+		model.copyOriginalToActual();
+	}
 
-    public Double getValue(int rowIndex, String columnName) {
-        return model.getValueAt(rowIndex, columnName);
-    }
+	public void swapUndoAndActual() {
+		model.swapUndoAndActual();
+	}
 
-    public synchronized int addRow(Molecule row) {
-        return model.addRow(row);
-    }
-    
-    public synchronized int addRow(double [] values) {
-        return model.addRow(values);
-    }
-    
-    public void setDescriptor(MoleculeDescriptor descriptor) {
-        model.setDescriptor(descriptor);
-    }
-    
-    public MoleculeDescriptor getDescriptor() {
-        return model.columns;
-    }
+	public void setOriginalState() {
+		model.setOriginalState();
+	}
 
-    public void deleteRow(int row) {
-        model.deleteRow(row);
-    }
-    
-    public void deleteColumn(String columnName) {
-        model.deleteColumn(columnName);
-    }
+	public void setActualState() {
+		model.setActualState();
+	}
 
-    public Vector<String> getColumnNames() {
-        return model.getColumnNames();
-    }
+	public static Pair<String, MoleculeDescriptor.Units> parseColumnLabel(String columnLabel) {
+		return GenericTableModel.parseColumnLabel(columnLabel);
+	}
 
-    public boolean columnNamesEqual(String[] names) {
-        if(getRowCount() == 0) return true; // if the table is empty then the colums are assumed to be empty
-        int checked = (columnExists(MoleculeDescriptor.LABEL_ID) ? 1 : 0);    // ignoring column id, if it is present in the table
-        for(int i = 0; i < names.length; i++) {
-            if(MoleculeDescriptor.LABEL_ID.equals(names[i])) {
-                continue;  // ignoring column id
-            }
-            if(columnExists(names[i])) {
-                checked++;
-            } else {
-                return false;
-            }
-        }
-        return (checked == getColumnCount());
-    }
+	public Double[] getColumnAsDoubleObjects(String columnName) {
+		return model.getColumnAsDoubleObjects(columnName, null);
+	}
 
-    public boolean columnExists(int column) {
-        return model.columnExists(column);
-    }
+	public Double[] getColumnAsDoubleObjects(String columnName, MoleculeDescriptor.Units units) {
+		return model.getColumnAsDoubleObjects(columnName, units);
+	}
 
-    public boolean columnExists(String columnName) {
-        return model.columnExists(columnName);
-    }
+	public double[] getColumnAsDoubles(String columnName) {
+		return model.getColumnAsDoubles(columnName, null);
+	}
 
-    public void filterRows(boolean[] keep) {
-        model.filterRows(keep);
-    }
+	public double[] getColumnAsDoubles(String columnName, MoleculeDescriptor.Units units) {
+		return model.getColumnAsDoubles(columnName, units);
+	}
 
-    public int findColumn(String columnName) {
-        return model.findColumn(columnName);
-    }
-    
-    public void setColumnUnits(String columnName, MoleculeDescriptor.Units new_units) {
-        setColumnUnits(model.findColumn(columnName), new_units);
-    }
-    
-    public void setColumnUnits(int columnIndex, MoleculeDescriptor.Units new_units) {
-        model.setColumnUnits(columnIndex, new_units);
-    }
-    
-    public MoleculeDescriptor.Units getColumnUnits(String columnName) {
-        return model.getColumnUnits(columnName);
-    }
-    
-    public MoleculeDescriptor.Units getColumnUnits(int columnIndex) {
-        return model.getColumnUnits(columnIndex);
-    }
-    
-    public boolean isEmpty() {
-        return model.rows.isEmpty();
-    }
+	// we usually work with model indices, but for example for row sorting
+	// we still need to do the conversion
+	public int convertViewRowIndexToModel(int viewRowIndex) {
+		return tableWindow.getView().convertRowIndexToModel(viewRowIndex);
+	}
 
-    public Vector<Molecule> getData() {
-        return model.rows;
-    }
+	public int convertModelRowIndexToView(int modelRowIndex) {
+		return tableWindow.getView().convertRowIndexToView(modelRowIndex);
+	}
 
-    public void setValueAt(Double value, int rowIndex, String columnName) {
-        setValueAt(value, rowIndex, findColumn(columnName));
-    }
+	public int convertViewColumnIndexToModel(int viewColumnIndex) {
+		return tableWindow.getView().convertColumnIndexToModel(viewColumnIndex);
+	}
 
-    public void setValueAt(Double value, int rowIndex, int columnIndex) {
-        model.setValueAt(value, rowIndex, columnIndex);
-    }
+	public int convertModelColumnIndexToView(int modelColumnIndex) {
+		return tableWindow.getView().convertColumnIndexToView(modelColumnIndex);
+	}
 
-    public void fireStructureChanged() {
-        model.fireTableStructureChanged();
-    }
-    
-    public void fireDataChanged() {
-        model.fireTableDataChanged();
-    }
-    
-    public void convertAllColumnsToAnalogUnits() {
-        model.convertAllColumnsToAnalogUnits();
-    }
-    
-    public void convertAllColumnsToDigitalUnits() {
-        model.convertAllColumnsToDigitalUnits();
-    }
+	public Molecule getRow(int index) {
+		return model.getRow(index);
+	}
 
-    public void sortTableByFrame() {
-        model.sortTableByColumn(MoleculeDescriptor.LABEL_FRAME);
-    }
+	public int getNewId() {
+		return model.getNewId();
+	}
 
-    public abstract String getFrameTitle();
-    public abstract String getTableIdentifier();
+	public void insertIdColumn() {
+		model.insertIdColumn();
+	}
+
+	public int getRowCount() {
+		return model.getRowCount();
+	}
+
+	public int getColumnCount() {
+		return model.getColumnCount();
+	}
+
+	public String getColumnName(int columnIndex) {
+		return model.getColumnRealName(columnIndex);
+	}
+
+	public String getColumnLabel(String columnName) {
+		return model.getColumnLabel(columnName);
+	}
+
+	public Double getValue(int rowIndex, int columnIndex) {
+		return model.getValueAt(rowIndex, columnIndex);
+	}
+
+	public Double getValue(int rowIndex, String columnName) {
+		return model.getValueAt(rowIndex, columnName);
+	}
+
+	public synchronized int addRow(Molecule row) {
+		return model.addRow(row);
+	}
+
+	public synchronized int addRow(double[] values) {
+		return model.addRow(values);
+	}
+
+	public void setDescriptor(MoleculeDescriptor descriptor) {
+		model.setDescriptor(descriptor);
+	}
+
+	public MoleculeDescriptor getDescriptor() {
+		return model.columns;
+	}
+
+	public void deleteRow(int row) {
+		model.deleteRow(row);
+	}
+
+	public void deleteColumn(String columnName) {
+		model.deleteColumn(columnName);
+	}
+
+	public Vector<String> getColumnNames() {
+		return model.getColumnNames();
+	}
+
+	public boolean columnNamesEqual(String[] names) {
+		if (getRowCount() == 0) return true; // if the table is empty then the
+																					// colums are assumed to be empty
+		int checked = (columnExists(MoleculeDescriptor.LABEL_ID) ? 1 : 0); // ignoring
+																																				// column
+																																				// id,
+																																				// if it
+																																				// is
+																																				// present
+																																				// in
+																																				// the
+																																				// table
+		for (int i = 0; i < names.length; i++) {
+			if (MoleculeDescriptor.LABEL_ID.equals(names[i])) {
+				continue; // ignoring column id
+			}
+			if (columnExists(names[i])) {
+				checked++;
+			}
+			else {
+				return false;
+			}
+		}
+		return (checked == getColumnCount());
+	}
+
+	public boolean columnExists(int column) {
+		return model.columnExists(column);
+	}
+
+	public boolean columnExists(String columnName) {
+		return model.columnExists(columnName);
+	}
+
+	public void filterRows(boolean[] keep) {
+		model.filterRows(keep);
+	}
+
+	public int findColumn(String columnName) {
+		return model.findColumn(columnName);
+	}
+
+	public void setColumnUnits(String columnName, MoleculeDescriptor.Units new_units) {
+		setColumnUnits(model.findColumn(columnName), new_units);
+	}
+
+	public void setColumnUnits(int columnIndex, MoleculeDescriptor.Units new_units) {
+		model.setColumnUnits(columnIndex, new_units);
+	}
+
+	public MoleculeDescriptor.Units getColumnUnits(String columnName) {
+		return model.getColumnUnits(columnName);
+	}
+
+	public MoleculeDescriptor.Units getColumnUnits(int columnIndex) {
+		return model.getColumnUnits(columnIndex);
+	}
+
+	public boolean isEmpty() {
+		return model.rows.isEmpty();
+	}
+
+	public Vector<Molecule> getData() {
+		return model.rows;
+	}
+
+	public void setValueAt(Double value, int rowIndex, String columnName) {
+		setValueAt(value, rowIndex, findColumn(columnName));
+	}
+
+	public void setValueAt(Double value, int rowIndex, int columnIndex) {
+		model.setValueAt(value, rowIndex, columnIndex);
+	}
+
+	public void fireStructureChanged() {
+		model.fireTableStructureChanged();
+	}
+
+	public void fireDataChanged() {
+		model.fireTableDataChanged();
+	}
+
+	public void convertAllColumnsToAnalogUnits() {
+		model.convertAllColumnsToAnalogUnits();
+	}
+
+	public void convertAllColumnsToDigitalUnits() {
+		model.convertAllColumnsToDigitalUnits();
+	}
+
+	public void sortTableByFrame() {
+		model.sortTableByColumn(MoleculeDescriptor.LABEL_FRAME);
+	}
+
+	public abstract String getFrameTitle();
+
+	public abstract String getTableIdentifier();
 
 }

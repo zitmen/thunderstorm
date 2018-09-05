@@ -1,3 +1,4 @@
+
 package cz.cuni.lf1.lge.ThunderSTORM.calibration;
 
 import cz.cuni.lf1.lge.ThunderSTORM.detectors.ui.IDetectorUI;
@@ -9,38 +10,41 @@ import ij.gui.Roi;
 
 public class AstigmaticCalibrationProcess extends AbstractCalibrationProcess {
 
-    // processing
-    ImagePlus imp;
-    Roi roi;
+	// processing
+	ImagePlus imp;
+	Roi roi;
 
-    // results
-    private PSFSeparator beadFits;
+	// results
+	private PSFSeparator beadFits;
 
-    public AstigmaticCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI, IDetectorUI selectedDetectorUI,
-                                        AstigmatismCalibrationEstimatorUI calibrationEstimatorUI, DefocusFunction defocusModel,
-                                        double stageStep, double zRangeLimit, ImagePlus imp, Roi roi) {
-        super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, stageStep, zRangeLimit);
-        this.imp = imp;
-        this.roi = roi;
-    }
+	public AstigmaticCalibrationProcess(CalibrationConfig config, IFilterUI selectedFilterUI,
+		IDetectorUI selectedDetectorUI, AstigmatismCalibrationEstimatorUI calibrationEstimatorUI,
+		DefocusFunction defocusModel, double stageStep, double zRangeLimit, ImagePlus imp, Roi roi)
+	{
+		super(config, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel,
+			stageStep, zRangeLimit);
+		this.imp = imp;
+		this.roi = roi;
+	}
 
-    @Override
-    public void runCalibration() {
-        angle = estimateAngle(imp, roi);
-        IJ.log("angle = " + angle);
+	@Override
+	public void runCalibration() {
+		angle = estimateAngle(imp, roi);
+		IJ.log("angle = " + angle);
 
-        beadFits = fitFixedAngle(angle, imp, roi, selectedFilterUI, selectedDetectorUI, calibrationEstimatorUI, defocusModel, config.showResultsTable);
-        fitQuadraticPolynomials(beadFits.getPositions());
-        IJ.log("s1 = " + polynomS1Final.toString());
-        IJ.log("s2 = " + polynomS2Final.toString());
-    }
+		beadFits = fitFixedAngle(angle, imp, roi, selectedFilterUI, selectedDetectorUI,
+			calibrationEstimatorUI, defocusModel, config.showResultsTable);
+		fitQuadraticPolynomials(beadFits.getPositions());
+		IJ.log("s1 = " + polynomS1Final.toString());
+		IJ.log("s2 = " + polynomS2Final.toString());
+	}
 
-    public DefocusCalibration getCalibration(DefocusFunction defocusModel) {
-        return defocusModel.getCalibration(angle, null, polynomS1Final, polynomS2Final);
-    }
+	public DefocusCalibration getCalibration(DefocusFunction defocusModel) {
+		return defocusModel.getCalibration(angle, null, polynomS1Final, polynomS2Final);
+	}
 
-    @Override
-    public void drawOverlay() {
-        drawOverlay(imp, roi, beadFits.getAllFits(), usedPositions);
-    }
+	@Override
+	public void drawOverlay() {
+		drawOverlay(imp, roi, beadFits.getAllFits(), usedPositions);
+	}
 }

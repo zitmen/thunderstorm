@@ -1,107 +1,108 @@
+
 package cz.cuni.lf1.lge.ThunderSTORM;
+
+import javax.swing.JPanel;
 
 import cz.cuni.lf1.lge.ThunderSTORM.util.MacroUI.ParameterTracker;
 
-import javax.swing.*;
-
 /**
- * The interface every module has to implement.
- *
- * Module in this sense means a part of the ThunderSTORM which will appear in
- * the main window of this plugin. For example different filters, detectors or
- * estimators which are listed in the combo boxes in the
- * {@code AnalysisOptionsDialog}.
+ * The interface every module has to implement. Module in this sense means a
+ * part of the ThunderSTORM which will appear in the main window of this plugin.
+ * For example different filters, detectors or estimators which are listed in
+ * the combo boxes in the {@code AnalysisOptionsDialog}.
  * 
  * @param <T> Module Interface
  */
 public abstract class IModuleUI<T extends IModule> {
 
-    transient ThreadLocal<T> threadLocalImplementation;
-    transient protected ParameterTracker parameters = new ParameterTracker(getPreferencesPrefix());
+	transient ThreadLocal<T> threadLocalImplementation;
+	transient protected ParameterTracker parameters = new ParameterTracker(getPreferencesPrefix());
 
-    public IModuleUI() {
-        parameters.setNoGuiParametersAllowed(true);
-        threadLocalImplementation = new ThreadLocal<T>() {
-            @Override
-            protected T initialValue() {
-                return getImplementation();
-            }
-        };
-    }
+	public IModuleUI() {
+		parameters.setNoGuiParametersAllowed(true);
+		threadLocalImplementation = new ThreadLocal<T>() {
 
-    /**
-     * Return name of a module.
-     *
-     * @return name of a module
-     */
-    public abstract String getName();
+			@Override
+			protected T initialValue() {
+				return getImplementation();
+			}
+		};
+	}
 
-    /**
-     * Panel with possible settings of a module.
-     *
-     * @return an instance of JPanel containing GUI controls necessary to
-     * recieve module settings from an user
-     */
-    public abstract JPanel getOptionsPanel();
+	/**
+	 * Return name of a module.
+	 *
+	 * @return name of a module
+	 */
+	public abstract String getName();
 
-    /**
-     * Read the parameters back from the GUI controls after used submited them.
-     */
-    public void readParameters() {
-        parameters.readDialogOptions();
-        parameters.savePrefs();
-    }
+	/**
+	 * Panel with possible settings of a module.
+	 *
+	 * @return an instance of JPanel containing GUI controls necessary to recieve
+	 *         module settings from an user
+	 */
+	public abstract JPanel getOptionsPanel();
 
-    protected String getPreferencesPrefix(){
-        return "thunderstorm";
-    }
+	/**
+	 * Read the parameters back from the GUI controls after used submited them.
+	 */
+	public void readParameters() {
+		parameters.readDialogOptions();
+		parameters.savePrefs();
+	}
 
-    public void resetToDefaults() {
-        parameters.resetToDefaults(true);
-    }
+	protected String getPreferencesPrefix() {
+		return "thunderstorm";
+	}
 
-    /**
-     * Record the module parameters to the imagej macro recorder. Use
-     * {@code Recorder.recordOption(name, value)}. The parameter should not
-     * conflict with other modules.
-     */
-    public void recordOptions() {
-        parameters.recordMacroOptions();
-    }
+	public void resetToDefaults() {
+		parameters.resetToDefaults(true);
+	}
 
-    /**
-     * Read the parameters from macro options string. Use
-     * {@code Macro.getValue(options, name, defaultValue)} to get individual
-     * parameter values.
-     *
-     * @param options String with options passed by
-     * {@code IJ.run(command, options)}.
-     */
-    public void readMacroOptions(String options) {
-        parameters.readMacroOptions();
-    }
+	/**
+	 * Record the module parameters to the imagej macro recorder. Use
+	 * {@code Recorder.recordOption(name, value)}. The parameter should not
+	 * conflict with other modules.
+	 */
+	public void recordOptions() {
+		parameters.recordMacroOptions();
+	}
 
-    protected ParameterTracker getParameterTracker() {
-        return parameters;
-    }
+	/**
+	 * Read the parameters from macro options string. Use
+	 * {@code Macro.getValue(options, name, defaultValue)} to get individual
+	 * parameter values.
+	 *
+	 * @param options String with options passed by
+	 *          {@code IJ.run(command, options)}.
+	 */
+	public void readMacroOptions(String options) {
+		parameters.readMacroOptions();
+	}
 
-    /**
-     * Returns the object that does the actual calculation. The object returned
-     * <b>must be thread safe or a new Object must be returned</b> for each
-     * invocation of this method.
-     */
-    public abstract T getImplementation();
+	protected ParameterTracker getParameterTracker() {
+		return parameters;
+	}
 
-    public T getThreadLocalImplementation() {
-        return threadLocalImplementation.get();
-    }
+	/**
+	 * Returns the object that does the actual calculation. The object returned
+	 * <b>must be thread safe or a new Object must be returned</b> for each
+	 * invocation of this method.
+	 */
+	public abstract T getImplementation();
 
-    public void resetThreadLocal() {
-        threadLocalImplementation = new ThreadLocal<T>() {
-            @Override
-            protected T initialValue() {
-                return getImplementation();
-            }
-        };
-    }
+	public T getThreadLocalImplementation() {
+		return threadLocalImplementation.get();
+	}
+
+	public void resetThreadLocal() {
+		threadLocalImplementation = new ThreadLocal<T>() {
+
+			@Override
+			protected T initialValue() {
+				return getImplementation();
+			}
+		};
+	}
 }

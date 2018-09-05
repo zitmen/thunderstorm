@@ -1,13 +1,6 @@
+
 package cz.cuni.lf1.lge.ThunderSTORM.results;
 
-import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
-import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
-import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
-import ij.IJ;
-import ij.WindowManager;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -29,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -42,314 +36,346 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import cz.cuni.lf1.lge.ThunderSTORM.ImportExportPlugIn;
+import cz.cuni.lf1.lge.ThunderSTORM.UI.GUI;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.Molecule;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.MoleculeDescriptor.Units;
+import cz.cuni.lf1.lge.ThunderSTORM.estimators.PSF.PSFModel;
+import ij.IJ;
+import ij.WindowManager;
+
 public class GenericTableWindow {
 
-    protected JFrame frame;
-    protected ColoredTable table;
-    protected final TripleStateTableModel model;
-    protected JScrollPane tableScrollPane;
+	protected JFrame frame;
+	protected ColoredTable table;
+	protected final TripleStateTableModel model;
+	protected JScrollPane tableScrollPane;
 
-    public GenericTableWindow(String frameTitle) {
-        frame = new JFrame(frameTitle);
-        frame.setIconImage(IJ.getInstance().getIconImage());
-        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        //
-        model = new TripleStateTableModel();
-        table = new ColoredTable(model);
-        TableRowSorter<TripleStateTableModel> sorter = new TableRowSorter<TripleStateTableModel>(model);
-        table.setRowSorter(sorter);
-        //
-        table.getTableHeader().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                tableHeaderMouseClicked(e);
-            }
-        });
-        table.setDropTarget(new TableDropTarget());
-        tableScrollPane = new JScrollPane(table);
-        tableScrollPane.setDropTarget(new TableDropTarget());
-        table.addMouseMotionListener(new MouseMotionListener() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                tableMouseDragged(e);
-            }
+	public GenericTableWindow(String frameTitle) {
+		frame = new JFrame(frameTitle);
+		frame.setIconImage(IJ.getInstance().getIconImage());
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		//
+		model = new TripleStateTableModel();
+		table = new ColoredTable(model);
+		TableRowSorter<TripleStateTableModel> sorter = new TableRowSorter<TripleStateTableModel>(model);
+		table.setRowSorter(sorter);
+		//
+		table.getTableHeader().addMouseListener(new MouseAdapter() {
 
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                tableMouseMoved(e);
-            }
-        });
-        table.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                tableMouseClicked(e);
-            }
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				tableHeaderMouseClicked(e);
+			}
+		});
+		table.setDropTarget(new TableDropTarget());
+		tableScrollPane = new JScrollPane(table);
+		tableScrollPane.setDropTarget(new TableDropTarget());
+		table.addMouseMotionListener(new MouseMotionListener() {
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-                tableMousePressed(e);
-            }
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				tableMouseDragged(e);
+			}
 
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                tableMouseReleased(e);
-            }
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				tableMouseMoved(e);
+			}
+		});
+		table.addMouseListener(new MouseListener() {
 
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                tableMouseEntered(e);
-            }
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				tableMouseClicked(e);
+			}
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                tableMouseExited(e);
-            }
-        });
-    }
+			@Override
+			public void mousePressed(MouseEvent e) {
+				tableMousePressed(e);
+			}
 
-    protected void packFrame() {
-        Container contentPane = frame.getContentPane();
-        contentPane.add(tableScrollPane);
-        frame.setContentPane(contentPane);
-        frame.pack();
-    }
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				tableMouseReleased(e);
+			}
 
-    public TripleStateTableModel getModel() {
-        return (TripleStateTableModel) table.getModel();
-    }
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				tableMouseEntered(e);
+			}
 
-    public JTable getView() {
-        return table;
-    }
+			@Override
+			public void mouseExited(MouseEvent e) {
+				tableMouseExited(e);
+			}
+		});
+	}
 
-    public void show(String title) {
-        frame.setTitle(title);
-        show();
-    }
+	protected void packFrame() {
+		Container contentPane = frame.getContentPane();
+		contentPane.add(tableScrollPane);
+		frame.setContentPane(contentPane);
+		frame.pack();
+	}
 
-    public void show() {
-        WindowManager.addWindow(frame); // ImageJ's own Window Manager
-        GUI.runOnUIThreadAndWait(new Runnable() {
-            @Override
-            public void run() {
-                frame.setVisible(true);
-            }
-        });
-        WindowManager.setWindow(frame); // ImageJ's own Window Manager
-    }
+	public TripleStateTableModel getModel() {
+		return (TripleStateTableModel) table.getModel();
+	}
 
-    public void hide() {
-        frame.setVisible(false);
-        WindowManager.removeWindow(frame); // ImageJ's own Window Manager
-    }
+	public JTable getView() {
+		return table;
+	}
 
-    public boolean isVisible() {
-        return frame.isVisible();
-    }
+	public void show(String title) {
+		frame.setTitle(title);
+		show();
+	}
 
-    private class UnitsContextMenu implements ActionListener {
+	public void show() {
+		WindowManager.addWindow(frame); // ImageJ's own Window Manager
+		GUI.runOnUIThreadAndWait(new Runnable() {
 
-        private int column;
+			@Override
+			public void run() {
+				frame.setVisible(true);
+			}
+		});
+		WindowManager.setWindow(frame); // ImageJ's own Window Manager
+	}
 
-        public UnitsContextMenu(MouseEvent e, int column) {
-            this.column = column;
-            Units selected = model.getColumnUnits(column);
-            JPopupMenu popup = new JPopupMenu();
-            //
-            if(MoleculeDescriptor.LABEL_ID.equals(model.getColumnRealName(column))) {
-                JMenuItem item;
-                item = new JMenuItem("convert all to digital units");
-                item.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        model.convertAllColumnsToDigitalUnits();
-                        if(GenericTableWindow.this instanceof ResultsTableWindow) {
-                            TableHandlerPlugin.recordChangeAllUnits(false);
-                        }
-                    }
-                });
-                popup.add(item);
-                item = new JMenuItem("convert all to analog units");
-                item.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        model.convertAllColumnsToAnalogUnits();
-                        if(GenericTableWindow.this instanceof ResultsTableWindow) {
-                            TableHandlerPlugin.recordChangeAllUnits(true);
-                        }
-                    }
-                });
-                popup.add(item);
-            } else if(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY.equals(model.getColumnRealName(column))) {
-                JMenuItem item = new JMenuItem("recalculate");
-                item.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            model.calculateUncertaintyXY();
-                        } catch (MoleculeDescriptor.Fitting.UncertaintyNotApplicableException ex) {
-                            IJ.log("Cannot calculate lateral uncertainty: " + ex.getMessage());
-                        } catch (NullPointerException ex) {
-                            IJ.log("Measurement protocol wasn't set properly to calculate uncertainty!");
-                        }
-                    }
-                });
-                popup.add(item);
-                popup.add(new JSeparator());
-            } else if(MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z.equals(model.getColumnRealName(column))) {
-                JMenuItem item = new JMenuItem("recalculate");
-                item.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            model.calculateUncertaintyZ();
-                        } catch (MoleculeDescriptor.Fitting.UncertaintyNotApplicableException ex) {
-                            IJ.log("Cannot calculate axial uncertainty: " + ex.getMessage());
-                        } catch (NullPointerException ex) {
-                            IJ.log("Measurement protocol wasn't set properly to calculate uncertainty!");
-                        }
-                    }
-                });
-                popup.add(item);
-                popup.add(new JSeparator());
-            }
-            //
-            JRadioButtonMenuItem menuItem;
-            for(Units unit : Units.getCompatibleUnits(selected)) {
-                if(unit == Units.UNITLESS) {
-                    continue;
-                }
-                if((PSFModel.Params.LABEL_Z.equals(model.getColumnRealName(column)))
-                        || (PSFModel.Params.LABEL_Z_REL.equals(model.getColumnRealName(column)))) {
-                    if(unit == Units.PIXEL) {
-                        continue;   // z-position can't be converted to pixels
-                    }
-                }
-                menuItem = new JRadioButtonMenuItem(unit.getLabel(), unit == selected);
-                menuItem.addActionListener(this);
-                popup.add(menuItem);
-            }
-            popup.show(e.getComponent(), e.getX(), e.getY());
-        }
+	public void hide() {
+		frame.setVisible(false);
+		WindowManager.removeWindow(frame); // ImageJ's own Window Manager
+	}
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Units target = Units.fromString(e.getActionCommand());
-            if(model.getColumnUnits(column) == target) {
-                return;    // nothing to do here
-            }
-            String colName = model.getColumnRealName(column);
-            if(PSFModel.Params.LABEL_X.equals(colName) || PSFModel.Params.LABEL_Y.equals(colName)) {
-                // ensure that X and Y are always in same units!
-                model.setColumnUnits(PSFModel.Params.LABEL_X, target);
-                model.setColumnUnits(PSFModel.Params.LABEL_Y, target);
-            } else {
-                model.setColumnUnits(column, target);
-            }
-            if(GenericTableWindow.this instanceof ResultsTableWindow) {
-                TableHandlerPlugin.recordChangeColumnUnits(colName, target);
-            }
-        }
-    }
+	public boolean isVisible() {
+		return frame.isVisible();
+	}
 
-    private class TableDropTarget extends DropTarget {
+	private class UnitsContextMenu implements ActionListener {
 
-        @Override
-        public synchronized void drop(DropTargetDropEvent dtde) {
-            dtde.acceptDrop(DnDConstants.ACTION_REFERENCE);
-            Transferable t = dtde.getTransferable();
-            List fileList;
-            try {
-                fileList = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
-            } catch(UnsupportedFlavorException ex) {
-                return;
-            } catch(IOException ex) {
-                return;
-            }
-            File f = (File) fileList.get(0);
-            dropFile(f);
-        }
-    }
+		private int column;
 
-    protected void dropFile(File f) {
-        new ImportExportPlugIn(f.getAbsolutePath()).run(ImportExportPlugIn.IMPORT + IJResultsTable.IDENTIFIER);
-    }
+		public UnitsContextMenu(MouseEvent e, int column) {
+			this.column = column;
+			Units selected = model.getColumnUnits(column);
+			JPopupMenu popup = new JPopupMenu();
+			//
+			if (MoleculeDescriptor.LABEL_ID.equals(model.getColumnRealName(column))) {
+				JMenuItem item;
+				item = new JMenuItem("convert all to digital units");
+				item.addActionListener(new ActionListener() {
 
-    protected void tableHeaderMouseClicked(MouseEvent e) {
-        if(SwingUtilities.isRightMouseButton(e)) {
-            new UnitsContextMenu(e, table.convertColumnIndexToModel(table.columnAtPoint(e.getPoint())));
-        }
-    }
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						model.convertAllColumnsToDigitalUnits();
+						if (GenericTableWindow.this instanceof ResultsTableWindow) {
+							TableHandlerPlugin.recordChangeAllUnits(false);
+						}
+					}
+				});
+				popup.add(item);
+				item = new JMenuItem("convert all to analog units");
+				item.addActionListener(new ActionListener() {
 
-    protected void tableMouseDragged(MouseEvent e) {
-        //
-    }
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						model.convertAllColumnsToAnalogUnits();
+						if (GenericTableWindow.this instanceof ResultsTableWindow) {
+							TableHandlerPlugin.recordChangeAllUnits(true);
+						}
+					}
+				});
+				popup.add(item);
+			}
+			else if (MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_XY.equals(model.getColumnRealName(
+				column)))
+			{
+				JMenuItem item = new JMenuItem("recalculate");
+				item.addActionListener(new ActionListener() {
 
-    protected void tableMouseMoved(MouseEvent e) {
-        //
-    }
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try {
+							model.calculateUncertaintyXY();
+						}
+						catch (MoleculeDescriptor.Fitting.UncertaintyNotApplicableException ex) {
+							IJ.log("Cannot calculate lateral uncertainty: " + ex.getMessage());
+						}
+						catch (NullPointerException ex) {
+							IJ.log("Measurement protocol wasn't set properly to calculate uncertainty!");
+						}
+					}
+				});
+				popup.add(item);
+				popup.add(new JSeparator());
+			}
+			else if (MoleculeDescriptor.Fitting.LABEL_UNCERTAINTY_Z.equals(model.getColumnRealName(
+				column)))
+			{
+				JMenuItem item = new JMenuItem("recalculate");
+				item.addActionListener(new ActionListener() {
 
-    protected void tableMouseClicked(MouseEvent e) {
-        //
-    }
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try {
+							model.calculateUncertaintyZ();
+						}
+						catch (MoleculeDescriptor.Fitting.UncertaintyNotApplicableException ex) {
+							IJ.log("Cannot calculate axial uncertainty: " + ex.getMessage());
+						}
+						catch (NullPointerException ex) {
+							IJ.log("Measurement protocol wasn't set properly to calculate uncertainty!");
+						}
+					}
+				});
+				popup.add(item);
+				popup.add(new JSeparator());
+			}
+			//
+			JRadioButtonMenuItem menuItem;
+			for (Units unit : Units.getCompatibleUnits(selected)) {
+				if (unit == Units.UNITLESS) {
+					continue;
+				}
+				if ((PSFModel.Params.LABEL_Z.equals(model.getColumnRealName(column))) ||
+					(PSFModel.Params.LABEL_Z_REL.equals(model.getColumnRealName(column))))
+				{
+					if (unit == Units.PIXEL) {
+						continue; // z-position can't be converted to pixels
+					}
+				}
+				menuItem = new JRadioButtonMenuItem(unit.getLabel(), unit == selected);
+				menuItem.addActionListener(this);
+				popup.add(menuItem);
+			}
+			popup.show(e.getComponent(), e.getX(), e.getY());
+		}
 
-    protected void tableMousePressed(MouseEvent e) {
-        //
-    }
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Units target = Units.fromString(e.getActionCommand());
+			if (model.getColumnUnits(column) == target) {
+				return; // nothing to do here
+			}
+			String colName = model.getColumnRealName(column);
+			if (PSFModel.Params.LABEL_X.equals(colName) || PSFModel.Params.LABEL_Y.equals(colName)) {
+				// ensure that X and Y are always in same units!
+				model.setColumnUnits(PSFModel.Params.LABEL_X, target);
+				model.setColumnUnits(PSFModel.Params.LABEL_Y, target);
+			}
+			else {
+				model.setColumnUnits(column, target);
+			}
+			if (GenericTableWindow.this instanceof ResultsTableWindow) {
+				TableHandlerPlugin.recordChangeColumnUnits(colName, target);
+			}
+		}
+	}
 
-    protected void tableMouseReleased(MouseEvent e) {
-        //
-    }
+	private class TableDropTarget extends DropTarget {
 
-    protected void tableMouseEntered(MouseEvent e) {
-        //
-    }
+		@Override
+		public synchronized void drop(DropTargetDropEvent dtde) {
+			dtde.acceptDrop(DnDConstants.ACTION_REFERENCE);
+			Transferable t = dtde.getTransferable();
+			List fileList;
+			try {
+				fileList = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+			}
+			catch (UnsupportedFlavorException ex) {
+				return;
+			}
+			catch (IOException ex) {
+				return;
+			}
+			File f = (File) fileList.get(0);
+			dropFile(f);
+		}
+	}
 
-    protected void tableMouseExited(MouseEvent e) {
-        //
-    }
+	protected void dropFile(File f) {
+		new ImportExportPlugIn(f.getAbsolutePath()).run(ImportExportPlugIn.IMPORT +
+			IJResultsTable.IDENTIFIER);
+	}
 
-    // =============================================================
-    public class ColoredTable extends JTable {
+	protected void tableHeaderMouseClicked(MouseEvent e) {
+		if (SwingUtilities.isRightMouseButton(e)) {
+			new UnitsContextMenu(e, table.convertColumnIndexToModel(table.columnAtPoint(e.getPoint())));
+		}
+	}
 
-        public final Color LIGHT_ORANGE = new Color(255, 222, 200);
-        public final Color LIGHT_RED = new Color(255, 222, 222);
-        public final Color LIGHT_GREEN = new Color(222, 255, 222);
+	protected void tableMouseDragged(MouseEvent e) {
+		//
+	}
 
-        public ColoredTable(TableModel dm) {
-            super(dm);
-        }
+	protected void tableMouseMoved(MouseEvent e) {
+		//
+	}
 
-        @Override
-        public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-            final Component c = super.prepareRenderer(renderer, row, column);
-            if (column < 0 || column >= getColumnCount()) return c;
-            if (row < 0 || row >= getRowCount()) return c;
+	protected void tableMouseClicked(MouseEvent e) {
+		//
+	}
 
-            NumberFormat formatter = NumberFormat.getInstance(Locale.ENGLISH);
-            ((DecimalFormat) formatter).setGroupingUsed(false);
-            ((JLabel) c).setText(formatter.format(getValueAt(row, column)));
-            if(!isCellSelected(row, column)) {
-                c.setBackground(null);
-                Molecule mol = ((GenericTableModel) super.getModel()).getRow(convertRowIndexToModel(row));
-                switch(mol.getStatus()) {
-                    case FALSE_POSITIVE:
-                        c.setBackground(LIGHT_RED);
-                        break;
+	protected void tableMousePressed(MouseEvent e) {
+		//
+	}
 
-                    case FALSE_NEGATIVE:
-                        c.setBackground(LIGHT_ORANGE);
-                        break;
+	protected void tableMouseReleased(MouseEvent e) {
+		//
+	}
 
-                    case TRUE_POSITIVE:
-                        c.setBackground(LIGHT_GREEN);
-                        break;
+	protected void tableMouseEntered(MouseEvent e) {
+		//
+	}
 
-                    default:
-                        c.setBackground(Color.WHITE);
-                }
-            }
-            return c;
-        }
-    }
+	protected void tableMouseExited(MouseEvent e) {
+		//
+	}
+
+	// =============================================================
+	public class ColoredTable extends JTable {
+
+		public final Color LIGHT_ORANGE = new Color(255, 222, 200);
+		public final Color LIGHT_RED = new Color(255, 222, 222);
+		public final Color LIGHT_GREEN = new Color(222, 255, 222);
+
+		public ColoredTable(TableModel dm) {
+			super(dm);
+		}
+
+		@Override
+		public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+			final Component c = super.prepareRenderer(renderer, row, column);
+			if (column < 0 || column >= getColumnCount()) return c;
+			if (row < 0 || row >= getRowCount()) return c;
+
+			NumberFormat formatter = NumberFormat.getInstance(Locale.ENGLISH);
+			((DecimalFormat) formatter).setGroupingUsed(false);
+			((JLabel) c).setText(formatter.format(getValueAt(row, column)));
+			if (!isCellSelected(row, column)) {
+				c.setBackground(null);
+				Molecule mol = ((GenericTableModel) super.getModel()).getRow(convertRowIndexToModel(row));
+				switch (mol.getStatus()) {
+					case FALSE_POSITIVE:
+						c.setBackground(LIGHT_RED);
+						break;
+
+					case FALSE_NEGATIVE:
+						c.setBackground(LIGHT_ORANGE);
+						break;
+
+					case TRUE_POSITIVE:
+						c.setBackground(LIGHT_GREEN);
+						break;
+
+					default:
+						c.setBackground(Color.WHITE);
+				}
+			}
+			return c;
+		}
+	}
 }

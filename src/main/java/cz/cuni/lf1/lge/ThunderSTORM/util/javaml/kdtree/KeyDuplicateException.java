@@ -23,24 +23,24 @@
  * based on work by Simon Levy
  * http://www.cs.wlu.edu/~levy/software/kd/
  */
+
 package cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree;
 
-
- /**
-  * KeyDuplicateException is thrown when the <TT>KDTree.insert</TT> method
-  * is invoked on a key already in the KDTree.
-  *
-  * @author      Simon Levy
-  * @version     %I%, %G%
-  * @since JDK1.2 
-  */
+/**
+ * KeyDuplicateException is thrown when the <TT>KDTree.insert</TT> method is
+ * invoked on a key already in the KDTree.
+ *
+ * @author Simon Levy
+ * @version %I%, %G%
+ * @since JDK1.2
+ */
 
 public class KeyDuplicateException extends RuntimeException {
 
-    protected KeyDuplicateException() {
-	super("Key already in tree");
-    }
-    
-    // arbitrary; every serializable class has to have one of these
-    public static final long serialVersionUID = 1L;
+	protected KeyDuplicateException() {
+		super("Key already in tree");
+	}
+
+	// arbitrary; every serializable class has to have one of these
+	public static final long serialVersionUID = 1L;
 }

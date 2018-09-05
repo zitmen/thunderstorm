@@ -23,16 +23,16 @@
  * based on work by Simon Levy
  * http://www.cs.wlu.edu/~levy/software/kd/
  */
-package cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree;
 
+package cz.cuni.lf1.lge.ThunderSTORM.util.javaml.kdtree;
 
 class KeyMissingException extends Exception {
 
-    public KeyMissingException() {
-	super("Key not found");
-    }
-    
-    // arbitrary; every serializable class has to have one of these
-    public static final long serialVersionUID = 3L;
-    
+	public KeyMissingException() {
+		super("Key not found");
+	}
+
+	// arbitrary; every serializable class has to have one of these
+	public static final long serialVersionUID = 3L;
+
 }
