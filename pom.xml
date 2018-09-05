@@ -150,8 +150,7 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>${gson.version}</version>
-		</dependency>
+			</dependency>
 
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -167,14 +166,12 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
-			<version>3.2</version>
-		</dependency>
+			</dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.1</version>
-		</dependency>
+			</dependency>
 
 		<dependency>
 			<groupId>commons-primitives</groupId>
