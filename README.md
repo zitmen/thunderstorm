@@ -6,7 +6,7 @@
   * My Ph.D. thesis [Computational methods in single molecule localization microscopy](https://www.researchgate.net/publication/311426573_Computational_methods_in_single_molecule_localization_microscopy) now available.
   * [Discussion group](http://groups.google.com/group/thunderstorm-users), [![Join the chat at https://gitter.im/thunder-storm/Lobby](https://badges.gitter.im/thunder-storm/Lobby.svg)](https://gitter.im/thunder-storm/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
   * [Issues](https://github.com/zitmen/thunderstorm/issues), [![Stories in Ready](https://badge.waffle.io/zitmen/thunderstorm.svg?label=ready&title=Ready)](http://waffle.io/zitmen/thunderstorm)
-  * [Releases](https://github.com/zitmen/thunderstorm/releases), [![Build Status](https://travis-ci.org/zitmen/thunderstorm.svg?branch=master)](https://travis-ci.org/zitmen/thunderstorm)
+  * [Releases](https://github.com/zitmen/thunderstorm/releases)
 
 <a href="https://github.com/zitmen/thunderstorm/releases/latest">
 <img src="https://raw.githubusercontent.com/zitmen/thunderstorm/gh-pages/images/thunderstorm-logo-download.png" />
