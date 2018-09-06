@@ -92,7 +92,7 @@
 	</issueManagement>
 	<ciManagement>
 		<system>Travis</system>
-		<url>https://travis-ci.org/zitmen/thunderstorm</url>
+		<url>https://travis-ci.com/zitmen/thunderstorm</url>
 	</ciManagement>
 
 	<dependencies>
