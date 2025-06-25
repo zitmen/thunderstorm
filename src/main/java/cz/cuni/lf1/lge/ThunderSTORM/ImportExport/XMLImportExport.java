@@ -8,154 +8,136 @@ import ij.IJ;
 
 import javax.xml.stream.*;
 import javax.xml.stream.events.*;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.*;
 
 public class XMLImportExport implements IImportExport {
-    
+
     static final String ROOT = "results";
     static final String ITEM = "molecule";
     static final String UNITS = "units";
-    
+
     @Override
     public void importFromFile(String fp, GenericTable table, int startingFrame) throws IOException {
-        assert(table != null);
-        assert(fp != null);
-        assert(!fp.isEmpty());
-        
-        //
-        // 1. Read the XML file into the hashmap
-        HashMap<String,String> units = null;
+        assert (table != null);
+        assert (fp != null && !fp.isEmpty());
+
+        HashMap<String, String> units = null;
         boolean filling_units = false;
-        ArrayList<HashMap<String,Double>> molecules = null;
-        HashMap<String,Double> molecule = null;
+        ArrayList<HashMap<String, Double>> molecules = null;
+        HashMap<String, Double> molecule = null;
         DecimalFormat df = StringFormatting.getDecimalFormat();
         boolean skipMolecule = false;
-        try {
-            // First create a new XMLInputFactory
+
+        try (InputStream in = new FileInputStream(fp)) {
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-            // Setup a new eventReader
-            InputStream in = new FileInputStream(fp);
             XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
-            while(eventReader.hasNext()) {
+
+            while (eventReader.hasNext()) {
                 XMLEvent event = eventReader.nextEvent();
 
-                if(event.isStartElement()) {
+                if (event.isStartElement()) {
                     StartElement startElement = event.asStartElement();
+                    String name = startElement.getName().getLocalPart();
 
-                    // the root element?
-                    if (startElement.getName().getLocalPart().equals(ROOT)) {
-                        molecules = new ArrayList<>();
-                        continue;
-                    }
-                    
-                    // the units element?
-                    if (startElement.getName().getLocalPart().equals(UNITS)) {
-                        units = new HashMap<>();
-                        filling_units = true;
-                        continue;
-                    }
-                    
-                    // an item element?
-                    if (startElement.getName().getLocalPart().equals(ITEM)) {
-                        molecule = new HashMap<>();
-                        continue;
-                    }
-
-                    // fill a new item
-                    if (event.isStartElement()) {
-                        String name = event.asStartElement().getName().getLocalPart();
-                        String value = eventReader.nextEvent().asCharacters().getData();
-                        if(filling_units) { // units
-                            units.put(name, value);
-                        } else {    // molecule
-                            try {
-                                molecule.put(name, df.parse(value).doubleValue());
-                            } catch (ParseException e) {
-                                skipMolecule = true;
+                    switch (name) {
+                        case ROOT:
+                            molecules = new ArrayList<>();
+                            break;
+                        case UNITS:
+                            units = new HashMap<>();
+                            filling_units = true;
+                            break;
+                        case ITEM:
+                            molecule = new HashMap<>();
+                            break;
+                        default:
+                            String value = eventReader.nextEvent().asCharacters().getData();
+                            if (filling_units) {
+                                units.put(name, value);
+                            } else {
+                                try {
+                                    molecule.put(name, df.parse(value).doubleValue());
+                                } catch (ParseException e) {
+                                    skipMolecule = true;
+                                }
                             }
-                        }
-                        continue;
                     }
-                } else if(event.isEndElement()) {
+                } else if (event.isEndElement()) {
                     EndElement endElement = event.asEndElement();
-                    
-                    // the units element?
-                    if (endElement.getName().getLocalPart().equals(UNITS)) {
-                        filling_units = false;
-                        continue;
-                    }
-                    
-                    // an item element?
-                    if (endElement.getName().getLocalPart().equals(ITEM)) {
-                        if (skipMolecule) {
-                            IJ.log("\\Update:Invalid number format! Skipping over...");
-                            skipMolecule = false;
-                        } else {
-                            molecules.add(molecule);
-                        }
-                        continue;
+                    String name = endElement.getName().getLocalPart();
+
+                    switch (name) {
+                        case UNITS:
+                            filling_units = false;
+                            break;
+                        case ITEM:
+                            if (skipMolecule) {
+                                IJ.log("\\Update:Invalid number format! Skipping over...");
+                                skipMolecule = false;
+                            } else {
+                                molecules.add(molecule);
+                            }
+                            break;
                     }
                 }
             }
         } catch (XMLStreamException ex) {
             throw new IOException(ex.toString());
         }
-        
-        //
-        // 2. Fill the table by values from the hashmap
-        if(molecules != null) {
-            double [] values = null;
-            String [] colnames = new String[1];
+
+        if (molecules != null) {
+            double[] values = null;
+            String[] colnames = new String[1];
             int r = 0, nrows = molecules.size();
-            for(HashMap<String,Double> mol : molecules) {
-                if(mol.size() != colnames.length) {
-                    if(mol.containsKey(MoleculeDescriptor.LABEL_ID)) {
-                        colnames = new String[mol.size()-1];
+
+            for (HashMap<String, Double> mol : molecules) {
+                if (mol.size() != colnames.length) {
+                    if (mol.containsKey(MoleculeDescriptor.LABEL_ID)) {
+                        colnames = new String[mol.size() - 1];
                     } else {
-                        colnames = new String[mol.size()-1];
+                        colnames = new String[mol.size()];
                     }
                 }
+
                 int ci = 0;
-                for(String key : mol.keySet()) {
-                    if(MoleculeDescriptor.LABEL_ID.equals(key)) continue;
-                    colnames[ci] = key;
-                    ci++;
+                for (String key : mol.keySet()) {
+                    if (MoleculeDescriptor.LABEL_ID.equals(key)) continue;
+                    colnames[ci++] = key;
                 }
-                if(!table.columnNamesEqual(colnames)) {
+
+                if (!table.columnNamesEqual(colnames)) {
                     throw new IOException("Labels in the file do not correspond to the header of the table (excluding '" + MoleculeDescriptor.LABEL_ID + "')!");
                 }
-                if(table.isEmpty()) {
+
+                if (table.isEmpty()) {
                     table.setDescriptor(new MoleculeDescriptor(colnames));
-                    if(units != null) {
-                        for(Entry<String,String> col : units.entrySet()) {
+                    if (units != null) {
+                        for (Map.Entry<String, String> col : units.entrySet()) {
                             table.setColumnUnits(col.getKey(), Units.fromString(col.getValue()));
                         }
                     }
                 }
-                if(values == null) {
+
+                if (values == null) {
                     values = new double[colnames.length];
                 }
-                //
-                for(int c = 0; c < colnames.length; c++) {
-                    if(MoleculeDescriptor.LABEL_ID.equals(colnames[c])) continue;
-                    values[c] = mol.get(colnames[c]).doubleValue();
-                    if(MoleculeDescriptor.LABEL_FRAME.equals(colnames[c])) {
-                        values[c] += startingFrame-1;
+
+                for (int c = 0; c < colnames.length; c++) {
+                    if (MoleculeDescriptor.LABEL_ID.equals(colnames[c])) continue;
+                    values[c] = mol.get(colnames[c]);
+                    if (MoleculeDescriptor.LABEL_FRAME.equals(colnames[c])) {
+                        values[c] += startingFrame - 1;
                     }
-                    IJ.showProgress((double)(r++) / (double)nrows);
+                    IJ.showProgress((double) (r++) / (double) nrows);
                 }
+
                 table.addRow(values);
             }
         }
+
         table.insertIdColumn();
         table.copyOriginalToActual();
         table.setActualState();
@@ -163,92 +145,73 @@ public class XMLImportExport implements IImportExport {
 
     @Override
     public void exportToFile(String fp, int floatPrecision, GenericTable table, List<String> columns) throws IOException {
-        assert(table != null);
-        assert(fp != null);
-        assert(!fp.isEmpty());
-        
-        // Create a XMLOutputFactory
-        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-        // Create XMLEventWriter
-        XMLEventWriter eventWriter;
-        try {
-            eventWriter = outputFactory.createXMLEventWriter(new FileOutputStream(fp));
-            
-            // Create a EventFactory
-            XMLEventFactory eventFactory = XMLEventFactory.newInstance();
-            XMLEvent tab = eventFactory.createDTD("\t");
-            XMLEvent end = eventFactory.createDTD("\n");
-            // Create and write Start Tag
-            StartDocument startDocument = eventFactory.createStartDocument();
-            eventWriter.add(startDocument);
-            eventWriter.add(end);
-
-            // Create open tag of the root element
-            StartElement resultsStartElement = eventFactory.createStartElement("", "", ROOT);
-            eventWriter.add(resultsStartElement);
-            eventWriter.add(end);
-            
-            int ncols = columns.size(), nrows = table.getRowCount();
-            
-            // Write columns headers with units
-            StartElement unitsStartElement = eventFactory.createStartElement("", "", UNITS);
-            eventWriter.add(tab);
-            eventWriter.add(unitsStartElement);
-            eventWriter.add(end);
-            for (String column1 : columns) {
-                String units = table.getColumnUnits(column1).toString();
-                if ((units != null) && !units.trim().isEmpty()) {
-                    createNode(eventWriter, column1, units);
-                }
-            }
-            eventWriter.add(tab);
-            eventWriter.add(eventFactory.createEndElement("", "", UNITS));
-            eventWriter.add(end);
-
-            DecimalFormat df = StringFormatting.getDecimalFormat(floatPrecision);
-
-            // Write molecules
-            for(int r = 0; r < nrows; r++) {
-                StartElement moleculeStartElement = eventFactory.createStartElement("", "", ITEM);
-                eventWriter.add(tab);
-                eventWriter.add(moleculeStartElement);
-                eventWriter.add(end);
-
-                for (String column : columns) {
-                    createNode(eventWriter, column, df.format(table.getValue(r, column)));
-                }
-                
-                eventWriter.add(tab);
-                eventWriter.add(eventFactory.createEndElement("", "", ITEM));
-                eventWriter.add(end);
-                IJ.showProgress((double)r / (double)nrows);
-            }
-
-            // Close the root element
-            eventWriter.add(eventFactory.createEndElement("", "", ROOT));
-            eventWriter.add(end);
-            
-            eventWriter.add(eventFactory.createEndDocument());
+        try (FileOutputStream fileOut = new FileOutputStream(fp)) {
+            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+            XMLEventWriter eventWriter = outputFactory.createXMLEventWriter(fileOut);
+            writeToStream(eventWriter, floatPrecision, table, columns);
             eventWriter.close();
-        } catch(XMLStreamException ex) {
-            throw new IOException(ex.toString());
-        } 
+        } catch (XMLStreamException ex) {
+            throw new IOException(ex);
+        }
     }
-    
+
+    public void writeToStream(XMLEventWriter eventWriter, int floatPrecision, GenericTable table, List<String> columns) throws XMLStreamException {
+        XMLEventFactory eventFactory = XMLEventFactory.newInstance();
+        XMLEvent tab = eventFactory.createDTD("\t");
+        XMLEvent end = eventFactory.createDTD("\n");
+
+        DecimalFormat df = StringFormatting.getDecimalFormat(floatPrecision);
+        int nrows = table.getRowCount();
+
+        eventWriter.add(eventFactory.createStartDocument());
+        eventWriter.add(end);
+
+        eventWriter.add(eventFactory.createStartElement("", "", ROOT));
+        eventWriter.add(end);
+
+        // Units
+        eventWriter.add(tab);
+        eventWriter.add(eventFactory.createStartElement("", "", UNITS));
+        eventWriter.add(end);
+        for (String column : columns) {
+            String units = table.getColumnUnits(column).toString();
+            if ((units != null) && !units.trim().isEmpty()) {
+                createNode(eventWriter, column, units);
+            }
+        }
+        eventWriter.add(tab);
+        eventWriter.add(eventFactory.createEndElement("", "", UNITS));
+        eventWriter.add(end);
+
+        // Molecules
+        for (int r = 0; r < nrows; r++) {
+            eventWriter.add(tab);
+            eventWriter.add(eventFactory.createStartElement("", "", ITEM));
+            eventWriter.add(end);
+            for (String column : columns) {
+                createNode(eventWriter, column, df.format(table.getValue(r, column)));
+            }
+            eventWriter.add(tab);
+            eventWriter.add(eventFactory.createEndElement("", "", ITEM));
+            eventWriter.add(end);
+            IJ.showProgress((double) r / nrows);
+        }
+
+        eventWriter.add(eventFactory.createEndElement("", "", ROOT));
+        eventWriter.add(end);
+        eventWriter.add(eventFactory.createEndDocument());
+    }
+
     private void createNode(XMLEventWriter eventWriter, String name, String value) throws XMLStreamException {
         XMLEventFactory eventFactory = XMLEventFactory.newInstance();
         XMLEvent end = eventFactory.createDTD("\n");
         XMLEvent tab = eventFactory.createDTD("\t\t");
-        // Create Start node
+
         StartElement sElement = eventFactory.createStartElement("", "", name);
         eventWriter.add(tab);
         eventWriter.add(sElement);
-        // Create Content
-        Characters characters = eventFactory.createCharacters(value);
-        eventWriter.add(characters);
-        // Create End node
-        EndElement eElement = eventFactory.createEndElement("", "", name);
-        eventWriter.add(eElement);
+        eventWriter.add(eventFactory.createCharacters(value));
+        eventWriter.add(eventFactory.createEndElement("", "", name));
         eventWriter.add(end);
     }
 
@@ -261,5 +224,4 @@ public class XMLImportExport implements IImportExport {
     public String getSuffix() {
         return "xml";
     }
-
 }
